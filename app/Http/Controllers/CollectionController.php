@@ -13,6 +13,11 @@ class CollectionController extends Controller
         return view('collectionmanagement', ['collections'=>$collections]);
     }
 
+    public function list(){
+        $collections = Collection::all();
+        return view('collections', ['collections'=>$collections]);
+    }
+
     public function save(Request $request){
          $id = empty($request->input('id'))?'':$request->input('id');
          $c = empty($id)? new Collection():Collection::find($id)->get();

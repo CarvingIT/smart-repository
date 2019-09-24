@@ -18,10 +18,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/collections', 'CollectionController@list');
 
 Route::get('/upload', 'UploadResume@index')->name('upload');
 #Route::view('/upload',"upload");
 Route::post('upload_resume','UploadResume@UploadResume');
+
 
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');
