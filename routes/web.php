@@ -27,3 +27,5 @@ Route::post('upload_resume','UploadResume@UploadResume');
 Route::get('/admin','AdminController@index')->name('adminhome');
 Route::get('/admin/collectionmanagement', 'CollectionController@index')->middleware('admin');
 Route::post('/admin/savecollection', 'CollectionController@save')->middleware('admin');
+Route::get('/admin/usermanagement', 'UserController@index')->middleware('admin');
+Route::post('/admin/saveuser', 'UserController@save')->middleware('admin');
