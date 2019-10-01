@@ -85,6 +85,7 @@
                 </div>
 
                 <div class="links">
+                    <a href="/collections">Collections</a>
                     <a href="/docs">Docs</a>
                     <a href="/support">Support</a>
                     <a href="#">Blog</a>

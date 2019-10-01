@@ -20,9 +20,8 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/collections', 'CollectionController@list');
 
-Route::get('/upload', 'UploadResume@index')->name('upload');
-#Route::view('/upload',"upload");
-Route::post('upload_resume','UploadResume@UploadResume');
+Route::get('/collection/{collection_id}/upload', 'UploadDocument@showForm')->name('upload');
+Route::post('/collection/{collection_id}/upload','UploadDocument@upload');
 
 
 // admin routes

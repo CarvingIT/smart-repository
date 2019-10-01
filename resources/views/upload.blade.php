@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header"><h4>Upload</h4></div>
+                <div class="card-header"><h4>{{ $collection->name }} :: Upload Document</h4></div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -14,14 +14,13 @@
                         </div>
                     @endif
 
-<p><strong>Please upload your Resume.</strong></p>
-<form name="upload_resume_form" action="upload_resume" method="post" enctype="multipart/form-data">
+<form name="document_upload_form" action="/collection/{{ $collection->id }}/upload_document" method="post" enctype="multipart/form-data">
 @csrf()
 <table><tr>
 <td>
-<input type="file" name="resume"></td>
+<input type="file" name="document"></td>
 <td>
-<button type="submit">Upload Resume</button>
+<button type="submit">Upload</button>
 </td>
 </tr></table>
 </form>
