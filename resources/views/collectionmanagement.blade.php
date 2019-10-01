@@ -18,6 +18,8 @@
                     @csrf()
                    <label for="collection_name">Name</label> 
                    <input type="text" name="collection_name" id="collection_name" value="" />
+                   <label for="description">Description</label> 
+                   <textarea id="description" name="description" placeholder="Description of the collecton here"></textarea>
 
                    <input type="submit" value="Submit" />
                    </form> 

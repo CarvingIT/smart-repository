@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 
 use App\Document;
 use App\Classes\DocxToTextConversion;
-
-
-
 use Illuminate\Support\Facades\Storage;
 #use Illuminate\Support\Facades\Input;
 #use Illuminate\Support\Facades\DB;
@@ -23,35 +20,31 @@ class UploadDocument extends Controller
    	}
 
 	public function upload(Request $request){
-                #echo "Upload Resume in DOCX format";
         /*  !!!!
             More work needed here
-            The location of the uploaded documents (asset-store) should be configurable and must come from .env file.
-            Each collection may have one directory named after the ID of the collection.
         */
-		if($request->hasFile('resume')){
-			$filename = $request->file('resume')->getClientOriginalName();
-			$filepath = $request->file('resume')->storeAs('public/uploaded_resumes',$filename);
-			$filesize = $request->file('resume')->getClientSize();
-			$mimetype = $request->file('resume')->getMimeType();
-			$success = $request->file('resume')->storeAs('public/uploaded_resumes',$filename);
-			echo $filepath;
+		if($request->hasFile('document')){
+			$filename = $request->file('document')->getClientOriginalName();
+            $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
+			$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id'),$new_filename);
+			$filesize = $request->file('document')->getClientSize();
+			$mimetype = $request->file('document')->getMimeType();
+			$d = new Document;
+            /*
 			$converter = new DocxToTextConversion('/public/uploaded_resumes/'.$filename);
-			$data = $converter->convertToText();
-			echo $data;
-exit;
-
-			$file = new File;
-			$file->name = $filename;
-			$file->size = $filesize;
-			$file->mime = $mimetype;
-			$file->content = $data;
-			$file->save();
+			$text_content = $converter->convertToText();
+			$d->text_content = $text_content;
+            */
+            $d->filename = $filename;
+            $d->collection_id = $request->input('collection_id');
+            $d->created_by = \Auth::user()->id;
+			$d->size = $filesize;
+			$d->type = $mimetype;
+            $d->path = $filepath;
+			$d->text_content = 'Not available';
+			$d->save();
 		}
-                if(!empty($success)){
-                	echo "Uploaded resume successfully!<br />";
-                	echo "<a href='/upload'>Click here to upload another document</a>";
-                }
-        }
+           return redirect('/collection/'.$request->input('collection_id')); 
+    }
 
 }

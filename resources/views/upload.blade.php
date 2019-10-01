@@ -14,10 +14,11 @@
                         </div>
                     @endif
 
-<form name="document_upload_form" action="/collection/{{ $collection->id }}/upload_document" method="post" enctype="multipart/form-data">
+<form name="document_upload_form" action="/collection/{{ $collection->id }}/upload" method="post" enctype="multipart/form-data">
 @csrf()
 <table><tr>
 <td>
+<input type="hidden" name="collection_id" value="{{ $collection->id }}" />
 <input type="file" name="document"></td>
 <td>
 <button type="submit">Upload</button>
