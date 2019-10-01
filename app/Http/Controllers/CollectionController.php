@@ -27,4 +27,9 @@ class CollectionController extends Controller
          $c->save();
          return redirect('/admin/collectionmanagement');
     }
+
+    public function collection($collection_id){
+        $collection = Collection::find($collection_id);
+        return view('collection', ['collection'=>$collection]);
+    }
 }

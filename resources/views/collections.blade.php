@@ -11,7 +11,7 @@
                   <div style="float:right;"><a href="/collection/{{ $c->id }}/upload">Add</a></div></div>
                   @endif
                   <div class="card-body">
-                  Description of the collection 
+                  {{ $c->description }}
                  </div>
             </div>
           @endforeach
