@@ -6,7 +6,7 @@
         <div class="col-md-8">
             @foreach ($collections as $c)
             <div class="card">
-            <div class="card-header">{{ $c->name }}
+            <div class="card-header"><a href="/collection/{{ $c->id }}">{{ $c->name }}</a>
                   @if(!empty(Auth::user()->id))
                   <div style="float:right;"><a href="/collection/{{ $c->id }}/upload">Add</a></div></div>
                   @endif

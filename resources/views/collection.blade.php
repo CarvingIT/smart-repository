@@ -17,10 +17,11 @@
             <div class="card-header">Documents</div>
                  <div class="card-body">
                     <ul>
-                    @foreach($collection->documents as $d)
-                    <li>{{ $d->filename }}</li> 
+                    @foreach($documents as $d)
+                    <li><a href="/document/{{$d->id}}" target="_new">{{ $d->filename }}</a></li> 
                     @endforeach
                     </ul>
+                    {{$documents->links() }}
                  </div>
             </div>
         </div>
