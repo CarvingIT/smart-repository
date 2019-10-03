@@ -16,12 +16,12 @@
             <div class="card">
             <div class="card-header">Documents</div>
                  <div class="card-body">
+                    {{$documents->links() }}
                     <ul>
                     @foreach($documents as $d)
                     <li><a href="/document/{{$d->id}}" target="_new">{{ $d->filename }}</a></li> 
                     @endforeach
                     </ul>
-                    {{$documents->links() }}
                  </div>
             </div>
         </div>
