@@ -18,8 +18,8 @@
 @csrf()
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
 <div class="input-with-label">
-<label for="title">Title</label>
-<input type="text" id="title" name="title" value="" placeholder="Give your document a title" />
+<label for="title">Title (Optional)</label>
+<input type="text" id="title" name="title" size="40" value="" placeholder="Give your document a title. If left blank, we shall guess!" />
 </div>
 <input type="file" name="document">
 <button type="submit">Upload</button>
