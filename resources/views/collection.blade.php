@@ -19,7 +19,7 @@
                     {{$documents->links() }}
                     <ul>
                     @foreach($documents as $d)
-                    <li><a href="/document/{{$d->id}}" target="_new">{{ $d->filename }}</a></li> 
+                    <li><a href="/document/{{$d->id}}" target="_new">{{ $d->title }}</a></li> 
                     @endforeach
                     </ul>
                  </div>

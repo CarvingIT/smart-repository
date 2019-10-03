@@ -35,7 +35,12 @@ class UploadDocument extends Controller
 			$text_content = $converter->convertToText();
 			$d->text_content = $text_content;
             */
-            $d->filename = $filename;
+            if(!empty($request->input('title'))){
+                $d->title = $request->input('title');
+            }
+            else{
+                $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
+            }
             $d->collection_id = $request->input('collection_id');
             $d->created_by = \Auth::user()->id;
 			$d->size = $filesize;
@@ -45,6 +50,15 @@ class UploadDocument extends Controller
 			$d->save();
 		}
            return redirect('/collection/'.$request->input('collection_id')); 
+    }
+
+    public function autoDocumentTitle($filename){
+        $filename_chunks = explode(".",$filename);
+        $title = $filename_chunks[0];
+        $title = str_replace('_',' ',$title);
+        $title = str_replace('-',' ',$title);
+        $title = ucfirst($title);
+        return $title;
     }
 
 }

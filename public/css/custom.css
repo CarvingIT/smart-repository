@@ -1,0 +1,15 @@
+.input-with-label {
+  border: solid 1px #ccc;
+  position: relative;
+  margin:10px 0;
+}
+.input-with-label input {
+  padding:5px;
+  height: 60px;
+  border: none;
+  outline: 0;
+  font-size:20px;
+}
+label {
+  position: absolute;
+}

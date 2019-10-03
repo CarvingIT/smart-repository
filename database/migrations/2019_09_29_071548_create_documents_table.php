@@ -17,7 +17,7 @@ class CreateDocumentsTable extends Migration
             $table->bigIncrements('id');
             $table->integer('collection_id')->unsigned();
             $table->bigInteger('created_by')->unsigned();
-            $table->string('filename');
+            $table->string('title');
             $table->string('path');
             $table->char('type', '30');
             $table->bigInteger('size');

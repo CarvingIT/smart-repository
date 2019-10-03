@@ -16,14 +16,13 @@
 
 <form name="document_upload_form" action="/collection/{{ $collection->id }}/upload" method="post" enctype="multipart/form-data">
 @csrf()
-<table><tr>
-<td>
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
-<input type="file" name="document"></td>
-<td>
+<div class="input-with-label">
+<label for="title">Title</label>
+<input type="text" id="title" name="title" value="" placeholder="Give your document a title" />
+</div>
+<input type="file" name="document">
 <button type="submit">Upload</button>
-</td>
-</tr></table>
 </form>
                 </div>
             </div>
