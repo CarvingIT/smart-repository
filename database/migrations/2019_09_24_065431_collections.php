@@ -17,6 +17,7 @@ class Collections extends Migration
             $table->increments('id');
             $table->string('name');
             $table->text('description');
+            $table->enum('type', ['Public', 'Members Only']);
             $table->bigInteger('user_id')->unsigned();
             $table->timestamps();
 

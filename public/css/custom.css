@@ -1,15 +1,27 @@
 .input-with-label {
-  border: solid 1px #ccc;
   position: relative;
   margin:10px 0;
 }
 .input-with-label input {
-  padding:5px;
   height: 60px;
+  padding:15px;
   border: none;
   outline: 0;
   font-size:20px;
+  border: solid 1px #ccc;
 }
 label {
   position: absolute;
+  padding: 2px;
+  font-weight: bold;
+}
+
+.input-with-label textarea{
+    width:600px;
+    height:300px;
+  padding:15px;
+  border: none;
+  outline: 0;
+  font-size:20px;
+  border: solid 1px #ccc;
 }

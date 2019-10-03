@@ -16,11 +16,21 @@
 
                    <form method="post" action="/admin/savecollection">
                     @csrf()
+                   <div class="input-with-label">
                    <label for="collection_name">Name</label> 
-                   <input type="text" name="collection_name" id="collection_name" value="" />
+                   <input type="text" name="collection_name" id="collection_name" value="" placeholder="Give your collection a name" />
+                   </div>
+                   <div class="input-with-label">
                    <label for="description">Description</label> 
                    <textarea id="description" name="description" placeholder="Description of the collecton here"></textarea>
-
+                   </div>
+                   <div>
+                   <input type="checkbox" name="collection_type" value="Members Only" /> Members Only
+                   </div>
+                   <div class="input-with-label">
+                   <label for="maintainer">Maintainer</label> 
+                   <input type="text" name="maintainer" id="maintainer" value="" placeholder="Enter maintainer's ID" />
+                   </div>
                    <input type="submit" value="Submit" />
                    </form> 
                 </div>
