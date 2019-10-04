@@ -16,28 +16,33 @@
 
                    <form method="post" action="/admin/savecollection">
                     @csrf()
+                    <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                    <div class="form-group row">
                    <label for="collection_name" class="col-md-4 col-form-label text-md-right">Name</label> 
                     <div class="col-md-6">
-                    <input type="text" name="collection_name" id="collection_name" class="form-control" value="" placeholder="Give your collection a name" />
+                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your collection a name" value="{{ $collection->name }}" />
                     </div>
                    </div>
                    <div class="form-group row">
                    <label for="description" class="col-md-4 col-form-label text-md-right">Description</label> 
                     <div class="col-md-6">
-                    <textarea name="description" id="description" class="form-control" value="" placeholder="Description"></textarea>
+                    <textarea name="description" id="description" class="form-control" value="" placeholder="Description">{{ $collection->description }}</textarea>
                     </div>
                    </div>
                    <div class="form-group row">
                    <label for="collection_type" class="col-md-4 col-form-label text-md-right">Type</label> 
                     <div class="col-md-6">
-                    <input type="checkbox" id="collection_type" name="collection_type" value="Members Only" /> Members Only
+                    <input type="checkbox" id="collection_type" name="collection_type" value="Members Only" 
+                    @if($collection->type == 'Members Only')
+                     checked 
+                    @endif
+                    /> Members Only
                     </div>
                    </div>
                    <div class="form-group row">
                    <label for="maintainer" class="col-md-4 col-form-label text-md-right">Maintainer</label> 
                     <div class="col-md-6">
-                    <input type="text" name="maintainer" id="maintainer" class="form-control" value="" placeholder="ID of the maintainer"></textarea>
+                    <input type="text" name="maintainer" id="maintainer" class="form-control" value="@if(!empty($collection->maintainer()->email)){{$collection->maintainer()->email}}@endif" placeholder="ID of the maintainer">
                     </div>
                    </div>
                 

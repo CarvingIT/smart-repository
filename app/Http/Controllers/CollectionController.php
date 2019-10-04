@@ -15,7 +15,7 @@ class CollectionController extends Controller
 
     public function add_edit_collection($collection_id){
         if($collection_id == 'new'){
-            $collection = null;
+            $collection = new \App\Collection();
         }
         else{
             $collection = \App\Collection::find($collection_id);
@@ -29,14 +29,31 @@ class CollectionController extends Controller
     }
 
     public function save(Request $request){
-         $id = empty($request->input('id'))?'':$request->input('id');
-         $c = empty($id)? new Collection():Collection::find($id)->get();
+         $id = empty($request->input('collection_id'))?'':$request->input('collection_id');
+         $c = empty($id)? new Collection():Collection::find($id);
          $c->name = $request->input('collection_name');
          $c->description = $request->input('description');
          $c->type = empty($request->input('collection_type'))?'Public':$request->input('collection_type');
          $c->description = $request->input('description');
          $c->user_id = Auth::user()->id;
          $c->save();
+         // maintainer ID
+         if(!empty($request->input('maintainer'))){
+            $maintainer = \App\User::where('email', '=', $request->input('maintainer'))->first();
+            $permission = \App\Permission::where('name','=','MAINTAINER')->first();
+            $maintainer_permission = \App\UserPermission::where('collection_id','=',$c->id)->where('permission_id','=',$permission->id)->first();
+            $maintainer_id = empty($maintainer->id)? null : $maintainer->id;
+            if($maintainer_permission){
+                $maintainer_permission->delete();
+            }
+            if($maintainer_id){
+                $new_maintainer_permission = new \App\UserPermission();
+                $new_maintainer_permission->permission_id = $permission->id;
+                $new_maintainer_permission->collection_id = $c->id;
+                $new_maintainer_permission->user_id = $maintainer_id;
+                $new_maintainer_permission->save();
+            }
+         } 
          return redirect('/admin/collectionmanagement');
     }
 

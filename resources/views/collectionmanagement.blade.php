@@ -38,7 +38,9 @@ $(document).ready(function() {
                             <td>{{ $c->name }}</td>
                             <td>{{ $c->type }}</td>
                             <td>{{ $c->created_at }}</td>
-                            <td>e x</td>    <!-- use font awesome icons or image icons -->
+                            <td>
+                                <a href="/admin/collection-form/{{$c->id}}">e</a> x
+                            </td>    <!-- use font awesome icons or image icons -->
                         </tr>
                         @endforeach
                         </tbody>
