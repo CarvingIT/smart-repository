@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
+<script>
+$(document).ready(function() {
+    $('#users').DataTable();
+} );
+</script>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -36,12 +41,15 @@
                         </div>
                     @endif
 
-                    <table>
+                    <table id="users">
                         <thead>
+                            <tr>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Actions</th>
+                            </tr>
                         </thead>
+                        <tbody>
                         @foreach ($users as $u)
                         <tr>
                             <td>{{ $u->name }}</td>
@@ -49,6 +57,7 @@
                             <td>e x</td>    <!-- use font awesome icons or image icons -->
                         </tr>
                         @endforeach
+                        </tbody>
                     </table>
                 </div>
             </div>

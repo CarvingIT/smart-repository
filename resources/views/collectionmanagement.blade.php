@@ -7,7 +7,6 @@ $(document).ready(function() {
     $('#collections').DataTable();
 } );
 </script>
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
