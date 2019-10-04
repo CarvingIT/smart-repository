@@ -13,6 +13,16 @@ class CollectionController extends Controller
         return view('collectionmanagement', ['collections'=>$collections]);
     }
 
+    public function add_edit_collection($collection_id){
+        if($collection_id == 'new'){
+            $collection = null;
+        }
+        else{
+            $collection = \App\Collection::find($collection_id);
+        }
+        return view('collection-form', ['collection'=>$collection]);
+    }
+
     public function list(){
         $collections = Collection::all();
         return view('collections', ['collections'=>$collections]);

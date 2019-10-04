@@ -30,6 +30,7 @@ Route::get('/document/{document_id}', 'DocumentController@loadDocument');
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');
 Route::get('/admin/collectionmanagement', 'CollectionController@index')->middleware('admin');
+Route::get('/admin/collection-form/{collection_id}', 'CollectionController@add_edit_collection')->middleware('admin');
 Route::post('/admin/savecollection', 'CollectionController@save')->middleware('admin');
 Route::get('/admin/usermanagement', 'UserController@index')->middleware('admin');
 Route::post('/admin/saveuser', 'UserController@save')->middleware('admin');
