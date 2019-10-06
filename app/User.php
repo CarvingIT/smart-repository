@@ -56,4 +56,8 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    public function accessPermissions(){
+        return \App\UserPermission::where('user_id','=',$this->id)->get();
+    }
 }
