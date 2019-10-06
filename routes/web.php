@@ -34,3 +34,4 @@ Route::get('/admin/collection-form/{collection_id}', 'CollectionController@add_e
 Route::post('/admin/savecollection', 'CollectionController@save')->middleware('admin');
 Route::get('/admin/usermanagement', 'UserController@index')->middleware('admin');
 Route::post('/admin/saveuser', 'UserController@save')->middleware('admin');
+Route::get('/admin/user/{user_id}/delete','UserController@delete')->middleware('admin');

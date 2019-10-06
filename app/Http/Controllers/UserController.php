@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\User;
 use Illuminate\Support\Facades\Auth;
+use Session;
 
 class UserController extends Controller
 {
@@ -19,8 +20,21 @@ class UserController extends Controller
          $u->email = $request->input('email');
          $u->name = $request->input('name');
          $u->password = empty($u->password)? bcrypt($this->generatePassword(8)) : $u->password;
-         $u->save();
+         
+         try{
+            $u->save();
+            Session::flash('alert-success', 'Done!');
+         }
+         catch(\Exception $e){
+            Session::flash('alert-danger', $e->getMessage());
+         }
          return redirect('/admin/usermanagement');
+    }
+
+    public function delete($user_id){
+        $user = User::find($user_id);
+        $user->delete();
+        return redirect('/admin/usermanagement');
     }
 
     public function generatePassword($length) {

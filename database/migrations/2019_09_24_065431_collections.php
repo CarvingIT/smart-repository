@@ -15,7 +15,7 @@ class Collections extends Migration
     {
         Schema::create('collections', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
+            $table->string('name')->unique();
             $table->text('description');
             $table->enum('type', ['Public', 'Members Only']);
             $table->bigInteger('user_id')->unsigned();

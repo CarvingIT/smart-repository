@@ -13,11 +13,13 @@ $(document).ready(function() {
                 <div class="card-header">Add User</div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+                    <div class="flash-message">
+                    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                        @if(Session::has('alert-' . $msg))
+                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }}</p>
+                        @endif
+                    @endforeach
+                    </div>
 
                    <form method="post" action="/admin/saveuser">
                     @csrf()
@@ -35,11 +37,6 @@ $(document).ready(function() {
                 <div class="card-header">Users</div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
-                        </div>
-                    @endif
 
                     <table id="users">
                         <thead>
@@ -54,7 +51,10 @@ $(document).ready(function() {
                         <tr>
                             <td>{{ $u->name }}</td>
                             <td>{{ $u->email }}</td>
-                            <td>e x</td>    <!-- use font awesome icons or image icons -->
+                            <td>
+                            e 
+                            <a href="/admin/user/{{ $u->id }}/delete">x</a>
+                            </td>    <!-- use font awesome icons or image icons -->
                         </tr>
                         @endforeach
                         </tbody>

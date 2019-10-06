@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Collection;
 use Illuminate\Support\Facades\Auth;
+use Session;
 
 class CollectionController extends Controller
 {
@@ -36,7 +37,13 @@ class CollectionController extends Controller
          $c->type = empty($request->input('collection_type'))?'Public':$request->input('collection_type');
          $c->description = $request->input('description');
          $c->user_id = Auth::user()->id;
-         $c->save();
+         try{
+            $c->save();
+            Session::flash('alert-success', 'Collection saved successfully!');
+         }
+         catch(\Exception $e){
+            Session::flash('alert-danger', $e->getMessage());
+         }
          // maintainer ID
          if(!empty($request->input('maintainer'))){
             $maintainer = \App\User::where('email', '=', $request->input('maintainer'))->first();
@@ -52,6 +59,9 @@ class CollectionController extends Controller
                 $new_maintainer_permission->collection_id = $c->id;
                 $new_maintainer_permission->user_id = $maintainer_id;
                 $new_maintainer_permission->save();
+            }
+            else{
+                Session::flash('alert-warning', 'Maintainer was not found');
             }
          } 
          return redirect('/admin/collectionmanagement');
