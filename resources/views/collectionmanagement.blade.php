@@ -12,7 +12,7 @@ $(document).ready(function() {
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">Collections
-                    <div class="card-header-corner"><a href="/admin/collection-form/new">Add</a></div>
+                    <div class="card-header-corner"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png" /></a></div>
                 </div>
 
                 <div class="card-body">
@@ -40,7 +40,8 @@ $(document).ready(function() {
                             <td>{{ $c->type }}</td>
                             <td>{{ $c->created_at }}</td>
                             <td>
-                                <a href="/admin/collection-form/{{$c->id}}">e</a> x
+                                <a href="/admin/collection-form/{{$c->id}}"><img class="icon" src="/i/pencil-edit-button.png" /></a>
+                                <a href="/admin/collection-form/{{$c->id}}/delete"><img class="icon" src="/i/trash.png" /></a>
                             </td>    <!-- use font awesome icons or image icons -->
                         </tr>
                         @endforeach

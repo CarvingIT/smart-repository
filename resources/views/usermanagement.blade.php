@@ -52,8 +52,8 @@ $(document).ready(function() {
                             <td>{{ $u->name }}</td>
                             <td>{{ $u->email }}</td>
                             <td>
-                            e 
-                            <a href="/admin/user/{{ $u->id }}/delete">x</a>
+                            <a href="/admin/user/{{ $u->id }}/edit"><img class="icon" src="/i/pencil-edit-button.png" /></a>
+                            <a href="/admin/user/{{ $u->id }}/delete"><img class="icon" src="/i/trash.png" /></a>
                             </td>    <!-- use font awesome icons or image icons -->
                         </tr>
                         @endforeach

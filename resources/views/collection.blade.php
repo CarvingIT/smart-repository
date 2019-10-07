@@ -7,7 +7,7 @@
             <div class="card">
             <div class="card-header">{{ $collection->name }}
                   @if(!empty(Auth::user()->id))
-                  <div class="card-header-corner"><a href="/collection/{{ $collection->id }}/upload">Add</a></div></div>
+                  <div class="card-header-corner"><a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" /></a></div></div>
                   @endif
                   <div class="card-body">
                     {{ $collection->description }}
