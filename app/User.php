@@ -60,4 +60,15 @@ class User extends Authenticatable
     public function accessPermissions(){
         return \App\UserPermission::where('user_id','=',$this->id)->get();
     }
+
+    public function hasPermission($collection_id, $permission_name){
+        $user_permissions = $this->accessPermissions();
+        foreach($user_permissions as $u_p){
+            if($u_p->collection_id == $collection_id && 
+                (($u_p->permission)->name == $permission_name || ($u_p->permission)->name == 'MAINTAINER')){
+                return true;
+            }
+        }
+        return false;
+    }
 }

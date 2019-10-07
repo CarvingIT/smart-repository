@@ -30,8 +30,8 @@ class CollectionController extends Controller
          plus collections to which the current user has access.
          Access to members-only collection is determined by db_table:user_permissions 
         */
-        $user_permissions = Auth::user()->accessPermissions();
         $user_collections = array();
+        $user_permissions = empty(Auth::user()) ? array() : Auth::user()->accessPermissions();
         foreach($user_permissions as $u_p){
             if(!in_array($u_p->collection_id, $user_collections)){
                 array_push($user_collections, $u_p->collection_id);

@@ -6,9 +6,12 @@
         <div class="col-md-8">
             <div class="card">
             <div class="card-header">{{ $collection->name }}
-                  @if(!empty(Auth::user()->id))
-                  <div class="card-header-corner"><a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" /></a></div></div>
+                  <div class="card-header-corner">
+                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE'))
+                    <a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" /></a>
                   @endif
+                  </div>
+            </div>
                   <div class="card-body">
                     {{ $collection->description }}
                  </div>
