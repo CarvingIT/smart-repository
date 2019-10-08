@@ -63,6 +63,18 @@ class User extends Authenticatable
 
     public function hasPermission($collection_id, $permission_name){
         $user_permissions = $this->accessPermissions();
+        /*
+        check VIEW access first
+        If the collection is Public or if the user has any permission on the collection
+        */ 
+        if($permission_name == 'VIEW'){
+            $c = \App\Collection::find($collection_id);
+            if($c->type == 'Public') return true;
+            
+            foreach($user_permissions as $u_p){
+                if($u_p->collection_id == $collection_id) return true;
+            }
+        }
         foreach($user_permissions as $u_p){
             if($u_p->collection_id == $collection_id && 
                 (($u_p->permission)->name == $permission_name || ($u_p->permission)->name == 'MAINTAINER')){

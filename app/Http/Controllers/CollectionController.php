@@ -9,6 +9,11 @@ use Session;
 
 class CollectionController extends Controller
 {
+    public function __construct()
+    {
+        //$this->middleware('collection_view');
+    }
+
     public function index(){
         $collections = Collection::all();
         return view('collectionmanagement', ['collections'=>$collections]);

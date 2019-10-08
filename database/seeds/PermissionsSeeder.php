@@ -18,7 +18,7 @@ class PermissionsSeeder extends Seeder
             array('EDIT_OWN', 'Can edit own content'),
             array('DELETE_ANY', 'Can delete any content'),
             array('DELETE_OWN', 'Can delete own content'),
-            array('VIEW_ONLY', 'Can view content'),
+            array('VIEW', 'Can view content'),
         );
         // add permissions
         foreach($permissions as $p){

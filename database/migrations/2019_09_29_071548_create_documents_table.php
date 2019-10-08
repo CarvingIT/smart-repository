@@ -19,7 +19,7 @@ class CreateDocumentsTable extends Migration
             $table->bigInteger('created_by')->unsigned();
             $table->string('title');
             $table->string('path');
-            $table->char('type', '30');
+            $table->string('type');
             $table->bigInteger('size');
             $table->longText('text_content');
             $table->timestamps();

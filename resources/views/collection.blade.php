@@ -22,7 +22,7 @@
                     {{$documents->links() }}
                     <ul>
                     @foreach($documents as $d)
-                    <li><a href="/document/{{$d->id}}" target="_new">{{ $d->title }}</a></li> 
+                    <li><a href="/collection/{{$collection->id}}/document/{{$d->id}}" target="_new">{{ $d->title }}</a></li> 
                     @endforeach
                     </ul>
                  </div>
