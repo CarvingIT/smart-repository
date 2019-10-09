@@ -11,7 +11,9 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-            <div class="card-header">{{ $collection->name }} :: Collection users</div>
+            <div class="card-header">{{ $collection->name }} :: Collection users
+                <div class="card-header-corner"><a href="/collection/{{ $collection->id }}/user"><img class="icon" src="/i/plus.png"></a></div>
+            </div>
                  <div class="card-body">
                     <table id="collection_users" class="display" style="width:100%">
                         <thead>
@@ -33,8 +35,8 @@ $(document).ready(function() {
                         @endforeach
                         </td>
                         <td>
-                            <a href="#"><img class="icon" src="/i/pencil-edit-button.png" /></a>
-                            <a href="#"><img class="icon" src="/i/trash.png" /></a>
+                            <a href="/collection/{{ $collection->id }}/user/{{ ($perms[0]->user)->id }}"><img class="icon" src="/i/pencil-edit-button.png" /></a>
+                            <a href="/collection/{{ $collection->id }}/remove-user/{{ ($perms[0]->user)->id }}"><img class="icon" src="/i/trash.png" /></a>
                         </td>
                     </tr>
                     @endforeach

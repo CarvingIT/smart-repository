@@ -25,6 +25,10 @@ Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadF
 Route::post('/collection/{collection_id}/upload','DocumentController@upload');
 
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('collection_view');
+Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm');
+Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@showCollectionUserForm');
+Route::post('/collection/{collection_id}/savecollectionuser', 'CollectionController@saveUser');
+Route::get('/collection/{collection_id}/remove-user/{user_id}', 'CollectionController@removeUser');
 
 Route::get('/document/{document_id}', 'DocumentController@loadDocument');
 Route::get('/document/{document_id}/edit', 'DocumentController@editForm');

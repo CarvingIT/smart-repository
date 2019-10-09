@@ -101,4 +101,41 @@ class CollectionController extends Controller
         }
         return view('collection_users', ['collection'=>$collection, 'collection_users'=>$collection_users]);
     }
+
+    public function showCollectionUserForm($collection_id, $user_id=null){
+        $user_permissions = array();
+        $user = null;
+        if(!empty($user_id)){
+            $user = \App\User::find($user_id);
+            $u_permissions = \App\UserPermission::where('user_id','=',$user_id)
+                ->where('collection_id','=',$collection_id)->get();
+            foreach($u_permissions as $u_p){
+                $user_permissions['p'.$u_p->permission_id] = 1;
+            }
+        }
+        return view('collection-user-form', ['collection'=>\App\Collection::find($collection_id), 
+            'user'=>$user, 
+            'user_permissions'=>$user_permissions]);
+    }
+
+    public function saveUser(Request $request){
+        $user = \App\User::where('email','=',$request->user_id)->first();
+        // first delete all permissions on the collection
+        \App\UserPermission::where('collection_id','=',$request->collection_id)
+            ->where('user_id','=',$user->id)->delete(); 
+        foreach($request->permission as $p){
+            $user_permission = new \App\UserPermission;
+            $user_permission->user_id = $user->id;
+            $user_permission->collection_id = $request->collection_id;
+            $user_permission->permission_id = $p; 
+            $user_permission->save();
+        }
+        return $this->collectionUsers($request->collection_id);
+    }
+
+    public function removeUser($collection_id, $user_id){
+        \App\UserPermission::where('collection_id','=',$collection_id)
+            ->where('user_id','=',$user_id)->delete(); 
+        return $this->collectionUsers($collection_id);
+    }
 }
