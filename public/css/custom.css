@@ -6,3 +6,8 @@ img.icon{
     width:20px;
     height:20px;
 }
+
+div.card-header{
+    font-weight:bold;
+    font-size: 15px;
+}

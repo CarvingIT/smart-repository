@@ -13,4 +13,8 @@ class UserPermission extends Model
     public function permission(){
         return $this->belongsTo('App\Permission', 'permission_id');
     }
+
+    public function user(){
+        return $this->belongsTo('App\User', 'user_id');
+    }
 }

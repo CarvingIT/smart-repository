@@ -14,7 +14,10 @@ $(document).ready(function() {
             <div class="card-header">{{ $collection->name }}
                   <div class="card-header-corner">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE'))
-                    <a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" /></a>
+                    <a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" title="New document" /></a>
+                  @endif
+                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
+                    <a href="/collection/{{ $collection->id }}/users"><img class="icon" src="/i/man-user.png" title="Manage users of this collection" /></a>
                   @endif
                   </div>
             </div>

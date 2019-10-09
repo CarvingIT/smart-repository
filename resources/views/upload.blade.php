@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header"><h4>{{ $collection->name }} :: Upload Document</h4></div>
+                <div class="card-header">{{ $collection->name }} :: Upload Document</div>
 
                 <div class="card-body">
                     @if (session('status'))

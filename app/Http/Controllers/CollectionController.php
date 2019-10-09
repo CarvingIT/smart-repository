@@ -90,4 +90,15 @@ class CollectionController extends Controller
         $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('id','DESC')->paginate(10);
         return view('collection', ['collection'=>$collection, 'documents'=>$documents]);
     }
+
+    public function collectionUsers($collection_id){
+        $collection = Collection::find($collection_id);
+        $user_permissions = \App\UserPermission::where('collection_id', '=', $collection_id)->get();
+        //$user_permissions;
+        $collection_users = array();
+        foreach($user_permissions as $u_p){
+            $collection_users[$u_p->user_id][] = $u_p;
+        }
+        return view('collection_users', ['collection'=>$collection, 'collection_users'=>$collection_users]);
+    }
 }

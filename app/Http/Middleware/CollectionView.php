@@ -15,7 +15,8 @@ class CollectionView
      */
     public function handle($request, Closure $next)
     {
-        if(!$request->user()->hasPermission($request->collection_id, 'VIEW')){
+        $collection = \App\Collection::find($request->collection_id);
+        if($collection->type != 'Public' && !$request->user()->hasPermission($request->collection_id, 'VIEW')){
             // Use a view for error pages
             return response('Access Denied', 403)->header('Content-Type', 'text/plain');
         }

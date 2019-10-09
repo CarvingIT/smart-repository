@@ -24,6 +24,8 @@ Route::get('/collection/{collection_id}', 'CollectionController@collection')->mi
 Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadForm')->middleware('collection_view');
 Route::post('/collection/{collection_id}/upload','DocumentController@upload');
 
+Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('collection_view');
+
 Route::get('/document/{document_id}', 'DocumentController@loadDocument');
 Route::get('/document/{document_id}/edit', 'DocumentController@editForm');
 Route::post('/document/{document_id}/edit', 'DocumentController@editDocument');
