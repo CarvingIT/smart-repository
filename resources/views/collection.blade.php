@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+<script>
+$(document).ready(function() {
+    $('#documents').DataTable();
+} );
+</script>
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -20,11 +26,33 @@
             <div class="card-header">Documents</div>
                  <div class="card-body">
                     {{$documents->links() }}
-                    <ul>
+                    <table id="documents" class="display" style="width:100%">
+                        <thead>
+                            <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Size</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                     @foreach($documents as $d)
-                    <li><a href="/collection/{{$collection->id}}/document/{{$d->id}}" target="_new">{{ $d->title }}</a></li> 
+                    <tr>
+                        <td>
+                        <a href="/document/{{$d->id}}" target="_new">{{ $d->title }}</a>
+                        </td>
+                        <td>{{ $d->type }}</td>
+                        <td>{{ $d->size }}</td>
+                        <td>{{ $d->created_at }}</td>
+                        <td>
+                            <a href="#"><img class="icon" src="/i/pencil-edit-button.png" /></a>
+                            <a href="#"><img class="icon" src="/i/trash.png" /></a>
+                        </td>
+                    </tr>
                     @endforeach
-                    </ul>
+                        </tbody>
+                    </table>
                  </div>
             </div>
         </div>
