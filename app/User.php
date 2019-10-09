@@ -83,4 +83,26 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    public function canEditDocument($document_id){
+        $document = \App\Document::find($document_id);
+        $collection_id = $document->collection_id;
+        if($this->hasPermission($collection_id, 'MAINTAINER') || 
+            $this->hasPermission($collection_id, 'EDIT_ANY') ||
+            ($this->hasPermission($collection_id, 'EDIT_OWN') && $document->created_by == $this->id)){
+            return true;
+        }
+        return false;
+    }
+
+    public function canDeleteDocument($document_id){
+        $document = \App\Document::find($document_id);
+        $collection_id = $document->collection_id;
+        if($this->hasPermission($collection_id, 'MAINTAINER') || 
+            $this->hasPermission($collection_id, 'DELETE_ANY') ||
+            ($this->hasPermission($collection_id, 'DELETE_OWN') && $document->created_by == $this->id)){
+            return true;
+        }
+        return false;
+    }
 }

@@ -21,8 +21,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/collections', 'CollectionController@list');
 
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
-Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadForm')->middleware('collection_view');
-Route::post('/collection/{collection_id}/upload','DocumentController@upload');
+Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadForm')->middleware('document_add');
+Route::post('/collection/{collection_id}/upload','DocumentController@upload')->middleware('document_add');
 
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('collection_view');
 Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm');
@@ -30,10 +30,10 @@ Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@s
 Route::post('/collection/{collection_id}/savecollectionuser', 'CollectionController@saveUser');
 Route::get('/collection/{collection_id}/remove-user/{user_id}', 'CollectionController@removeUser');
 
-Route::get('/document/{document_id}', 'DocumentController@loadDocument');
-Route::get('/document/{document_id}/edit', 'DocumentController@editForm');
-Route::post('/document/{document_id}/edit', 'DocumentController@editDocument');
+Route::get('/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
+Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 
+Route::get('/document/{document_id}/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');

@@ -20,6 +20,13 @@ class DocumentController extends Controller
        		return view('upload', ['collection'=>$collection]);
    	}
 
+	public function showEditForm($document_id)
+    {
+            $document = \App\Document::find($document_id);
+            $collection = \App\Collection::find($document->collection_id);
+       		return view('upload', ['collection'=>$collection, 'document'=>$document]);
+   	}
+
 	public function upload(Request $request){
         /*  !!!!
             More work needed here
@@ -30,7 +37,12 @@ class DocumentController extends Controller
 			$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id'),$new_filename);
 			$filesize = $request->file('document')->getClientSize();
 			$mimetype = $request->file('document')->getMimeType();
-			$d = new Document;
+            if(!empty($request->input('document_id'))){
+                $d = Document::find($request->input('document_id'));
+            }
+            else{
+			    $d = new Document;
+            }
             /*
 			$converter = new DocxToTextConversion('/public/uploaded_resumes/'.$filename);
 			$text_content = $converter->convertToText();
@@ -60,5 +72,12 @@ class DocumentController extends Controller
         $title = str_replace('-',' ',$title);
         $title = ucfirst($title);
         return $title;
+    }
+
+    public function deleteDocument($document_id){
+        $d = \App\Document::find($document_id);
+        $collection_id = $d->collection_id;
+        $d->delete();
+        return redirect('/collection/'.$collection_id); 
     }
 }

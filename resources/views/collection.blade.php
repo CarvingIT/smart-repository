@@ -49,8 +49,12 @@ $(document).ready(function() {
                         <td>{{ $d->size }}</td>
                         <td>{{ $d->created_at }}</td>
                         <td>
-                            <a href="#"><img class="icon" src="/i/pencil-edit-button.png" /></a>
-                            <a href="#"><img class="icon" src="/i/trash.png" /></a>
+                            @if(Auth::user() && Auth::user()->canEditDocument($d->id))
+                            <a href="/document/{{ $d->id }}/edit"><img class="icon" src="/i/pencil-edit-button.png" /></a>
+                            @endif
+                            @if(Auth::user() && Auth::user()->canDeleteDocument($d->id))
+                            <a href="/document/{{ $d->id }}/delete"><img class="icon" src="/i/trash.png" /></a>
+                            @endif
                         </td>
                     </tr>
                     @endforeach

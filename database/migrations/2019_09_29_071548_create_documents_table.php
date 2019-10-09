@@ -23,6 +23,7 @@ class CreateDocumentsTable extends Migration
             $table->bigInteger('size');
             $table->longText('text_content');
             $table->timestamps();
+            $table->softDeletes();
         });
         //add foreign keys
         Schema::table('documents', function(Blueprint $table){

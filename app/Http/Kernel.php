@@ -62,6 +62,10 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'admin' => \App\Http\Middleware\Admin::class,
         'collection_view' => \App\Http\Middleware\CollectionView::class,
+        'document_view' => \App\Http\Middleware\DocumentView::class,
+        'document_add' => \App\Http\Middleware\DocumentAdd::class,
+        'document_edit' => \App\Http\Middleware\DocumentEdit::class,
+        'document_delete' => \App\Http\Middleware\DocumentDelete::class,
     ];
 
     /**
