@@ -43,11 +43,7 @@ class DocumentController extends Controller
             else{
 			    $d = new Document;
             }
-            /*
-			$converter = new DocxToTextConversion('/public/uploaded_resumes/'.$filename);
-			$text_content = $converter->convertToText();
-			$d->text_content = $text_content;
-            */
+
             if(!empty($request->input('title'))){
                 $d->title = $request->input('title');
             }
@@ -59,7 +55,8 @@ class DocumentController extends Controller
 			$d->size = $filesize;
 			$d->type = $mimetype;
             $d->path = $filepath;
-			$d->text_content = 'Not available';
+			$d->text_content = $this->extractText($d);
+			//$d->text_content = 'Not available';
 			$d->save();
 
             $this->createDocumentRevision($d);
@@ -103,5 +100,15 @@ class DocumentController extends Controller
     public function loadRevision($revision_id){
         $doc = \App\DocumentRevision::find($revision_id);
         return response()->download(storage_path('app/'.$doc->path), null, [], null);
+    }
+
+    public function extractText($d){
+        if(preg_match('/^text\//', $d->type)){
+            return file_get_contents(storage_path('app/'.$d->path));
+        }
+        else{
+	        $doc = new \App\DocXtract(storage_path('app/'.$d->path));
+		    return $doc->convertToText();
+        }
     }
 }
