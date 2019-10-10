@@ -6,6 +6,9 @@ img.icon{
     width:20px;
     height:20px;
 }
+img.file-icon{
+    width:40px;
+}
 
 div.card-header{
     font-weight:bold;

@@ -16,20 +16,20 @@ $(document).ready(function() {
                     <table id="revisions" class="display" style="width:100%">
                         <thead>
                             <tr>
+                            <th>Type</th>
                             <th>Created</th>
                             <th>Created By</th>
-                            <th>Type</th>
                             <th>Size</th>
                             </tr>
                         </thead>
                         <tbody>
                     @foreach($document_revisions as $dr)
                     <tr>
+                        <td><img class="file-icon" src="/i/file-types/{{ ($dr->document)->icon() }}.png" /></td>
                         <td>
                         <a href="/document-revision/{{$dr->id}}" target="_new">{{ $dr->created_at }}</a>
                         </td>
                         <td>{{ ($dr->user)->email }}</td>
-                        <td>{{ $dr->type }}</td>
                         <td>{{ $dr->size }}</td>
                     </tr>
                     @endforeach

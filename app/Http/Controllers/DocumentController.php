@@ -103,7 +103,14 @@ class DocumentController extends Controller
     }
 
     public function extractText($d){
-        if(preg_match('/^text\//', $d->type)){
+        if($d->type == 'application/pdf'){
+            $parser = new \Smalot\PdfParser\Parser();
+            $pdf = $parser->parseFile(storage_path('app/'.$d->path));
+            $text = $pdf->getText();
+            $text = str_replace(array('&', '%', '$', "\n"), ' ', $text);
+            return $text;
+        }
+        else if(preg_match('/^text\//', $d->type)){
             return file_get_contents(storage_path('app/'.$d->path));
         }
         else{

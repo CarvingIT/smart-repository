@@ -3,7 +3,10 @@
 @section('content')
 <script>
 $(document).ready(function() {
-    $('#documents').DataTable();
+    $('#documents').DataTable({
+    "aoColumnDefs": [{ "bSortable": false, "aTargets": [0, 4]}],
+    "aaSorting": []
+    });
 } );
 </script>
 
@@ -21,19 +24,13 @@ $(document).ready(function() {
                   @endif
                   </div>
             </div>
-                  <div class="card-body">
-                    {{ $collection->description }}
-                 </div>
-            </div>
-            <div class="card">
-            <div class="card-header">Documents</div>
                  <div class="card-body">
-                    {{$documents->links() }}
+                    <p>{{ $collection->description }}</p>
                     <table id="documents" class="display" style="width:100%">
                         <thead>
                             <tr>
-                            <th>Title</th>
                             <th>Type</th>
+                            <th>Title</th>
                             <th>Size</th>
                             <th>Created</th>
                             <th>Actions</th>
@@ -42,20 +39,21 @@ $(document).ready(function() {
                         <tbody>
                     @foreach($documents as $d)
                     <tr>
+                        <td><img class="file-icon" src="/i/file-types/{{ $d->icon() }}.png" alt="{{$d->type}}"/></td>
                         <td>
                         <a href="/document/{{$d->id}}" target="_new">{{ $d->title }}</a>
                         </td>
-                        <td>{{ $d->type }}</td>
                         <td>{{ $d->size }}</td>
-                        <td>{{ $d->created_at }}</td>
+                        <td>
+                        {{ date('F d, Y', strtotime($d->updated_at)) }}
                         <td>
                             @if(Auth::user() && Auth::user()->canEditDocument($d->id))
-                            <a href="/document/{{ $d->id }}/edit"><img class="icon" src="/i/pencil-edit-button.png" /></a>
+                            <a href="/document/{{ $d->id }}/edit" title="Create a new revision"><img class="icon" src="/i/pencil-edit-button.png" /></a>
                             @endif
+                            <a href="/document/{{ $d->id }}/revisions" title="View revisions"><img class="icon" src="/i/revisions.png" /></a>
                             @if(Auth::user() && Auth::user()->canDeleteDocument($d->id))
-                            <a href="/document/{{ $d->id }}/delete"><img class="icon" src="/i/trash.png" /></a>
+                            <a href="/document/{{ $d->id }}/delete" title="Delete"><img class="icon" src="/i/trash.png" /></a>
                             @endif
-                            <a href="/document/{{ $d->id }}/revisions">r</a>
                         </td>
                     </tr>
                     @endforeach
