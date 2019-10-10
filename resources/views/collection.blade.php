@@ -5,7 +5,16 @@
 $(document).ready(function() {
     $('#documents').DataTable({
     "aoColumnDefs": [{ "bSortable": false, "aTargets": [0, 4]}],
-    "aaSorting": []
+    "order": [[ 3, "desc" ]],
+    "serverSide":true,
+    "ajax":'/collection/{{$collection->id}}/search',
+    "columns":[
+        {data:"type"},
+        {data:"title"},
+        {data:"size"},
+        {data:"updated_at"},
+        {data:"actions"},
+    ]
     });
 } );
 </script>
@@ -36,6 +45,7 @@ $(document).ready(function() {
                             <th>Actions</th>
                             </tr>
                         </thead>
+                <!--
                         <tbody>
                     @foreach($documents as $d)
                     <tr>
@@ -58,6 +68,7 @@ $(document).ready(function() {
                     </tr>
                     @endforeach
                         </tbody>
+                -->
                     </table>
                  </div>
             </div>

@@ -30,6 +30,8 @@ Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@s
 Route::post('/collection/{collection_id}/savecollectionuser', 'CollectionController@saveUser');
 Route::get('/collection/{collection_id}/remove-user/{user_id}', 'CollectionController@removeUser');
 
+Route::get('/collection/{collection_id}/search', 'CollectionController@search')->middleware('collection_view');
+
 Route::get('/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 

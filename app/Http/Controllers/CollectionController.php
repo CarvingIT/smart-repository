@@ -137,4 +137,41 @@ class CollectionController extends Controller
             ->where('user_id','=',$user_id)->delete(); 
         return $this->collectionUsers($collection_id);
     }
+
+    public function search(Request $request){
+        $columns = array('type', 'title', 'size', 'updated_at');
+        $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id)
+            ->where('title', 'like', '%'.$request->search['value'].'%')
+            ->orderby($columns[$request->order[0]['column']],$request->order[0]['dir']);
+            
+         $documents = $documents_filtered->limit($request->length)->offset($request->start)->get();
+        
+        $results_data = array();
+        foreach($documents as $d){
+            $action_icons = '';
+            if(Auth::user()){
+                if(Auth::user()->canEditDocument($d->id)){
+                $action_icons .= '<a href="/document/'.$d->id.'/revisions" title="View revisions"><img class="icon" src="/i/revisions.png" /></a>';
+                $action_icons .= '<a href="/document/'.$d->id.'/edit" title="Create a new revision"><img class="icon" src="/i/pencil-edit-button.png" /></a>';
+                }
+                if(Auth::user()->canDeleteDocument($d->id)){
+                $action_icons .= '<a href="/document/'.$d->id.'/delete" title="Delete document"><img class="icon" src="/i/trash.png" /></a>';
+                }
+            }
+            $results_data[] = array('type' => '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />',
+                        'title' => '<a href="/document/'.$d->id.'" target="_new">'.$d->title.'</a>',
+                        'size' => $d->size,
+                        'updated_at' => date('F d, Y', strtotime($d->updated_at)),
+                        'actions' => $action_icons);
+        }
+
+        $results = array(
+            'data'=>$results_data,
+            'draw'=>(int) $request->draw,
+            'recordsTotal'=> 1000,
+            'recordsFiltered' => $documents_filtered->count(),
+            'error'=> '',
+        );
+        return json_encode($results);
+    }
 }
