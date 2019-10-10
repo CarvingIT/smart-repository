@@ -34,7 +34,7 @@ class DocumentController extends Controller
 		if($request->hasFile('document')){
 			$filename = $request->file('document')->getClientOriginalName();
             $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
-			$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id'),$new_filename);
+			$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename);
 			$filesize = $request->file('document')->getClientSize();
 			$mimetype = $request->file('document')->getMimeType();
             if(!empty($request->input('document_id'))){
@@ -91,5 +91,17 @@ class DocumentController extends Controller
         $collection_id = $d->collection_id;
         $d->delete();
         return redirect('/collection/'.$collection_id); 
+    }
+
+	public function documentRevisions($document_id)
+    {
+            $document_revisions = \App\DocumentRevision::where('document_id','=', $document_id)
+                ->orderBy('id','DESC')->get();
+       		return view('document-revisions', ['document_revisions'=>$document_revisions]);
+   	}
+
+    public function loadRevision($revision_id){
+        $doc = \App\DocumentRevision::find($revision_id);
+        return response()->download(storage_path('app/'.$doc->path), null, [], null);
     }
 }

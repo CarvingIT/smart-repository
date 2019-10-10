@@ -55,6 +55,7 @@ $(document).ready(function() {
                             @if(Auth::user() && Auth::user()->canDeleteDocument($d->id))
                             <a href="/document/{{ $d->id }}/delete"><img class="icon" src="/i/trash.png" /></a>
                             @endif
+                            <a href="/document/{{ $d->id }}/revisions">r</a>
                         </td>
                     </tr>
                     @endforeach
