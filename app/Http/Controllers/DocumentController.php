@@ -61,8 +61,20 @@ class DocumentController extends Controller
             $d->path = $filepath;
 			$d->text_content = 'Not available';
 			$d->save();
+
+            $this->createDocumentRevision($d);
 		}
            return redirect('/collection/'.$request->input('collection_id')); 
+    }
+
+    public function createDocumentRevision($d){
+        $revision = new \App\DocumentRevision; 
+        $revision->document_id = $d->id;
+        $revision->created_by = $d->created_by;
+        $revision->path = $d->path;
+        $revision->type = $d->type;
+        $revision->size = $d->size;
+        $revision->save();        
     }
 
     public function autoDocumentTitle($filename){
