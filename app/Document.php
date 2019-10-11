@@ -8,6 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Document extends Model
 {
     use SoftDeletes;
+    use FullTextSearch;
+
+    /**
+     * The columns of the full text index
+     */
+    protected $searchable = [
+        'title',
+        'text_content'
+    ];
 
     public function icon(){
         $file_type_icons = array(

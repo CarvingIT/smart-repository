@@ -31,6 +31,8 @@ class CreateDocumentsTable extends Migration
             $table->foreign('created_by')->references('id')->on('users');
         });
 
+       // Full Text Index
+       DB::statement('ALTER TABLE documents ADD FULLTEXT fulltext_index (title, text_content)');
     }
 
     /**

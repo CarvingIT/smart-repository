@@ -140,11 +140,14 @@ class CollectionController extends Controller
 
     public function search(Request $request){
         $columns = array('type', 'title', 'size', 'updated_at');
-        $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id)
-            ->where('title', 'like', '%'.$request->search['value'].'%')
-            ->orderby($columns[$request->order[0]['column']],$request->order[0]['dir']);
-            
-         $documents = $documents_filtered->limit($request->length)->offset($request->start)->get();
+        $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
+        $total_documents = $documents_filtered->count();
+
+        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
+            $documents_filtered = $documents_filtered->search($request->search['value']);
+        }
+            $documents = $documents_filtered->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
+            ->limit($request->length)->offset($request->start)->get();
         
         $results_data = array();
         foreach($documents as $d){
@@ -168,7 +171,7 @@ class CollectionController extends Controller
         $results = array(
             'data'=>$results_data,
             'draw'=>(int) $request->draw,
-            'recordsTotal'=> 1000,
+            'recordsTotal'=> $total_documents,
             'recordsFiltered' => $documents_filtered->count(),
             'error'=> '',
         );
