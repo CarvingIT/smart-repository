@@ -40,6 +40,7 @@ trait FullTextSearch
      * @param string $term
      * @return \Illuminate\Database\Eloquent\Builder
      */
+    /*
     public function scopeSearch($query, $term)
     {
         $columns = implode(',',$this->searchable);
@@ -47,5 +48,16 @@ trait FullTextSearch
         $query->whereRaw("MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)" , $this->fullTextWildcards($term));
  
         return $query;
+    }
+    */
+    public function scopeSearch($query, $term)
+    {
+    $columns = implode(',',$this->searchable);
+ 
+    $searchableTerm = $this->fullTextWildcards($term);
+ 
+    return $query->selectRaw("id,path,{$columns}, MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE) AS relevance_score", [$searchableTerm])
+        ->whereRaw("MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)", $searchableTerm)
+        ->orderByDesc('relevance_score');
     }
 }
