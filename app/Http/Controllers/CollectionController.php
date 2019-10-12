@@ -146,6 +146,7 @@ class CollectionController extends Controller
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $documents_filtered = $documents_filtered->search($request->search['value']);
         }
+            $filtered_count = $documents_filtered->count();
             $documents = $documents_filtered->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
             ->limit($request->length)->offset($request->start)->get();
         
@@ -172,7 +173,7 @@ class CollectionController extends Controller
             'data'=>$results_data,
             'draw'=>(int) $request->draw,
             'recordsTotal'=> $total_documents,
-            'recordsFiltered' => $documents_filtered->count(),
+            'recordsFiltered' => $filtered_count,
             'error'=> '',
         );
         return json_encode($results);
