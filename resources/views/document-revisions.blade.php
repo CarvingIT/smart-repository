@@ -25,7 +25,7 @@ $(document).ready(function() {
                         <tbody>
                     @foreach($document_revisions as $dr)
                     <tr>
-                        <td><img class="file-icon" src="/i/file-types/{{ ($dr->document)->icon() }}.png" /></td>
+                        <td><img class="file-icon" src="/i/file-types/{{ ($dr->document)->icon($dr->path) }}.png" /></td>
                         <td>
                         <a href="/document-revision/{{$dr->id}}" target="_new">{{ $dr->created_at }}</a>
                         </td>

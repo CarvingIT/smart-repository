@@ -56,7 +56,7 @@ trait FullTextSearch
  
     $searchableTerm = $this->fullTextWildcards($term);
  
-    return $query->selectRaw("id,path,{$columns}, MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE) AS relevance_score", [$searchableTerm])
+    return $query->selectRaw("id,path,created_at, updated_at,size, {$columns}, MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE) AS relevance_score", [$searchableTerm])
         ->whereRaw("MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)", $searchableTerm)
         ->orderByDesc('relevance_score');
     }

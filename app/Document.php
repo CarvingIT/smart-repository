@@ -18,7 +18,7 @@ class Document extends Model
         'text_content'
     ];
 
-    public function icon(){
+    public function icon($path = null){
         $file_type_icons = array(
             'doc' => 'doc',
             'docx' => 'doc',
@@ -39,8 +39,9 @@ class Document extends Model
             'mp3'=>'mp3',
             'mp4'=>'mp4',
         );
+        $path = empty($path) ? $this->path : $path;
         //get extension
-        $path_fields = explode(".", $this->path);
+        $path_fields = explode(".", $path);
         $cnt = count($path_fields);
         $extn = strtolower($path_fields[$cnt-1]);
         if(!empty($file_type_icons[$extn])) return $file_type_icons[$extn];

@@ -11,7 +11,11 @@ class DocumentController extends Controller
 {
     public function loadDocument($document_id){
         $doc = \App\Document::find($document_id);
-        return response()->download(storage_path('app/'.$doc->path), null, [], null);
+        $open_in_browser_types = array('application/pdf', 'text/plain');
+        if(in_array($doc->type, $open_in_browser_types)){
+            return response()->download(storage_path('app/'.$doc->path), null, [], null);
+        }
+        return response()->download(storage_path('app/'.$doc->path));
     }
 
 	public function showUploadForm($collection_id)
@@ -99,7 +103,11 @@ class DocumentController extends Controller
 
     public function loadRevision($revision_id){
         $doc = \App\DocumentRevision::find($revision_id);
-        return response()->download(storage_path('app/'.$doc->path), null, [], null);
+        $open_in_browser_types = array('application/pdf', 'text/plain');
+        if(in_array($doc->type, $open_in_browser_types)){
+            return response()->download(storage_path('app/'.$doc->path), null, [], null);
+        }
+        return response()->download(storage_path('app/'.$doc->path));
     }
 
     public function extractText($d){
