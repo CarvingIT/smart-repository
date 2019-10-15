@@ -4,7 +4,7 @@
 <script>
 $(document).ready(function() {
     $('#revisions').DataTable({
-    //"order": [[ 2, "desc" ]],
+    "order": [[ 1, "desc" ]],
     "columnDefs":[
         {"targets":[1,3], "className":'dt-right'},
         {"targets":[0], "bSortable":false}
