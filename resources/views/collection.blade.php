@@ -4,15 +4,28 @@
 <script>
 $(document).ready(function() {
     $('#documents').DataTable({
-    "aoColumnDefs": [{ "bSortable": false, "aTargets": [0, 4]}],
+    "aoColumnDefs": [
+            { "bSortable": false, "aTargets": [0, 4]},
+            { "className": 'dt-right', "aTargets": [2]}
+     ],
     "order": [[ 3, "desc" ]],
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
     "columns":[
         {data:"type"},
         {data:"title"},
-        {data:"size"},
-        {data:"updated_at"},
+        {data:"size",
+            render:{
+                '_': 'display',
+                'sort': 'bytes'
+            }
+        },
+        {data:"updated_at",
+            render:{
+                '_':'display',
+                'sort': 'updated_date'
+            }
+        },
         {data:"actions"},
     ]
     });
@@ -40,35 +53,11 @@ $(document).ready(function() {
                             <tr>
                             <th>Type</th>
                             <th>Title</th>
-                            <th>Size</th>
+                            <th class="dt-right">Size</th>
                             <th>Created</th>
                             <th>Actions</th>
                             </tr>
                         </thead>
-                <!--
-                        <tbody>
-                    @foreach($documents as $d)
-                    <tr>
-                        <td><img class="file-icon" src="/i/file-types/{{ $d->icon() }}.png" alt="{{$d->type}}"/></td>
-                        <td>
-                        <a href="/document/{{$d->id}}" target="_new">{{ $d->title }}</a>
-                        </td>
-                        <td>{{ $d->size }}</td>
-                        <td>
-                        {{ date('F d, Y', strtotime($d->updated_at)) }}
-                        <td>
-                            @if(Auth::user() && Auth::user()->canEditDocument($d->id))
-                            <a href="/document/{{ $d->id }}/edit" title="Create a new revision"><img class="icon" src="/i/pencil-edit-button.png" /></a>
-                            @endif
-                            <a href="/document/{{ $d->id }}/revisions" title="View revisions"><img class="icon" src="/i/revisions.png" /></a>
-                            @if(Auth::user() && Auth::user()->canDeleteDocument($d->id))
-                            <a href="/document/{{ $d->id }}/delete" title="Delete"><img class="icon" src="/i/trash.png" /></a>
-                            @endif
-                        </td>
-                    </tr>
-                    @endforeach
-                        </tbody>
-                -->
                     </table>
                  </div>
             </div>

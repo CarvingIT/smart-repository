@@ -3,7 +3,13 @@
 @section('content')
 <script>
 $(document).ready(function() {
-    $('#revisions').DataTable();
+    $('#revisions').DataTable({
+    //"order": [[ 2, "desc" ]],
+    "columnDefs":[
+        {"targets":[1,3], "className":'dt-right'},
+        {"targets":[0], "bSortable":false}
+    ]
+    });
 } );
 </script>
 
@@ -26,11 +32,11 @@ $(document).ready(function() {
                     @foreach($document_revisions as $dr)
                     <tr>
                         <td><img class="file-icon" src="/i/file-types/{{ ($dr->document)->icon($dr->path) }}.png" /></td>
-                        <td>
-                        <a href="/document-revision/{{$dr->id}}" target="_new">{{ $dr->created_at }}</a>
+                        <td data-order="{{ $dr->created_at }}">
+                        <a href="/document-revision/{{$dr->id}}" target="_new">{{ date('F d, Y', strtotime($dr->created_at)) }}</a>
                         </td>
                         <td>{{ ($dr->user)->email }}</td>
-                        <td>{{ $dr->size }}</td>
+                        <td data-order="{{$dr->size}}">{{ ($dr->document)->human_filesize($dr->size) }}</td>
                     </tr>
                     @endforeach
                         </tbody>

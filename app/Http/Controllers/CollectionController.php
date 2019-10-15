@@ -164,8 +164,9 @@ class CollectionController extends Controller
             }
             $results_data[] = array('type' => '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />',
                         'title' => '<a href="/document/'.$d->id.'" target="_new">'.$d->title.'</a>',
-                        'size' => $d->size,
-                        'updated_at' => date('F d, Y', strtotime($d->updated_at)),
+                        //'size' => $d->human_filesize(),
+                        'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
+                        'updated_at' => array('display'=>date('F d, Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                         'actions' => $action_icons);
         }
 
