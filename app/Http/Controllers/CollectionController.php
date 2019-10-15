@@ -179,4 +179,11 @@ class CollectionController extends Controller
         );
         return json_encode($results);
     }
+    
+    public function metaInformation($collection_id){
+        $collection = \App\Collection::find($collection_id);
+        return view('metainformation', ['collection'=>$collection]);
+    }
+
+
 }
