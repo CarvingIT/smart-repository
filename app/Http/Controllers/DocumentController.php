@@ -21,14 +21,18 @@ class DocumentController extends Controller
 	public function showUploadForm($collection_id)
     {
             $collection = \App\Collection::find($collection_id);
-       		return view('upload', ['collection'=>$collection]);
+            $meta_fields = \App\MetaField::where('collection_id', '=', $collection_id)->get();
+       		return view('upload', ['collection'=>$collection, 'meta_fields'=>$meta_fields]);
    	}
 
 	public function showEditForm($document_id)
     {
             $document = \App\Document::find($document_id);
             $collection = \App\Collection::find($document->collection_id);
-       		return view('upload', ['collection'=>$collection, 'document'=>$document]);
+            $meta_fields = \App\MetaField::where('collection_id', '=', $collection->id)->get();
+       		return view('upload', ['collection'=>$collection, 
+                    'document'=>$document, 
+                    'meta_fields'=>$meta_fields]);
    	}
 
 	public function upload(Request $request){

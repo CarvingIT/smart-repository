@@ -47,8 +47,12 @@ class CollectionController extends Controller
     }
 
     public function save(Request $request){
-         $id = empty($request->input('collection_id'))?'':$request->input('collection_id');
-         $c = empty($id)? new Collection():Collection::find($id);
+         if(empty($request->input('collection_id'))){
+            $c = new \App\Collection;
+         }
+         else{
+            $c = \App\Collection::find($request->input('collection_id'));
+         }
          $c->name = $request->input('collection_name');
          $c->description = $request->input('description');
          $c->type = empty($request->input('collection_type'))?'Public':$request->input('collection_type');
@@ -60,6 +64,7 @@ class CollectionController extends Controller
          }
          catch(\Exception $e){
             Session::flash('alert-danger', $e->getMessage());
+            return redirect('/admin/collectionmanagement');
          }
          // maintainer ID
          if(!empty($request->input('maintainer'))){
