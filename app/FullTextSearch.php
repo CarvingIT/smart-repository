@@ -40,7 +40,6 @@ trait FullTextSearch
      * @param string $term
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    /*
     public function scopeSearch($query, $term)
     {
         $columns = implode(',',$this->searchable);
@@ -49,7 +48,9 @@ trait FullTextSearch
  
         return $query;
     }
-    */
+    /* Following should be used for sorting based on relevance score */
+    
+    /*
     public function scopeSearch($query, $term)
     {
     $columns = implode(',',$this->searchable);
@@ -60,4 +61,5 @@ trait FullTextSearch
         ->whereRaw("MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)", $searchableTerm)
         ->orderByDesc('relevance_score');
     }
+    */
 }

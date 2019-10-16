@@ -21,14 +21,14 @@
 <input type="hidden" name="document_id" value="{{ $document->id }}" />
 @endif
 <div class="form-group row">
-<label for="title" class="col-md-4 col-form-label text-md-right">Title (Optional)</label>
+<label for="title" class="col-md-4 col-form-label text-md-right">Title</label>
                     <div class="col-md-6">
                     <input type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ $document->title }}@endif" 
-                    placeholder="Give your document a title. If left blank, we shall guess!" />
+                    placeholder="If left blank, we shall guess!" />
                     </div>
 </div>
 <div class="form-group row">
-<label for="uploadfile" class="col-md-4 col-form-label text-md-right">File</label>
+<label for="uploadfile" class="col-md-4 col-form-label text-md-right">Document</label>
     <div class="col-md-6">
     <input id="uploadfile" type="file" name="document">
     </div>
