@@ -180,10 +180,42 @@ class CollectionController extends Controller
         return json_encode($results);
     }
     
-    public function metaInformation($collection_id){
+    public function metaInformation($collection_id, $meta_field_id=null){
         $collection = \App\Collection::find($collection_id);
-        return view('metainformation', ['collection'=>$collection]);
+        if(empty($meta_field_id)){
+            $edit_field = new \App\MetaField;
+        }
+        else{
+            $edit_field = \App\MetaField::find($meta_field_id);
+        }
+        $meta_fields = \App\MetaField::where('collection_id', '=', $collection_id)->get();
+        return view('metainformation', ['collection'=>$collection, 
+                'edit_field'=>$edit_field, 
+                'meta_fields'=>$meta_fields]);
     }
 
+    public function saveMeta(Request $request){
+        $collection = \App\Collection::find($request->input('collection_id'));
+        if(empty($request->input('meta_field_id'))){
+            $meta_field = new \App\MetaField;
+        }
+        else{
+            $meta_field = \App\MetaField::find($request->input('meta_field_id'));
+        }
+        $meta_field->collection_id = $request->input('collection_id');
+        $meta_field->label = $request->input('label');
+        $meta_field->placeholder = $request->input('placeholder');
+        $meta_field->type = $request->input('type');
+        $meta_field->options = $request->input('options');
+        $meta_field->display_order = $request->input('display_order');
+        $meta_field->save();
+        return $this->metaInformation($request->input('collection_id'));
+    }
 
+    public function deleteMetaField($meta_field_id){
+        $meta_field = \App\MetaField::find($meta_field_id);
+        $collection_id = $meta_field->collection_id;
+        $meta_field->delete();
+        return $this->metaInformation($collection_id);
+    }
 }

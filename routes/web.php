@@ -39,6 +39,9 @@ Route::get('/collection/{collection_id}/search', 'CollectionController@search')-
 
 // Meta information
 Route::get('/collection/{collection_id}/meta', 'CollectionController@metaInformation');
+Route::get('/collection/{collection_id}/meta/{meta_field_id}', 'CollectionController@metaInformation');
+Route::post('/collection/{collection_id}/meta', 'CollectionController@saveMeta');
+Route::get('/meta/{meta_field_id}/delete', 'CollectionController@deleteMetaField');
 
 // Document routes
 Route::get('/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
