@@ -67,7 +67,11 @@ class DocumentController extends Controller
 			$d->text_content = $this->extractText($d);
 			//$d->text_content = 'Not available';
 			$d->save();
+            // save meta data
+            $meta = $this->getMetaDataFromRequest($request);
+            $this->saveMetaData($d->id, $meta);
 
+            // create revision
             $this->createDocumentRevision($d);
 		}
            return redirect('/collection/'.$request->input('collection_id')); 
@@ -130,6 +134,32 @@ class DocumentController extends Controller
         else{
 	        $doc = new \App\DocXtract(storage_path('app/'.$d->path));
 		    return $doc->convertToText();
+        }
+    }
+
+    public function getMetaDataFromRequest(Request $request){
+        $inputs = $request->all();
+        $meta_data = array();
+        foreach($inputs as $k=>$v){
+            if(preg_match('/^meta_field_/', $k)){
+                $field_id = str_replace('meta_field_','', $k);
+                array_push($meta_data, array('field_id'=>$field_id, 'field_value'=>$v));
+            }
+        }
+        return $meta_data;
+    }
+
+    public function saveMetaData($document_id, $meta_data){
+        // first delete old and then save new 
+        \App\MetaFieldValue::where('document_id','=', $document_id)->delete();
+
+        foreach($meta_data as $m){
+            if(empty($m['field_value'])) continue;
+            $m_f = new \App\MetaFieldValue;
+            $m_f->document_id = $document_id;
+            $m_f->meta_field_id = $m['field_id'];
+            $m_f->value = $m['field_value'];
+            $m_f->save();
         }
     }
 

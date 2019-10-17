@@ -34,6 +34,7 @@ class MetaInformation extends Migration
             $table->bigInteger('document_id')->unsigned();
             $table->integer('meta_field_id')->unsigned();
             $table->string('value', 255);
+            $table->timestamps();
         });
         //add foreign keys
         Schema::table('meta_field_values', function(Blueprint $table){

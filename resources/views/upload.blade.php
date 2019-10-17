@@ -23,7 +23,7 @@
 <div class="form-group row">
 <label for="title" class="col-md-4 col-form-label text-md-right">Title</label>
                     <div class="col-md-6">
-                    <input type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ $document->title }}@endif" 
+                    <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ $document->title }}@endif" 
                     placeholder="If left blank, we shall guess!" />
                     </div>
 </div>
@@ -35,15 +35,16 @@
 </div>
     @foreach($meta_fields as $f)
     <div class="form-group row">
-    <label for="field_{{$f->id}}" class="col-md-4 col-form-label text-md-right">{{$f->label}}</label>
+    <label for="meta_field_{{$f->id}}" class="col-md-4 col-form-label text-md-right">{{$f->label}}</label>
         <div class="col-md-6">
         @if($f->type != 'Select')
-        <input id="field_{{$f->id}}" type="text" name="field_{{$f->id}}" />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="" placeholder="{{ $f->placeholder }}" />
         @else
-        <select id="field_{{$f->id}}" name="field_{{$f->id}}">
+        <select class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
             @php
                 $options = explode(",", $f->options);
             @endphp
+            <option value="">{{ $f->placeholder }}</option>
             @foreach($options as $o)
             <option value="{{ $o }}">{{$o}}</option>
             @endforeach

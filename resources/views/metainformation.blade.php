@@ -32,7 +32,7 @@ $( document ).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Manage Meta Fields</div>
+                <div class="card-header">Manage Metadata Fields</div>
                 <div class="card-body">
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
@@ -88,7 +88,7 @@ $( document ).ready(function() {
                 </div>
             </div>
             <div class="card">
-                <div class="card-header">Meta Fields</div>
+                <div class="card-header">Metadata Fields</div>
                 <div class="card-body">
                     <table id="metafields">
                         <thead>
