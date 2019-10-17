@@ -22,36 +22,34 @@ class DocumentController extends Controller
 	public function showUploadForm($collection_id)
     {
             $collection = \App\Collection::find($collection_id);
-            $meta_fields = \App\MetaField::where('collection_id', '=', $collection_id)->get();
-       		return view('upload', ['collection'=>$collection, 'meta_fields'=>$meta_fields]);
+            $document = new \App\Document;
+       		return view('upload', ['collection'=>$collection, 'document'=>$document]);
    	}
 
 	public function showEditForm($document_id)
     {
             $document = \App\Document::find($document_id);
             $collection = \App\Collection::find($document->collection_id);
-            $meta_fields = \App\MetaField::where('collection_id', '=', $collection->id)->get();
        		return view('upload', ['collection'=>$collection, 
-                    'document'=>$document, 
-                    'meta_fields'=>$meta_fields]);
+                    'document'=>$document]);
    	}
 
 	public function upload(Request $request){
         /*  !!!!
             More work needed here
         */
+        if(!empty($request->input('document_id'))){
+            $d = Document::find($request->input('document_id'));
+        }
+        else{
+            $d = new Document;
+        }
 		if($request->hasFile('document')){
 			$filename = $request->file('document')->getClientOriginalName();
             $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
 			$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename);
 			$filesize = $request->file('document')->getClientSize();
 			$mimetype = $request->file('document')->getMimeType();
-            if(!empty($request->input('document_id'))){
-                $d = Document::find($request->input('document_id'));
-            }
-            else{
-			    $d = new Document;
-            }
 
             if(!empty($request->input('title'))){
                 $d->title = $request->input('title');
@@ -67,13 +65,13 @@ class DocumentController extends Controller
 			$d->text_content = $this->extractText($d);
 			//$d->text_content = 'Not available';
 			$d->save();
-            // save meta data
-            $meta = $this->getMetaDataFromRequest($request);
-            $this->saveMetaData($d->id, $meta);
 
             // create revision
             $this->createDocumentRevision($d);
 		}
+            // save meta data
+            $meta = $this->getMetaDataFromRequest($request);
+            $this->saveMetaData($d->id, $meta);
            return redirect('/collection/'.$request->input('collection_id')); 
     }
 

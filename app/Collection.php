@@ -10,6 +10,10 @@ class Collection extends Model
         return $this->hasMany('App\Document');
     }
 
+    public function meta_fields(){
+        return $this->hasMany('App\MetaField');
+    }
+
     public function maintainer(){
         $maintainer_permission = \App\Permission::where('name','=','MAINTAINER')->first();
         $user_permission = \App\UserPermission::where('permission_id','=',$maintainer_permission->id)->where('collection_id','=', $this->id)->first();

@@ -48,10 +48,20 @@ class Document extends Model
         else return 'file';
     }
 
-    function human_filesize($bytes=null, $decimals = 2) {
+    public function human_filesize($bytes=null, $decimals = 2) {
         $bytes = empty($bytes)?$this->size:$bytes;
         $size = array('B','kB','MB','GB','TB','PB','EB','ZB','YB');
         $factor = floor((strlen($bytes) - 1) / 3);
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) .' '. @$size[$factor];
     }
+
+    public function meta_value($meta_field_id){
+        $meta_value = \App\MetaFieldValue::where('document_id','=', $this->id)
+            ->where('meta_field_id','=',$meta_field_id)->first();
+        if($meta_value){
+            return $meta_value->value;
+        }
+        return null;
+    }
+
 }
