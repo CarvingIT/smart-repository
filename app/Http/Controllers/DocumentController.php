@@ -11,8 +11,9 @@ class DocumentController extends Controller
 {
     public function loadDocument($document_id){
         $doc = \App\Document::find($document_id);
-        $open_in_browser_types = array('application/pdf', 'text/plain');
-        if(in_array($doc->type, $open_in_browser_types)){
+        $ext = pathinfo($doc->path, PATHINFO_EXTENSION);
+        $open_in_browser_types = explode(',',env('FILE_EXTENSIONS_TO_OPEN_IN_BROWSER'));
+        if(in_array($ext, $open_in_browser_types)){
             return response()->download(storage_path('app/'.$doc->path), null, [], null);
         }
         return response()->download(storage_path('app/'.$doc->path));
@@ -107,8 +108,9 @@ class DocumentController extends Controller
 
     public function loadRevision($revision_id){
         $doc = \App\DocumentRevision::find($revision_id);
-        $open_in_browser_types = array('application/pdf', 'text/plain');
-        if(in_array($doc->type, $open_in_browser_types)){
+        $open_in_browser_types = explode(',', env('FILE_EXTENSIONS_TO_OPEN_IN_BROWSER'));
+        $ext = pathinfo($doc->path, PATHINFO_EXTENSION);
+        if(in_array($ext, $open_in_browser_types)){
             return response()->download(storage_path('app/'.$doc->path), null, [], null);
         }
         return response()->download(storage_path('app/'.$doc->path));
@@ -130,4 +132,5 @@ class DocumentController extends Controller
 		    return $doc->convertToText();
         }
     }
+
 }
