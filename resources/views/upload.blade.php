@@ -37,8 +37,10 @@
     <div class="form-group row">
     <label for="meta_field_{{$f->id}}" class="col-md-4 col-form-label text-md-right">{{$f->label}}</label>
         <div class="col-md-6">
-        @if($f->type != 'Select')
+        @if($f->type == 'Text' || $f->type == 'Numeric')
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
+        @elseif ($f->type == 'Date')
+        <input class="form-control" id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
         @else
         <select class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
             @php

@@ -18,7 +18,7 @@ class MetaInformation extends Migration
             $table->integer('collection_id')->unsigned();
             $table->string('label');
             $table->string('placeholder');
-            $table->enum('type', ['Text','Numeric', 'Select']);
+            $table->enum('type', ['Text','Numeric', 'Select', 'Date']);
             $table->string('options',255)->nullable();
             $table->integer('display_order');
             $table->timestamps();

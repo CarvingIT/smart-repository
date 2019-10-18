@@ -64,6 +64,7 @@ $( document ).ready(function() {
                             <option value="Text" @if($edit_field->type == 'Text') selected @endif>Text</option> 
                             <option value="Numeric" @if($edit_field->type == 'Numeric') selected @endif>Numeric</option> 
                             <option value="Select" @if($edit_field->type == 'Select') selected @endif>Select from options</option> 
+                            <option value="Date" @if($edit_field->type == 'Date') selected @endif>Date</option> 
                         </select>
                     </div>
                    </div>
