@@ -63,15 +63,23 @@ class DocumentController extends Controller
 			$d->type = $mimetype;
             $d->path = $filepath;
 			$d->text_content = $this->extractText($d);
-			//$d->text_content = 'Not available';
 			$d->save();
 
             // create revision
             $this->createDocumentRevision($d);
 		}
-            // save meta data
+            // extract meta
             $meta = $this->getMetaDataFromRequest($request);
+            // put all meta values in a string
+            $meta_string = '';
+            foreach($meta as $m){
+                $meta_string .= ' '.$m['field_value'].' ';
+            }
+            // save meta data
             $this->saveMetaData($d->id, $meta);
+            // also update the text_content of the document
+            $d->text_content = $d->text_content . $meta_string;
+            $d->save();
            return redirect('/collection/'.$request->input('collection_id')); 
     }
 

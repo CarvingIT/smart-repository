@@ -46,7 +46,10 @@
             @endphp
             <option value="">{{ $f->placeholder }}</option>
             @foreach($options as $o)
-            <option value="{{ $o }}">{{$o}}</option>
+                @php
+                    $o = ltrim(rtrim($o));
+                @endphp
+            <option value="{{$o}}" @if($o == $document->meta_value($f->id)) selected="selected" @endif >{{$o}}</option>
             @endforeach
         </select>
         @endif
