@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Collection;
 use Illuminate\Support\Facades\Auth;
 use Session;
+use Illuminate\Support\Facades\DB;
 
 class CollectionController extends Controller
 {
@@ -158,9 +159,9 @@ class CollectionController extends Controller
         $results_data = array();
         foreach($documents as $d){
             $action_icons = '';
+                $action_icons .= '<a href="/document/'.$d->id.'/revisions" title="View revisions"><img class="icon" src="/i/revisions.png" /></a>';
             if(Auth::user()){
                 if(Auth::user()->canEditDocument($d->id)){
-                $action_icons .= '<a href="/document/'.$d->id.'/revisions" title="View revisions"><img class="icon" src="/i/revisions.png" /></a>';
                 $action_icons .= '<a href="/document/'.$d->id.'/edit" title="Create a new revision"><img class="icon" src="/i/pencil-edit-button.png" /></a>';
                 }
                 if(Auth::user()->canDeleteDocument($d->id)){
@@ -222,5 +223,23 @@ class CollectionController extends Controller
         $collection_id = $meta_field->collection_id;
         $meta_field->delete();
         return $this->metaInformation($collection_id);
+    }
+
+    public function metaSearchForm($collection_id){
+        $collection = \App\Collection::find($collection_id);
+        $documents = array();
+        return view('metasearch', ['collection'=>$collection, 'documents'=>$documents]);
+    }
+
+    public function metaSearch(Request $request){
+        $collection = \App\Collection::find($request->collection_id);
+        $documents = DB::table('documents')
+            ->join('collections', 'documents.collection_id','=','collections.id')
+            ->join('meta_field_values','documents.id','=','meta_field_values.document_id')
+            ->select('documents.id','title','size', 'documents.updated_at')
+            ->where('collection_id','=', $request->collection_id)
+            ->distinct()
+            ->get();
+        return view('metasearch', ['collection'=>$collection, 'documents'=>$documents]);
     }
 }
