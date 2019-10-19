@@ -106,7 +106,7 @@ function pptx_to_text(){
     public function convertToText() {
 
         if(isset($this->filename) && !file_exists($this->filename)) {
-            return "File Not exists";
+            return "File does not exist";
         }
 
         $fileArray = pathinfo($this->filename);
@@ -123,7 +123,7 @@ function pptx_to_text(){
                 return $this->pptx_to_text();
             }
         } else {
-            return "Not available";
+            return '';
         }
     }
 }

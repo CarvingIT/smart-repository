@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Document;
-use App\Classes\DocxToTextConversion;
 use Illuminate\Support\Facades\Storage;
 
 class DocumentController extends Controller
@@ -62,7 +61,13 @@ class DocumentController extends Controller
 			$d->size = $filesize;
 			$d->type = $mimetype;
             $d->path = $filepath;
-			$d->text_content = $this->extractText($d);
+            try{
+			    $d->text_content = $this->extractText($d);
+            }
+            catch(\Exception $e){
+                \Log::error($e->getMessage());
+                $d->text_content = '';
+            }
 			$d->save();
 
             // create revision
@@ -137,7 +142,7 @@ class DocumentController extends Controller
         else if(preg_match('/^text\//', $d->type)){
             return file_get_contents(storage_path('app/'.$d->path));
         }
-        else{
+        else{ // for doc, docx, ppt, pptx, xls, xlsx
 	        $doc = new \App\DocXtract(storage_path('app/'.$d->path));
 		    return $doc->convertToText();
         }
