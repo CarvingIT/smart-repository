@@ -225,21 +225,73 @@ class CollectionController extends Controller
         return $this->metaInformation($collection_id);
     }
 
+    /*
     public function metaSearchForm($collection_id){
         $collection = \App\Collection::find($collection_id);
         $documents = array();
         return view('metasearch', ['collection'=>$collection, 'documents'=>$documents]);
     }
+    */
 
     public function metaSearch(Request $request){
         $collection = \App\Collection::find($request->collection_id);
-        $documents = DB::table('documents')
+        $records_all = DB::table('documents')
             ->join('collections', 'documents.collection_id','=','collections.id')
             ->join('meta_field_values','documents.id','=','meta_field_values.document_id')
-            ->select('documents.id','title','size', 'documents.updated_at')
-            ->where('collection_id','=', $request->collection_id)
-            ->distinct()
-            ->get();
-        return view('metasearch', ['collection'=>$collection, 'documents'=>$documents]);
+            //->select('documents.id','title','size', 'documents.updated_at')
+            ->select('documents.id')
+            ->where('collection_id','=', $request->collection_id);
+        $params = $request->all(); 
+        //print_r($params);
+        $i = 0;
+        $set1 = null;
+        $set2 = null;
+        foreach($params as $k=>$v){
+            if(preg_match('/^meta_field_/',$k) && !empty($v)){
+                $field_id = str_replace('meta_field_','', $k);
+                $operator = $params['operator_'.$field_id];
+                $field_value = $operator == 'like' ? '%'.$params['meta_field_'.$field_id].'%':$params['meta_field_'.$field_id];
+                if($i == 0){
+                    $records1 = clone $records_all;
+                    $records1 = $records1->where('meta_field_id', '=', $field_id)
+                        ->where('value', $operator, $field_value);
+                    //print_r($records1->toSql());
+                    $r1 = array();
+                    foreach($records1->distinct()->get() as $r){
+                        $r1[] = $r->id;
+                    }
+                    $set1 = collect($r1);
+                    //print_r($set1);
+                }
+                else{
+                    $records2 = clone $records_all;
+                    $records2 = $records2->where('meta_field_id', '=', $field_id)
+                        ->where('value', $operator, $field_value);
+                    //print_r($records2->toSql());
+                    $r2 = array();
+                    foreach($records2->distinct()->get() as $r){
+                        $r2[] = $r->id;
+                    }
+                    //print_r($r2);
+                    $set1 = $set1->intersect($r2);
+                    //print_r($set2);
+                }
+                $i++;
+            }
+        }
+    //exit;
+        if($i > 0){
+            $records = $set1->toArray();
+        }
+        else{
+            echo "here";
+            $set1= array();
+            foreach($records_all->distinct()->get() as $r){
+                array_push($set1, $r->id);
+            }
+            $records = $set1;
+        }
+        //print_r($set1->toArray());
+        return view('metasearch', ['collection'=>$collection, 'documents'=>$records, 'params'=>$params]);
     }
 }

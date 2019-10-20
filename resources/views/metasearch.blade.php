@@ -21,7 +21,7 @@ $(document).ready(function() {
                 <div class="card-header">{{ $collection->name }} :: Metasearch</div>
                 <div class="card-body">
 
-<form name="metasearch_form" action="/collection/{{ $collection->id }}/metasearch" method="post">
+<form name="metasearch_form" action="/collection/{{ $collection->id }}/metasearch" method="get">
 @csrf()
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
     @foreach($collection->meta_fields as $f)
@@ -30,37 +30,36 @@ $(document).ready(function() {
         <div class="col-md-4">
         <select class="form-control" name="operator_{{$f->id}}">
             @if($f->type == 'Text' || $f->type == 'Select')
-            <option value="matches">matches</option>
-            <option value="contains">contains</option>
+            <option value="=" @if(@$params['operator_'.$f->id] == "=") selected @endif>matches</option>
             @elseif($f->type == 'Numeric')
-            <option value=">=">greater than or equal to</option>
-            <option value="matches">matches</option>
-            <option value="<=">less than or equal to</option>
+            <option value=">=" @if(@$params['operator_'.$f->id] == ">=") selected @endif>greater than or equal to</option>
+            <option value="=" @if(@$params['operator_'.$f->id] == "=") selected @endif>matches</option>
+            <option value="<=" @if(@$params['operator_'.$f->id] == "<=") selected @endif>less than or equal to</option>
             @elseif($f->type == 'Date')
-            <option value=">=">on or later than</option>
-            <option value="matches">matches</option>
-            <option value="<=">on of before</option>
+            <option value=">=" @if(@$params['operator_'.$f->id] == ">=") selected @endif>on or later than</option>
+            <option value="=" @if(@$params['operator_'.$f->id] == "=") selected @endif>matches</option>
+            <option value="<=" @if(@$params['operator_'.$f->id] == "<=") selected @endif>on or before</option>
             @endif
         </select>
         </div>
         <div class="col-md-6">
         @if($f->type == 'Text')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="" placeholder="{{ $f->placeholder }}" />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ @$params['meta_field_'.$f->id] }}" placeholder="{{ $f->placeholder }}" />
         @elseif ($f->type == 'Numeric')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="" placeholder="{{ $f->placeholder }}" />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ @$params['meta_field_'.$f->id] }}" placeholder="{{ $f->placeholder }}" />
         @elseif ($f->type == 'Date')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="" placeholder="{{ $f->placeholder }}" />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ @$params['meta_field_'.$f->id] }}" placeholder="{{ $f->placeholder }}" />
         @else
         <select class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
             @php
                 $options = explode(",", $f->options);
             @endphp
-            <option value="">{{ $f->placeholder }}</option>
+            <option value="">Any</option>
             @foreach($options as $o)
                 @php
                     $o = ltrim(rtrim($o));
                 @endphp
-            <option value="{{$o}}">{{$o}}</option>
+            <option value="{{$o}}" @if(@$params['meta_field_'.$f->id] == $o) selected @endif>{{$o}}</option>
             @endforeach
         </select>
         @endif
@@ -93,7 +92,7 @@ $(document).ready(function() {
                   <tbody>
                 @foreach($documents as $r)
                 @php
-                $d = \App\Document::find($r->id);
+                $d = \App\Document::find($r);
                 @endphp
                 <tr>
                     <td><img class="file-icon" src="/i/file-types/{{$d->icon()}}.png" /></td>
