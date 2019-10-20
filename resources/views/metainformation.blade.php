@@ -57,10 +57,9 @@ $( document ).ready(function() {
                     </div>
                    </div>
                    <div class="form-group row">
-                   <label for="type" class="col-md-4 col-form-label text-md-right">Data type</label> 
+                   <label for="type" class="col-md-4 col-form-label text-md-right">Field type</label> 
                     <div class="col-md-6">
                         <select class="form-control" id="type" name="type">
-                            <option value="">Select</option> 
                             <option value="Text" @if($edit_field->type == 'Text') selected @endif>Text</option> 
                             <option value="Numeric" @if($edit_field->type == 'Numeric') selected @endif>Numeric</option> 
                             <option value="Select" @if($edit_field->type == 'Select') selected @endif>Select from options</option> 
