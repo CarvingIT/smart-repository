@@ -29,7 +29,10 @@ $(document).ready(function() {
     <label for="meta_field_{{$f->id}}" class="col-md-10 col-form-label text-md-left">{{$f->label}}</label>
         <div class="col-md-4">
         <select class="form-control" name="operator_{{$f->id}}">
-            @if($f->type == 'Text' || $f->type == 'Select')
+            @if($f->type == 'Text')
+            <option value="=" @if(@$params['operator_'.$f->id] == "=") selected @endif>matches</option>
+            <option value="like" @if(@$params['operator_'.$f->id] == "like") selected @endif>contains</option>
+            @elseif($f->type == 'Select')
             <option value="=" @if(@$params['operator_'.$f->id] == "=") selected @endif>matches</option>
             @elseif($f->type == 'Numeric')
             <option value=">=" @if(@$params['operator_'.$f->id] == ">=") selected @endif>greater than or equal to</option>

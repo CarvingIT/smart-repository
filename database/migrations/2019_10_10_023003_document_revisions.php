@@ -19,6 +19,7 @@ class DocumentRevisions extends Migration
             $table->bigInteger('created_by')->unsigned();
             $table->string('path');
             $table->string('type');
+            $table->longText('text_content');
             $table->bigInteger('size');
             $table->timestamps();
             $table->softDeletes();
