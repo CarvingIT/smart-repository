@@ -95,6 +95,7 @@ class DocumentController extends Controller
         $revision->path = $d->path;
         $revision->type = $d->type;
         $revision->size = $d->size;
+        $revision->text_content = $d->text_content;
         $revision->save();        
     }
 

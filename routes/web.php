@@ -43,8 +43,7 @@ Route::get('/collection/{collection_id}/meta/{meta_field_id}', 'CollectionContro
 Route::post('/collection/{collection_id}/meta', 'CollectionController@saveMeta');
 Route::get('/meta/{meta_field_id}/delete', 'CollectionController@deleteMetaField');
 
-Route::get('/collection/{collection_id}/metasearch', 'CollectionController@metaSearchForm');
-Route::post('/collection/{collection_id}/metasearch', 'CollectionController@metaSearch');
+Route::get('/collection/{collection_id}/metasearch', 'CollectionController@metaSearch');
 
 // Document routes
 Route::get('/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
