@@ -284,7 +284,6 @@ class CollectionController extends Controller
             $records = $set1->toArray();
         }
         else{
-            echo "here";
             $set1= array();
             foreach($records_all->distinct()->get() as $r){
                 array_push($set1, $r->id);
