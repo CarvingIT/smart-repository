@@ -20,11 +20,15 @@ class DBSelect
         $domain = env('APP_DOMAIN');
         $subdomain = str_replace('.'.$domain, '', $host);
         $org = \App\Organization::where('subdomain','=',$subdomain)->first();
-        $db = $org->db;
-        config([
-                'database.connections.mysql.database'=> $db,
+        if(!empty($org->db)){
+            config([
+                'database.connections.mysql.database'=> $org->db,
             ]);
-        \DB::reconnect('mysql');
-        return $next($request);
+            \DB::reconnect('mysql');
+            return $next($request);
+        }
+        else{
+            return response('Not found', 404)->header('Content-Type', 'text/plain');
+        }
     }
 }
