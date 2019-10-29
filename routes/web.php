@@ -52,6 +52,9 @@ Route::get('/document/{document_id}/delete', 'DocumentController@deleteDocument'
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
 
+// reports
+Route::get('/reports/downloads', 'ReportsController@downloads');
+
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');
 Route::get('/admin/collectionmanagement', 'CollectionController@index')->middleware('admin');
