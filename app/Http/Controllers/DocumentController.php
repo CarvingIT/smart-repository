@@ -12,10 +12,21 @@ class DocumentController extends Controller
         $doc = \App\Document::find($document_id);
         $ext = pathinfo($doc->path, PATHINFO_EXTENSION);
         $open_in_browser_types = explode(',',env('FILE_EXTENSIONS_TO_OPEN_IN_BROWSER'));
+        $this->recordHit($document_id);
         if(in_array($ext, $open_in_browser_types)){
             return response()->download(storage_path('app/'.$doc->path), null, [], null);
         }
         return response()->download(storage_path('app/'.$doc->path));
+    }
+    
+    public function recordHit($document_id){
+        $hit = new \App\DocumentHit;
+        $revision = \App\DocumentRevision::where('document_id','=', $document_id)
+            ->orderby('id', 'DESC')->first();
+        $hit->document_id = $document_id;
+        $hit->revision_id = $revision->id;
+        $hit->user_id = empty(\Auth::user()->id)? null : \Auth::user()->id;
+        $hit->save(); 
     }
 
 	public function showUploadForm($collection_id)
