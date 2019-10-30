@@ -183,6 +183,14 @@ class CollectionController extends Controller
             'recordsFiltered' => $filtered_count,
             'error'=> '',
         );
+        $search_log_data = array('collection_id'=> $request->collection_id, 
+                'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
+                'search_query'=> $request->search['value'], 
+                'meta_query'=>'',
+                'results'=>$filtered_count);
+        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
+            $this->logSearchQuery($search_log_data);
+        }
         return json_encode($results);
     }
     
@@ -292,5 +300,16 @@ class CollectionController extends Controller
         }
         //print_r($set1->toArray());
         return view('metasearch', ['collection'=>$collection, 'documents'=>$records, 'params'=>$params]);
+    }
+
+
+    public function logSearchQuery($data){
+        $search_log_entry = new \App\Searches;
+        $search_log_entry->collection_id = $data['collection_id']; 
+        $search_log_entry->meta_query = $data['meta_query']; 
+        $search_log_entry->search_query = $data['search_query']; 
+        $search_log_entry->user_id = $data['user_id']; 
+        $search_log_entry->results = $data['results']; 
+        $search_log_entry->save();
     }
 }
