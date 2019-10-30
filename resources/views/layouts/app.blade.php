@@ -64,6 +64,7 @@
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                                     @if (Auth::user()->hasRole('Admin'))
                                     <a class="dropdown-item" href="{{ route('adminhome') }}">{{ __('Admin Dashboard') }} </a>
+                                    <a class="dropdown-item" href="/reports">Reports</a>
                                     @endif
 
                                     <a class="dropdown-item" href="{{ route('logout') }}"

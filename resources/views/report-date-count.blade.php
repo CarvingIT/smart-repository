@@ -18,6 +18,11 @@
 <!-- Chart code -->
 <script>
 am4core.ready(function() {
+var hits = [
+@foreach($hits as $hit)
+    ['{{ $hit->date }}', {{ $hit->cnt }}],
+@endforeach
+];
 
 // Themes begin
 am4core.useTheme(am4themes_animated);
@@ -37,7 +42,7 @@ var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 
 // Create series
 var series = chart.series.push(new am4charts.LineSeries());
-series.dataFields.valueY = "visits";
+series.dataFields.valueY = "downloads";
 series.dataFields.dateX = "date";
 series.strokeWidth = 2;
 series.minBulletDistance = 10;
@@ -58,21 +63,11 @@ chart.cursor.snapToSeries = series;
 
 function generateChartData() {
     var chartData = [];
-    var firstDate = new Date();
-    firstDate.setDate(firstDate.getDate() - 1000);
-    var visits = 1200;
-    for (var i = 0; i < 500; i++) {
-        // we create date objects here. In your data, you can have date strings
-        // and then set format of your dates using chart.dataDateFormat property,
-        // however when possible, use date objects, as this will speed up chart rendering.
-        var newDate = new Date(firstDate);
-        newDate.setDate(newDate.getDate() + i);
-        
-        visits += Math.round((Math.random()<0.5?1:-1)*Math.random()*10);
-
+    for (var i = 0; i < hits.length; i++) {
+        var newDate = new Date(hits[i][0]);
         chartData.push({
             date: newDate,
-            visits: visits
+            downloads: hits[i][1] 
         });
     }
     return chartData;
@@ -85,7 +80,7 @@ function generateChartData() {
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-            <div class="card-header">Download report</div>
+            <div class="card-header"><a href="/reports">Reports</a> :: {{ $name }} report</div>
                  <div class="card-body">
                     <div id="chartdiv"></div>
                  </div>

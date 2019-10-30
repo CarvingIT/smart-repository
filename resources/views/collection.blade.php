@@ -36,7 +36,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-            <div class="card-header">{{ $collection->name }}
+            <div class="card-header"><a href="/collections">Collections</a> :: {{ $collection->name }}
                   <div class="card-header-corner">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a href="/collection/{{ $collection->id }}/users"><img class="icon" src="/i/man-user.png" title="Manage users of this collection" /></a>

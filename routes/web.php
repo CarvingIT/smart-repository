@@ -53,7 +53,9 @@ Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevi
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
 
 // reports
+Route::get('/reports', 'ReportsController@index');
 Route::get('/reports/downloads', 'ReportsController@downloads');
+Route::get('/reports/uploads', 'ReportsController@uploads');
 
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');
