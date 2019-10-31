@@ -83,7 +83,13 @@ class DocumentController extends Controller
             }
             if(empty($d->text_content)){
                 // Try OCR
-                $d->text_content = utf8_encode((new TesseractOCR(storage_path('app/'.$d->path)))->run());
+                try{
+                    $d->text_content = utf8_encode((new TesseractOCR(storage_path('app/'.$d->path)))->run());
+                }
+                catch(\Exception $e){
+                    Session::flash('alert-danger', $e->getMessage());
+                   // return redirect('/collection/'.$request->input('collection_id')); 
+                }
             }
 			//$d->save();
             try{
