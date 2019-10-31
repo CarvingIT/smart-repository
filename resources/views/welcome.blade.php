@@ -85,10 +85,10 @@
                 </div>
 
                 <div class="links">
-                    <a href="/collections">Collections</a>
-                    <a href="/docs">Docs</a>
-                    <a href="/support">Support</a>
-                    <a href="#">Blog</a>
+                    <a href="/collections">Public Collections</a>
+                    <a href="/features">Features</a>
+                    <a href="/faq">FAQ</a>
+                    <a href="/contact">Contact</a>
                 </div>
             </div>
         </div>
