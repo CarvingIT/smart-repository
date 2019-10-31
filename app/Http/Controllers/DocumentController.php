@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Document;
 use Illuminate\Support\Facades\Storage;
 use thiagoalessio\TesseractOCR\TesseractOCR;
+use Session;
 
 class DocumentController extends Controller
 {
@@ -74,17 +75,25 @@ class DocumentController extends Controller
 			$d->type = $mimetype;
             $d->path = $filepath;
             try{
-			    $d->text_content = $this->extractText($d);
+			    $d->text_content = utf8_encode($this->extractText($d));
             }
             catch(\Exception $e){
                 \Log::error($e->getMessage());
                 $d->text_content = '';
             }
             if(empty($d->text_content)){
-            // Try OCR
-            $d->text_content = (new TesseractOCR(storage_path('app/'.$d->path)))->run();
+                // Try OCR
+                $d->text_content = utf8_encode((new TesseractOCR(storage_path('app/'.$d->path)))->run());
             }
-			$d->save();
+			//$d->save();
+            try{
+                $d->save();
+                Session::flash('alert-success', 'Document uploaded successfully!');
+            }
+            catch(\Exception $e){
+                Session::flash('alert-danger', $e->getMessage());
+                return redirect('/collection/'.$request->input('collection_id')); 
+            }
 
             // create revision
             $this->createDocumentRevision($d);
@@ -100,7 +109,13 @@ class DocumentController extends Controller
             $this->saveMetaData($d->id, $meta);
             // also update the text_content of the document
             $d->text_content = $d->text_content . $meta_string;
-            $d->save();
+            try{
+                $d->save();
+                Session::flash('alert-success', 'Document uploaded successfully!');
+            }
+            catch(\Exception $e){
+                Session::flash('alert-danger', $e->getMessage());
+            }
            return redirect('/collection/'.$request->input('collection_id')); 
     }
 
@@ -112,7 +127,13 @@ class DocumentController extends Controller
         $revision->type = $d->type;
         $revision->size = $d->size;
         $revision->text_content = $d->text_content;
-        $revision->save();        
+            try{
+                $revision->save();
+                Session::flash('alert-success', 'Document uploaded successfully!');
+            }
+            catch(\Exception $e){
+                Session::flash('alert-danger', 'Error: '.$e->getMessage());
+            }
     }
 
     public function autoDocumentTitle($filename){

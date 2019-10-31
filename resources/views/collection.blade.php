@@ -49,6 +49,13 @@ $(document).ready(function() {
                   </div>
             </div>
                  <div class="card-body">
+                    <div class="flash-message">
+                    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                        @if(Session::has('alert-' . $msg))
+                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }}</p>
+                        @endif
+                    @endforeach
+                    </div>
                     <p>{{ $collection->description }}</p>
                     <table id="documents" class="display" style="width:100%">
                         <thead>
