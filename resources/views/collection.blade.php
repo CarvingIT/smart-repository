@@ -45,7 +45,9 @@ $(document).ready(function() {
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE'))
                     <a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" title="New document" /></a>
                   @endif
+                  @if(count($collection->meta_fields)>0)
                     <a href="/collection/{{ $collection->id }}/metasearch"><img class="icon" src="/i/meta_search.png" title="Meta search" /></a>
+                  @endif
                   </div>
             </div>
                  <div class="card-body">

@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ $collection->name }} :: User Permissions</div>
+                <div class="card-header"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: User Permissions</div>
 
                 <div class="card-body">
                     @if (session('status'))

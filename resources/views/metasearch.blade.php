@@ -18,7 +18,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ $collection->name }} :: Metasearch</div>
+                <div class="card-header"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Metasearch</div>
                 <div class="card-body">
 
 <form name="metasearch_form" action="/collection/{{ $collection->id }}/metasearch" method="get">
