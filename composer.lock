@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d08d87891801a6b754ecc7cb21c7b177",
+    "content-hash": "21bf4c6f9fa8fc2c6ed7727ff0db0898",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -2895,6 +2895,51 @@
                 "qrcode"
             ],
             "time": "2019-09-20T09:35:01+00:00"
+        },
+        {
+            "name": "thiagoalessio/tesseract_ocr",
+            "version": "2.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thiagoalessio/tesseract-ocr-for-php.git",
+                "reference": "1cee61aa4e80be51b3dd9c4e40cf87c3b47a571d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thiagoalessio/tesseract-ocr-for-php/zipball/1cee61aa4e80be51b3dd9c4e40cf87c3b47a571d",
+                "reference": "1cee61aa4e80be51b3dd9c4e40cf87c3b47a571d",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.4 || ^7.0"
+            },
+            "require-dev": {
+                "codacy/coverage": "dev-master",
+                "phpunit/php-code-coverage": "^2.2.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "thiagoalessio\\TesseractOCR\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "thiagoalessio",
+                    "email": "thiagoalessio@me.com"
+                }
+            ],
+            "description": "A wrapper to work with Tesseract OCR inside PHP.",
+            "keywords": [
+                "OCR",
+                "Tesseract",
+                "text recognition"
+            ],
+            "time": "2019-10-27T16:27:29+00:00"
         },
         {
             "name": "tijsverkoyen/css-to-inline-styles",

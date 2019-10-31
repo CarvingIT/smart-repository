@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Document;
 use Illuminate\Support\Facades\Storage;
+use thiagoalessio\TesseractOCR\TesseractOCR;
 
 class DocumentController extends Controller
 {
@@ -78,6 +79,10 @@ class DocumentController extends Controller
             catch(\Exception $e){
                 \Log::error($e->getMessage());
                 $d->text_content = '';
+            }
+            if(empty($d->text_content)){
+            // Try OCR
+            $d->text_content = (new TesseractOCR(storage_path('app/'.$d->path)))->run();
             }
 			$d->save();
 
