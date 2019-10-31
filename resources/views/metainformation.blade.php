@@ -107,7 +107,7 @@ $( document ).ready(function() {
                             <td>{{ $f->options }}</td>
                             <td>
                                 <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}"><img src="/i/pencil-edit-button.png" class="icon" /></a>
-                                <a href="/meta/{{ $f->id }}/delete"><img src="/i/trash.png" class="icon" /></a>
+                                <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}/delete"><img src="/i/trash.png" class="icon" /></a>
                             </td>
                         </tr>
                     @endforeach

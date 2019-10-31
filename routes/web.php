@@ -38,10 +38,10 @@ Route::get('/collection/{collection_id}/remove-user/{user_id}', 'CollectionContr
 Route::get('/collection/{collection_id}/search', 'CollectionController@search')->middleware('collection_view');
 
 // Meta information
-Route::get('/collection/{collection_id}/meta', 'CollectionController@metaInformation');
-Route::get('/collection/{collection_id}/meta/{meta_field_id}', 'CollectionController@metaInformation');
-Route::post('/collection/{collection_id}/meta', 'CollectionController@saveMeta');
-Route::get('/meta/{meta_field_id}/delete', 'CollectionController@deleteMetaField');
+Route::get('/collection/{collection_id}/meta', 'CollectionController@metaInformation')->middleware('maintainer');
+Route::get('/collection/{collection_id}/meta/{meta_field_id}', 'CollectionController@metaInformation')->middleware('maintainer');
+Route::post('/collection/{collection_id}/meta', 'CollectionController@saveMeta')->middleware('maintainer');
+Route::get('/collection/{collection_id}/meta/{meta_field_id}/delete', 'CollectionController@deleteMetaField')->middleware('maintainer');
 
 Route::get('/collection/{collection_id}/metasearch', 'CollectionController@metaSearch');
 

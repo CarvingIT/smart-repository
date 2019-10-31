@@ -67,6 +67,7 @@ class Kernel extends HttpKernel
         'document_add' => \App\Http\Middleware\DocumentAdd::class,
         'document_edit' => \App\Http\Middleware\DocumentEdit::class,
         'document_delete' => \App\Http\Middleware\DocumentDelete::class,
+        'maintainer' => \App\Http\Middleware\Maintainer::class,
     ];
 
     /**
