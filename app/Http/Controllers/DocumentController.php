@@ -81,16 +81,6 @@ class DocumentController extends Controller
                 \Log::error($e->getMessage());
                 $d->text_content = '';
             }
-            if(empty($d->text_content)){
-                // Try OCR
-                try{
-                    $d->text_content = utf8_encode((new TesseractOCR(storage_path('app/'.$d->path)))->run());
-                }
-                catch(\Exception $e){
-                    Session::flash('alert-danger', $e->getMessage());
-                   // return redirect('/collection/'.$request->input('collection_id')); 
-                }
-            }
 			//$d->save();
             try{
                 $d->save();
@@ -123,6 +113,35 @@ class DocumentController extends Controller
                 Session::flash('alert-danger', $e->getMessage());
             }
            return redirect('/collection/'.$request->input('collection_id')); 
+    }
+
+    public static function importFile($collection_id, $path, $meta=[]){
+        // get filename and create a new one
+        $path_dirs = explode("/", $path);
+        $filename = array_pop($path_dirs);
+        $new_filename = '0_'.time().'_'.$filename;
+
+		copy($path, base_path().'/storage/app/smartarchive_assets/'.$collection_id.'/0/'.$new_filename);
+		$filesize = filesize($path);
+		$mimetype = mime_content_type($path); 
+        $d = new Document;
+        //echo "$filesize $mimetype\n";
+        $dc = new \App\Http\Controllers\DocumentController;
+        $d->title = $dc->autoDocumentTitle($filename);
+        $d->collection_id = $collection_id;
+        $d->created_by = 1;
+		$d->size = $filesize;
+		$d->type = $mimetype;
+        $d->path = 'smartarchive_assets/'.$collection_id.'/0/'.$new_filename;
+        try{
+            $d->text_content = utf8_encode($dc->extractText($d));
+        }
+        catch(\Exception $e){
+            echo $e->getMessage();
+            $d->text_content = '';
+        }
+            $d->save();
+            $dc->createDocumentRevision($d);
     }
 
     public function createDocumentRevision($d){
@@ -176,20 +195,25 @@ class DocumentController extends Controller
     }
 
     public function extractText($d){
+        $text = '';
         if($d->type == 'application/pdf'){
             $parser = new \Smalot\PdfParser\Parser();
             $pdf = $parser->parseFile(storage_path('app/'.$d->path));
             $text = $pdf->getText();
             $text = str_replace(array('&', '%', '$', "\n"), ' ', $text);
-            return $text;
+        }
+        else if(preg_match('/^image\//', $d->type)){
+            // try OCR
+            $text = utf8_encode((new TesseractOCR(storage_path('app/'.$d->path)))->run());
         }
         else if(preg_match('/^text\//', $d->type)){
-            return file_get_contents(storage_path('app/'.$d->path));
+            $text = file_get_contents(storage_path('app/'.$d->path));
         }
         else{ // for doc, docx, ppt, pptx, xls, xlsx
 	        $doc = new \App\DocXtract(storage_path('app/'.$d->path));
-		    return $doc->convertToText();
+		    $text = $doc->convertToText();
         }
+        return $text;
     }
 
     public function getMetaDataFromRequest(Request $request){

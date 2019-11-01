@@ -87,6 +87,10 @@ class CollectionController extends Controller
                 Session::flash('alert-warning', 'Maintainer was not found');
             }
          } 
+         // create a storage dir for this collection if it does not exist
+         if (!file_exists(storage_path().'/app/smartarchive_assets/'.$c->id.'/0')) {
+            mkdir(storage_path().'/app/smartarchive_assets/'.$c->id.'/0', 0777, true);
+         }
          return redirect('/admin/collectionmanagement');
     }
 
