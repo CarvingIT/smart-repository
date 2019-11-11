@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Smart Archive</title>
+        <title>Smart Repository</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
@@ -81,11 +81,11 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Smart Archive
+                    Smart Repository
                 </div>
 
                 <div class="links">
-                    <a href="/collections">Public Collections</a>
+                    <a href="/collections">Collections</a>
                     <a href="/features">Features</a>
                     <a href="/faq">FAQ</a>
                     <a href="/contact">Contact</a>
