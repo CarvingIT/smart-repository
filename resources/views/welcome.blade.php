@@ -1,96 +1,18 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app', ['class' => 'off-canvas-sidebar', 'activePage' => 'home', 'title' => __('Smart Repository')])
 
-        <title>Smart Repository</title>
+@section('content')
+<div class="container" style="height: auto;">
+  <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-8">
+          <h1 class="text-white text-center">{{ __('Welcome to Smart Repository.') }}</h1>
+      </div>
+  </div>
+  <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-8">
+          <p style="background:#fff; color:#000; padding:5%;">You have definitely heard of Smartphones; have you heard of Smart Search?
 
-        <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Nunito', sans-serif;
-                font-weight: 200;
-                height: 100vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 100vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 13px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="flex-center position-ref full-height">
-            @if (Route::has('login'))
-                <div class="top-right links">
-                    @auth
-                        <a href="{{ url('/home') }}">Home</a>
-                    @else
-                        <a href="{{ route('login') }}">Login</a>
-
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}">Register</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
-
-            <div class="content">
-                <div class="title m-b-md">
-                    Smart Repository
-                </div>
-
-                <div class="links">
-                    <a href="/collections">Collections</a>
-                    <a href="/features">Features</a>
-                    <a href="/faq">FAQ</a>
-                    <a href="/contact">Contact</a>
-                </div>
-            </div>
-        </div>
-    </body>
-</html>
+Presenting one of its kind Smart Search functionality that enables you to search any text content from your multiple files that is uploaded on the software. The good news is that it doesn’t just search the word in the title but in the entire file as well to generate accurate and suitable Search result. We currently support pdf, doc, docx, xls, xlsx, ppt, pptx and all text file formats.</p>
+      </div>
+  </div>
+</div>
+@endsection

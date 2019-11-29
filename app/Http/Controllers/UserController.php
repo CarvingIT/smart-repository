@@ -2,53 +2,86 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\User;
-use Illuminate\Support\Facades\Auth;
-use Session;
+use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index(){
-        $users = User::all();
-        return view('usermanagement', ['users'=>$users]);
+    /**
+     * Display a listing of the users
+     *
+     * @param  \App\User  $model
+     * @return \Illuminate\View\View
+     */
+    public function index(User $model)
+    {
+        return view('users.index', ['users' => $model->paginate(15)]);
     }
 
-    public function save(Request $request){
-         $id = empty($request->input('id'))?'':$request->input('id');
-         $u = empty($id)? new User():User::find($id)->get();
-         $u->email = $request->input('email');
-         $u->name = $request->input('name');
-         $u->password = empty($u->password)? bcrypt($this->generatePassword(8)) : $u->password;
-         
-         try{
-            $u->save();
-            Session::flash('alert-success', 'Done!');
-         }
-         catch(\Exception $e){
-            Session::flash('alert-danger', $e->getMessage());
-         }
-         return redirect('/admin/usermanagement');
+    /**
+     * Show the form for creating a new user
+     *
+     * @return \Illuminate\View\View
+     */
+    public function create()
+    {
+        return view('users.create');
     }
 
-    public function delete($user_id){
-        $user = User::find($user_id);
+    /**
+     * Store a newly created user in storage
+     *
+     * @param  \App\Http\Requests\UserRequest  $request
+     * @param  \App\User  $model
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(UserRequest $request, User $model)
+    {
+        $model->create($request->merge(['password' => Hash::make($request->get('password'))])->all());
+
+        return redirect()->route('user.index')->withStatus(__('User successfully created.'));
+    }
+
+    /**
+     * Show the form for editing the specified user
+     *
+     * @param  \App\User  $user
+     * @return \Illuminate\View\View
+     */
+    public function edit(User $user)
+    {
+        return view('users.edit', compact('user'));
+    }
+
+    /**
+     * Update the specified user in storage
+     *
+     * @param  \App\Http\Requests\UserRequest  $request
+     * @param  \App\User  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function update(UserRequest $request, User  $user)
+    {
+        $hasPassword = $request->get('password');
+        $user->update(
+            $request->merge(['password' => Hash::make($request->get('password'))])
+                ->except([$hasPassword ? '' : 'password']
+        ));
+
+        return redirect()->route('user.index')->withStatus(__('User successfully updated.'));
+    }
+
+    /**
+     * Remove the specified user from storage
+     *
+     * @param  \App\User  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(User  $user)
+    {
         $user->delete();
-        return redirect('/admin/usermanagement');
-    }
 
-    public function generatePassword($length) {
-        $pswd = "";
-        $possible = "0123456789abcdfghjkmnpqrstvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        $i = 0;
-        while ($i < $length) {
-            $char = substr($possible, mt_rand(0, strlen($possible) - 1), 1);
-            if (!strstr($pswd, $char)) {
-                $pswd .= $char;
-                $i++;
-            }
-        }
-        return $pswd;
+        return redirect()->route('user.index')->withStatus(__('User successfully deleted.'));
     }
-
 }
