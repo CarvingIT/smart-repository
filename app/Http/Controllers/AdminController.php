@@ -24,6 +24,6 @@ class AdminController extends Controller
     public function index()
     {
         //return view('home');
-        return view('adminhome');
+        return view('adminhome',['title'=>'Admin Dashboard','activePage'=>'Admin Dashboard','titlePage'=>'Admin Dashboard']);
     }
 }

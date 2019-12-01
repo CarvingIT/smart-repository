@@ -35,7 +35,7 @@ class DocumentController extends Controller
     {
             $collection = \App\Collection::find($collection_id);
             $document = new \App\Document;
-       		return view('upload', ['collection'=>$collection, 'document'=>$document]);
+       		return view('upload', ['collection'=>$collection, 'document'=>$document,'activePage'=>'Upload Document Form','titlePage'=>'Upload Document']);
    	}
 
 	public function showEditForm($document_id)

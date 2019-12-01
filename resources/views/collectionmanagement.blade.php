@@ -7,12 +7,12 @@ $(document).ready(function() {
     $('#collections').DataTable();
 } );
 </script>
-<div class="container">
+<div class="container" style="margin-top:5%;">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">Collections
-                    <div class="card-header-corner"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png" /></a></div>
+                    <div class="card-header-corner"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png" style="width:4%;"/></a></div>
                 </div>
 
                 <div class="card-body">
@@ -40,8 +40,8 @@ $(document).ready(function() {
                             <td>{{ $c->type }}</td>
                             <td>{{ $c->created_at }}</td>
                             <td>
-                                <a href="/admin/collection-form/{{$c->id}}"><img class="icon" src="/i/pencil-edit-button.png" /></a>
-                                <a href="/admin/collection-form/{{$c->id}}/delete"><img class="icon" src="/i/trash.png" /></a>
+                                <a href="/admin/collection-form/{{$c->id}}"><img class="icon" src="/i/pencil-edit-button.png" style="width:13%;/></a>
+                                <a href="/admin/collection-form/{{$c->id}}/delete"><img class="icon" src="/i/trash.png" style="width:13%;" /></a>
                             </td>    <!-- use font awesome icons or image icons -->
                         </tr>
                         @endforeach

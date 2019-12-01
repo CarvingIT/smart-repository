@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.app',['title'=>'Smart Repository','activePage'=>'Contact Us','titlePage'=>'Contact Us'])
 
 @section('content')
-<div class="container">
+<div class="container" style="margin-top:5%;">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">

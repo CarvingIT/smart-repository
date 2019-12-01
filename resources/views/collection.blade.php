@@ -32,18 +32,18 @@ $(document).ready(function() {
 } );
 </script>
 
-<div class="container">
+<div class="container" style="margin-top:5%;">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
             <div class="card-header"><a href="/collections">Collections</a> :: {{ $collection->name }}
                   <div class="card-header-corner">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a href="/collection/{{ $collection->id }}/users"><img class="icon" src="/i/man-user.png" title="Manage users of this collection" /></a>
-                    <a href="/collection/{{ $collection->id }}/meta"><img class="icon" src="/i/meta.png" title="Manage meta information fields of this collection" /></a>
+                    <a href="/collection/{{ $collection->id }}/users"><img class="icon" src="/i/man-user.png" title="Manage users of this collection" style="width:3%;"/></a>
+                    <a href="/collection/{{ $collection->id }}/meta"><img class="icon" src="/i/meta.png" title="Manage meta information fields of this collection" style="width:3%;"/></a>
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE'))
-                    <a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" title="New document" /></a>
+                    <a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" title="New document" style="width:3%;"/></a>
                   @endif
                   @if(count($collection->meta_fields)>0)
                     <a href="/collection/{{ $collection->id }}/metasearch"><img class="icon" src="/i/meta_search.png" title="Meta search" /></a>

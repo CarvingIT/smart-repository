@@ -17,7 +17,7 @@ class CollectionController extends Controller
 
     public function index(){
         $collections = Collection::all();
-        return view('collectionmanagement', ['collections'=>$collections]);
+        return view('collectionmanagement', ['collections'=>$collections, 'activePage'=>'Collections','titlePage'=>'Collections']);
     }
 
     public function add_edit_collection($collection_id){
@@ -27,7 +27,7 @@ class CollectionController extends Controller
         else{
             $collection = \App\Collection::find($collection_id);
         }
-        return view('collection-form', ['collection'=>$collection]);
+        return view('collection-form', ['collection'=>$collection,'activePage'=>'New Collection', 'titlePage'=>'New Collection']);
     }
 
     public function list(){
@@ -44,7 +44,7 @@ class CollectionController extends Controller
             }
         }
         $collections = Collection::whereIn('id', $user_collections)->orWhere('type','=','Public')->get();
-        return view('collections', ['collections'=>$collections]);
+        return view('collections', ['title'=>'Smart Repository','activePage'=>'Collections','titlePage'=>'Collections','collections'=>$collections]);
     }
 
     public function save(Request $request){
@@ -97,7 +97,7 @@ class CollectionController extends Controller
     public function collection($collection_id){
         $collection = Collection::find($collection_id);
         $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-        return view('collection', ['collection'=>$collection, 'documents'=>$documents]);
+        return view('collection', ['collection'=>$collection, 'documents'=>$documents, 'activePage'=>'Collections','titlePage'=>'Collections']);
     }
 
     public function collectionUsers($collection_id){
