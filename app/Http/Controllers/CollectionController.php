@@ -209,7 +209,9 @@ class CollectionController extends Controller
         $meta_fields = \App\MetaField::where('collection_id', '=', $collection_id)->get();
         return view('metainformation', ['collection'=>$collection, 
                 'edit_field'=>$edit_field, 
-                'meta_fields'=>$meta_fields]);
+                'meta_fields'=>$meta_fields,
+		'activePage' =>'Collections Meta Data',
+		'titlePage'=>'Collections Metadata Fields']);
     }
 
     public function saveMeta(Request $request){

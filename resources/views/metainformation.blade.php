@@ -28,7 +28,7 @@ $( document ).ready(function() {
 });
 
 </script>
-<div class="container">
+<div class="container" style="margin-top:5%">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -45,19 +45,25 @@ $( document ).ready(function() {
                     <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                     <input type="hidden" name="meta_field_id" value="{{$edit_field->id}}" />
                    <div class="form-group row">
+                   <div class="col-md-5">
                    <label for="label" class="col-md-4 col-form-label text-md-right">Label</label> 
+		   </div>
                     <div class="col-md-6">
                     <input type="text" name="label" id="label" class="form-control" placeholder="Label of the field you will be creating" value="{{ $edit_field->label }}" />
                     </div>
                    </div>
                    <div class="form-group row">
-                   <label for="placeholder" class="col-md-4 col-form-label text-md-right">Placeholder text</label> 
+                   <div class="col-md-5">
+                   <label for="placeholder" class="col-md-6 col-form-label text-md-right">Placeholder text</label> 
+		   </div>
                     <div class="col-md-6">
                     <input type="text" name="placeholder" id="placeholder" class="form-control" placeholder="A short description of what you want to store" value="{{ $edit_field->placeholder }}" />
                     </div>
                    </div>
                    <div class="form-group row">
-                   <label for="type" class="col-md-4 col-form-label text-md-right">Field type</label> 
+                   <div class="col-md-5">
+                   <label for="type" class="col-md-6 col-form-label text-md-right">Field type</label> 
+		   </div>
                     <div class="col-md-6">
                         <select class="form-control" id="type" name="type">
                             <option value="Text" @if($edit_field->type == 'Text') selected @endif>Text</option> 
@@ -68,13 +74,17 @@ $( document ).ready(function() {
                     </div>
                    </div>
                    <div class="form-group row" id="options-field">
-                   <label for="options" class="col-md-4 col-form-label text-md-right">Options</label> 
+		   <div class="col-md-5">
+                   <label for="options" class="col-md-5 col-form-label text-md-right">Options</label> 
+                   </div>
                     <div class="col-md-6">
                     <input type="text" name="options" id="options" class="form-control" placeholder="Comma separated list of options" value="{{ $edit_field->options }}" />
                     </div>
                    </div>
                    <div class="form-group row" id="display-order">
-                   <label for="display_order" class="col-md-4 col-form-label text-md-right">Display Order</label> 
+		   <div class="col-md-5">
+                   <label for="display_order" class="col-md-5 col-form-label text-md-right">Display Order</label> 
+                   </div>
                     <div class="col-md-6">
                     <input type="text" name="display_order" id="display_order" class="form-control" placeholder="A number" value="{{ $edit_field->display_order}}" />
                     </div>

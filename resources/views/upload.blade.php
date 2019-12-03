@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+<div class="container" style="margin-top:5%;">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -23,15 +23,19 @@
 <input type="hidden" name="document_id" value="{{ $document->id }}" />
 @endif
 <div class="form-group row">
+    <div class="col-md-4">
 <label for="title" class="col-md-4 col-form-label text-md-right">Title</label>
+</div>
                     <div class="col-md-6">
                     <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ $document->title }}@endif" 
                     placeholder="If left blank, we shall guess!" />
                     </div>
 </div>
 <div class="form-group row">
-<label for="uploadfile" class="col-md-4 col-form-label text-md-right">Document</label>
-    <div class="col-md-6">
+    <div class="col-md-4">
+<label for="uploadfile" class="col-md-7 col-form-label text-md-right">Document</label>
+	</div>
+    <div class="col-md-4">
     <input id="uploadfile" type="file" name="document">
     </div>
 </div>
