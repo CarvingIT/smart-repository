@@ -65,6 +65,18 @@
           <p>{{ __('Reports') }}</p>
         </a>
       </li>
+      <li class="nav-item{{ $activePage == 'icons' ? ' active' : '' }}">
+        <a class="nav-link" href="/reports/downloads">
+          <i class="material-icons">bubble_chart</i>
+          <p>{{ __('Downloads Reports') }}</p>
+        </a>
+      </li>
+      <li class="nav-item{{ $activePage == 'icons' ? ' active' : '' }}">
+        <a class="nav-link" href="/reports/uploads">
+          <i class="material-icons">bubble_chart</i>
+          <p>{{ __('Uploads Reports') }}</p>
+        </a>
+      </li>
       <!--li class="nav-item{{ $activePage == 'icons' ? ' active' : '' }}">
         <a class="nav-link" href="/features">
           <i class="material-icons">bubble_chart</i>

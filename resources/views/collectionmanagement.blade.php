@@ -45,9 +45,17 @@ $(document).ready(function() {
                             <td>{{ $c->name }}</td>
                             <td>{{ $c->type }}</td>
                             <td>{{ $c->created_at }}</td>
-                            <td class="text-right">
-                                <a rel="tooltip" class="btn btn-success btn-link" href="/admin/collection-form/{{$c->id}}"><img class="material-icon" src="/i/pencil-edit-button.png" width=20% /></a>
-                                <a rel="tooltip" class="btn btn-success btn-link" href="/admin/collection-form/{{$c->id}}/delete"><img class="material-icon" src="/i/trash.png" style="width:20%;" /></a>
+                            <td class="td-actions text-right">
+                                <a rel="tooltip" class="btn btn-success btn-link" href="/admin/collection-form/{{$c->id}}">
+				<!--img class="material-icons" src="/i/pencil-edit-button.png" width=20% /-->
+				<i class="material-icons">edit</i>
+                                <div class="ripple-container"></div>
+				</a>
+                                <a rel="tooltip" class="btn btn-danger btn-link" href="/admin/collection-form/{{$c->id}}/delete">
+				<!--img class="material-icon" src="/i/trash.png" style="width:20%;" /-->
+				<i class="material-icons">close</i>
+                                <div class="ripple-container"></div>
+				</a>
                             </td>    <!-- use font awesome icons or image icons -->
                         </tr>
                         @endforeach
