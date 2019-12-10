@@ -97,7 +97,7 @@ class CollectionController extends Controller
     public function collection($collection_id){
         $collection = Collection::find($collection_id);
         $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-        return view('collection', ['collection'=>$collection, 'documents'=>$documents, 'activePage'=>'Collections','titlePage'=>'Collections']);
+        return view('collection', ['collection'=>$collection, 'documents'=>$documents, 'activePage'=>'Collections','titlePage'=>'Collections', 'title'=>'Collections']);
     }
 
     public function collectionUsers($collection_id){
