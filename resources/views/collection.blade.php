@@ -5,25 +5,25 @@
 $(document).ready(function() {
     $('#documents').DataTable({
     "aoColumnDefs": [
-            { "bSortable": false, "aTargets": [0, 4]},
-            { "className": 'dt-right', "aTargets": [2]}
+           { "bSortable": false, "aTargets": [0, 4]},
+           { "className": 'dt-right', "aTargets": [2]}
      ],
     "order": [[ 3, "desc" ]],
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
     "columns":[
-        {data:"type"},
-        {data:"title"},
-        {data:"size",
-            render:{
-                '_': 'display',
-                'sort': 'bytes'
+       {data:"type"},
+       {data:"title"},
+       {data:"size",
+           render:{
+             '_': 'display',
+             'sort': 'bytes'
             }
         },
         {data:"updated_at",
             render:{
-                '_':'display',
-                'sort': 'updated_date'
+               '_':'display',
+              'sort': 'updated_date'
             }
         },
         {data:"actions"},
@@ -69,6 +69,29 @@ $(document).ready(function() {
                             <th>Actions</th>
                             </tr>
                         </thead>
+			<tbody>
+                        @foreach ($documents as $c)
+                        <tr>
+                            <td>{{ $c->type }}</td>
+                            <td>{{ $c->title }}</td>
+                            <td>{{ $c->size }}</td>
+                            <td>{{ $c->created_at }}</td>
+                            <td class="td-actions text-right">
+                                <a rel="tooltip" class="btn btn-success btn-link" href="/admin/collection-form/{{$c->id}}">
+                                <!--img class="material-icons" src="/i/pencil-edit-button.png" width=20% /-->
+                                <i class="material-icons">edit</i>
+                                <div class="ripple-container"></div>
+                                </a>
+                                <a rel="tooltip" class="btn btn-danger btn-link" href="/admin/collection-form/{{$c->id}}/delete">
+                                <!--img class="material-icon" src="/i/trash.png" style="width:20%;" /-->
+                                <i class="material-icons">close</i>
+                                <div class="ripple-container"></div>
+                                </a>
+                            </td>    <!-- use font awesome icons or image icons -->
+                        </tr>
+                        @endforeach
+                        </tbody>
+
                     </table>
                  </div>
             </div>
