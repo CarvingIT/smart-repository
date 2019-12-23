@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
 <script>
 $(document).ready(function() {
     $('#documents').DataTable({
@@ -33,10 +36,15 @@ $(document).ready(function() {
 </script>
 
 <div class="container" style="margin-top:5%;">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-            <div class="card-header"><a href="/collections">Collections</a> :: {{ $collection->name }}
+		<div class="card-header card-header-primary">
+                <h4 class="card-title ">
+            	<a href="/collections">Collections</a> :: {{ $collection->name }}
+		</h4>
+              	</div>
                   <div class="card-header-corner">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a href="/collection/{{ $collection->id }}/users"><img class="icon" src="/i/man-user.png" title="Manage users of this collection" style="width:3%;"/></a>
@@ -64,38 +72,17 @@ $(document).ready(function() {
                             <tr>
                             <th>Type</th>
                             <th>Title</th>
-                            <th class="dt-right">Size</th>
+                            <th>Size</th>
                             <th>Created</th>
                             <th>Actions</th>
                             </tr>
                         </thead>
-			<tbody>
-                        @foreach ($documents as $c)
-                        <tr>
-                            <td>{{ $c->type }}</td>
-                            <td>{{ $c->title }}</td>
-                            <td>{{ $c->size }}</td>
-                            <td>{{ $c->created_at }}</td>
-                            <td class="td-actions text-right">
-                                <a rel="tooltip" class="btn btn-success btn-link" href="/admin/collection-form/{{$c->id}}">
-                                <!--img class="material-icons" src="/i/pencil-edit-button.png" width=20% /-->
-                                <i class="material-icons">edit</i>
-                                <div class="ripple-container"></div>
-                                </a>
-                                <a rel="tooltip" class="btn btn-danger btn-link" href="/admin/collection-form/{{$c->id}}/delete">
-                                <!--img class="material-icon" src="/i/trash.png" style="width:20%;" /-->
-                                <i class="material-icons">close</i>
-                                <div class="ripple-container"></div>
-                                </a>
-                            </td>    <!-- use font awesome icons or image icons -->
-                        </tr>
-                        @endforeach
-                        </tbody>
 
                     </table>
                  </div>
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

@@ -19,6 +19,24 @@
   font-size: .875rem;
 }
 
+.card-header-corner{
+    float:right;
+}
+
+img.icon{
+    width:20px;
+    height:20px;
+}
+img.file-icon{
+    width:40px;
+}
+
+div.card-header{
+    font-weight:bold;
+    font-size: 15px;
+}
+
+
 *,
 *::before,
 *::after {
