@@ -11,11 +11,12 @@ $(document).ready(function() {
 } );
 </script>
 
-<div class="container">
+<div class="container" style="margin-top:5%;">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-            <div class="card-header"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Collection users
+            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Collection users</h4>
                 <div class="card-header-corner"><a href="/collection/{{ $collection->id }}/user"><img class="icon" src="/i/plus.png"></a></div>
             </div>
                  <div class="card-body">
@@ -50,5 +51,6 @@ $(document).ready(function() {
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

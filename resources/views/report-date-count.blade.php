@@ -79,9 +79,9 @@ function generateChartData() {
 <div class="container" style="margin-top:5%;">
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-            <div class="card-header card-header-primary"><a href="/reports" style="color:#fff;">Reports</a> :: {{ $name }} report</div>
+            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/reports" style="color:#fff;">Reports</a> :: {{ $name }} report</h4></div>
                  <div class="card-body">
                     <div id="chartdiv"></div>
                  </div>

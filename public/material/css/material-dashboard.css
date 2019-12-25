@@ -21,6 +21,7 @@
 
 .card-header-corner{
     float:right;
+    margin-right:-65%; margin-top:-4%; /*SKK*/
 }
 
 img.icon{

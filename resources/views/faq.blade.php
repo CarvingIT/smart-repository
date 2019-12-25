@@ -2,11 +2,12 @@
 
 @section('content')
 <div class="container" style="height:auto; margin-top:5%;">
+<div class="container-fluid">
 
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header"><a href="/">Home</a> :: FAQ</div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/">Home</a> :: FAQ</h4></div>
 
                 <div class="card-body">
 		<h2>FAQ</h2>
@@ -34,5 +35,6 @@ The following permissions can be given to a user:
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

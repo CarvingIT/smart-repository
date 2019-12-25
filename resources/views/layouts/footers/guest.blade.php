@@ -25,11 +25,11 @@
       </ul>
 
         </nav>
-        <div class="copyright float-right">
+        <!--div class="copyright float-right">
         CopyRights &copy;
         <script>
             document.write(new Date().getFullYear())
         </script><!--i class="material-icons">CARVING IT PVT. LTD.</i--> 
-        </div>
+        </div-->
     </div>
 </footer>

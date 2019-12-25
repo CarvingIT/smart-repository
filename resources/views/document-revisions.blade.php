@@ -13,13 +13,14 @@ $(document).ready(function() {
 } );
 </script>
 
-<div class="container">
+<div class="container" style="margin-top:5%;">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-            <div class="card-header">{{ ($document_revisions[0]->document)->title }}</div>
+            <div class="card-header card-header-primary"><h4 class="card-title">{{ ($document_revisions[0]->document)->title }}</h4></div>
                  <div class="card-body">
-                    <table id="revisions" class="display" style="width:100%">
+                    <table id="revisions" class="display table" style="width:100%">
                         <thead>
                             <tr>
                             <th>Type</th>
@@ -45,5 +46,6 @@ $(document).ready(function() {
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

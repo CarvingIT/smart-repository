@@ -43,7 +43,7 @@ class DocumentController extends Controller
             $document = \App\Document::find($document_id);
             $collection = \App\Collection::find($document->collection_id);
        		return view('upload', ['collection'=>$collection, 
-                    'document'=>$document]);
+                    'document'=>$document,'activePage'=>'Document Edit Form','titlePage'=>'Document Edit Form']);
    	}
 
 	public function upload(Request $request){
@@ -181,7 +181,7 @@ class DocumentController extends Controller
     {
             $document_revisions = \App\DocumentRevision::where('document_id','=', $document_id)
                 ->orderBy('id','DESC')->get();
-       		return view('document-revisions', ['document_revisions'=>$document_revisions,'title'=>'Document Revisions','activePage'=>'Document Revsions']);
+       		return view('document-revisions', ['document_revisions'=>$document_revisions,'title'=>'Document Revisions','activePage'=>'Document Revsions','titlePage'=>'Document Revisions']);
    	}
 
     public function loadRevision($revision_id){

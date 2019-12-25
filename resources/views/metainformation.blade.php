@@ -29,10 +29,11 @@ $( document ).ready(function() {
 
 </script>
 <div class="container" style="margin-top:5%">
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Manage Metadata Fields</div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Manage Metadata Fields</h4></div>
                 <div class="card-body">
                     @if (session('status'))
                         <div class="alert alert-success" role="alert">
@@ -46,7 +47,7 @@ $( document ).ready(function() {
                     <input type="hidden" name="meta_field_id" value="{{$edit_field->id}}" />
                    <div class="form-group row">
                    <div class="col-md-5">
-                   <label for="label" class="col-md-4 col-form-label text-md-right">Label</label> 
+                   <label for="label" class="col-md-8 col-form-label text-md-right">Label</label> 
 		   </div>
                     <div class="col-md-6">
                     <input type="text" name="label" id="label" class="form-control" placeholder="Label of the field you will be creating" value="{{ $edit_field->label }}" />
@@ -54,7 +55,7 @@ $( document ).ready(function() {
                    </div>
                    <div class="form-group row">
                    <div class="col-md-5">
-                   <label for="placeholder" class="col-md-6 col-form-label text-md-right">Placeholder text</label> 
+                   <label for="placeholder" class="col-md-8 col-form-label text-md-right">Placeholder text</label> 
 		   </div>
                     <div class="col-md-6">
                     <input type="text" name="placeholder" id="placeholder" class="form-control" placeholder="A short description of what you want to store" value="{{ $edit_field->placeholder }}" />
@@ -62,7 +63,7 @@ $( document ).ready(function() {
                    </div>
                    <div class="form-group row">
                    <div class="col-md-5">
-                   <label for="type" class="col-md-6 col-form-label text-md-right">Field type</label> 
+                   <label for="type" class="col-md-8 col-form-label text-md-right">Field type</label> 
 		   </div>
                     <div class="col-md-6">
                         <select class="form-control" id="type" name="type">
@@ -75,7 +76,7 @@ $( document ).ready(function() {
                    </div>
                    <div class="form-group row" id="options-field">
 		   <div class="col-md-5">
-                   <label for="options" class="col-md-5 col-form-label text-md-right">Options</label> 
+                   <label for="options" class="col-md-8 col-form-label text-md-right">Options</label> 
                    </div>
                     <div class="col-md-6">
                     <input type="text" name="options" id="options" class="form-control" placeholder="Comma separated list of options" value="{{ $edit_field->options }}" />
@@ -83,7 +84,7 @@ $( document ).ready(function() {
                    </div>
                    <div class="form-group row" id="display-order">
 		   <div class="col-md-5">
-                   <label for="display_order" class="col-md-5 col-form-label text-md-right">Display Order</label> 
+                   <label for="display_order" class="col-md-8 col-form-label text-md-right">Display Order</label> 
                    </div>
                     <div class="col-md-6">
                     <input type="text" name="display_order" id="display_order" class="form-control" placeholder="A number" value="{{ $edit_field->display_order}}" />
@@ -129,5 +130,6 @@ $( document ).ready(function() {
 
         </div>
     </div>
+</div>
 </div>
 @endsection

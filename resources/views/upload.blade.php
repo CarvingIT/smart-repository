@@ -2,10 +2,11 @@
 
 @section('content')
 <div class="container" style="margin-top:5%;">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Upload Document</div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Upload Document</h4></div>
 
                 <div class="card-body">
                     <div class="flash-message">
@@ -24,7 +25,7 @@
 @endif
 <div class="form-group row">
     <div class="col-md-4">
-<label for="title" class="col-md-4 col-form-label text-md-right">Title</label>
+<label for="title" class="col-md-8 col-form-label text-md-right">Title</label>
 </div>
                     <div class="col-md-6">
                     <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ $document->title }}@endif" 
@@ -33,7 +34,7 @@
 </div>
 <div class="form-group row">
     <div class="col-md-4">
-<label for="uploadfile" class="col-md-7 col-form-label text-md-right">Document</label>
+<label for="uploadfile" class="col-md-8 col-form-label text-md-right">Document</label>
 	</div>
     <div class="col-md-4">
     <input id="uploadfile" type="file" name="document">
@@ -77,5 +78,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

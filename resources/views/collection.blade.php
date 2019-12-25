@@ -44,8 +44,7 @@ $(document).ready(function() {
                 <h4 class="card-title ">
             	<a href="/collections">Collections</a> :: {{ $collection->name }}
 		</h4>
-              	</div>
-                  <div class="card-header-corner">
+                  <div class="card-header-corner" style="margin-right:-65%; margin-top:-4%;">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a href="/collection/{{ $collection->id }}/users"><img class="icon" src="/i/man-user.png" title="Manage users of this collection" style="width:3%;"/></a>
                     <a href="/collection/{{ $collection->id }}/meta"><img class="icon" src="/i/meta.png" title="Manage meta information fields of this collection" style="width:3%;"/></a>
@@ -67,8 +66,8 @@ $(document).ready(function() {
                     @endforeach
                     </div>
                     <p>{{ $collection->description }}</p>
-                    <table id="documents" class="display" style="width:100%">
-                        <thead>
+                    <table id="documents" class="table">
+                        <thead class="text-primary">
                             <tr>
                             <th>Type</th>
                             <th>Title</th>

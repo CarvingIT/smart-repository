@@ -13,15 +13,11 @@ $(document).ready(function() {
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <div class="card-header">Collections
-                    <!--div class="card-header-corner"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png" style="width:4%;"/></a></div-->
-                </div>
+                <h4 class="card-title">Collections</h4>
+                    <div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div>
               </div>		
 
                 <div class="card-body">
-		<div class="row">
-                    <div class="col-12 text-right"><a href="/admin/collection-form/new" class="btn btn-sm btn-primary">Add Collection</a></div>
-		</div>
                     <div class="flash-message">
                     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
                         @if(Session::has('alert-' . $msg))

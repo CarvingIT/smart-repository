@@ -108,7 +108,7 @@ class CollectionController extends Controller
         foreach($user_permissions as $u_p){
             $collection_users[$u_p->user_id][] = $u_p;
         }
-        return view('collection_users', ['collection'=>$collection, 'collection_users'=>$collection_users]);
+        return view('collection_users', ['collection'=>$collection, 'collection_users'=>$collection_users,'titlePage'=>'Collection Users','activePage'=>'Collection Users','title'=>'Collection Users']);
     }
 
     public function showCollectionUserForm($collection_id, $user_id=null){
@@ -124,7 +124,11 @@ class CollectionController extends Controller
         }
         return view('collection-user-form', ['collection'=>\App\Collection::find($collection_id), 
             'user'=>$user, 
-            'user_permissions'=>$user_permissions]);
+            'user_permissions'=>$user_permissions,
+            'title'=>'Collection User Form',
+	    'activePage'=>'Collection User Form',
+	    'titlePage'=> 'Collection User Form'				
+	]);
     }
 
     public function saveUser(Request $request){

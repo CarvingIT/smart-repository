@@ -2,10 +2,11 @@
 
 @section('content')
 <div class="container" style="margin-top:5%;">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header"><a href="/">Home</a> :: Contact Us</div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/">Home</a> :: Contact Us</h4></div>
 
                 <div class="card-body">
                     <p>If you would like to request a demo, have any questions or suggest a feature, we shall be glad to hear from you!</p>
@@ -17,5 +18,6 @@
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

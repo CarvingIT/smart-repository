@@ -1,7 +1,7 @@
 @extends('layouts.app', ['activePage' => 'user-management', 'titlePage' => __('User Management')])
 
 @section('content')
-  <div class="content">
+  <div class="content" style="margin-top:2%;">
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
@@ -9,6 +9,7 @@
               <div class="card-header card-header-primary">
                 <h4 class="card-title ">{{ __('Users') }}</h4>
                 <p class="card-category"> {{ __('Here you can manage users') }}</p>
+<div class="card-header-corner" style="margin-top:-5%;"><a href="/user/create"><img class="icon" src="/i/plus.png"/></a></div>
               </div>
               <div class="card-body">
                 @if (session('status'))
@@ -23,11 +24,11 @@
                     </div>
                   </div>
                 @endif
-                <div class="row">
+                <!--div class="row">
                   <div class="col-12 text-right">
                     <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary">{{ __('Add user') }}</a>
                   </div>
-                </div>
+                </div-->
                 <div class="table-responsive">
                   <table class="table">
                     <thead class=" text-primary">

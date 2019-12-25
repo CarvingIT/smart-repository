@@ -2,11 +2,12 @@
 
 @section('content')
 <div class="container" style="height:auto; margin-top:5%;">
+<div class="container-fluid">
 
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header"><a href="/">Home</a> :: Features</div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/">Home</a> :: Features<h4></div>
                 <div class="card-body">
 		<h2>Features</h2>
 <strong>Meta-searchable collections</strong>
@@ -22,5 +23,6 @@ This is an exclusive feature that allows you to manage different files together 
             </div>
         </div>
     </div>
+</div>
 </div>
 @endsection

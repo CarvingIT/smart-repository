@@ -2,10 +2,11 @@
 
 @section('content')
 <div class="container" style="margin-top:5%">
+<div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-9">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header">Add Collection</div>
+                <div class="card-header card-header-primary"><h4 class="card-title">Add Collection</h4></div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -19,7 +20,7 @@
                     <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="collection_name" class="col-md-4 col-form-label text-md-right">Name</label> 
+                   <label for="collection_name" class="col-md-8 col-form-label text-md-right">Name</label> 
                     </div>
                     <div class="col-md-6">
                     <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your collection a name" value="{{ $collection->name }}" />
@@ -27,7 +28,7 @@
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="description" class="col-md-6 col-form-label text-md-right">Description</label> 
+                   <label for="description" class="col-md-8 col-form-label text-md-right">Description</label> 
 			</div>
                     <div class="col-md-6">
                     <textarea name="description" id="description" class="form-control" value="" placeholder="Description">{{ $collection->description }}</textarea>
@@ -35,7 +36,7 @@
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="collection_type" class="col-md-4 col-form-label text-md-right">Type</label> 
+                   <label for="collection_type" class="col-md-8 col-form-label text-md-right">Type</label> 
 			</div>
                     <div class="col-md-6">
                     <input type="checkbox" id="collection_type" name="collection_type" value="Members Only" 
@@ -47,7 +48,7 @@
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="maintainer" class="col-md-6 col-form-label text-md-right">Maintainer</label> 
+                   <label for="maintainer" class="col-md-8 col-form-label text-md-right">Maintainer</label> 
 			</div>
                     <div class="col-md-6">
                     <input type="text" name="maintainer" id="maintainer" class="form-control" value="@if(!empty($collection->maintainer()->email)){{$collection->maintainer()->email}}@endif" placeholder="Email ID of the maintainer">
