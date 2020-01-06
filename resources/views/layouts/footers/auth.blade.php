@@ -1,3 +1,4 @@
+<!--
 <footer class="footer">
   <div class="container-fluid">
     <nav class="float-left">
@@ -32,3 +33,4 @@
     </div-->
   </div>
 </footer>
+-->

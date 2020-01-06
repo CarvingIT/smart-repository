@@ -14,6 +14,7 @@
 <p>This feature enables you to define your own meta tags for creating meta-searchable collections. Incase you do not remember the exact file name also, this feature enables you to search for a specific content based on the meta- tags defined. Isn’t that wonderful?</p>
 
 <strong>Document / File management</strong>
+<p>
 This is an exclusive feature that allows you to manage different files together at one place for better work efficiency. This software also allows you to maintain multiple revisions of the same file. Once a document is added into the collection, the document is stored in multiple versions.
 </p>
 		<strong>Distinctive User permissions:</strong>

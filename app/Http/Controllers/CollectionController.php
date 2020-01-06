@@ -27,7 +27,7 @@ class CollectionController extends Controller
         else{
             $collection = \App\Collection::find($collection_id);
         }
-        return view('collection-form', ['collection'=>$collection,'activePage'=>'New Collection', 'titlePage'=>'New Collection']);
+        return view('collection-form', ['collection'=>$collection,'activePage'=>'Collection', 'titlePage'=>'Collection']);
     }
 
     public function list(){
@@ -321,5 +321,16 @@ class CollectionController extends Controller
         $search_log_entry->user_id = $data['user_id']; 
         $search_log_entry->results = $data['results']; 
         $search_log_entry->save();
+    }
+
+    public function deleteCollection($collection_id){
+        $collection = \App\Collection::find($collection_id);
+
+    if ($collection != null) {
+	echo $collection_id;
+        $collection->delete();
+        #return redirect('/admin/collectionmanagement')->with(['message' => 'Successfully deleted!']);
+    }
+
     }
 }

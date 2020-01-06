@@ -6,7 +6,11 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
+		@if (empty($collection->id))
                 <div class="card-header card-header-primary"><h4 class="card-title">Add Collection</h4></div>
+		@else
+                <div class="card-header card-header-primary"><h4 class="card-title">Edit Collection</h4></div>
+		@endif
 
                 <div class="card-body">
                     @if (session('status'))
