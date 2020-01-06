@@ -1,2 +1,7 @@
+Instruction specific to Material design theme.
 Use this command
-npm install material-design-icons --save
+1. npm install material-design-icons --save
+2. Also add a sym link under public/.
+    cd public
+    ln -s ../node-modules/material-design-icons
+
