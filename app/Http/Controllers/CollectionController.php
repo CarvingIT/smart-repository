@@ -167,7 +167,7 @@ class CollectionController extends Controller
         $results_data = array();
         foreach($documents as $d){
             $action_icons = '';
-                $action_icons .= '<a class="btn btn-success btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">view_column</i>
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">view_column</i>
                                 <div class="ripple-container"></div></a>';
             if(Auth::user()){
                 if(Auth::user()->canEditDocument($d->id)){
