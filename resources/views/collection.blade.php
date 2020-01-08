@@ -9,7 +9,9 @@ $(document).ready(function() {
     $('#documents').DataTable({
     "aoColumnDefs": [
            { "bSortable": false, "aTargets": [0, 4]},
-           { "className": 'dt-right', "aTargets": [2]}
+           { "className": 'dt-right', "aTargets": [2]},
+           { "className": 'dt-right', "aTargets": [3]},
+           { "className": 'td-actions text-right', "aTargets": [4]}
      ],
     "order": [[ 3, "desc" ]],
     "serverSide":true,
@@ -88,7 +90,7 @@ $(document).ready(function() {
                             <th>Title</th>
                             <th>Size</th>
                             <th>Created</th>
-                            <th>Actions</th>
+                            <th class="text-right">Actions</th>
                             </tr>
                         </thead>
 

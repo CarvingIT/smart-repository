@@ -167,13 +167,16 @@ class CollectionController extends Controller
         $results_data = array();
         foreach($documents as $d){
             $action_icons = '';
-                $action_icons .= '<a href="/document/'.$d->id.'/revisions" title="View revisions"><img class="icon" src="/i/revisions.png" /></a>';
+                $action_icons .= '<a class="btn btn-success btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">view_column</i>
+                                <div class="ripple-container"></div></a>';
             if(Auth::user()){
                 if(Auth::user()->canEditDocument($d->id)){
-                $action_icons .= '<a href="/document/'.$d->id.'/edit" title="Create a new revision"><img class="icon" src="/i/pencil-edit-button.png" /></a>';
+                $action_icons .= '<a class="btn btn-success btn-link" href="/document/'.$d->id.'/edit" title="Create a new revision"><i class="material-icons">edit</i>
+                                <div class="ripple-container"></div></a>';
                 }
                 if(Auth::user()->canDeleteDocument($d->id)){
-                $action_icons .= '<a href="/document/'.$d->id.'/delete" title="Delete document"><img class="icon" src="/i/trash.png" /></a>';
+                $action_icons .= '<a class="btn btn-danger btn-link" href="/document/'.$d->id.'/delete" title="Delete document"><i class="material-icons">close</i>
+                                <div class="ripple-container"></div></a>';
                 }
             }
             $results_data[] = array('type' => '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />',
