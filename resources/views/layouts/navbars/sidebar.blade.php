@@ -19,13 +19,13 @@
       </li-->
 @if(Auth::check() && Auth::user()->hasRole('admin'))
       <li class="nav-item {{ ($activePage == 'profile' || $activePage == 'user-management') ? ' active' : '' }}">
-        <a class="nav-link" data-toggle="collapse" href="#laravelExample" aria-expanded="true">
+        <a class="nav-link" data-toggle="collapse" href="#admindashboard" aria-expanded="true">
           <i class="material-icons">dashboard</i>
           <p>{{ __('Admin Dashboard') }}
             <b class="caret"></b>
           </p>
         </a>
-        <div class="collapse show" id="laravelExample">
+        <div class="collapse show" id="admindashboard">
           <ul class="nav">
             <li class="nav-item{{ $activePage == 'profile' ? ' active' : '' }}">
               <a class="nav-link" href="{{ route('profile.edit') }}">
@@ -59,7 +59,8 @@
 @if(Auth::check() && Auth::user()->hasRole('admin'))
       <li class="nav-item {{ ($activePage == 'profile' || $activePage == 'user-management') ? ' active' : '' }}">
         <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="true">
-          <i><img style="width:25px" src="{{ asset('material') }}/img/laravel.svg"></i>
+          <!--i><img style="width:25px" src="{{ asset('material') }}/img/laravel.svg"></i-->
+          <i class="material-icons">report</i>
           <p>{{ __('Reports') }}
             <b class="caret"></b>
           </p>
