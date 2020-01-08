@@ -58,7 +58,6 @@
       <li class="nav-item {{ ($activePage == 'profile' || $activePage == 'user-management') ? ' active' : '' }}">
         <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="true">
           <i><img style="width:25px" src="{{ asset('material') }}/img/laravel.svg"></i>
-          <i class="material-icons">graphreport</i>
           <p>{{ __('Reports') }}
             <b class="caret"></b>
           </p>
