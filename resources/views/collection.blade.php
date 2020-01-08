@@ -44,7 +44,7 @@ $(document).ready(function() {
                 <h4 class="card-title ">
             	<a href="/collections">Collections</a> :: {{ $collection->name }}
 		</h4>
-                  <div class="card-header-corner" style="margin-right:-65%; margin-top:-4%;">
+                  <!--div class="card-header-corner" style="margin-right:-65%; margin-top:-4%;">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a href="/collection/{{ $collection->id }}/users"><img class="icon" src="/i/man-user.png" title="Manage users of this collection" style="width:3%;"/></a>
                     <a href="/collection/{{ $collection->id }}/meta"><img class="icon" src="/i/meta.png" title="Manage meta information fields of this collection" style="width:3%;"/></a>
@@ -55,9 +55,24 @@ $(document).ready(function() {
                   @if(count($collection->meta_fields)>0)
                     <a href="/collection/{{ $collection->id }}/metasearch"><img class="icon" src="/i/meta_search.png" title="Meta search" /></a>
                   @endif
-                  </div>
+                  </div-->
             </div>
                  <div class="card-body">
+		<div class="row">
+                  <div class="col-12 text-right">
+                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
+                    <a title="Manage Users of this collection"href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary">{{ __('Manage users') }}</a>
+                    <a title="Manage meta information fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary">{{ __('Manage Meta Info') }}</a>
+		  @endif
+                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE'))
+                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary">{{ __('Add Document') }}</a>
+		  @endif
+                  @if(count($collection->meta_fields)>0)
+                    <a href="/collection/{{ $collection->id }}/metasearch" title="Meta search" class="btn btn-sm btn-primary">Meta Search </a>
+                  @endif
+                  </div>
+                </div>
+
                     <div class="flash-message">
                     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
                         @if(Session::has('alert-' . $msg))

@@ -1,9 +1,9 @@
 @extends('layouts.app', ['activePage' => 'user-management', 'titlePage' => __('User Management')])
 
 @section('content')
-  <div class="content">
-    <div class="container-fluid">
-      <div class="row">
+  <div class="content" style="margin-top:2%;">
+  <div class="content-fluid">
+      <div class="row" justify-content-center">
         <div class="col-md-12">
           <form method="post" action="{{ route('user.update', $user) }}" autocomplete="off" class="form-horizontal">
             @csrf

@@ -17,15 +17,21 @@ $(document).ready(function() {
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Collection users</h4>
-                <div class="card-header-corner"><a href="/collection/{{ $collection->id }}/user"><img class="icon" src="/i/plus.png"></a></div>
+                <!--div class="card-header-corner"><a href="/collection/{{ $collection->id }}/user"><img class="icon" src="/i/plus.png"></a></div-->
             </div>
                  <div class="card-body">
-                    <table id="collection_users" class="display" style="width:100%">
+		<div class="row">
+                  <div class="col-12 text-right">
+                    <a href="/collection/{{ $collection->id }}/user" class="btn btn-sm btn-primary">{{ __('Add user') }}</a>
+                  </div>
+                </div>
+
+                    <table id="collection_users" class="display table responsive" style="width:100%">
                         <thead>
                             <tr>
                             <th>ID</th>
                             <th>Permissions</th>
-                            <th>Actions</th>
+                            <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -39,8 +45,14 @@ $(document).ready(function() {
                             {{ ($p->permission)->name }}<br/>
                         @endforeach
                         </td>
-                        <td>
-                            <a href="/collection/{{ $collection->id }}/user/{{ ($perms[0]->user)->id }}"><img class="icon" src="/i/pencil-edit-button.png" /></a>
+                        <td class="text-right">
+                            <a rel="tooltip" class="btn btn-success btn-link" href="/collection/{{ $collection->id }}/user/{{ ($perms[0]->user)->id }}" data-original-title="" title="">
+				<!--img class="icon" src="/i/pencil-edit-button.png" /-->
+                                    <i class="material-icons">edit</i>
+                                    <div class="ripple-container"></div>
+                                  </a>
+
+				</a>
                             <a href="/collection/{{ $collection->id }}/remove-user/{{ ($perms[0]->user)->id }}"><img class="icon" src="/i/trash.png" /></a>
                         </td>
                     </tr>

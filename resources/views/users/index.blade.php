@@ -9,7 +9,7 @@
               <div class="card-header card-header-primary">
                 <h4 class="card-title ">{{ __('Users') }}</h4>
                 <p class="card-category"> {{ __('Here you can manage users') }}</p>
-<div class="card-header-corner" style="margin-top:-5%;"><a href="/user/create"><img class="icon" src="/i/plus.png"/></a></div>
+<!--div class="card-header-corner" style="margin-top:-5%;"><a href="/user/create"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>
               <div class="card-body">
                 @if (session('status'))
@@ -24,11 +24,11 @@
                     </div>
                   </div>
                 @endif
-                <!--div class="row">
+                <div class="row">
                   <div class="col-12 text-right">
                     <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary">{{ __('Add user') }}</a>
                   </div>
-                </div-->
+                </div>
                 <div class="table-responsive">
                   <table class="table">
                     <thead class=" text-primary">

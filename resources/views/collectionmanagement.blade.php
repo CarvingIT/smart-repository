@@ -14,7 +14,7 @@ $(document).ready(function() {
             <div class="card">
             <div class="card-header card-header-primary">
                 <h4 class="card-title">Collections</h4>
-                    <div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div>
+                    <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 
                 <div class="card-body">
@@ -25,6 +25,12 @@ $(document).ready(function() {
                         @endif
                     @endforeach
                     </div>
+		<div class="row">
+                  <div class="col-12 text-right">
+                    <a href="/admin/collection-form/new" class="btn btn-sm btn-primary">{{ __('Add collection') }}</a>
+                  </div>
+                </div>
+
 			<div class="table-responsive">
                     <table id="collections" class="table">
                         <thead class="text-primary">
