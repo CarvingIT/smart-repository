@@ -29,19 +29,22 @@
           <ul class="nav">
             <li class="nav-item{{ $activePage == 'profile' ? ' active' : '' }}">
               <a class="nav-link" href="{{ route('profile.edit') }}">
-                <span class="sidebar-mini"> UP </span>
+          	<i class="material-icons">account_box</i>
+                <!--span class="sidebar-mini"> UP </span-->
                 <span class="sidebar-normal">{{ __('User profile') }} </span>
               </a>
             </li>
             <li class="nav-item{{ $activePage == 'user-management' ? ' active' : '' }}">
               <a class="nav-link" href="{{ route('user.index') }}">
-                <span class="sidebar-mini"> UM </span>
+                <!--span class="sidebar-mini"> UM </span-->
+          	<i class="material-icons">view_list</i>
                 <span class="sidebar-normal"> {{ __('User Management') }} </span>
               </a>
             </li>
             <li class="nav-item{{ $activePage == 'typography' ? ' active' : '' }}">
               <a class="nav-link" href="/admin/collectionmanagement">
-                <span class="sidebar-mini"> CM </span>
+                <!--span class="sidebar-mini"> CM </span-->
+          	<i class="material-icons">view_list</i>
                 <span class="sidebar-normal"> {{ __('Collection Management') }}</span>
               </a>
             </li>
