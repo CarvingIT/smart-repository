@@ -14,11 +14,12 @@ $(document).ready(function() {
 } );
 </script>
 
-<div class="container">
+<div class="container" style="margin-top:5%;">
+<div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Metasearch</div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Advanced Search</h4></div>
                 <div class="card-body">
 
 <form name="metasearch_form" action="/collection/{{ $collection->id }}/metasearch" method="get">
@@ -26,7 +27,9 @@ $(document).ready(function() {
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
     @foreach($collection->meta_fields as $f)
     <div class="form-group row">
+	<div class="col-md-4">
     <label for="meta_field_{{$f->id}}" class="col-md-10 col-form-label text-md-left">{{$f->label}}</label>
+	</div>
         <div class="col-md-4">
         <select class="form-control" name="operator_{{$f->id}}">
             @if($f->type == 'Text')
@@ -80,16 +83,16 @@ $(document).ready(function() {
             </div>
 
     <div class="card">
-        <div class="card-header">Metasearch Results</div>
+        <div class="card-header card-header-primary"><h4 class="card-title">Advanced Search Results</h4></div>
         <div class="card-body">
-              <table id="documents" class="display" style="width:100%">
-                  <thead>
+              <table id="documents" class="display table" style="width:100%">
+                  <thead class=" text-primary">
                       <tr>
                       <th>Type</th>
                       <th>Title</th>
                       <th class="dt-right">Size</th>
                       <th>Created</th>
-                      <th>Actions</th>
+                      <th class="text-right">Actions</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -102,14 +105,26 @@ $(document).ready(function() {
                     <td>{{$d->title}}</td>
                     <td data-order="{{$d->size}}">{{$d->human_filesize()}}</td>
                     <td data-order="{{$d->updated_at}}">{{ date('F d, Y', strtotime($d->updated_at)) }}</td>
-                    <td>
-                <a href="/document/{{$d->id}}/revisions" title="View revisions"><img class="icon" src="/i/revisions.png" /></a>
+                    <td class="text-right">
+                <a href="/document/{{$d->id}}/revisions" title="View revisions" class="btn btn-primary btn-link">
+		<i class="material-icons">view_column</i>
+                <div class="ripple-container"></div>
+		<!--img class="icon" src="/i/revisions.png" /-->
+		</a>
                 @if(Auth::user())
                 @if(Auth::user()->canEditDocument($d->id))
-                <a href="/document/{{$d->id}}/edit" title="Create a new revision"><img class="icon" src="/i/pencil-edit-button.png" /></a>
+                <a href="/document/{{$d->id}}/edit" title="Create a new revision" class="btn btn-success btn-link">
+		<i class="material-icons">edit</i>
+                <div class="ripple-container"></div>
+		<!--img class="icon" src="/i/pencil-edit-button.png" /-->
+		</a>
                 @endif
                 @if(Auth::user()->canDeleteDocument($d->id))
-                <a href="/document/{{$d->id}}/delete" title="Delete document"><img class="icon" src="/i/trash.png" /></a>
+                <a href="/document/{{$d->id}}/delete" title="Delete document" class="btn btn-danger btn-link">
+		<i class="material-icons">close</i>
+                <div class="ripple-container"></div>
+		<!--img class="icon" src="/i/trash.png" /-->
+		</a>
                 @endif
                 @endif
                     </td>
@@ -122,5 +137,6 @@ $(document).ready(function() {
 
         </div>
     </div>
+</div>
 </div>
 @endsection

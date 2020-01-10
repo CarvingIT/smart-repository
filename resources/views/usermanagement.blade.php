@@ -39,7 +39,7 @@ $(document).ready(function() {
                 <div class="card-body">
 
                     <table id="users">
-                        <thead>
+                        <thead class=" text-primary">
                             <tr>
                             <th>Name</th>
                             <th>Email</th>

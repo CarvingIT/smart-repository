@@ -21,7 +21,7 @@ $(document).ready(function() {
             <div class="card-header card-header-primary"><h4 class="card-title">{{ ($document_revisions[0]->document)->title }}</h4></div>
                  <div class="card-body">
                     <table id="revisions" class="display table" style="width:100%">
-                        <thead>
+                        <thead class=" text-primary">
                             <tr>
                             <th>Type</th>
                             <th>Created</th>

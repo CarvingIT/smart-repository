@@ -55,7 +55,7 @@ $(document).ready(function() {
                     <a href="/collection/{{ $collection->id }}/upload"><img class="icon" src="/i/new-document.png" title="New document" style="width:3%;"/></a>
                   @endif
                   @if(count($collection->meta_fields)>0)
-                    <a href="/collection/{{ $collection->id }}/metasearch"><img class="icon" src="/i/meta_search.png" title="Meta search" /></a>
+                    <a href="/collection/{{ $collection->id }}/metasearch"><img class="icon" src="/i/meta_search.png" title="Advanced search" /></a>
                   @endif
                   </div-->
             </div>
@@ -70,7 +70,7 @@ $(document).ready(function() {
                     <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary">{{ __('Add Document') }}</a>
 		  @endif
                   @if(count($collection->meta_fields)>0)
-                    <a href="/collection/{{ $collection->id }}/metasearch" title="Meta search" class="btn btn-sm btn-primary">Meta Search </a>
+                    <a href="/collection/{{ $collection->id }}/metasearch" title="Advanced Search" class="btn btn-sm btn-primary">Advanced Search </a>
                   @endif
                   </div>
                 </div>

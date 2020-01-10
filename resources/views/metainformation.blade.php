@@ -102,7 +102,7 @@ $( document ).ready(function() {
                 <div class="card-header">Metadata Fields</div>
                 <div class="card-body">
                     <table id="metafields">
-                        <thead>
+                        <thead class=" text-primary">
                             <tr>
                             <th>Label</th>
                             <th>Type</th>

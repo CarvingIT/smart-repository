@@ -312,7 +312,7 @@ class CollectionController extends Controller
             $records = $set1;
         }
         //print_r($set1->toArray());
-        return view('metasearch', ['collection'=>$collection, 'documents'=>$records, 'params'=>$params]);
+        return view('metasearch', ['collection'=>$collection, 'documents'=>$records, 'params'=>$params,'activePage'=>'Advanced Search','titlePage'=>'Advanced Search','title'=>'Advanced Search']);
     }
 
 

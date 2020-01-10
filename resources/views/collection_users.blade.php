@@ -27,7 +27,7 @@ $(document).ready(function() {
                 </div>
 
                     <table id="collection_users" class="display table responsive" style="width:100%">
-                        <thead>
+                        <thead class=" text-primary">
                             <tr>
                             <th>ID</th>
                             <th>Permissions</th>
