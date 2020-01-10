@@ -6,7 +6,7 @@
   <!--div class="row justify-content-center" style="margin-top:1%;"-->
       <div class="col-lg-12 col-md-12">
 <div class="card">
-<div class="card-header card-header-primary"><h4 class="card-title">Welcome Smart Repository</h4></div>
+<div class="card-header card-header-primary"><h4 class="card-title">Welcome To Smart Repository</h4></div>
 <div class="card-body">
           <div style="background:#fff; color:#000; padding:1%; ">
 	<p><strong>Document management</strong> is very Easy Now with <strong>Smart Repository</strong>. Until now your organization stores, manages and tracks its electronic documents on google drive or some other external resources. It incorporates document, document repositories, multiple revisions and search systems. Now we are presenting all these facilities in one software. It has some more unique features...</p> 

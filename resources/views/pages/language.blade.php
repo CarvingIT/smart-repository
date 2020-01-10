@@ -51,8 +51,8 @@
         Tip 2: you can also add an image using data-image tag
     -->
       <div class="logo">
-        <a href="https://creative-tim.com/" class="simple-text logo-normal">
-          تیم خلاق
+        <a href="/" class="simple-text logo-normal">
+	<img src="/i/smart-repo-logo.png">
         </a>
       </div>
       <div class="sidebar-wrapper">
