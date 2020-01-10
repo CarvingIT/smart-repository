@@ -5,8 +5,8 @@
       Tip 2: you can also add an image using data-image tag
   -->
   <div class="logo">
-    <a href="{{ route('home') }}" class="simple-text logo-normal"><img src="/i/smart-repo-logo.png">
-      <!--{{ __('Smart Repository') }}-->
+    <a href="{{ route('home') }}" class="simple-text logo-normal"><!--img src="/i/smart-repo-logo.png"-->
+      <{{ __('Smart Repository') }}>
     </a>
   </div>
   <div class="sidebar-wrapper">
@@ -60,7 +60,7 @@
       </li>
 
 @if(Auth::check() && Auth::user()->hasRole('admin'))
-      <li class="nav-item {{ ($activePage == 'profile' || $activePage == 'user-management') ? ' active' : '' }}">
+      <li class="nav-item {{ ($activePage == 'reports' || $activePage == 'user-management') ? ' active' : '' }}">
         <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="true">
           <!--i><img style="width:25px" src="{{ asset('material') }}/img/laravel.svg"></i-->
           <i class="material-icons">report</i>
@@ -72,13 +72,13 @@
           <ul class="nav">
             <li class="nav-item{{ $activePage == 'uploads' ? ' active' : '' }}">
               <a class="nav-link" href="/reports/uploads">
-                <span class="sidebar-mini"> UP </span>
+          	<i class="material-icons">report</i>
                 <span class="sidebar-normal">{{ __('Uploads Reports') }} </span>
               </a>
             </li>
             <li class="nav-item{{ $activePage == '/reports/downloads' ? ' active' : '' }}">
               <a class="nav-link" href="/reports/downloads">
-                <span class="sidebar-mini"> DN </span>
+          	<i class="material-icons">report</i>
                 <span class="sidebar-normal"> {{ __('Downloads Reports') }} </span>
               </a>
             </li>
