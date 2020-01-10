@@ -29,7 +29,7 @@ $( document ).ready(function() {
 
 </script>
 <div class="container" style="margin-top:5%">
-<div class="container">
+<div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
@@ -99,15 +99,16 @@ $( document ).ready(function() {
                 </div>
             </div>
             <div class="card">
-                <div class="card-header">Metadata Fields</div>
+                <div class="card-header card-header-primary"><h4 class="card-title">Metadata Fields</h4></div>
                 <div class="card-body">
-                    <table id="metafields">
+		<div class="table-responsive">
+                    <table id="metafields" class="table">
                         <thead class=" text-primary">
                             <tr>
                             <th>Label</th>
                             <th>Type</th>
                             <th>Options</th>
-                            <th>Actions</th>
+                            <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -116,14 +117,23 @@ $( document ).ready(function() {
                             <td>{{ $f->label }}</td>
                             <td>{{ $f->type }}</td>
                             <td>{{ $f->options }}</td>
-                            <td>
-                                <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}"><img src="/i/pencil-edit-button.png" class="icon" /></a>
-                                <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}/delete"><img src="/i/trash.png" class="icon" /></a>
+                            <td class="td-actions text-right">
+                                <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}" class="btn btn-success btn-link">
+				<!--img src="/i/pencil-edit-button.png" class="icon" /-->
+				<i class="material-icons">edit</i>
+                                <div class="ripple-container"></div>
+				</a>
+                                <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}/delete" class="btn btn-danger btn-link">
+				<i class="material-icons">close</i>
+                                <div class="ripple-container"></div>
+				<!--img src="/i/trash.png" class="icon" /-->
+				</a>
                             </td>
                         </tr>
                     @endforeach
                     </tbody>
                     </table>
+		</div>
                 </div>
             </div>
             
