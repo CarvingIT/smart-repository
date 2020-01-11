@@ -1,5 +1,6 @@
 @if(Request::url() ===  url('/') )
 @include('layouts.page_templates.user-home')
+<?php exit();?>
 @else
 <div class="sidebar" data-color="orange" data-background-color="white" data-image="{{ asset('material') }}/img/sidebar-1.jpg">
 @endif
