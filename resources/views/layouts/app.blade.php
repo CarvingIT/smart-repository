@@ -26,6 +26,14 @@
             </form>
 		@if(Request::url() ===  url('/') )
 			@include('layouts.page_templates.user-home')
+		@elseif(Request::url() ===  url('/collections'))
+			@include('layouts.page_templates.user-collections')
+		@elseif(Request::url() ===  url('/features'))
+			@include('layouts.page_templates.user-features')
+		@elseif(Request::url() ===  url('/faq'))
+			@include('layouts.page_templates.user-faq')
+		@elseif(Request::url() ===  url('/contact'))
+			@include('layouts.page_templates.user-contact')
 		@else
 			@include('layouts.page_templates.auth')
 		@endif

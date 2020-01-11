@@ -7,10 +7,10 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/">Home</a> :: FAQ</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">FAQ</h4></div>
 
                 <div class="card-body">
-		<h2>FAQ</h2>
+		<!--h2>FAQ</h2-->
 		<strong>Distinctive User permissions:</strong>
 <p>You can manage different users by providing them unique user privileges that show them what they can do with the document.  This time it’s not just Read and Write! You can enable customized permission for every user, meaning you can give read permission for some documents to a user and give write permission to other documents according to the user privileges. Fantastic! Right?</p>
 

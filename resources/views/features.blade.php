@@ -7,9 +7,9 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/">Home</a> :: Features<h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">Features<h4></div>
                 <div class="card-body">
-		<h2>Features</h2>
+		<!--h2>Features</h2-->
 <strong>Meta-searchable collections</strong>
 <p>This feature enables you to define your own meta tags for creating meta-searchable collections. Incase you do not remember the exact file name also, this feature enables you to search for a specific content based on the meta- tags defined. Isn’t that wonderful?</p>
 
