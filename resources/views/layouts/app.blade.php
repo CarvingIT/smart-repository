@@ -24,7 +24,11 @@
             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                 @csrf
             </form>
-            @include('layouts.page_templates.auth')
+		@if(Request::url() ===  url('/') )
+			@include('layouts.page_templates.user-home')
+		@else
+			@include('layouts.page_templates.auth')
+		@endif
         @endauth
         @guest()
             @include('layouts.page_templates.guest')

@@ -1,9 +1,4 @@
-@if(Request::url() ===  url('/') )
-@include('layouts.page_templates.user-home')
-<?php exit();?>
-@else
 <div class="sidebar" data-color="orange" data-background-color="white" data-image="{{ asset('material') }}/img/sidebar-1.jpg">
-@endif
   <!--
       Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
 
