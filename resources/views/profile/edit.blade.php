@@ -12,7 +12,7 @@
             <div class="card ">
               <div class="card-header card-header-primary">
                 <h4 class="card-title">{{ __('Edit Profile') }}</h4>
-                <p class="card-category">{{ __('User information') }}</p>
+                <!--<p class="card-category">{{ __('User information') }}</p>-->
               </div>
               <div class="card-body ">
                 @if (session('status'))
@@ -66,7 +66,7 @@
             <div class="card ">
               <div class="card-header card-header-primary">
                 <h4 class="card-title">{{ __('Change password') }}</h4>
-                <p class="card-category">{{ __('Password') }}</p>
+                <!--<p class="card-category">{{ __('Password') }}</p>-->
               </div>
               <div class="card-body ">
                 @if (session('status_password'))

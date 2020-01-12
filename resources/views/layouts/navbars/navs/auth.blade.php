@@ -1,4 +1,5 @@
 <!-- Navbar -->
+<!--
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
   <div class="container-fluid">
     <div class="navbar-wrapper">
@@ -11,7 +12,7 @@
     <span class="navbar-toggler-icon icon-bar"></span>
     </button>
     <div class="collapse navbar-collapse justify-content-end">
-      <!--form class="navbar-form">
+      <form class="navbar-form">
         <div class="input-group no-border">
         <input type="text" value="" class="form-control" placeholder="Search...">
         <button type="submit" class="btn btn-white btn-round btn-just-icon">
@@ -19,16 +20,16 @@
           <div class="ripple-container"></div>
         </button>
         </div>
-      </form-->
+      </form>
       <ul class="navbar-nav">
-        <!--li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" href="{{ route('home') }}">
             <i class="material-icons">dashboard</i>
             <p class="d-lg-none d-md-block">
               {{ __('Stats') }}
             </p>
           </a>
-        </li-->
+        </li>
         <li class="nav-item dropdown">
           <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="material-icons">notifications</i>
@@ -63,3 +64,4 @@
     </div>
   </div>
 </nav>
+-->

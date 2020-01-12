@@ -7,7 +7,7 @@ $(document).ready(function() {
     $('#collections').DataTable();
 } );
 </script>
-<div class="container" style="margin-top:5%;">
+<div class="container">
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-12">

@@ -1,7 +1,7 @@
 @extends('layouts.app', ['activePage' => 'user-management', 'titlePage' => __('User Management')])
 
 @section('content')
-  <div class="content" style="margin-top:2%;">
+  <div class="content">
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-12">
