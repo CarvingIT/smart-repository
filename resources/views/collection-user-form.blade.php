@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container" style="margin-top:5%;">
+<div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -23,7 +23,7 @@
                    <label for="user_id" class="col-md-10 col-form-label text-md-right">User ID</label> 
 			</div>
                     <div class="col-md-4">
-                    <input type="text" name="user_id" id="user_id" class="form-control" placeholder="User ID" 
+                    <input type="text" name="user_id" id="user_id" class="form-control" placeholder="User Email ID" 
                     value="@if(!empty($user->id)){{ $user->email }}@endif" />
                     </div>
                    </div>

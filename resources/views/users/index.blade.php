@@ -8,7 +8,7 @@
             <div class="card">
               <div class="card-header card-header-primary">
                 <h4 class="card-title ">{{ __('Users') }}</h4>
-                <p class="card-category"> {{ __('Here you can manage users') }}</p>
+                <!--p class="card-category"> {{ __('Here you can manage users') }}</p-->
 <!--div class="card-header-corner" style="margin-top:-5%;"><a href="/user/create"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>
               <div class="card-body">

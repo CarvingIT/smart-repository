@@ -11,7 +11,7 @@ $(document).ready(function() {
 } );
 </script>
 
-<div class="container" style="margin-top:5%;">
+<div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -45,15 +45,18 @@ $(document).ready(function() {
                             {{ ($p->permission)->name }}<br/>
                         @endforeach
                         </td>
-                        <td class="text-right">
+                        <td class="td-actions text-right">
                             <a rel="tooltip" class="btn btn-success btn-link" href="/collection/{{ $collection->id }}/user/{{ ($perms[0]->user)->id }}" data-original-title="" title="">
 				<!--img class="icon" src="/i/pencil-edit-button.png" /-->
                                     <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
                                   </a>
 
-				</a>
-                            <a href="/collection/{{ $collection->id }}/remove-user/{{ ($perms[0]->user)->id }}"><img class="icon" src="/i/trash.png" /></a>
+                            <a href="/collection/{{ $collection->id }}/remove-user/{{ ($perms[0]->user)->id }}" class="btn btn-danger btn-link">
+				<!--img class="icon" src="/i/trash.png" /-->
+                                    <i class="material-icons">close</i>
+                                    <div class="ripple-container"></div>
+			    </a>
                         </td>
                     </tr>
                     @endforeach
