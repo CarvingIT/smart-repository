@@ -33,7 +33,7 @@
             <b class="caret"></b>
           </p>
         </a>
-        <div class="collapse show" id="admindashboard">
+        <div class="collapse hide" id="admindashboard">
           <ul class="nav">
             <li class="nav-item{{ $activePage == 'profile' ? ' active' : '' }}">
               <a class="nav-link" href="{{ route('profile.edit') }}">
@@ -62,22 +62,22 @@
       <li class="nav-item {{ ($activePage == 'reports' || $activePage == 'user-management') ? ' active' : '' }}">
         <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="true">
           <!--i><img style="width:25px" src="{{ asset('material') }}/img/laravel.svg"></i-->
-          <i class="material-icons">report</i>
+          <i class="material-icons">show_chart</i>
           <p>{{ __('Reports') }}
             <b class="caret"></b>
           </p>
         </a>
-        <div class="collapse show" id="reports">
+        <div class="collapse hide" id="reports">
           <ul class="nav">
             <li class="nav-item{{ $activePage == 'uploads' ? ' active' : '' }}">
               <a class="nav-link" href="/reports/uploads">
-          	<i class="material-icons">report</i>
+          	<i class="material-icons">show_chart</i>
                 <span class="sidebar-normal">{{ __('Uploads Reports') }} </span>
               </a>
             </li>
             <li class="nav-item{{ $activePage == '/reports/downloads' ? ' active' : '' }}">
               <a class="nav-link" href="/reports/downloads">
-          	<i class="material-icons">report</i>
+          	<i class="material-icons">show_chart</i>
                 <span class="sidebar-normal"> {{ __('Downloads Reports') }} </span>
               </a>
             </li>
