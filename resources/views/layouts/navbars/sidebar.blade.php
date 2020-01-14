@@ -84,6 +84,12 @@
           </ul>
         </div>
       </li>
+      <li class="nav-item{{ $activePage == 'logout' ? ' active' : '' }}">
+        <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+          <i class="material-icons">library_books</i>
+            <p>{{ __('Log out') }}</p>
+        </a>
+      </li>
 @endif
     </ul>
   </div>

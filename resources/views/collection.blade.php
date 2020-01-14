@@ -37,7 +37,11 @@ $(document).ready(function() {
 } );
 </script>
 
+@if(Request::url() ===  url('/collections'))
+<div class="container" style="margin-top:5%;">
+@else
 <div class="container">
+@endif
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
