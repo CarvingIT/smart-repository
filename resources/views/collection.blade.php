@@ -36,8 +36,9 @@ $(document).ready(function() {
     });
 } );
 </script>
-
 @if(Request::url() ===  url('/collections'))
+<div class="container" style="margin-top:5%;">
+@elseif(!empty($collection->id) && !Auth::user())
 <div class="container" style="margin-top:5%;">
 @else
 <div class="container">
@@ -55,14 +56,14 @@ $(document).ready(function() {
 		<div class="row">
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a title="Manage Users of this collection"href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary">{{ __('Manage users') }}</a>
-                    <a title="Manage meta information fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary">{{ __('Manage Meta Info') }}</a>
+                    <a title="Manage Users of this collection"href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
+                    <a title="Manage meta information fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">info</i></a>
 		  @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE'))
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary">{{ __('Add Document') }}</a>
+                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">add</i></a>
 		  @endif
                   @if(count($collection->meta_fields)>0)
-                    <a href="/collection/{{ $collection->id }}/metasearch" title="Advanced Search" class="btn btn-sm btn-primary">Advanced Search </a>
+                    <a href="/collection/{{ $collection->id }}/metasearch" title="Advanced Search" class="btn btn-sm btn-primary"><i class="material-icons">search</i></a>
                   @endif
                   </div>
                 </div>

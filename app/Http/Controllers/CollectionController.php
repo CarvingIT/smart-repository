@@ -97,7 +97,7 @@ class CollectionController extends Controller
     public function collection($collection_id){
         $collection = Collection::find($collection_id);
         $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-        return view('collection', ['collection'=>$collection, 'documents'=>$documents, 'activePage'=>'Collections','titlePage'=>'Collections', 'title'=>'Collections']);
+        return view('collection', ['collection'=>$collection, 'documents'=>$documents, 'activePage'=>'Collections','titlePage'=>'Collections', 'title'=>'Smart Repository']);
     }
 
     public function collectionUsers($collection_id){
@@ -329,11 +329,11 @@ class CollectionController extends Controller
     public function deleteCollection($collection_id){
         $collection = \App\Collection::find($collection_id);
 
-    if ($collection != null) {
-	echo $collection_id;
-        $collection->delete();
-        #return redirect('/admin/collectionmanagement')->with(['message' => 'Successfully deleted!']);
-    }
+    	if ($collection != null) {
+		echo $collection_id;
+       	 	$collection->delete();
+       	 	#return redirect('/admin/collectionmanagement')->with(['message' => 'Successfully deleted!']);
+    	}
 
     }
 }

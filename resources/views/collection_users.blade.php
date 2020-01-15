@@ -22,7 +22,7 @@ $(document).ready(function() {
                  <div class="card-body">
 		<div class="row">
                   <div class="col-12 text-right">
-                    <a href="/collection/{{ $collection->id }}/user" class="btn btn-sm btn-primary">{{ __('Add user') }}</a>
+                    <a href="/collection/{{ $collection->id }}/user" class="btn btn-sm btn-primary" title="Add User"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 

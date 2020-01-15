@@ -27,7 +27,7 @@ $(document).ready(function() {
                     </div>
 		<div class="row">
                   <div class="col-12 text-right">
-                    <a href="/admin/collection-form/new" class="btn btn-sm btn-primary">{{ __('Add collection') }}</a>
+                    <a href="/admin/collection-form/new" class="btn btn-sm btn-primary" title="Add Collection"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 
