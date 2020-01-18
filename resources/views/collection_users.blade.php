@@ -25,7 +25,7 @@ $(document).ready(function() {
                     <a href="/collection/{{ $collection->id }}/user" class="btn btn-sm btn-primary" title="Add User"><i class="material-icons">add</i></a>
                   </div>
                 </div>
-
+			<div class="table-responsive">
                     <table id="collection_users" class="display table responsive" style="width:100%">
                         <thead class=" text-primary">
                             <tr>
@@ -62,6 +62,7 @@ $(document).ready(function() {
                     @endforeach
                         </tbody>
                     </table>
+		</div> <!-- table-responsive ends -->
                  </div>
             </div>
         </div>
