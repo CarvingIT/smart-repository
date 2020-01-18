@@ -36,13 +36,7 @@ $(document).ready(function() {
     });
 } );
 </script>
-@if(Request::url() ===  url('/collections'))
-<div class="container" style="margin-top:5%;">
-@elseif(!empty($collection->id) && !Auth::user())
-<div class="container" style="margin-top:5%;">
-@else
 <div class="container">
-@endif
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -75,6 +69,7 @@ $(document).ready(function() {
                         @endif
                     @endforeach
                     </div>
+		    <div class="table-responsive">
                     <p>{{ $collection->description }}</p>
                     <table id="documents" class="table">
                         <thead class="text-primary">
@@ -86,8 +81,8 @@ $(document).ready(function() {
                             <th class="text-right">Actions</th>
                             </tr>
                         </thead>
-
                     </table>
+		    </div>
                  </div>
             </div>
         </div>

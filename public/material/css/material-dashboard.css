@@ -17997,6 +17997,7 @@ Copyright (c) 2015 Daniel Eden
   .navbar .dropdown-menu .dropdown-item {
     margin-left: 1.5rem;
     margin-right: 1.5rem;
+    color:#ffffff; /* SKK */
   }
   .navbar .dropdown.show .dropdown-menu,
   .navbar .dropdown .dropdown-menu {

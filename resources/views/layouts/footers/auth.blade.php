@@ -25,12 +25,12 @@
         </li>
       </ul>
     </nav>
-    <!--div class="copyright float-right">
+    <div class="copyright float-right">
       &copy;
       <script>
         document.write(new Date().getFullYear())
       </script>, made with <i class="material-icons">CARVING IT PVT. LTD.</i> 
-    </div-->
+    </div>
   </div>
 </footer>
 -->

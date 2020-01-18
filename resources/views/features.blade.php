@@ -1,7 +1,7 @@
-@extends('layouts.app',['title'=>'Smart Repository','activePage'=>'Features','titlePage'=>'Features'])
+@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'Features','titlePage'=>'Features'])
 
 @section('content')
-<div class="container" style="height:auto; margin-top:5%;">
+<div class="container">
 <div class="container-fluid">
 
     <div class="row justify-content-center">
