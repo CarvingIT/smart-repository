@@ -10,7 +10,7 @@ $(document).ready(function() {
     "aoColumnDefs": [
            { "bSortable": false, "aTargets": [0, 4]},
            { "className": 'text-right', "aTargets": [2,3]},
-           { "className": 'col-md-7', "aTargets": [1]},
+           { "className": 'col-md-6', "aTargets": [1]},
            { "className": 'td-actions text-right', "aTargets": [4]}
      ],
     "order": [[ 3, "desc" ]],
@@ -69,8 +69,8 @@ $(document).ready(function() {
                         @endif
                     @endforeach
                     </div>
-		    <div class="table-responsive">
                     <p>{{ $collection->description }}</p>
+		    <div class="table-responsive">
                     <table id="documents" class="table">
                         <thead class="text-primary">
                             <tr>

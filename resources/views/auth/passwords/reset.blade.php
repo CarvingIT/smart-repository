@@ -60,7 +60,7 @@
             </div>
           </div>
           <div class="card-footer justify-content-center">
-            <button type="submit" class="btn btn-primary btn-link btn-lg">{{ __('Reset Password') }}</button>
+            <button type="submit" class="btn btn-primary btn-sm btn-lg">{{ __('Reset Password') }}</button>
           </div>
         </div>
       </form>

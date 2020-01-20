@@ -331,7 +331,7 @@ class CollectionController extends Controller
 
     	if ($collection != null) {
 		echo $collection_id;
-       	 	$collection->delete();
+       	 	#$collection->delete();
        	 	#return redirect('/admin/collectionmanagement')->with(['message' => 'Successfully deleted!']);
     	}
 
