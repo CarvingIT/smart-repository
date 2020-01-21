@@ -18116,7 +18116,7 @@ Copyright (c) 2015 Daniel Eden
     top: -2%;
   }
   .login-page .container {
-    padding-top: 100px !important;
+    /*padding-top: 100px !important;*/	/* SKK */
   }
   .presentation-page #cd-vertical-nav,
   .index-page #cd-vertical-nav,
@@ -18137,6 +18137,9 @@ Copyright (c) 2015 Daniel Eden
 /*          Changes for small display      */
 
 @media (max-width: 991px) {
+ .card{	/* SKK */
+margin-top:21%;
+}
   .form-group textarea {
     padding-top: 15px;
   }
