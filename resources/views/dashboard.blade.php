@@ -1,6 +1,9 @@
-@extends('layouts.app', ['activePage' => 'dashboard', 'titlePage' => __('Dashboard')])
+@extends('layouts.app', ['class' => 'off-canvas-sidebar', 'activePage' => 'dashboard', 'titlePage' => __('Dashboard')])
 
 @section('content')
+{{ $collections }}
+<hr />
+{{ $my_collections }}
   <div class="content">
     <div class="container-fluid">
       <div class="row">

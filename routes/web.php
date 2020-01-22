@@ -26,7 +26,8 @@ Route::get('/faq', function () {
 
 Auth::routes();
 
-Route::get('/home', 'HomeController@index')->name('home');
+#Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/collections', 'CollectionController@list');
 
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
