@@ -15,14 +15,14 @@ class ReportsController extends Controller
         $hits = \DB::table('document_downloads')
             ->select(\DB::raw('DATE(added_on) as date'), \DB::raw('count(id) as cnt'))
             ->groupBy('date')->get();
-        return view('report-date-count',['hits'=>$hits, 'name'=>'Downloads','titlePage'=>'Downloads','activePage'=>'Downloads']);
+        return view('report-date-count',['hits'=>$hits, 'name'=>'Downloads','titlePage'=>'Downloads','activePage'=>'downloads']);
     }
 
     public function uploads(){
         $hits = \DB::table('document_revisions')
             ->select(\DB::raw('DATE(created_at) as date'), \DB::raw('count(id) as cnt'))
             ->groupBy('date')->get();
-        return view('report-date-count',['hits'=>$hits, 'name'=>'Uploads', 'titlePage'=>'Uploads','activePage'=>'Uploads']);
+        return view('report-date-count',['hits'=>$hits, 'name'=>'Uploads', 'titlePage'=>'Uploads','activePage'=>'uploads']);
     }
 
 }

@@ -13,6 +13,27 @@
     </button>
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
+	<li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+          <a href="/collections" class="nav-link">
+            <i class="material-icons">library_books</i> {{ __('Collections') }}
+          </a>
+        </li>
+        <li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+          <a href="/features" class="nav-link">
+            <i class="material-icons">featured_play_list</i> {{ __('Features') }}
+          </a>
+        </li>
+        <li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+          <a href="/faq" class="nav-link">
+            <i class="material-icons">question_answer</i> {{ __('FAQ') }}
+          </a>
+        </li>
+        <li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+          <a href="/contact" class="nav-link">
+            <i class="material-icons">contacts</i> {{ __('Contact') }}
+          </a>
+        </li>
+
         <li class="nav-item dropdown">
           <a class="nav-link" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i class="material-icons">person</i>

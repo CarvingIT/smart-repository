@@ -19,7 +19,13 @@
             <p>{{ __('Admin Dashboard') }}</p>
         </a>
       </li-->
-      <li class="nav-item{{ $activePage == 'table' ? ' active' : '' }}">
+      <li class="nav-item{{ $activePage == 'dashboard' ? ' active' : '' }}">
+       <a class="nav-link" href="{{ route('dashboard') }}">
+      	<i class="material-icons">dashboard</i>
+                <p>{{ __('Dashboard') }} </p>
+       </a>
+      </li>
+      <li class="nav-item{{ $activePage == 'collection' ? ' active' : '' }}">
         <a class="nav-link" href="/collections">
           <i class="material-icons">library_books</i>
             <p>{{ __('Collections') }}</p>
@@ -59,7 +65,8 @@
           </ul>
         </div>
       </li>
-      <li class="nav-item {{ ($activePage == 'reports' || $activePage == 'user-management') ? ' active' : '' }}">
+@endif
+      <li class="nav-item {{ $activePage == 'reports' ? ' active' : '' }}">
         <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="true">
           <!--i><img style="width:25px" src="{{ asset('material') }}/img/laravel.svg"></i-->
           <i class="material-icons">show_chart</i>
@@ -75,7 +82,7 @@
                 <span class="sidebar-normal">{{ __('Uploads Reports') }} </span>
               </a>
             </li>
-            <li class="nav-item{{ $activePage == '/reports/downloads' ? ' active' : '' }}">
+            <li class="nav-item{{ $activePage == 'downloads' ? ' active' : '' }}">
               <a class="nav-link" href="/reports/downloads">
           	<i class="material-icons">show_chart</i>
                 <span class="sidebar-normal"> {{ __('Downloads Reports') }} </span>
@@ -84,7 +91,6 @@
           </ul>
         </div>
       </li>
-@endif
       <li class="nav-item{{ $activePage == 'logout' ? ' active' : '' }}">
         <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
           <i class="material-icons">exit_to_app</i>
