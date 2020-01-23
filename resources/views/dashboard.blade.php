@@ -44,12 +44,12 @@
               <div class="card-icon">
                 <i class="material-icons">info_outline</i>
               </div>
-              <p class="card-category">Fixed Issues</p>
+              <p class="card-category">Documents</p>
               <h3 class="card-title">75</h3>
             </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">local_offer</i> Tracked from Github
+                <i class="material-icons">documents</i> Total No. Of Documents
               </div>
             </div>
           </div>
@@ -78,13 +78,24 @@
               <div class="ct-chart" id="dailySalesChart"></div>
             </div>
             <div class="card-body">
-              <h4 class="card-title"><a href="/reports/uploads">Uploads Reports</a></h4>
+              <h4 class="card-title">
+		@if(Auth::check() && Auth::user()->hasRole('admin'))
+		<a href="/reports/uploads">Uploads Reports</a>
+		@else
+		Uploads Reports
+		@endif
+              </h4>
               <p class="card-category">
                 <span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
             </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">show_chart</i> <a href="/reports/uploads">View Reports</a>
+                <i class="material-icons">show_chart</i> 
+		@if(Auth::check() && Auth::user()->hasRole('admin'))
+		<a href="/reports/uploads">View Reports</a>
+		@else
+		View Reports
+		@endif
               </div>
             </div>
           </div>
@@ -95,12 +106,23 @@
               <div class="ct-chart" id="completedTasksChart"></div>
             </div>
             <div class="card-body">
-              <h4 class="card-title"><a href="/reports/downloads">Downloads Reports</a></h4>
+              <h4 class="card-title">
+		@if(Auth::check() && Auth::user()->hasRole('admin'))
+		<a href="/reports/downloads">Downloads Reports</a>
+		@else
+		Downloads Reports
+		@endif
+	      </h4>
               <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
             </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">show_chart</i> <a href="/reports/downloads">View Reports</a>
+                <i class="material-icons">show_chart</i>
+		@if(Auth::check() && Auth::user()->hasRole('admin'))
+		<a href="/reports/downloads">View Reports</a>
+		@else
+		View Reports
+		@endif
               </div>
             </div>
           </div>

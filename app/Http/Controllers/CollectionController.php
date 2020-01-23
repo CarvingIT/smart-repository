@@ -44,7 +44,7 @@ class CollectionController extends Controller
             }
         }
         $collections = Collection::whereIn('id', $user_collections)->orWhere('type','=','Public')->get();
-        return view('collections', ['title'=>'Smart Repository','activePage'=>'Collections','titlePage'=>'Collections','collections'=>$collections]);
+        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections]);
     }
 
     public function save(Request $request){

@@ -65,7 +65,6 @@
           </ul>
         </div>
       </li>
-@endif
       <li class="nav-item {{ $activePage == 'reports' ? ' active' : '' }}">
         <a class="nav-link" data-toggle="collapse" href="#reports" aria-expanded="true">
           <!--i><img style="width:25px" src="{{ asset('material') }}/img/laravel.svg"></i-->
@@ -91,6 +90,7 @@
           </ul>
         </div>
       </li>
+@endif
       <li class="nav-item{{ $activePage == 'logout' ? ' active' : '' }}">
         <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
           <i class="material-icons">exit_to_app</i>
