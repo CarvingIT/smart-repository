@@ -49,7 +49,7 @@
             </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">documents</i> Total No. Of Documents
+                <i class="material-icons">list</i> <a href="/collections">Total No. Of Documents</a>
               </div>
             </div>
           </div>
