@@ -181,7 +181,7 @@ class DocumentController extends Controller
     {
             $document_revisions = \App\DocumentRevision::where('document_id','=', $document_id)
                 ->orderBy('id','DESC')->get();
-       		return view('document-revisions', ['document_revisions'=>$document_revisions,'title'=>'Document Revisions','activePage'=>'Document Revsions','titlePage'=>'Document Revisions']);
+       		return view('document-revisions', ['document_revisions'=>$document_revisions,'title'=>'Smart Repository','activePage'=>'Document Revsions','titlePage'=>'Document Revisions']);
    	}
 
     public function loadRevision($revision_id){
