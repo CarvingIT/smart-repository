@@ -12,7 +12,13 @@
                     <div class="flash-message">
                     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
                         @if(Session::has('alert-' . $msg))
-                        <p class="alert alert-{{ $msg }}">{{ Session::get('alert-' . $msg) }}</p>
+				<div class="alert alert-success">
+                        	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        	<i class="material-icons">close</i>
+                        	</button>
+                        	<span>{{ Session::get('alert-' . $msg) }}</span>
+                        </div>
+
                         @endif
                     @endforeach
                     </div>

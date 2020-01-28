@@ -7,7 +7,7 @@
         <div class="col-md-12">
             @foreach ($collections as $c)
             <div class="card">
-            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collection/{{ $c->id }}">{{ $c->name }}</a></h4>
+            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collection/{{ $c->id }}" title="Click here to view documents">{{ $c->name }}</a></h4>
                   @if(!empty(Auth::user()->id))
                   @endif
             </div>
