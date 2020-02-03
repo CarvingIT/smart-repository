@@ -58,6 +58,7 @@ class CollectionController extends Controller
          $c->description = $request->input('description');
          $c->type = empty($request->input('collection_type'))?'Public':$request->input('collection_type');
          $c->description = $request->input('description');
+         $c->require_approval = $request->input('require_approval');
          $c->user_id = Auth::user()->id;
          try{
             $c->save();

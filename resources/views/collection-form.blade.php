@@ -67,6 +67,19 @@
                     <input type="text" name="maintainer" id="maintainer" class="form-control" value="@if(!empty($collection->maintainer()->email)){{$collection->maintainer()->email}}@endif" placeholder="Email ID of the maintainer">
                     </div>
                    </div>
+                   <div class="form-group row">
+                    <div class="col-md-4">
+                   <label for="maintainer" class="col-md-8 col-form-label text-md-right">Document Type</label> 
+			</div>
+                    <div class="col-md-6">
+                    <input type="checkbox" id="require_approval" name="require_approval" value="1" 
+		@if($collection->require_approval == 1)
+                     checked
+                    @endif
+                    /> Document becomes available after approval
+	
+                    </div>
+                   </div>
                 
                    <div class="form-group row mb-0"><div class="col-md-8 offset-md-4"><button type="submit" class="btn btn-primary">
                                     Save
