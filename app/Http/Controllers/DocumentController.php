@@ -179,9 +179,11 @@ class DocumentController extends Controller
 
 	public function documentRevisions($document_id)
     {
+        $c = \App\Document::find($document_id);
+        $collection_id = $c->collection_id;
             $document_revisions = \App\DocumentRevision::where('document_id','=', $document_id)
                 ->orderBy('id','DESC')->get();
-       		return view('document-revisions', ['document_revisions'=>$document_revisions,'title'=>'Smart Repository','activePage'=>'Document Revsions','titlePage'=>'Document Revisions']);
+       		return view('document-revisions', ['document_revisions'=>$document_revisions,'collection_id'=>$collection_id,'title'=>'Smart Repository','activePage'=>'Document Revsions','titlePage'=>'Document Revisions']);
    	}
 
     public function loadRevision($revision_id){

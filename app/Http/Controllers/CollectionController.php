@@ -171,12 +171,22 @@ class CollectionController extends Controller
                 $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">view_column</i>
                                 <div class="ripple-container"></div></a>';
             if(Auth::user()){
+                if(Auth::user()->canApproveDocument($d->id)){
+			if($d->approved == 1){
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i>
+                                <div class="ripple-container"></div></a>';
+			}
+			else{
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="Approve document"><i class="material-icons">close</i>
+                                <div class="ripple-container"></div></a>';
+			}
+		}
                 if(Auth::user()->canEditDocument($d->id)){
                 $action_icons .= '<a class="btn btn-success btn-link" href="/document/'.$d->id.'/edit" title="Create a new revision"><i class="material-icons">edit</i>
                                 <div class="ripple-container"></div></a>';
                 }
                 if(Auth::user()->canDeleteDocument($d->id)){
-                $action_icons .= '<a class="btn btn-danger btn-link" href="/document/'.$d->id.'/delete" title="Delete document"><i class="material-icons">close</i>
+                $action_icons .= '<a class="btn btn-danger btn-link" href="/document/'.$d->id.'/delete" title="Delete document"><i class="material-icons">delete</i>
                                 <div class="ripple-container"></div></a>';
                 }
             }

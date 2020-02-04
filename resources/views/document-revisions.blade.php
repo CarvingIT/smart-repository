@@ -20,6 +20,12 @@ $(document).ready(function() {
             <div class="card">
             <div class="card-header card-header-primary"><h4 class="card-title">{{ ($document_revisions[0]->document)->title }}</h4></div>
                  <div class="card-body">
+			<div class="row">
+                  <div class="col-md-12 text-right">
+                      <a href="/collection/{{ $collection_id }}" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
+                  </div>
+                </div>
+
                     <table id="revisions" class="display table" style="width:100%">
                         <thead class=" text-primary">
                             <tr>

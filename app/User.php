@@ -108,4 +108,14 @@ class User extends Authenticatable implements MustVerifyEmail
         }
         return false;
     }
+
+    public function canApproveDocument($document_id){
+        $document = \App\Document::find($document_id);
+        $collection_id = $document->collection_id;
+        if($this->hasPermission($collection_id, 'MAINTAINER') || 
+            ($this->hasPermission($collection_id, 'APPROVE') && $document->created_by == $this->id)){
+            return true;
+        }
+        return false;
+    }
 }

@@ -43,7 +43,7 @@
 		   <label for="uploadfile" class="col-md-8 col-form-label text-md-right">Document</label>
 		   </div>
     		   <div class="col-md-4">
-    		   <input id="uploadfile" type="file" name="document">
+    		   <input id="uploadfile" type="file" name="document"> @if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
     		   </div>
 		</div>
     @foreach($collection->meta_fields as $f)
