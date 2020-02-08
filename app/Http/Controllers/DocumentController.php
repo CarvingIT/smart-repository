@@ -56,31 +56,32 @@ class DocumentController extends Controller
         else{
             $d = new Document;
         }
-		if($request->hasFile('document')){
-			$filename = $request->file('document')->getClientOriginalName();
-            $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
-			$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename);
-			$filesize = $request->file('document')->getClientSize();
-			$mimetype = $request->file('document')->getMimeType();
+	if($request->hasFile('document')){
+		$filename = $request->file('document')->getClientOriginalName();
+            	$new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
+		$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename);
+		$filesize = $request->file('document')->getClientSize();
+		$mimetype = $request->file('document')->getMimeType();
 
-            if(!empty($request->input('title'))){
+            	if(!empty($request->input('title'))){
                 $d->title = $request->input('title');
-            }
-            else{
+            	}
+            	else{
                 $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
-            }
-            $d->collection_id = $request->input('collection_id');
-            $d->created_by = \Auth::user()->id;
-			$d->size = $filesize;
-			$d->type = $mimetype;
-            $d->path = $filepath;
-            try{
+            	}
+            	$d->collection_id = $request->input('collection_id');
+            	$d->created_by = \Auth::user()->id;
+
+		$d->size = $filesize;
+		$d->type = $mimetype;
+            	$d->path = $filepath;
+            	try{
 			    $d->text_content = utf8_encode($this->extractText($d));
-            }
-            catch(\Exception $e){
-                \Log::error($e->getMessage());
-                $d->text_content = '';
-            }
+            	}
+            	catch(\Exception $e){
+               		\Log::error($e->getMessage());
+                	$d->text_content = '';
+            	}
 			//$d->save();
             try{
                 $d->save();
@@ -93,7 +94,11 @@ class DocumentController extends Controller
 
             // create revision
             $this->createDocumentRevision($d);
-		}
+	}
+            	if(!empty($request->input('approved_on'))){
+            	$d->approved_by = \Auth::user()->id;
+		$d->approved_on = now();
+            	}
             // extract meta
             $meta = $this->getMetaDataFromRequest($request);
             // put all meta values in a string
@@ -105,6 +110,7 @@ class DocumentController extends Controller
             $this->saveMetaData($d->id, $meta);
             // also update the text_content of the document
             $d->text_content = $d->text_content . $meta_string;
+
             try{
                 $d->save();
                 Session::flash('alert-success', 'Document uploaded successfully!');

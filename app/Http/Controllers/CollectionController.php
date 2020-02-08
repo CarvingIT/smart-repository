@@ -155,7 +155,12 @@ class CollectionController extends Controller
 
     public function search(Request $request){
         $columns = array('type', 'title', 'size', 'updated_at');
-        $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
+        if(Auth::user()){
+        	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
+	}
+	else{
+        	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id)->whereNotNull('approved_on');
+	}
         $total_documents = $documents_filtered->count();
 
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
@@ -172,7 +177,7 @@ class CollectionController extends Controller
                                 <div class="ripple-container"></div></a>';
             if(Auth::user()){
                 if(Auth::user()->canApproveDocument($d->id)){
-			if($d->approved == 1){
+			if(!empty($d->approved_on)){
                 $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i>
                                 <div class="ripple-container"></div></a>';
 			}

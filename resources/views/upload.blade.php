@@ -46,6 +46,16 @@
     		   <input id="uploadfile" type="file" name="document"> @if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
     		   </div>
 		</div>
+@if(!empty($document->id) && Auth::user()->canApproveDocument($document->id))
+		<div class="form-group row">
+		   <div class="col-md-4">
+		   <label for="approved" class="col-md-8 col-form-label text-md-right">Document Status</label>
+		   </div>
+    		   <div class="col-md-4">
+    		   <input id="approved_on" type="checkbox" name="approved_on" value="1" @if(!empty($document->approved_on)) checked @endif /> Approved
+    		   </div>
+		</div>
+@endif
     @foreach($collection->meta_fields as $f)
     <div class="form-group row">
 		   <div class="col-md-4">
