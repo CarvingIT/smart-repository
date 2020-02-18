@@ -35,7 +35,7 @@
 		   </div>
                     <div class="col-md-6">
                     <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ $document->title }}@endif" 
-                    placeholder="If left blank, we shall guess!" />
+                    placeholder="If left blank, we shall guess!" required />
                     </div>
 		</div>
 		<div class="form-group row">
@@ -43,7 +43,7 @@
 		   <label for="uploadfile" class="col-md-8 col-form-label text-md-right">Document</label>
 		   </div>
     		   <div class="col-md-4">
-    		   <input id="uploadfile" type="file" name="document"> @if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
+    		   <input id="uploadfile" type="file" name="document" required > @if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
     		   </div>
 		</div>
 @if(!empty($document->id) && Auth::user()->canApproveDocument($document->id))
