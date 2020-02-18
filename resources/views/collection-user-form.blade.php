@@ -28,7 +28,7 @@
 			</div>
                     <div class="col-md-4">
                     <input type="text" name="user_id" id="user_id" class="form-control" placeholder="User Email ID" 
-                    value="@if(!empty($user->id)){{ $user->email }}@endif" />
+                    value="@if(!empty($user->id)){{ $user->email }}@endif" required/>
                     </div>
                    </div>
                     @foreach(\App\Permission::all() as $p)
