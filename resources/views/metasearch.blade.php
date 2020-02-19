@@ -92,7 +92,7 @@ $(document).ready(function() {
                       <th>Title</th>
                       <th class="dt-right">Size</th>
                       <th>Created</th>
-                      <th class="text-right">Actions</th>
+                      <th class="text-right td-actions">Actions</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -105,7 +105,7 @@ $(document).ready(function() {
                     <td>{{$d->title}}</td>
                     <td data-order="{{$d->size}}">{{$d->human_filesize()}}</td>
                     <td data-order="{{$d->updated_at}}">{{ date('F d, Y', strtotime($d->updated_at)) }}</td>
-                    <td class="text-right">
+                    <td class="text-right td-actions">
                 <a href="/document/{{$d->id}}/revisions" title="View revisions" class="btn btn-primary btn-link">
 		<i class="material-icons">view_column</i>
                 <div class="ripple-container"></div>

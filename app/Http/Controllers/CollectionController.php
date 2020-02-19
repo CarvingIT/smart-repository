@@ -277,7 +277,7 @@ class CollectionController extends Controller
             ->join('meta_field_values','documents.id','=','meta_field_values.document_id')
             //->select('documents.id','title','size', 'documents.updated_at')
             ->select('documents.id')
-            ->where('collection_id','=', $request->collection_id);
+            ->where('collection_id','=', $request->collection_id)->whereNotNull('approved_on');
         $params = $request->all(); 
         //print_r($params);
         $i = 0;
