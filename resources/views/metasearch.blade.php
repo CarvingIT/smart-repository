@@ -28,7 +28,7 @@ $(document).ready(function() {
     @foreach($collection->meta_fields as $f)
     <div class="form-group row">
 	<div class="col-md-4">
-    <label for="meta_field_{{$f->id}}" class="col-md-10 col-form-label text-md-left">{{$f->label}}</label>
+    <label for="meta_field_{{$f->id}}" class="col-md-6 col-form-label text-md-left">{{$f->label}}</label>
 	</div>
         <div class="col-md-4">
         <select class="form-control" name="operator_{{$f->id}}">
@@ -48,7 +48,7 @@ $(document).ready(function() {
             @endif
         </select>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
         @if($f->type == 'Text')
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ @$params['meta_field_'.$f->id] }}" placeholder="{{ $f->placeholder }}" />
         @elseif ($f->type == 'Numeric')

@@ -61,8 +61,7 @@
 		   <div class="col-md-4">
     			<label for="meta_field_{{$f->id}}" class="col-md-8 col-form-label text-md-right">{{$f->label}}</label>
     		   </div>
-		</div>
-        <div class="col-md-6">
+        <div class="col-md-4">
         @if($f->type == 'Text')
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
         @elseif ($f->type == 'Numeric')
