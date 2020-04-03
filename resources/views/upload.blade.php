@@ -35,7 +35,7 @@
 		   </div>
                     <div class="col-md-6">
                     <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ $document->title }}@endif" 
-                    placeholder="If left blank, we shall guess!" required />
+                    placeholder="If left blank, we shall guess!" />
                     </div>
 		</div>
 		<div class="form-group row">
