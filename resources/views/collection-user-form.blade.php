@@ -32,7 +32,7 @@
                     </div>
                    </div>
                     @foreach(\App\Permission::all() as $p)
-			@if($collection_has_approval->isEmpty() && $p->name == 'APPROVE')
+			@if(count($collection_has_approval)==0 && $p->name == 'APPROVE')
 			@else
                    <div class="form-group row">
                    <label for="permission" class="col-md-4 col-form-label text-md-right"></label> 

@@ -115,6 +115,7 @@ class CollectionController extends Controller
     public function showCollectionUserForm($collection_id, $user_id=null){
         $user_permissions = array();
         $user = null;
+	$has_approval=array();
         if(!empty($user_id)){
             $user = \App\User::find($user_id);
             $u_permissions = \App\UserPermission::where('user_id','=',$user_id)
