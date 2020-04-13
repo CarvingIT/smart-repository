@@ -119,6 +119,7 @@ class CollectionController extends Controller
             $user = \App\User::find($user_id);
             $u_permissions = \App\UserPermission::where('user_id','=',$user_id)
                 ->where('collection_id','=',$collection_id)->get();
+	    $has_approval = \App\Collection::where('id','=',$collection_id)->where('require_approval','=','1')->get();
             foreach($u_permissions as $u_p){
                 $user_permissions['p'.$u_p->permission_id] = 1;
             }
@@ -126,6 +127,7 @@ class CollectionController extends Controller
         return view('collection-user-form', ['collection'=>\App\Collection::find($collection_id), 
             'user'=>$user, 
             'user_permissions'=>$user_permissions,
+	    'collection_has_approval'=>$has_approval,
             'title'=>'Collection User Form',
 	    'activePage'=>'Collection User Form',
 	    'titlePage'=> 'Collection User Form'				
@@ -171,12 +173,13 @@ class CollectionController extends Controller
             ->limit($request->length)->offset($request->start)->get();
         
         $results_data = array();
+	$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
         foreach($documents as $d){
             $action_icons = '';
                 $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">view_column</i>
                                 <div class="ripple-container"></div></a>';
             if(Auth::user()){
-                if(Auth::user()->canApproveDocument($d->id)){
+                if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
 			if(!empty($d->approved_on)){
                 $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i>
                                 <div class="ripple-container"></div></a>';
@@ -229,7 +232,7 @@ class CollectionController extends Controller
         else{
             $edit_field = \App\MetaField::find($meta_field_id);
         }
-        $meta_fields = \App\MetaField::where('collection_id', '=', $collection_id)->get();
+        $meta_fields = \App\MetaField::where('collection_id', '=', $collection_id)->orderby('display_order','ASC')->get();
         return view('metainformation', ['collection'=>$collection, 
                 'edit_field'=>$edit_field, 
                 'meta_fields'=>$meta_fields,
