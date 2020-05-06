@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\User;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+
+
 
 class UserController extends Controller
 {
@@ -14,9 +18,16 @@ class UserController extends Controller
      * @param  \App\User  $model
      * @return \Illuminate\View\View
      */
+   #public function index(User $model)
     public function index(User $model)
     {
-        return view('users.index', ['users' => $model->paginate(15),'activePage'=>'Users']);
+        #return view('users.index', ['users' => $model->paginate(15),'activePage'=>'Users']);		## This page is as it is.
+
+	$records_all = DB::table('users')
+            ->select('id','name','email','created_at');
+	$users = $records_all->distinct()->get();
+	$total_users = $users->count();
+        return view('users.index', ['users'=>$users, 'activePage'=>'Users','titlePage'=>'Users']);
     }
 
     /**

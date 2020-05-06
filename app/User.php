@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -41,6 +42,8 @@ class User extends Authenticatable implements MustVerifyEmail
 	'updated_at' => 'datetime',
 	'deleted_at' => 'datetime'
     ];
+
+	protected $table = "users";
 
     public function roles(){
         return $this->hasMany('App\UserRole');

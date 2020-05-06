@@ -281,8 +281,8 @@ class CollectionController extends Controller
             ->join('meta_field_values','documents.id','=','meta_field_values.document_id')
             //->select('documents.id','title','size', 'documents.updated_at')
             ->select('documents.id')
-            //->where('collection_id','=', $request->collection_id)->whereNotNull('approved_on');
-            ->where([['collection_id','=', $request->collection_id],['text_content',$request->content_field]])->whereNotNull('approved_on');
+            ->where('collection_id','=', $request->collection_id)->whereNotNull('approved_on');
+
         $params = $request->all(); 
         //print_r($params);
 	//exit;
@@ -327,7 +327,19 @@ class CollectionController extends Controller
             $records = $set1->toArray();
         }
         else{
-            $set1= array();
+        $set1= array();
+	$documents_filtered = '';
+/*
+        if(!empty($request->content_field) && strlen($request->content_field)>3){
+            $documents_filtered = $documents_filtered->search($request->content_field);
+        }
+	if(!empty($$documents_filtered)){
+	foreach($documents_filtered as $d){
+		array_push($set1,$d->id);
+	}
+	}
+*/
+
             foreach($records_all->distinct()->get() as $r){
                 array_push($set1, $r->id);
             }

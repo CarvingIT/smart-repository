@@ -1,6 +1,30 @@
 @extends('layouts.app', ['activePage' => 'user-management', 'titlePage' => __('User Management')])
 
 @section('content')
+<script src="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" /></script>
+<script src="https://cdn.datatables.net/scroller/2.0.1/css/scroller.dataTables.min.css" /></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $('#users').DataTable({
+    "processing": true,
+    "serverSide": true,
+    "ajax": "{{ route('user.index') }}",
+    "columns":[
+       {data:"name"},
+       {data:"email"},
+       {data:"created_at",
+            render:{
+               '_':'display',
+        //      'sort': 'created_date'
+            }
+        }
+    ]
+    });
+
+});
+</script>
+
   <div class="content">
     <div class="container-fluid">
       <div class="row">
@@ -30,7 +54,7 @@
                   </div>
                 </div>
                 <div class="table-responsive">
-                  <table class="table">
+                  <table id="users" class="table">
                     <thead class=" text-primary">
                       <th>
                           {{ __('Name') }}
@@ -55,15 +79,14 @@
                             {{ $user->email }}
                           </td>
                           <td>
-                            {{ $user->created_at->format('Y-m-d') }}
+                            {{ $user->created_at }}
                           </td>
                           <td class="td-actions text-right">
                             @if ($user->id != auth()->id())
                               <form action="{{ route('user.destroy', $user) }}" method="post">
                                   @csrf
                                   @method('delete')
-                              
-                                  <a rel="tooltip" class="btn btn-success btn-link" href="{{ route('user.edit', $user) }}" data-original-title="" title="">
+                    <a rel="tooltip" class="btn btn-success btn-link" href="{{ route('user.edit', $user) }}" data-original-title="" title="">
                                     <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
                                   </a>

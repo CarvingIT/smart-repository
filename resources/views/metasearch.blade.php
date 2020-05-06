@@ -77,7 +77,7 @@ $(document).ready(function() {
     	<label for="content_field" class="col-md-6 col-form-label text-md-left">Content to be searched.</label>
 	</div>
         <div class="col-md-4">
-        <input class="form-control" id="text_field_operator" type="text" name="content_field_operator" value="like" placeholder="Content to be searched operator">
+        <!--input class="form-control" id="text_field_operator" type="text" name="content_field_operator" value="like" placeholder="Content to be searched operator"-->
         <input class="form-control" id="text_field" type="text" name="content_field" value="{{ @$params['content_field'] }} " placeholder="Content to be searched">
 	</div>
 	</div>
