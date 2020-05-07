@@ -1,28 +1,13 @@
 @extends('layouts.app', ['activePage' => 'user-management', 'titlePage' => __('User Management')])
 
 @section('content')
-<script src="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" /></script>
-<script src="https://cdn.datatables.net/scroller/2.0.1/css/scroller.dataTables.min.css" /></script>
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#users').DataTable({
-    "processing": true,
-    "serverSide": true,
-    "ajax": "{{ route('user.index') }}",
-    "columns":[
-       {data:"name"},
-       {data:"email"},
-       {data:"created_at",
-            render:{
-               '_':'display',
-               'sort': 'created_date'
-            }
-        }
-    ]
-    });
-
-});
+    $("#users-list").DataTables();
 </script>
 
   <div class="content">
@@ -54,7 +39,7 @@ $(document).ready(function() {
                   </div>
                 </div>
                 <div class="table-responsive">
-                  <table id="users" class="table">
+                  <table id="users-list" class="table">
                     <thead class=" text-primary">
                       <th>
                           {{ __('Name') }}
@@ -70,7 +55,40 @@ $(document).ready(function() {
                       </th>
                     </thead>
                     <tbody>
-<?php print_r($users);?>
+                      @foreach($users as $user)
+                        <tr>
+                          <td>
+                            {{ $user->name }}
+                          </td>
+                          <td>
+                            {{ $user->email }}
+                          </td>
+                          <td>
+                            {{ $user->created_at }}
+                          </td>
+                          <td class="td-actions text-right">
+                            @if ($user->id != auth()->id())
+                              <form action="{{ route('user.destroy', $user) }}" method="post">
+                                  @csrf
+                                  @method('delete')
+                    <a rel="tooltip" class="btn btn-success btn-link" href="{{ route('user.edit', $user) }}" data-original-title="" title="">
+                                    <i class="material-icons">edit</i>
+                                    <div class="ripple-container"></div>
+                                  </a>
+                                  <button type="button" class="btn btn-danger btn-link" data-original-title="" title="" onclick="confirm('{{ __("Are you sure you want to delete this user?") }}') ? this.parentElement.submit() : ''">
+                                      <i class="material-icons">close</i>
+                                      <div class="ripple-container"></div>
+                                  </button>
+                              </form>
+                            @else
+                              <a rel="tooltip" class="btn btn-success btn-link" href="{{ route('profile.edit') }}" data-original-title="" title="">
+                                <i class="material-icons">edit</i>
+                                <div class="ripple-container"></div>
+                              </a>
+                            @endif
+                          </td>
+                        </tr>
+                      @endforeach
                     </tbody>
                   </table>
                 </div>

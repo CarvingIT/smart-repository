@@ -1,9 +1,16 @@
 @extends('layouts.app', ['activePage' => 'user-management', 'titlePage' => __('User Management')])
 
 @section('content')
+<style>
+.row{
+margin-right:0px;
+margin-left:0px;
+}
+</style>
+
   <div class="content">
   <div class="content-fluid">
-      <div class="row" justify-content-center">
+      <div class="row">
         <div class="col-md-12">
           <form method="post" action="{{ route('user.update', $user) }}" autocomplete="off" class="form-horizontal">
             @csrf
@@ -14,7 +21,7 @@
                 <h4 class="card-title">{{ __('Edit User') }}</h4>
                 <p class="card-category"></p>
               </div>
-              <div class="card-body ">
+              <div class="card-body">
                 <div class="row">
                   <div class="col-md-12 text-right">
                       <a href="{{ route('user.index') }}" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>

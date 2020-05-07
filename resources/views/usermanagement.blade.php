@@ -2,32 +2,11 @@
 
 @section('content')
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $('#users').DataTable();
-    "aoColumnDefs": [
-           { "bSortable": false, "aTargets": [0, 3]},
-           { "className": 'text-right', "aTargets": [0,1]},
-           { "className": 'td-actions text-right', "aTargets": [3]}
-     ],
-    "order": [[ 3, "desc" ]],
-    "processing":true,
-    "serverSide":false,
-    "ajax":'/admin/usermanagement',
-    "columns":[
-       {data:"name"},
-       {data:"email"},
-       {data:"created_at",
-            render:{
-               '_':'display',
-              'sort': 'created_date'
-            }
-        },
-        {data:"actions"},
-    ]
-    });
+    $("#users").DataTable();
 } );
 
 </script>
@@ -95,6 +74,7 @@ $(document).ready(function() {
                             <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Created Date</th>
                             <th class="text-right">Actions</th>
                             </tr>
                         </thead>
@@ -103,9 +83,17 @@ $(document).ready(function() {
                         <tr>
                             <td>{{ $u->name }}</td>
                             <td>{{ $u->email }}</td>
-                            <td>
-                            <a href="/admin/user/{{ $u->id }}/edit"><img class="icon" src="/i/pencil-edit-button.png" /></a>
-                            <a href="/admin/user/{{ $u->id }}/delete"><img class="icon" src="/i/trash.png" /></a>
+                            <td>{{ $u->created_at }}</td>
+                            <td class="td-actions text-right">
+                            <!--a href="/admin/user/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link"-->
+                            <a href="/user/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
+				    <i class="material-icons">edit</i>
+                                    <div class="ripple-container"></div>
+				</a>
+                            <a href="/user/{{ $u->id }}/delete" class="btn btn-danger btn-link">
+				<i class="material-icons">close</i>
+                                <div class="ripple-container"></div>
+				</a>
                             </td>    
                         </tr>
                         @endforeach

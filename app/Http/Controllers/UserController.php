@@ -18,36 +18,11 @@ class UserController extends Controller
      * @param  \App\User  $model
      * @return \Illuminate\View\View
      */
-   #public function index(User $model)
-    public function index(User $model)
+     public function index(User $model)
     {
         #return view('users.index', ['users' => $model->paginate(15),'activePage'=>'Users']);		## This page is as it is.
 
-	$records_all = DB::table('users')
-            ->select('id','name','email','created_at');
-	$users = $records_all->distinct()->get();
-	$total_users = $users->count();
-	$action_icons = '';
-	foreach($users as $u){
-	$action_icons .= '<a href="/admin/user/'.$u->id.'/edit"><img class="icon" src="/i/pencil-edit-button.png" /></a>';
-        $action_icons .= '<a href="/admin/user/'.$u->id.'/delete"><img class="icon" src="/i/trash.png" /></a>';
-
-	$results_data[] = array(
-                        'name' => '<a href="/user/'.$u->id.'" target="_new">'.$u->name.'</a>',
-                        'email' => '<a href="/user/'.$u->id.'" target="_new">'.$u->email.'</a>',
-                        'created_at' => array('display'=>date('F d, Y', strtotime($u->created_at)), 'created_date'=>$u->created_at),
-                        'actions' => $action_icons
-			);
-        }
-	$results = array(
-            'data'=>$results_data,
-            'recordsTotal'=> $total_users,
-            'error'=> '',
-        );
-
-
-	$users= json_encode($results);
-        return view('users.index', ['users'=>$users, 'activePage'=>'Users','titlePage'=>'Users']);
+        return view('usermanagement', ['users'=>$model->all(), 'activePage'=>'user-management', 'titlePage' => 'Users']);
     }
 
     /**
