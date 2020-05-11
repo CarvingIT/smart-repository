@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
 <script>
 $(document).ready(function() {
     $('#documents').DataTable({
@@ -11,7 +14,7 @@ $(document).ready(function() {
     "searching": false,
     "order": [[ 3, "desc" ]],
     });
-} );
+});
 </script>
 
 <div class="container">
@@ -111,7 +114,7 @@ $(document).ready(function() {
                 @endphp
                 <tr>
                     <td><img class="file-icon" src="/i/file-types/{{$d->icon()}}.png" /></td>
-                    <td>{{$d->title}}</td>
+                    <td><a href="/document/{{$d->id }}" target="_blank">{{$d->title}}</a></td>
                     <td data-order="{{$d->size}}">{{$d->human_filesize()}}</td>
                     <td data-order="{{$d->updated_at}}">{{ date('F d, Y', strtotime($d->updated_at)) }}</td>
                     <td class="text-right td-actions">
