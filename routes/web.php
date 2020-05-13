@@ -14,6 +14,7 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
 Route::get('/contact', function () {
     return view('contact');
 });
@@ -40,6 +41,9 @@ Route::post('/collection/{collection_id}/upload','DocumentController@upload')->m
 // Collection-user management
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('collection_view');
 Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm');
+
+Route::get('autocomplete', 'UserController@autoComplete')->name('autocomplete');
+
 Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@showCollectionUserForm');
 Route::post('/collection/{collection_id}/savecollectionuser', 'CollectionController@saveUser');
 Route::get('/collection/{collection_id}/remove-user/{user_id}', 'CollectionController@removeUser');

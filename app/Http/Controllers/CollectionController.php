@@ -429,4 +429,6 @@ else{
         $collections = Collection::whereIn('id', $user_collections)->orWhere('type','=','Public')->get();
 	return $collections;
     }
+
+## Class Ends
 }

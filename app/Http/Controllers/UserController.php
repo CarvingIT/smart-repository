@@ -78,6 +78,16 @@ class UserController extends Controller
         return redirect()->route('user.index')->withStatus(__('User successfully updated.'));
     }
 
+    public function autoComplete(Request $request){
+        $data = DB::table('users')
+                ->select('email')
+                ->where("name","LIKE","%{$request->input('query')}%")
+                ->get();
+        return response()->json($data);
+    }
+
+
+
     /**
      * Remove the specified user from storage
      *
