@@ -116,11 +116,11 @@ class CollectionController extends Controller
         $user_permissions = array();
         $user = null;
 	$has_approval=array();
+	$has_approval = \App\Collection::where('id','=',$collection_id)->where('require_approval','=','1')->get();
         if(!empty($user_id)){
             $user = \App\User::find($user_id);
             $u_permissions = \App\UserPermission::where('user_id','=',$user_id)
                 ->where('collection_id','=',$collection_id)->get();
-	    $has_approval = \App\Collection::where('id','=',$collection_id)->where('require_approval','=','1')->get();
             foreach($u_permissions as $u_p){
                 $user_permissions['p'.$u_p->permission_id] = 1;
             }
