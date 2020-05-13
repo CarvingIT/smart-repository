@@ -286,6 +286,29 @@ class CollectionController extends Controller
         $params = $request->all(); 
         //print_r($params);
 	//exit;
+
+###### Code for content search
+        if(!empty($request->content_field) && strlen($request->content_field)>3){
+	$documents_filtered = clone $records_all;
+	$documents_filtered = $documents_filtered->whereRaw(
+        "MATCH(title,text_content) AGAINST(? IN BOOLEAN MODE)", 
+        array($request->content_field)
+    	)->get();
+	#echo "<br />";
+        #print_r($documents_filtered);
+        }
+	$set3 = null;
+	$r3 = array();
+	if(!empty($documents_filtered)){
+		foreach($documents_filtered as $d){
+			#array_push($set1,$d->id);
+			$r3[] = $d->id;
+		}
+		$r3 = array_unique($r3);
+		$set3 = collect($r3);
+	}
+###### Code for content search ends
+
         $i = 0;
         $set1 = null;
         $set2 = null;
@@ -322,31 +345,48 @@ class CollectionController extends Controller
                 $i++;
             }
         }
-    //exit;
+
+###### Code for content search
+if($i > 0 && !empty($set3)){
+	$records = $set1->toArray();
+	$set3 = $set3->toArray();
+	if(!empty($records)){
+		$set1 = $set1->intersect($set3);
+		$records = $set1;
+	}
+	else{
+		$records = $set3;
+	}
+} 
+else if($i == 0 && !empty($set3)){
+	$records = $set3->toArray();
+}
+else if($i > 0 && empty($set3)){
+	$records = $set1->toArray();
+}
+else{
+	$set1= array();
+        foreach($records_all->distinct()->get() as $r){
+              array_push($set1, $r->id);
+        }
+        $records = $set1;
+}
+###### Code for content search ends 
+/*
         if($i > 0){
+        //print_r($set1);
             $records = $set1->toArray();
         }
         else{
-        $set1= array();
-	$documents_filtered = '';
-/*
-        if(!empty($request->content_field) && strlen($request->content_field)>3){
-            $documents_filtered = $documents_filtered->search($request->content_field);
-        }
-	if(!empty($$documents_filtered)){
-	foreach($documents_filtered as $d){
-		array_push($set1,$d->id);
-	}
-	}
-*/
-
+            $set1= array();
             foreach($records_all->distinct()->get() as $r){
-                array_push($set1, $r->id);
+                  array_push($set1, $r->id);
             }
             $records = $set1;
         }
-        //print_r($set1);
-	//exit;
+*/
+        #print_r($set1);
+	#exit;
         return view('metasearch', ['collection'=>$collection, 'documents'=>$records, 'params'=>$params,'activePage'=>'Advanced Search','titlePage'=>'Advanced Search','title'=>'Advanced Search']);
     }
 
