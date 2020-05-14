@@ -1,46 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link rel="stylesheet"  href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.min.css" type="text/css"> 
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <script type="text/javascript">
-//var path = "{{ route('autocomplete') }}";
-//   $('#user_id').typeahead({
- //     source:  function (query, process) {
-  //      return $.get(path, { query: query }, function (data) {
-   //             return process(data);
-    //        });
-     //   }
-   // });
 
-
-$(document).ready(function(){
-
- $('#user_id').keyup(function(){ 
-        var query = $(this).val();
-        if(query != '')
-        {
-         var _token = $('input[name="_token"]').val();
-         $.ajax({
-          url:"{{ route('autocomplete') }}",
-          method:"GET",
-          data:{query:query, _token:_token},
-          success:function(data){
-           $('#countryList').fadeIn();  
-                    $('#countryList').html(data);
-          }
-         });
-        }
+$(document).ready(function() {
+	//alert("js is working");
+        src = "{{ route('autocomplete') }}";
+        $( "#user_id" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+	            method: 'GET',		
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+			//console.log(data);
+                        response(data);
+                    }
+                });
+            },
+            minLength: 1,
+        });
     });
-
-    $(document).on('click', 'li', function(){  
-        $('#user_id').val($(this).text());  
-        $('#countryList').fadeOut();  
-    });  
-
-});
 </script>
 
 
@@ -70,7 +57,7 @@ $(document).ready(function(){
                    <label for="user_id" class="col-md-10 col-form-label text-md-right">User ID</label> 
 			</div>
                     <div class="col-md-4">
-                    <input type="text" name="user_id" id="user_id" class="typeahead form-control" placeholder="User Email ID" 
+                    <input type="text" name="user_id" id="user_id" class="form-control" placeholder="User Email ID" 
                     value="@if(!empty($user->id)){{ $user->email }}@endif" required/>
 			<div id="countryList"></div>
                     </div>

@@ -41,7 +41,7 @@
             @include('layouts.page_templates.guest')
         @endguest
         <!--   Core JS Files   -->
-        <script src="{{ asset('material') }}/js/core/jquery.min.js"></script>
+        <!--script src="{{ asset('material') }}/js/core/jquery.min.js"></script--> <!-- commented due to error on collection user add form for autocomplete-->
         <script src="{{ asset('material') }}/js/core/popper.min.js"></script>
         <script src="{{ asset('material') }}/js/core/bootstrap-material-design.min.js"></script>
         <script src="{{ asset('material') }}/js/plugins/perfect-scrollbar.jquery.min.js"></script>
@@ -84,7 +84,7 @@
         <!-- Material Dashboard DEMO methods, don't include it in your project! -->
         <!--script src="{{ asset('material') }}/demo/demo.js"></script-->
         <script src="{{ asset('material') }}/js/settings.js"></script>
+	<script src="{{ asset('/js/materialize.js') }}"></script> <!-- commented due to error on collection user add form for autocomplete-->
         @stack('js')
-<script src="/js/materialize.js"></script>
     </body>
 </html>

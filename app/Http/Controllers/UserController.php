@@ -80,10 +80,22 @@ class UserController extends Controller
 
     public function autoComplete(Request $request){
         $data = DB::table('users')
-                ->select('email')
-                ->where("name","LIKE","%{$request->input('query')}%")
-                ->get();
-        return response()->json($data);
+                ->select('id','email')
+                ->where("email","LIKE","%{$request->input('term')}%");
+	#print_r($data->toSql());
+
+        $data = $data->distinct()->get();
+	$results = array();
+	foreach($data as $d){
+		#$results[] = ['id'=> $d->id, 'value' => $d->email];
+		$results[] = ['value' => $d->email];
+	}
+	if(count($results)){
+        return response()->json($results);
+	}
+	else{
+	return ['value'=>'No Result Found'];
+	}
     }
 
 
