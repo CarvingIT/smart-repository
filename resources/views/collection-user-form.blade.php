@@ -1,8 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.app',['class'=> 'off-canvas-sidebar'])
 
 @section('content')
 <link rel="stylesheet"  href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.min.css" type="text/css"> 
-<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <script type="text/javascript">
