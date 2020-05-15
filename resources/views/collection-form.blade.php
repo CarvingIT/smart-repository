@@ -1,7 +1,36 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
+
+<link rel="stylesheet"  href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.min.css" type="text/css">
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+        //alert("js is working");
+        src = "{{ route('autocomplete') }}";
+        $( "#maintainer" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+                    method: 'GET',
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+                        //console.log(data);
+                        response(data);
+                    }
+                });
+            },
+            minLength: 1,
+        });
+    });
+</script>
+
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12">
