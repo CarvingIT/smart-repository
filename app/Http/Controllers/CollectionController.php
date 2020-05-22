@@ -136,6 +136,9 @@ class CollectionController extends Controller
     }
 
     public function saveUser(Request $request){
+	$request->validate([
+    	'user_id' => 'email:rfc,dns'
+	]);
         $user = \App\User::where('email','=',$request->user_id)->first();
         // first delete all permissions on the collection
         \App\UserPermission::where('collection_id','=',$request->collection_id)
