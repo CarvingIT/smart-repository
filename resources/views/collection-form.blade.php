@@ -65,7 +65,7 @@ $(document).ready(function() {
                    <label for="collection_name" class="col-md-8 col-form-label text-md-right">Name</label> 
                     </div>
                     <div class="col-md-6">
-                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your collection a name" value="{{ $collection->name }}" />
+                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your collection a name" value="{{ $collection->name }}" required />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -73,7 +73,7 @@ $(document).ready(function() {
                    <label for="description" class="col-md-8 col-form-label text-md-right">Description</label> 
 			</div>
                     <div class="col-md-6">
-                    <textarea name="description" id="description" class="form-control" value="" placeholder="Description">{{ $collection->description }}</textarea>
+                    <textarea name="description" id="description" class="form-control" value="" placeholder="Description" required >{{ $collection->description }}</textarea>
                     </div>
                    </div>
                    <div class="form-group row">

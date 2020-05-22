@@ -408,9 +408,9 @@ else{
         $collection = \App\Collection::find($collection_id);
 
     	if ($collection != null) {
-		echo $collection_id;
-       	 	#$collection->delete();
-       	 	#return redirect('/admin/collectionmanagement')->with(['message' => 'Successfully deleted!']);
+       	 	if($collection->delete())
+            	Session::flash('alert-success', 'Collection deleted successfully!');
+       	 	return redirect('/admin/collectionmanagement');
     	}
 
     }
