@@ -74,6 +74,7 @@ function generateChartData() {
 }
 
 }); // end am4core.ready()
+
 </script>
 
 <div class="container">
@@ -82,7 +83,22 @@ function generateChartData() {
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary"><h4 class="card-title"><a href="/reports" style="color:#fff;">Reports</a> :: {{ $name }} report</h4></div>
-                 <div class="card-body">
+            <div class="card-body">
+		<div class="form-group row">
+		   <div class="col-md-4">
+		<form name="get_uploads_report" method="get" action="">
+			<select name="collection_id" class="form-control">
+			   <option value="">Select Collection</option>
+			   @foreach($collection_list as $link)
+			     <option value="{{ $link['id'] }}" @if($collection_id == $link['id']) selected @endif>{{ $link['name'] }}</option>
+			   @endforeach
+			</select>
+		   </div>
+		   <div class="col-md-4">
+			<input type="submit" name="get_report" value="Get Report" class="btn btn-primary">
+		   </div>
+		</form>
+		</div>
                     <div id="chartdiv"></div>
                  </div>
             </div>
