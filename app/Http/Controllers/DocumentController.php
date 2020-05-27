@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Document;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use Session;
 
@@ -33,23 +34,39 @@ class DocumentController extends Controller
 
 	public function showUploadForm($collection_id)
     {
+            $size_limit = ini_get("upload_max_filesize");	
             $collection = \App\Collection::find($collection_id);
             $document = new \App\Document;
-       		return view('upload', ['collection'=>$collection, 'document'=>$document,'activePage'=>'Upload Document Form','titlePage'=>'Upload Document']);
+       		return view('upload', ['collection'=>$collection, 'document'=>$document,'activePage'=>'Upload Document Form','titlePage'=>'Upload Document','size_limit'=>$size_limit]);
    	}
 
 	public function showEditForm($document_id)
-    {
+    	{
+            $size_limit = ini_get("upload_max_filesize");	
             $document = \App\Document::find($document_id);
             $collection = \App\Collection::find($document->collection_id);
        		return view('upload', ['collection'=>$collection, 
-                    'document'=>$document,'activePage'=>'Document Edit Form','titlePage'=>'Document Edit Form']);
+                    'document'=>$document,'activePage'=>'Document Edit Form','titlePage'=>'Document Edit Form','size_limit'=>$size_limit]);
    	}
+
 
 	public function upload(Request $request){
         /*  !!!!
             More work needed here
         */
+
+############### Filesize validation code starts
+	$size_limit = ini_get("upload_max_filesize");
+	$collection_id = $request->input('collection_id');
+        $validator = Validator::make($request->all(), [
+	    'document' => 'required|file|max:1024',
+        ]);
+	if ($validator->fails()) {
+            Session::flash('alert-danger', 'File size has been exceeded. The file size should not be more than '.$size_limit.'B.');
+            return redirect('/collection/'.$collection_id.'/upload');
+        }
+############### Filesize validation code ends
+
         if(!empty($request->input('document_id'))){
             $d = Document::find($request->input('document_id'));
         }
@@ -75,6 +92,7 @@ class DocumentController extends Controller
 		$d->size = $filesize;
 		$d->type = $mimetype;
             	$d->path = $filepath;
+
             	try{
 			    $d->text_content = utf8_encode($this->extractText($d));
             	}

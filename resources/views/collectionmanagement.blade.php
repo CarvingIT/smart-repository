@@ -24,7 +24,7 @@ $(document).ready(function() {
                     <div class="flash-message">
                     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
                         @if(Session::has('alert-' . $msg))
-			<div class="alert alert-success">
+			<div class="alert alert-<?php echo $msg; ?>">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <i class="material-icons">close</i>
                         </button>

@@ -12,7 +12,7 @@
                     <div class="flash-message">
                     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
                         @if(Session::has('alert-' . $msg))
-				<div class="alert alert-success">
+				<div class="alert alert-<?php echo $msg; ?>">
                         	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         	<i class="material-icons">close</i>
                         	</button>
@@ -43,7 +43,8 @@
 		   <label for="uploadfile" class="col-md-8 col-form-label text-md-right">Document</label>
 		   </div>
     		   <div class="col-md-4">
-    		   <input id="uploadfile" type="file" name="document" @if(empty($document->id)) required @endif> @if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
+			<label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
+    		   <input id="uploadfile" type="file" class="form-control-file" name="document" @if(empty($document->id)) required @endif> @if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
     		   </div>
 		</div>
 @if(!empty($document->id) && Auth::user()->canApproveDocument($document->id))
