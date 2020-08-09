@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Collection extends Model
 {
+    use SoftDeletes;
+
     public function documents(){
         return $this->hasMany('App\Document');
     }
