@@ -45,8 +45,15 @@ class DocumentController extends Controller
             $size_limit = ini_get("upload_max_filesize");	
             $document = \App\Document::find($document_id);
             $collection = \App\Collection::find($document->collection_id);
+	    $has_approval=array();
+	    $has_approval = \App\Collection::where('id','=',$document->collection_id)->where('require_approval','=','1')->get();
+
        		return view('upload', ['collection'=>$collection, 
-                    'document'=>$document,'activePage'=>'Document Edit Form','titlePage'=>'Document Edit Form','size_limit'=>$size_limit]);
+			'document'=>$document,
+			'collection_has_approval'=>$has_approval,
+			'activePage'=>'Document Edit Form',
+			'titlePage'=>'Document Edit Form',
+			'size_limit'=>$size_limit]);
    	}
 
 
