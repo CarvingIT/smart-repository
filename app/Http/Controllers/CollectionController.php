@@ -160,12 +160,18 @@ class CollectionController extends Controller
     }
 
     public function search(Request $request){
+	$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
         $columns = array('type', 'title', 'size', 'updated_at');
         if(Auth::user()){
         	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
 	}
 	else{
+		if($has_approval->isEmpty()){
+        	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
+		}
+		else{
         	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id)->whereNotNull('approved_on');
+		}
 	}
         $total_documents = $documents_filtered->count();
 
@@ -177,7 +183,7 @@ class CollectionController extends Controller
             ->limit($request->length)->offset($request->start)->get();
         
         $results_data = array();
-	$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
+	##$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
         foreach($documents as $d){
             $action_icons = '';
                 $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">view_column</i>
