@@ -43,11 +43,23 @@
 		   <label for="uploadfile" class="col-md-8 col-form-label text-md-right">Document</label>
 		   </div>
     		   <div class="col-md-4">
-			<label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
-    		   <input id="uploadfile" type="file" class="form-control-file" name="document" @if(empty($document->id)) required @endif> @if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
+		   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
+    		   <input id="uploadfile" type="file" class="form-control-file" name="document" @if(empty($document->id)) required @endif> 
     		   </div>
 		</div>
+		@if(!empty($document->id))
+		<div class="form-group row">
+		   <div class="col-md-4">
+		   <label for="uploadfile" class="col-md-8 col-form-label text-md-right">Uploaded Document</label>
+		   </div>
+    		   <div class="col-md-4">
+			@if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
+    		   </div>
+		</div>
+		@endif
 @if(!empty($document->id) && Auth::user()->canApproveDocument($document->id))
+@if(count($collection_has_approval)==0)
+@else
 		<div class="form-group row">
 		   <div class="col-md-4">
 		   <label for="approved" class="col-md-8 col-form-label text-md-right">Document Status</label>
@@ -56,6 +68,7 @@
     		   <input id="approved_on" type="checkbox" name="approved_on" value="1" @if(!empty($document->approved_on)) checked @endif /> Approved
     		   </div>
 		</div>
+@endif
 @endif
     @foreach($collection->meta_fields as $f)
     <div class="form-group row">
