@@ -18,3 +18,6 @@ div.card-header{
 .card-title a {
     text-decoration:underline;
 }
+table.dataTable thead th, table.dataTable thead td{
+    padding-right:20px !important;
+}
