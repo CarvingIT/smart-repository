@@ -57,9 +57,10 @@ class DocumentController extends Controller
 
 ############### Filesize validation code starts
 	$size_limit = ini_get("upload_max_filesize");
+	$actual_size = $this->return_bytes($size_limit); ## Newly added line
 	$collection_id = $request->input('collection_id');
         $validator = Validator::make($request->all(), [
-	    'document' => 'required|file|max:1024',
+	    'document' => 'required|file|max:'.$actual_size
         ]);
 	if ($validator->fails()) {
             Session::flash('alert-danger', 'File size has been exceeded. The file size should not be more than '.$size_limit.'B.');
@@ -267,5 +268,31 @@ class DocumentController extends Controller
             $m_f->save();
         }
     }
+
+    public function return_bytes($val) {
+    $val = trim($val);
+    $last = strtolower($val[strlen($val)-1]);
+    $val = substr($val, 0, -1);
+    switch($last) {
+        // The 'G' modifier is available since PHP 5.1.0
+        case 'g':
+            $val *= 1024;
+        case 'm':
+            $val *= 1024;
+        case 'k':
+            $val *= 1024;
+    }
+    $val = $this->isa_convert_bytes_to_specified($val,'K',0);
+    return $val;
+}
+
+    public function isa_convert_bytes_to_specified($bytes, $to, $decimal_places = 1) {
+    $formulas = array(
+        'K' => number_format($bytes / 1024, $decimal_places,'',''),
+        'M' => number_format($bytes / 1048576, $decimal_places,'',''),
+        'G' => number_format($bytes / 1073741824, $decimal_places,'','')
+    );
+    return isset($formulas[$to]) ? $formulas[$to] : 0;
+}
 
 }
