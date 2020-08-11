@@ -14,3 +14,7 @@ div.card-header{
     font-weight:bold;
     font-size: 15px;
 }
+
+.card-title a {
+    text-decoration:underline;
+}
