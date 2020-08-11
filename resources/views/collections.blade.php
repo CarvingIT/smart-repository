@@ -7,9 +7,12 @@
         <div class="col-md-12">
             @foreach ($collections as $c)
             <div class="card">
-            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collection/{{ $c->id }}" title="Click here to view documents">{{ $c->name }}</a></h4>
-                  @if(!empty(Auth::user()->id))
+            <div class="card-header card-header-primary">
+                  @if ($c->type == 'Members Only')
+                    <i class="material-icons">lock</i>
                   @endif
+                <span class="card-title"><a href="/collection/{{ $c->id }}" title="Click here to view documents">{{ $c->name }}</a> 
+            </span>
             </div>
                   <div class="card-body">
                   {{ $c->description }}

@@ -14,3 +14,10 @@ div.card-header{
     font-weight:bold;
     font-size: 15px;
 }
+
+.card-title a {
+    text-decoration:underline;
+}
+table.dataTable thead th, table.dataTable thead td{
+    padding-right:20px !important;
+}
