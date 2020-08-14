@@ -20,32 +20,7 @@
     <!--link href="{{ asset('material') }}/demo/demo.css" rel="stylesheet" /-->
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!--   Core JS Files   -->
-        <!--script src="{{ asset('material') }}/js/core/jquery.min.js"--></script> <!-- commented due to error on collection user add form for autocomplete-->
 <script src="/js/jquery-3.3.1.js"></script>
-
-    </head>
-    <body class="{{ $class ?? '' }}">
-        @auth()
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
-		@if(Request::url() ===  url('/') )
-			@include('layouts.page_templates.user-home')
-		@elseif(Request::url() ===  url('/collections'))
-			@include('layouts.page_templates.user-collections')
-		@elseif(Request::url() ===  url('/features'))
-			@include('layouts.page_templates.user-features')
-		@elseif(Request::url() ===  url('/faq'))
-			@include('layouts.page_templates.user-faq')
-		@elseif(Request::url() ===  url('/contact'))
-			@include('layouts.page_templates.user-contact')
-		@else
-			@include('layouts.page_templates.auth')
-		@endif
-        @endauth
-        @guest()
-            @include('layouts.page_templates.guest')
-        @endguest
         <!--   Core JS Files   -->
         <script src="{{ asset('material') }}/js/core/popper.min.js"></script>
         <script src="{{ asset('material') }}/js/core/bootstrap-material-design.min.js"></script>
@@ -90,6 +65,18 @@
         <!--script src="{{ asset('material') }}/demo/demo.js"></script-->
         <script src="{{ asset('material') }}/js/settings.js"></script>
 	<script src="/js/materialize.js"></script> <!-- commented due to error on collection user add form for autocomplete-->
+
         @stack('js')
+    </head>
+    <body class="{{ $class ?? '' }}">
+        @auth()
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
+			@include('layouts.page_templates.user-home')
+        @endauth
+        @guest()
+            @include('layouts.page_templates.guest')
+        @endguest
     </body>
 </html>

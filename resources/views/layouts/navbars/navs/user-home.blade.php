@@ -43,6 +43,11 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
+            @if(Auth::user()->hasRole('admin'))
+            <a class="dropdown-item" href="/admin/usermanagement">{{ __('User Management') }}</a>
+            <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Collection Management') }}</a>
+            <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
+            @endif
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a>
           </div>

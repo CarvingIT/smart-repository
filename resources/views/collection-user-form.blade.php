@@ -1,11 +1,12 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar'])
 
 @section('content')
+@push('js')
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <link rel="stylesheet"  href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.min.css" type="text/css"> 
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <script type="text/javascript">
-
 $(document).ready(function() {
 	//alert("js is working");
         src = "{{ route('autocomplete') }}";
@@ -28,7 +29,7 @@ $(document).ready(function() {
         });
     });
 </script>
-
+@endpush
 
 <div class="container">
 <div class="container-fluid">
