@@ -8,7 +8,7 @@
 <div class="card">
 <div class="card-header card-header-primary"><h4 class="card-title">Smart Repository</h4></div>
 <div class="card-body">
-    <img style="float:left;" src="/i/wordcloud.png" />
+    <img class="img-responsive" style="float:left;" src="/i/wordcloud.png" />
     <h3>Welcome to Smart Repository!</h3>
 	<p><strong>Knowledge management</strong> is very Easy Now with <strong>Smart Repository</strong>. Organizations store, manage and track their electronic documents on cloud drives or some other external resources. Now we are presenting all these facilities in one software. It has some more unique features...</p> 
 	<strong>Smart Search</strong>: You have definitely heard of Smartphones; have you heard of <strong>Smart Search</strong>?
