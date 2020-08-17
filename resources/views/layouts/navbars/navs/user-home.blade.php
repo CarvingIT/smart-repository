@@ -13,22 +13,22 @@
     </button>
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
-	<li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+	<li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
             <i class="material-icons">library_books</i> {{ __('Collections') }}
           </a>
         </li>
-        <li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+        <li class="nav-item{{ $activePage == 'features' ? ' active' : '' }}">
           <a href="/features" class="nav-link">
             <i class="material-icons">featured_play_list</i> {{ __('Features') }}
           </a>
         </li>
-        <li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+        <li class="nav-item{{ $activePage == 'faq' ? ' active' : '' }}">
           <a href="/faq" class="nav-link">
             <i class="material-icons">question_answer</i> {{ __('FAQ') }}
           </a>
         </li>
-        <li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+        <li class="nav-item{{ $activePage == 'contact' ? ' active' : '' }}">
           <a href="/contact" class="nav-link">
             <i class="material-icons">contacts</i> {{ __('Contact') }}
           </a>
@@ -43,6 +43,11 @@
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
+            @if(Auth::user()->hasRole('admin'))
+            <a class="dropdown-item" href="/admin/usermanagement">{{ __('User Management') }}</a>
+            <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Collection Management') }}</a>
+            <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
+            @endif
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a>
           </div>

@@ -1,6 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.app',['class'=> 'off-canvas-sidebar'])
 
 @section('content')
+@push('js')
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 
@@ -16,7 +17,7 @@ $(document).ready(function() {
     });
 });
 </script>
-
+@endpush
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">

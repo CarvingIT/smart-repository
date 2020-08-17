@@ -21,3 +21,8 @@ div.card-header{
 table.dataTable thead th, table.dataTable thead td{
     padding-right:20px !important;
 }
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}

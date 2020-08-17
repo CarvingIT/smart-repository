@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.app',['class'=> 'off-canvas-sidebar'])
 
 @section('content')
 <!-- Styles -->
