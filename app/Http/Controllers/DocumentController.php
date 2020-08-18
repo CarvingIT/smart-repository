@@ -67,7 +67,7 @@ class DocumentController extends Controller
 	$actual_size = $this->return_bytes($size_limit); ## Newly added line
 	$collection_id = $request->input('collection_id');
         $validator = Validator::make($request->all(), [
-	    'document' => 'required|file|max:'.$actual_size
+	    'document' => 'file|max:'.$actual_size
         ]);
 	if ($validator->fails()) {
             Session::flash('alert-danger', 'File size has been exceeded. The file size should not be more than '.$size_limit.'B.');
