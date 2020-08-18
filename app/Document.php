@@ -64,4 +64,8 @@ class Document extends Model
         return null;
     }
 
+    public function meta(){
+        return $this->hasMany('App\MetaFieldValue');
+    }
+
 }
