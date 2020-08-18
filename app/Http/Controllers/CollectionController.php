@@ -301,7 +301,7 @@ class CollectionController extends Controller
         else{
             $edit_field = \App\MetaField::find($meta_field_id);
         }
-        $meta_fields = \App\MetaField::where('collection_id', '=', $collection_id)->orderby('display_order','ASC')->get();
+        $meta_fields = $collection->meta_fields()->orderby('display_order','ASC')->get();
         return view('metainformation', ['collection'=>$collection, 
                 'edit_field'=>$edit_field, 
                 'meta_fields'=>$meta_fields,
@@ -327,11 +327,11 @@ class CollectionController extends Controller
         return $this->metaInformation($request->input('collection_id'));
     }
 
-    public function deleteMetaField($meta_field_id){
+    public function deleteMetaField($collection_id,$meta_field_id){
         $meta_field = \App\MetaField::find($meta_field_id);
         $collection_id = $meta_field->collection_id;
         $meta_field->delete();
-        return $this->metaInformation($collection_id);
+        return redirect('/collection/'.$collection_id.'/meta');
     }
 
     public function metaFiltersForm($collection_id){
