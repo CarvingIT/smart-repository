@@ -29,6 +29,15 @@ table.dataTable thead th, table.dataTable thead td{
 .filtertag{
     display:inline-block;
     border:1px #ccc solid;
-    margin-left:2%;
-    padding:2px;
+    margin-right:2%;
+    padding:5px;
+    background-color:#ccc;
+    border-radius: 10px;
+}
+.removefiltertag{
+    background-color:#ccc;
+}
+.tinyicon{
+    font-size:18px;
+    color:#f44336;
 }

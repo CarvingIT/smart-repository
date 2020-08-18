@@ -278,7 +278,8 @@ class CollectionController extends Controller
     public function setMetaFilters(Request $request){
         // set filters in session and return to the collection view 
         $params = $request->all(); 
-        $meta_filters = array();
+        $meta_filters = Session::get('meta_filters');
+        $meta_filters[$request->collection_id] = array();
         foreach($params as $k=>$v){
             if(preg_match('/^meta_field_/',$k) && !empty($v)){
                 $field_id = str_replace('meta_field_','', $k);

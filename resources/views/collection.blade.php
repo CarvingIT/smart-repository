@@ -76,8 +76,10 @@ $(document).ready(function() {
         @foreach( $all_meta_filters[$collection->id] as $m)
             <span class="filtertag">
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
-                <span class="removefilter"><a title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['field_id'] }}">X</a></span>
-            </span>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['field_id'] }}">
+                <i class="tinyicon material-icons">delete</i>
+                </a>
+                </span>
         @endforeach
         @endif
         </p>
