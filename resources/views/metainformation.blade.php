@@ -130,7 +130,7 @@ $( document ).ready(function() {
                                 <div class="ripple-container"></div>
 				</a>
                                 <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}/delete" class="btn btn-danger btn-link">
-				<i class="material-icons">close</i>
+				<i class="material-icons">delete</i>
                                 <div class="ripple-container"></div>
 				<!--img src="/i/trash.png" class="icon" /-->
 				</a>
