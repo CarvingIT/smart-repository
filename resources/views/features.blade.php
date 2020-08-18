@@ -14,7 +14,7 @@
 <h4>Optical Character Recognition</h4>
 <p>Text that appears on images/screenshots is indexed for search. The images thus become searchable through the search field just like your other documents. The team has been working on continuously improving this exciting feature.</p>
 <h4>Meta-searchable collections</h4>
-<p>This feature enables you to define your own meta tags for creating meta-searchable collections. Incase you do not remember the exact file name also, this feature enables you to search for a specific content based on the meta- tags defined. Isn’t that wonderful?</p>
+<p>This feature enables you to define your own meta tags thus enabling you in creating rich catalogs. The same tags automatically appear as filters that narrow down search of a document! We believe, this means a huge saving in your organizational time which would otherwise be spent in looking for documents. Moreover, the filters are persistent and they work with the content search making the overall search an extremely powerful feature.</p> 
 
 <h4>Collaborative Document Management</h4>
 <p>
