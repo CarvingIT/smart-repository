@@ -47,10 +47,12 @@
                         <div class="col-sm-5">{{ $document->icon($document->path) }}</div>
                     </div>
                     @foreach($document->meta as $m)
+                    @if(!empty($meta_labels[$m->meta_field_id]))
                     <div class="row">
                         <div class="col-sm-3 text-right">{{ $meta_labels[$m->meta_field_id] }}:</div>
                         <div class="col-sm-5">{{ $m->value }}</div>
                     </div>
+                    @endif
                     @endforeach
                     <div class="row">
                         <div class="col-sm-3 text-right">Download/Open:</div>
