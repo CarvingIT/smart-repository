@@ -276,6 +276,11 @@ class DocumentController extends Controller
         }
     }
 
+    public function showDetails($document_id){
+        $d = Document::find($document_id);
+        return view('document-details', ['document'=>$d]);
+    }
+
     public function return_bytes($val) {
     $val = trim($val);
     $last = strtolower($val[strlen($val)-1]);
@@ -291,7 +296,7 @@ class DocumentController extends Controller
     }
     $val = $this->isa_convert_bytes_to_specified($val,'K',0);
     return $val;
-}
+    }
 
     public function isa_convert_bytes_to_specified($bytes, $to, $decimal_places = 1) {
     $formulas = array(

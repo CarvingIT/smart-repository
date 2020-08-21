@@ -72,4 +72,8 @@ class Document extends Model
         return $this->hasMany('App\DocumentRevision');
     }
 
+    public function owner(){
+        return $this->belongsTo('App\User', 'created_by');
+    }
+
 }

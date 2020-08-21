@@ -69,6 +69,9 @@ Route::get('/document/{document_id}/delete', 'DocumentController@deleteDocument'
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
 
+// Document details (meta)
+Route::get('/document/{document_id}/details', 'DocumentController@showDetails')->middleware('document_view');
+
 // reports
 Route::get('/reports', 'ReportsController@index');
 Route::get('/reports/downloads', 'ReportsController@downloads');
