@@ -68,4 +68,8 @@ class Document extends Model
         return $this->hasMany('App\MetaFieldValue');
     }
 
+    public function revisions(){
+        return $this->hasMany('App\DocumentRevision');
+    }
+
 }

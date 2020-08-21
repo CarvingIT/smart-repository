@@ -223,10 +223,11 @@ class CollectionController extends Controller
             ->limit($request->length)->offset($request->start)->get();
         
         $results_data = array();
-	##$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
         foreach($documents as $d){
+            $revisions = $d->revisions;
+            $r_count = count($revisions)<10 ? '_'.count($revisions) : '';
             $action_icons = '';
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">view_column</i>
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">filter'.$r_count.'</i>
                                 <div class="ripple-container"></div></a>';
             if(Auth::user()){
                 if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
