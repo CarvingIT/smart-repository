@@ -8,7 +8,7 @@
 $(document).ready(function() {
     $('#documents').DataTable({
     "aoColumnDefs": [
-           { "bSortable": false, "aTargets": [0, 4]},
+           { "bSortable": false, "aTargets": [4]},
            { "className": 'text-right', "aTargets": [2,3]},
            { "className": 'td-actions text-right', "aTargets": [4]}
      ],
@@ -16,7 +16,12 @@ $(document).ready(function() {
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
     "columns":[
-       {data:"type"},
+       {data:"type",
+          render:{
+            '_':'display',
+            'sort':'filetype'
+          }
+       },
        {data:"title"},
        {data:"size",
            render:{

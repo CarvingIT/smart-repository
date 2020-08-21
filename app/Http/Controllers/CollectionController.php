@@ -225,36 +225,34 @@ class CollectionController extends Controller
         $results_data = array();
         foreach($documents as $d){
             $revisions = $d->revisions;
-            $r_count = count($revisions)<10 ? '_'.count($revisions) : '';
+            $r_count = count($revisions);
             $action_icons = '';
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="View revisions"><i class="material-icons">filter'.$r_count.'</i>
-                                <div class="ripple-container"></div></a>';
+            if($r_count > 1){
+                $filter_count = ($r_count > 9) ? '' : '_'.$r_count;
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
+            }
             if(Auth::user()){
                 if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
 			if(!empty($d->approved_on)){
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i>
-                                <div class="ripple-container"></div></a>';
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i></a>';
 			}
 			else{
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="Approve document"><i class="material-icons">close</i>
-                                <div class="ripple-container"></div></a>';
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="Approve document"><i class="material-icons">close</i></a>';
 			}
 		}
                 if(Auth::user()->canEditDocument($d->id)){
-                $action_icons .= '<a class="btn btn-success btn-link" href="/document/'.$d->id.'/edit" title="Create a new revision"><i class="material-icons">edit</i>
-                                <div class="ripple-container"></div></a>';
+                $action_icons .= '<a class="btn btn-success btn-link" href="/document/'.$d->id.'/edit" title="Create a new revision"><i class="material-icons">edit</i></a>';
                 }
                 if(Auth::user()->canDeleteDocument($d->id)){
-                $action_icons .= '<a class="btn btn-danger btn-link" href="/document/'.$d->id.'/delete" title="Delete document"><i class="material-icons">delete</i>
-                                <div class="ripple-container"></div></a>';
+                $action_icons .= '<a class="btn btn-danger btn-link" href="/document/'.$d->id.'/delete" title="Delete document"><i class="material-icons">delete</i></a>';
                 }
             }
-            $results_data[] = array('type' => '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />',
-                        'title' => '<a href="/document/'.$d->id.'" target="_new">'.$d->title.'</a>',
-                        //'size' => $d->human_filesize(),
-                        'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
-                        'updated_at' => array('display'=>date('F d, Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
-                        'actions' => $action_icons);
+            $results_data[] = array(
+                'type' => array('display'=>'<a href="/document/'.$d->id.'" target="_new"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
+                'title' => $d->title,
+                'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
+                'updated_at' => array('display'=>date('F d, Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                'actions' => $action_icons);
         }
 
         $results = array(
