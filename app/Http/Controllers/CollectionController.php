@@ -251,7 +251,7 @@ class CollectionController extends Controller
                 'type' => array('display'=>'<a href="/document/'.$d->id.'" target="_new"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
                 'title' => $d->title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
-                'updated_at' => array('display'=>date('F d, Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'actions' => $action_icons);
         }
 

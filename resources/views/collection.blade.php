@@ -9,8 +9,8 @@ $(document).ready(function() {
     $('#documents').DataTable({
     "aoColumnDefs": [
            { "bSortable": false, "aTargets": [4]},
-           { "className": 'text-right', "aTargets": [2,3]},
-           { "className": 'td-actions text-right', "aTargets": [4]}
+           { "className": 'text-right dt-nowrap', "aTargets": [2,3]},
+           { "className": 'td-actions text-right dt-nowrap', "aTargets": [4]}
      ],
     "order": [[ 3, "desc" ]],
     "serverSide":true,
