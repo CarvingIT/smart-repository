@@ -4,9 +4,12 @@
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md-9">
             <div class="card">
                 <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Set Meta Filters</h4></div>
+                <div class="col-md-12 text-right">
+                <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
+                </div>
                 <div class="card-body">
 
 <form name="metasearch_form" action="/collection/{{ $collection->id }}/metafilters" method="post">
@@ -24,11 +27,11 @@
     @endphp
     @foreach($collection->meta_fields as $f)
     <div class="form-group row">
-	<div class="col-md-4">
-    <label for="meta_field_{{$f->id}}" class="col-md-6 col-form-label text-md-left">{{$f->label}}</label>
+	<div class="col-md-3 text-right">
+    <label for="meta_field_{{$f->id}}" class="col-md-12 col-form-label">{{$f->label}}</label>
 	</div>
-        <div class="col-md-4">
-        <select class="form-control" name="operator_{{$f->id}}">
+        <div class="col-md-5">
+        <select class="selectpicker col-md-12" name="operator_{{$f->id}}">
             @if($f->type == 'Text')
             <option value="=" @if(@$meta_params['operator_'.$f->id] == "=") selected @endif>matches</option>
             <option value="contains" @if(@$meta_params['operator_'.$f->id] == "contains") selected @endif>contains</option>
@@ -70,7 +73,7 @@
     </div>
     @endforeach
 <div class="form-group row mb-0">
-    <div class="col-md-8 offset-md-4">
+    <div class="col-md-5 offset-md-4">
         <button type="submit" class="btn btn-primary">Set Filters</button>
     </div>
 </div>

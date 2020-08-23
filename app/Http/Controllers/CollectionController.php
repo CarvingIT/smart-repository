@@ -337,8 +337,10 @@ class CollectionController extends Controller
         $collection = \App\Collection::find($collection_id);
         return view('metasearch', ['collection'=>$collection, 
             'activePage'=>'Set Meta Filters',
-            'titlePage'=>'Set Meta Filters',
-            'title'=>'Set Meta Filters']);
+            //'titlePage'=>'Set Meta Filters',
+            'title'=>'Smart Repository'
+            ]
+            );
     }
     
     public function removeMetaFilter($collection_id, $field_id){

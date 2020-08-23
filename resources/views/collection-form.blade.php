@@ -4,9 +4,8 @@
 
 <link rel="stylesheet"  href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.min.css" type="text/css">
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
+@push('js')
 <script type="text/javascript">
-
 $(document).ready(function() {
         //alert("js is working");
         src = "{{ route('autocomplete') }}";
@@ -29,11 +28,11 @@ $(document).ready(function() {
         });
     });
 </script>
-
+@endpush
 
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md-9">
             <div class="card">
 		@if (empty($collection->id))
                 <div class="card-header card-header-primary"><h4 class="card-title">Add Collection</h4></div>
@@ -62,50 +61,48 @@ $(document).ready(function() {
                     <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="collection_name" class="col-md-8 col-form-label text-md-right">Name</label> 
+                   <label for="collection_name" class="col-md-12 col-form-label text-md-right">Name</label> 
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                     <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your collection a name" value="{{ $collection->name }}" required />
                     </div>
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="description" class="col-md-8 col-form-label text-md-right">Description</label> 
+                   <label for="description" class="col-md-12 col-form-label text-md-right">Description</label> 
 			</div>
-                    <div class="col-md-6">
+                    <div class="col-md-8">
                     <textarea name="description" id="description" class="form-control" value="" placeholder="Description" required >{{ $collection->description }}</textarea>
                     </div>
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="collection_type" class="col-md-8 col-form-label text-md-right">Type</label> 
-			</div>
-                    <div class="col-md-6">
-                    <input type="checkbox" id="collection_type" name="collection_type" value="Members Only" 
-                    @if($collection->type == 'Members Only')
-                     checked 
-                    @endif
-                    /> Members Only
-                    </div>
-                   </div>
-                   <div class="form-group row">
-                    <div class="col-md-4">
-                   <label for="maintainer" class="col-md-8 col-form-label text-md-right">Maintainer</label> 
-			</div>
-                    <div class="col-md-6">
+                   <label for="maintainer" class="col-md-12 col-form-label text-md-right">Maintainer</label> 
+			       </div>
+                    <div class="col-md-8">
                     <input type="text" name="maintainer" id="maintainer" class="form-control" value="@if(!empty($collection->maintainer()->email)){{$collection->maintainer()->email}}@endif" placeholder="Email ID of the maintainer">
                     </div>
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="maintainer" class="col-md-8 col-form-label text-md-right">Document Type</label> 
-			</div>
-                    <div class="col-md-6">
+         			</div>
+                    <div class="col-md-8">
+                    <input type="checkbox" id="collection_type" name="collection_type" value="Members Only" 
+                    @if($collection->type == 'Members Only')
+                     checked 
+                    @endif
+                    /> <label>Members Only</label>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                    <div class="col-md-4">
+			        </div>
+                    <div class="col-md-8">
                     <input type="checkbox" id="require_approval" name="require_approval" value="1" 
 		@if($collection->require_approval == 1)
                      checked
                     @endif
-                    /> Document becomes available after approval
+                    /> <label>Document becomes available after approval</label>
 	
                     </div>
                    </div>
