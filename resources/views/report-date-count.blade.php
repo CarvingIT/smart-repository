@@ -85,10 +85,10 @@ function generateChartData() {
             <div class="card-header card-header-primary"><h4 class="card-title"><a href="/reports" style="color:#fff;">Reports</a> :: {{ $name }} report</h4></div>
             <div class="card-body">
 		<div class="form-group row">
-		   <div class="col-md-4">
+	    <div class="col-md-4">
 		<form name="get_uploads_report" method="get" action="">
-			<select name="collection_id" class="form-control">
-			   <option value="">Select Collection</option>
+			<select name="collection_id" class="form-control selectpicker">
+			   <option value="" disabled>Select Collection</option>
 			   @foreach($collection_list as $link)
 			     <option value="{{ $link['id'] }}" @if($collection_id == $link['id']) selected @endif>{{ $link['name'] }}</option>
 			   @endforeach

@@ -25,9 +25,9 @@
                 @method('post')
                 <div class="form-group row bmd-form-group">
                   <div class="col-md-4">
-                  <label class="col-md-8 col-form-label text-md-right">{{ __('Name') }}</label>
+                  <label class="col-md-12 col-form-label text-md-right">{{ __('Name') }}</label>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-8">
                       <input class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" id="input-name" type="text" placeholder="{{ __('Name') }}" value="{{ old('name') }}" required="true" aria-required="true"/>
                       @if ($errors->has('name'))
                         <span id="name-error" class="error text-danger" for="input-name">{{ $errors->first('name') }}</span>
@@ -36,9 +36,9 @@
                 </div>
                 <div class="form-group row">
                    <div class="col-md-4">
-                  <label class="col-md-8 col-form-label text-md-right">{{ __('Email') }}</label>
+                  <label class="col-md-12 col-form-label text-md-right">{{ __('Email') }}</label>
                     </div>
-                  <div class="col-md-6">
+                  <div class="col-md-8">
                       <input class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" id="input-email" type="email" placeholder="{{ __('Email') }}" value="{{ old('email') }}" required />
                       @if ($errors->has('email'))
                         <span id="email-error" class="error text-danger" for="input-email">{{ $errors->first('email') }}</span>
@@ -47,9 +47,9 @@
                 </div>
                 <div class="form-group row">
                    <div class="col-md-4">
-                  <label class="col-md-8 col-form-label text-md-right" for="input-password">{{ __(' Password') }}</label>
+                  <label class="col-md-12 col-form-label text-md-right" for="input-password">{{ __(' Password') }}</label>
                     </div>
-                  <div class="col-md-6">
+                  <div class="col-md-8">
                       <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" input type="password" name="password" id="input-password" placeholder="{{ __('Password') }}" value="" required />
                       @if ($errors->has('password'))
                         <span id="name-error" class="error text-danger" for="input-name">{{ $errors->first('password') }}</span>
@@ -58,9 +58,9 @@
                 </div>
                 <div class="form-group row">
                   <div class="col-md-4">
-                  <label class="col-md-8 col-form-label text-md-right" for="input-password-confirmation">{{ __('Confirm Password') }}</label>
+                  <label class="col-md-12 col-form-label text-md-right" for="input-password-confirmation">{{ __('Confirm Password') }}</label>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-8">
                       <input class="form-control" name="password_confirmation" id="input-password-confirmation" type="password" placeholder="{{ __('Confirm Password') }}" value="" required />
                   </div>
                 </div>
