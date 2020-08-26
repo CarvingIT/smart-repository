@@ -67,37 +67,53 @@ $(document).ready(function()
                       </div>
                   </div>
                     <div class="row">
-                        <div class="col-md-4 text-right">Title:</div>
-                        <div class="col-md-8">{{ $document->title }}</div>
+                        <div class="col-md-12">
+                        <label for="doc-title" class="col-md-12">Title</label>
+                        <span id="doc-title" class="col-md-12">{{ $document->title }}</span>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 text-right">Size:</div>
-                        <div class="col-md-8">{{ $document->human_filesize($document->size) }}</div>
+                        <div class="col-md-12">
+                        <label for="doc-size" class="col-md-12">Size</label>
+                        <span id="doc-size" class="col-md-12">{{ $document->human_filesize($document->size) }}</span>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 text-right">Created by:</div>
-                        <div class="col-md-8">{{ $document->owner->name }}</div>
+                        <div class="col-md-12">
+                        <label for="doc-creator" class="col-md-12">Created by</label>
+                        <span id="doc-creator" class="col-md-12">{{ $document->owner->name }}</span>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 text-right">Created on:</div>
-                        <div class="col-md-8">{{ $document->updated_at }}</div>
+                        <div class="col-md-12">
+                        <label for="doc-updated" class="col-md-12">Updated</label>
+                        <span id="doc-updated" class="col-md-12">{{ $document->updated_at }}</span>
+                        </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 text-right">Type:</div>
-                        <div class="col-md-8">{{ $document->icon($document->path) }}</div>
+                        <div class="col-md-12">
+                        <label for="doc-type" class="col-md-12">Type</label>
+                        <span id="doc-type" class="col-md-12">{{ $document->type }}</span>
+                        </div>
                     </div>
                     @foreach($document->meta as $m)
                     @if(!empty($meta_labels[$m->meta_field_id]))
                         <div class="row">
-                            <div class="col-md-4 text-right">{{ $meta_labels[$m->meta_field_id] }}:</div>
-                            <div class="col-md-8">{{ $m->value }}</div>
+                            <div class="col-md-12">
+                            <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">Type</label>
+                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
+                            </div>
                         </div>
                     @endif
                     @endforeach
-                    </div>
                     <div class="row">
-                        <div class="col-md-4 text-right">Download/Open:</div>
-                        <div class="col-md-8"><a href="/document/{{$document->id}}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a></div>
+                        <div class="col-md-12">
+                        <label for="doc-download-open" class="col-md-12">Download/Open</label>
+                        <span id="doc-download-open" class="col-md-12">
+                        <a href="/document/{{$document->id}}" target="_new">
+                        <img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>
+                        </span>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 text-center"><h3>Word cloud</h3></div>
@@ -107,6 +123,7 @@ $(document).ready(function()
                         <div class="col-md-10"><div id="wordcloud"></div></div>
                         <div class="col-md-1"></div>
                     </div>
+                   </div><!-- card body ends -->
                 </div>
             </div>
         </div>
