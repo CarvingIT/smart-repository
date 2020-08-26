@@ -120,7 +120,7 @@ $(document).ready(function(){
     <div class="form-group row filter-row" id="filter-row">
         <div class="col-md-4 text-right">
             <select id="metafieldselect" class="selectpicker col-md-12" name="meta_field">
-            <option value="">Meta field</option>
+            <option value="">Select Meta field</option>
             @foreach($collection->meta_fields as $f)
             <option value="{{ $f->id }}" ourtype="{{ $f->type }}">{{ $f->label }}</option>
             @endforeach
@@ -138,6 +138,7 @@ $(document).ready(function(){
 <div class="form-group row mb-0">
     <div class="col-md-5 offset-md-4">
         <button type="submit" class="btn btn-primary">Add</button>
+        <a href="/collection/{{ $collection->id }}"><span class="btn btn-primary">Done</span></a>
     </div>
 </div>
 </form>
