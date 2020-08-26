@@ -70,7 +70,7 @@ class DocumentController extends Controller
 	    'document' => 'file|max:'.$actual_size
         ]);
 	if ($validator->fails()) {
-            Session::flash('alert-danger', 'File size has been exceeded. The file size should not be more than '.$size_limit.'B.');
+            Session::flash('alert-danger', 'File size exceeded. The file size should not be more than '.$size_limit.'B.');
             return redirect('/collection/'.$collection_id.'/upload');
         }
 ############### Filesize validation code ends
@@ -238,6 +238,7 @@ class DocumentController extends Controller
         }
         else if(preg_match('/^image\//', $d->type)){
             // try OCR
+            $d->is_ocr = 1;
             $text = utf8_encode((new TesseractOCR(storage_path('app/'.$d->path)))->run());
         }
         else if(preg_match('/^text\//', $d->type)){
@@ -278,7 +279,7 @@ class DocumentController extends Controller
 
     public function showDetails($document_id){
         $d = Document::find($document_id);
-        return view('document-details', ['document'=>$d]);
+        return view('document-details', ['document'=>$d, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
     }
 
     public function return_bytes($val) {

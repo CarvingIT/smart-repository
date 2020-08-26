@@ -65,7 +65,7 @@
         <!-- Material Dashboard DEMO methods, don't include it in your project! -->
         <!--script src="{{ asset('material') }}/demo/demo.js"></script-->
         <script src="{{ asset('material') }}/js/settings.js"></script>
-	<!--script src="/js/materialize.js" --></script> <!-- commented due to error on collection user add form for autocomplete-->
+    	<!--script src="/js/materialize.js" ></script--> 
 
         @stack('js')
     </head>
