@@ -10,6 +10,7 @@ class Curation{
         foreach($words as $w){
             // if word length is less than 4, ignore
             if(strlen($w) < 4) continue;
+            $w = strtolower($w);
             @$weights[$w]++;
         }
         return $weights;
