@@ -58,7 +58,7 @@ Route::post('/collection/{collection_id}/meta', 'CollectionController@saveMeta')
 Route::get('/collection/{collection_id}/meta/{meta_field_id}/delete', 'CollectionController@deleteMetaField')->middleware('maintainer');
 
 Route::get('/collection/{collection_id}/metafilters', 'CollectionController@metaFiltersForm');
-Route::post('/collection/{collection_id}/metafilters', 'CollectionController@setMetaFilters');
+Route::post('/collection/{collection_id}/metafilters', 'CollectionController@addMetaFilter');
 
 Route::get('/collection/{collection_id}/removefilter/{field_id}', 'CollectionController@removeMetaFilter');
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllMetaFilters');

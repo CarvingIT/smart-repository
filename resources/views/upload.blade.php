@@ -86,7 +86,7 @@
         @elseif ($f->type == 'Date')
         <input class="form-control" id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
         @else
-        <select class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
+        <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
             @php
                 $options = explode(",", $f->options);
             @endphp

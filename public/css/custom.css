@@ -41,3 +41,8 @@ table.dataTable thead th, table.dataTable thead td{
     font-size:18px;
     color:#f44336;
 }
+
+.bootstrap-select > .dropdown-toggle.bs-placeholder, .bootstrap-select > .dropdown-toggle.bs-placeholder:active, .bootstrap-select > .dropdown-toggle.bs-placeholder:focus, .bootstrap-select > .dropdown-toggle.bs-placeholder:hover
+{
+    color:#fff !important;
+}

@@ -15,7 +15,8 @@
         "laravel/tinker": "^1.0",
         "smalot/pdfparser": "^0.14.0",
         "swiftmailer/swiftmailer": "^6.0",
-        "thiagoalessio/tesseract_ocr": "^2.8"
+        "thiagoalessio/tesseract_ocr": "^2.8",
+        "webpatser/laravel-uuid": "^3.0"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

@@ -274,22 +274,19 @@ class CollectionController extends Controller
         return json_encode($results);
     }
 
-    public function setMetaFilters(Request $request){
+    public function addMetaFilter(Request $request){
         // set filters in session and return to the collection view 
-        $params = $request->all(); 
         $meta_filters = Session::get('meta_filters');
-        $meta_filters[$request->collection_id] = array();
-        foreach($params as $k=>$v){
-            if(preg_match('/^meta_field_/',$k) && !empty($v)){
-                $field_id = str_replace('meta_field_','', $k);
-                $operator = $params['operator_'.$field_id];
-                $meta_filters[$request->collection_id][] = array('field_id'=>$field_id, 
-                    'operator'=>$operator, 
-                    'value'=>$params['meta_field_'.$field_id]);
-            }
+        if(!empty($request->meta_value)){
+            $meta_filters[$request->collection_id][] = array(
+                'filter_id'=>\Uuid::generate()->string,
+                'field_id'=>$request->meta_field,
+                'operator'=>$request->operator,
+                'value'=>$request->meta_value
+            );
         }
         Session::put('meta_filters', $meta_filters);
-        return redirect('/collection/'.$request->collection_id);
+        return redirect('/collection/'.$request->collection_id.'/metafilters');
     }
     
     public function metaInformation($collection_id, $meta_field_id=null){
@@ -343,11 +340,11 @@ class CollectionController extends Controller
             );
     }
     
-    public function removeMetaFilter($collection_id, $field_id){
+    public function removeMetaFilter($collection_id, $filter_id){
         $all_meta_filters = Session::get('meta_filters');
         $new_collection_filters = array();
         foreach($all_meta_filters[$collection_id] as $mf){
-            if($mf['field_id'] == $field_id) continue;
+            if($mf['filter_id'] == $filter_id) continue;
             $new_collection_filters[] = $mf;
         }
         $all_meta_filters[$collection_id] = $new_collection_filters;
