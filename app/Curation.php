@@ -13,7 +13,7 @@ class Curation{
             $w = strtolower($w);
             @$weights[$w]++;
         }
-        return $weights;
+        return arsort($weights);
     }
 }
 
