@@ -99,6 +99,9 @@ $(document).ready(function()
                         <div class="col-md-4 text-right">Download/Open:</div>
                         <div class="col-md-8"><a href="/document/{{$document->id}}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a></div>
                     </div>
+                    <div class="row">
+                        <div class="col-md-12 text-center"><h3>Word cloud</h3></div>
+                    </div>
                     <div class="row" style="margin-top:10%;min-height:200px;"> 
                         <div class="col-md-1"></div>
                         <div class="col-md-10"><div id="wordcloud"></div></div>
