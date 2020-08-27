@@ -116,7 +116,7 @@ $(document).ready(function()
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-12 text-center"><h3>Word cloud</h3></div>
+                        <div class="col-md-12 text-center"><h3>Keywords</h3></div>
                     </div>
                     <div class="row" style="margin-top:10%;min-height:200px;"> 
                         <div class="col-md-1"></div>
