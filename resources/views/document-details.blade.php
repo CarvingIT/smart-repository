@@ -100,7 +100,7 @@ $(document).ready(function()
                     @if(!empty($meta_labels[$m->meta_field_id]))
                         <div class="row">
                             <div class="col-md-12">
-                            <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">Type</label>
+                            <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
                             </div>
                         </div>
