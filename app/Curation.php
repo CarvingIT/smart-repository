@@ -9,6 +9,7 @@ class Curation{
         $weights = array();
         $ignored = self::ignoredWords();
         foreach($words as $w){
+            $w = ltrim(rtrim($w));
             // if word length is less than 4, ignore
             if(strlen($w) < 4) continue;
             $w = strtolower($w);
@@ -21,7 +22,9 @@ class Curation{
     
     private static function ignoredWords(){
         $ignored_words = array(
-            'this','that','with','also','they','their','from', 'which','thus', 'shall', 'than'
+            'this','that','with','also','they','their','from', 'which','thus', 'shall', 'than', 'will','shall',
+            'well','like', 'many','most','some', 'were', 'where', 'when', 'what', 'only', 'both', 'each', 'other',
+            'should','would'
         );
         return $ignored_words;
     }
