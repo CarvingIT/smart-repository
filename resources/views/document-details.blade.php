@@ -54,7 +54,7 @@ $(document).ready(function()
     }
 @endphp
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md-9">
             <div class="card">
                 <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $c->id }}">{{$c->name}}</a> :: {{ $document->title }}</h4></div>
                 <div class="card-body">
