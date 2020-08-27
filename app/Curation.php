@@ -24,7 +24,8 @@ class Curation{
         $ignored_words = array(
             'this','that','with','also','they','their','from', 'which','thus', 'shall', 'than', 'will','shall',
             'well','like', 'many','most','some', 'were', 'where', 'when', 'what', 'only', 'both', 'each', 'other',
-            'should','would','such','must','less','least','either','full','into', 'there', 'very','could','your'
+            'should','would','such','must','less','least','either','full','into', 'there', 'very','could','your', 
+            'them', 'been', 'more'
         );
         return $ignored_words;
     }
