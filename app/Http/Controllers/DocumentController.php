@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Document;
+use App\DocumentRevision;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use thiagoalessio\TesseractOCR\TesseractOCR;
@@ -280,6 +281,15 @@ class DocumentController extends Controller
     public function showDetails($document_id){
         $d = Document::find($document_id);
         return view('document-details', ['document'=>$d, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
+    }
+
+    public function showRevisionDiff($document_id, $rev1_id, $rev2_id){
+        $d = Document::find($document_id);
+        $rev1 = DocumentRevision::find($rev1_id);
+        $rev2 = DocumentRevision::find($rev2_id);
+        return view('revision-diff', 
+            ['document'=>$d, 'rev1'=>$rev1, 'rev2'=>$rev2,
+            'activePage'=>'Diff in Revisions']);
     }
 
     public function return_bytes($val) {

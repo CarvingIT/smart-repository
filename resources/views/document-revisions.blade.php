@@ -1,19 +1,21 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar'])
 
 @section('content')
-<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+@push('js')
+<script src="/js/jquery-3.3.1.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
 <script>
 $(document).ready(function() {
     $('#revisions').DataTable({
     "order": [[ 1, "desc" ]],
     "columnDefs":[
-        {"targets":[1,3], "className":'dt-right'},
-        {"targets":[0], "bSortable":false}
+        {"targets":[1,3,4], "className":'dt-right'},
+        {"targets":[0,1,2,3,4], "bSortable":false}
     ]
     });
 } );
 </script>
+@endpush
 
 <div class="container">
 <div class="container-fluid">
@@ -35,10 +37,17 @@ $(document).ready(function() {
                             <th>Created</th>
                             <th>Created By</th>
                             <th>Size</th>
+                            <th>Changes</th>
                             </tr>
                         </thead>
                         <tbody>
+                    @php
+                        $i=0;
+                    @endphp
                     @foreach($document_revisions as $dr)
+                        @php
+                        $i++;
+                        @endphp
                     <tr>
                         <td><img class="file-icon" src="/i/file-types/{{ ($dr->document)->icon($dr->path) }}.png" /></td>
                         <td data-order="{{ $dr->created_at }}">
@@ -46,6 +55,13 @@ $(document).ready(function() {
                         </td>
                         <td>{{ ($dr->user)->email }}</td>
                         <td data-order="{{$dr->size}}">{{ ($dr->document)->human_filesize($dr->size) }}</td>
+                        <td>
+                            @if(count($document_revisions) != $i)
+                            <a href="/document/{{ $document_revisions[0]->document->id }}/revision-diff/{{ $document_revisions[$i]->id }}/{{ $dr->id }}">
+                            <i rev-id="{{$dr->id}}" class="loaddiff material-icons">compare</i>
+                            </a>
+                            @endif
+                        </td>
                     </tr>
                     @endforeach
                         </tbody>

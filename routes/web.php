@@ -71,6 +71,8 @@ Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision'
 
 // Document details (meta)
 Route::get('/document/{document_id}/details', 'DocumentController@showDetails')->middleware('document_view');
+// See Diff in revisions
+Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
 
 // reports
 Route::get('/reports', 'ReportsController@index');
