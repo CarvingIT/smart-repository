@@ -1,4 +1,4 @@
-@extends('layouts.app',['class'=> 'off-canvas-sidebar'])
+@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'title'=>'Document Revisions'])
 
 @section('content')
 
