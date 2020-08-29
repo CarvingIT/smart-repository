@@ -8,7 +8,7 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">Showing diffrece in revisions of  "{{ $document->title }}"</h4></div>
+                <h4 class="card-title">Showing difference in revisions of  "{{ $document->title }}"</h4></div>
                  <div class="card-body">
 			<div class="row">
                   <div class="col-md-12 text-right">
