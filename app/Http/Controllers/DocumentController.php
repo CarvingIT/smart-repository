@@ -235,7 +235,8 @@ class DocumentController extends Controller
             $parser = new \Smalot\PdfParser\Parser();
             $pdf = $parser->parseFile(storage_path('app/'.$d->path));
             $text = $pdf->getText();
-            $text = str_replace(array('&', '%', '$', "\n"), ' ', $text);
+            //$text = str_replace(array('&', '%', '$', "\n"), ' ', $text);
+            $text = str_replace(array('&', '%', '$'), ' ', $text);
         }
         else if(preg_match('/^image\//', $d->type)){
             // try OCR

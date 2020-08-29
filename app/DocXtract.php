@@ -19,7 +19,7 @@ class DocXtract{
             if (($pos !== FALSE)||(strlen($thisline)==0))
               {
               } else {
-                $outtext .= $thisline." ";
+                $outtext .= $thisline."\n";
               }
           }
          $outtext = preg_replace("/[^a-zA-Z0-9\s\,\.\-\n\r\t@\/\_\(\)]/","",$outtext);
