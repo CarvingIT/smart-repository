@@ -222,6 +222,32 @@ class CollectionController extends Controller
             $documents = $documents_filtered->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
             ->limit($request->length)->offset($request->start)->get();
         
+        // log search query
+        $search_log_data = array('collection_id'=> $request->collection_id, 
+                'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
+                'search_query'=> $request->search['value'], 
+                'meta_query'=>'',
+                'results'=>$filtered_count);
+        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
+            $this->logSearchQuery($search_log_data);
+        }
+
+        $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
+        $results= array(
+            'data'=>$results_data,
+            'draw'=>(int) $request->draw,
+            'recordsTotal'=> $total_documents,
+            'recordsFiltered' => $filtered_count,
+            'error'=> '',
+        );
+        return json_encode($results);
+    }
+
+    private function datatableFormatResults($data){
+        $documents = $data['documents'];
+        $request = $data['request'];
+        $has_approval = $data['has_approval'];
+
         $results_data = array();
         foreach($documents as $d){
             $revisions = $d->revisions;
@@ -254,24 +280,8 @@ class CollectionController extends Controller
                 'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'actions' => $action_icons);
         }
+        return $results_data;
 
-        $results = array(
-            'data'=>$results_data,
-            'draw'=>(int) $request->draw,
-            'recordsTotal'=> $total_documents,
-            'recordsFiltered' => $filtered_count,
-            'error'=> '',
-        );
-        // log search query
-        $search_log_data = array('collection_id'=> $request->collection_id, 
-                'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
-                'search_query'=> $request->search['value'], 
-                'meta_query'=>'',
-                'results'=>$filtered_count);
-        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-            $this->logSearchQuery($search_log_data);
-        }
-        return json_encode($results);
     }
 
     public function addMetaFilter(Request $request){
