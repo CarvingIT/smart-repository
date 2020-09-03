@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
+use Elasticsearch\ClientBuilder;
 
 class CollectionController extends Controller
 {
@@ -192,29 +193,96 @@ class CollectionController extends Controller
         return $documents;
     }
 
+    // wrapper function for search
     public function search(Request $request){
-	$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
+        if(!empty(env('SEARCH_MODE')) && env('SEARCH_MODE') == 'elastic'){
+            return $this->searchElastic($request);
+        }
+        else{
+            return $this->searchDB($request); 
+        }
+    }
+
+    // elastic search
+    public function searchElastic($request){
+        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+        $hosts = explode(",",$elastic_hosts);
+        $client = ClientBuilder::create()->setHosts($hosts)->build();
+    
+        $params = array();
+        /*
+        $params = [
+            'index' => 'sr_documents',
+            'body'  => [
+                'query' => [
+                    'bool'=>[
+                        'filter' => [
+                            'term'=> ['collection_id' => $request->collection_id]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+        */
+
+        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
+            $params['body']['query']['bool']['must']['match']['text_content'] = $request->search['value'];
+        }
         $columns = array('type', 'title', 'size', 'updated_at');
-    if(Auth::user()){ // and has permission APPROVE on this collection!!!
+        $documents = \App\Document::where('collection_id', $request->collection_id);
+
+        if(!empty($params)){
+            $response = $client->search($params);
+            $document_ids = array();
+            foreach($response['hits']['hits'] as $h){
+                $document_ids[] = $h['_id'];
+            }
+            $documents = $documents->whereIn('id', $document_ids);
+        }
+        $documents = $documents->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
+             ->limit($request->length)->offset($request->start);
+
+	    $has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
+        $total_count = \App\Document::where('collection_id', $request->collection_id)->count();
+        $results_data = $this->datatableFormatResults(
+                array('request'=>$request, 'documents'=>$documents->get(), 'has_approval'=>$has_approval)
+        );
+        $results= array(
+            'data'=>$results_data,
+            'draw'=>(int) $request->draw,
+            'recordsTotal'=> $total_count,
+            'recordsFiltered' => $documents->count(),
+            'error'=> '',
+        );
+        return json_encode($results);
+    }
+
+    // db search (default)
+    public function searchDB($request){
+        // if approval is involved, get list of documents based on permissions of the logged in user
+	    $has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
+        $columns = array('type', 'title', 'size', 'updated_at');
+        if(Auth::user()){ // and has permission APPROVE on this collection!!!
         	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
-	}
-	else{
-		if($has_approval->isEmpty()){
-        	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
-		}
-		else{
-        	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id)->whereNotNull('approved_on');
-		}
-	}
-        $total_documents = $documents_filtered->count(); // total number of viewable records
+	    }
+	    else{
+		    if($has_approval->isEmpty()){
+        	    $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
+		    }
+		    else{
+        	    $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id)->whereNotNull('approved_on');
+		    }
+	    }
+        // total number of viewable records
+        $total_documents = $documents_filtered->count(); 
+
         // get Meta filtered documents
         $all_meta_filters = Session::get('meta_filters');
         if(!empty($all_meta_filters[$request->collection_id])){
             $documents_filtered = $this->getMetaFilteredDocuments($request, $documents_filtered);
         }
-        // and take intersection with $documents filtered
-        // to get a new set of "documents_filtered
 
+        // content search
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $documents_filtered = $documents_filtered->search($request->search['value']);
         }
@@ -222,6 +290,15 @@ class CollectionController extends Controller
             $documents = $documents_filtered->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
             ->limit($request->length)->offset($request->start)->get();
         
+        $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
+        $results= array(
+            'data'=>$results_data,
+            'draw'=>(int) $request->draw,
+            'recordsTotal'=> $total_documents,
+            'recordsFiltered' => $filtered_count,
+            'error'=> '',
+        );
+
         // log search query
         $search_log_data = array('collection_id'=> $request->collection_id, 
                 'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
@@ -232,14 +309,6 @@ class CollectionController extends Controller
             $this->logSearchQuery($search_log_data);
         }
 
-        $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
-        $results= array(
-            'data'=>$results_data,
-            'draw'=>(int) $request->draw,
-            'recordsTotal'=> $total_documents,
-            'recordsFiltered' => $filtered_count,
-            'error'=> '',
-        );
         return json_encode($results);
     }
 
