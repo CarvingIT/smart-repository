@@ -226,7 +226,16 @@ class CollectionController extends Controller
         */
 
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-            $params['body']['query']['bool']['must']['match']['text_content'] = $request->search['value'];
+            $search_term = $request->search['value'];
+            $words = explode(' ',$search_term);
+            /*
+            $params['body']['query']['simple_query_string']['fields'] = ['text_content','title'];
+            $params['body']['query']['simple_query_string']['query'] = $search_term;
+            */
+            foreach($words as $w){
+                $params['body']['query']['bool']['must'][]['wildcard']['text_content']=$w.'*';
+            }
+            $params['body']['query']['bool']['filter']['term']['collection_id']=$request->collection_id;
         }
         $columns = array('type', 'title', 'size', 'updated_at');
         $documents = \App\Document::where('collection_id', $request->collection_id);
@@ -238,6 +247,11 @@ class CollectionController extends Controller
                 $document_ids[] = $h['_id'];
             }
             $documents = $documents->whereIn('id', $document_ids);
+        }
+        // get Meta filtered documents
+        $all_meta_filters = Session::get('meta_filters');
+        if(!empty($all_meta_filters[$request->collection_id])){
+            $documents = $this->getMetaFilteredDocuments($request, $documents);
         }
         $documents = $documents->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
              ->limit($request->length)->offset($request->start);
