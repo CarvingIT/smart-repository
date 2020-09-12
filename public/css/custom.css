@@ -64,3 +64,7 @@ table.dataTable thead th, table.dataTable thead td{
     border: 1px solid rgb(255,192,192);
     background: rgb(255,224,224);
 }
+#wordcloud{
+    margin:10%;
+    padding:15% 5%;
+}

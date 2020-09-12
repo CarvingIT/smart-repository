@@ -1,4 +1,4 @@
-@extends('layouts.app', ['class' => 'off-canvas-sidebar','activePage' => 'home', 'title' => __('Smart Repository'), 'titlePage' => 'Collections'])
+@extends('layouts.app', ['class' => 'off-canvas-sidebar','activePage' => 'home', 'title' => __('DEMO SITE'), 'titlePage' => 'Collections'])
 
 @section('content')
 <div class="container">
@@ -9,7 +9,7 @@
 <div class="card-header card-header-primary"><h4 class="card-title">Smart Repository</h4></div>
 <div class="card-body">
     <img class="img-responsive" style="float:left;" src="/i/wordcloud.png" />
-    <h3>Welcome to Smart Repository!</h3>
+    <h3>Welcome to the demo site!</h3>
 <p>Smart Repository is designed to be an <strong>Institutional Knowledge Repository</strong>. This tool has powerful features like Collaborative management, Cataloging of electronic content, Custom meta fields and filters, Full-text search (search through the documents), Optical Character Recognition (OCR), Tracking of Revisions and strong Permission Control. 
 </p>
 	<strong>Smart Search</strong>: You have definitely heard of Smartphones; have you heard of <strong>Smart Search</strong>?

@@ -28,7 +28,8 @@ $(document).ready(function()
             $(this).css("text-decoration","none");
         },
         word_click: function(){
-            alert("Edit feature coming soon! You would like to edit the word: " +$(this).text());
+            //alert("Edit feature coming soon! You would like to edit the word: " +$(this).text());
+            alert("Feature coming soon!");
         },
         beforeCloudRender: function(){
                date1=new Date();
@@ -54,9 +55,9 @@ $(document).ready(function()
     }
 @endphp
     <div class="row justify-content-center">
-        <div class="col-md-9">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $c->id }}">{{$c->name}}</a> :: {{ $document->title }}</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $c->id }}">{{$c->name}}</a> :: Document Details</h4></div>
                 <div class="card-body">
 
                   <div class="row">
@@ -66,63 +67,48 @@ $(document).ready(function()
                         </a>
                       </div>
                   </div>
-                    <div class="row">
+
+                  <div class="row">
+                    <div class="col-md-9">
                         <div class="col-md-12">
-                        <label for="doc-title" class="col-md-12">Title</label>
-                        <span id="doc-title" class="col-md-12">{{ $document->title }}</span>
+                        <span id="doc-title" class="col-md-12"><h4>{{ $document->title }}</h4></span>
                         </div>
+                        <div class="col-md-12"><div id="wordcloud"></div></div>
                     </div>
-                    <div class="row">
+                    <div class="col-md-3">
                         <div class="col-md-12">
-                        <label for="doc-size" class="col-md-12">Size</label>
-                        <span id="doc-size" class="col-md-12">{{ $document->human_filesize($document->size) }}</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                        <label for="doc-creator" class="col-md-12">Created by</label>
-                        <span id="doc-creator" class="col-md-12">{{ $document->owner->name }}</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                        <label for="doc-updated" class="col-md-12">Updated</label>
-                        <span id="doc-updated" class="col-md-12">{{ $document->updated_at }}</span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                        <label for="doc-type" class="col-md-12">Type</label>
-                        <span id="doc-type" class="col-md-12">{{ $document->type }}</span>
-                        </div>
-                    </div>
-                    @foreach($document->meta as $m)
-                    @if(!empty($meta_labels[$m->meta_field_id]))
-                        <div class="row">
-                            <div class="col-md-12">
-                            <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
-                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
-                            </div>
-                        </div>
-                    @endif
-                    @endforeach
-                    <div class="row">
-                        <div class="col-md-12">
-                        <label for="doc-download-open" class="col-md-12">Download/Open</label>
                         <span id="doc-download-open" class="col-md-12">
                         <a href="/document/{{$document->id}}" target="_new">
                         <img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>
                         </span>
                         </div>
+                        <div class="col-md-12">
+                        <label for="doc-size" class="col-md-12">Size</label>
+                        <span id="doc-size" class="col-md-12">{{ $document->human_filesize($document->size) }}</span>
+                        </div>
+                        <div class="col-md-12">
+                        <label for="doc-creator" class="col-md-12">Created by</label>
+                        <span id="doc-creator" class="col-md-12">{{ $document->owner->name }}</span>
+                        </div>
+                        <div class="col-md-12">
+                        <label for="doc-updated" class="col-md-12">Updated</label>
+                        <span id="doc-updated" class="col-md-12">{{ $document->updated_at }}</span>
+                        </div>
+                        <div class="col-md-12">
+                        <label for="doc-type" class="col-md-12">Type</label>
+                        <span id="doc-type" class="col-md-12">{{ $document->type }}</span>
+                        </div>
+                        @foreach($document->meta as $m)
+                        @if(!empty($meta_labels[$m->meta_field_id]))
+                            <div class="col-md-12">
+                            <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
+                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
+                            </div>
+                        @endif
+                        @endforeach
                     </div>
-                    <div class="row">
-                        <div class="col-md-12 text-center"><h3>Keywords</h3></div>
-                    </div>
-                    <div class="row" style="margin-top:10%;min-height:200px;"> 
-                        <div class="col-md-1"></div>
-                        <div class="col-md-10"><div id="wordcloud"></div></div>
-                        <div class="col-md-1"></div>
-                    </div>
+                  </div>
+
                    </div><!-- card body ends -->
                 </div>
             </div>
