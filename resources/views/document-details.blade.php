@@ -71,7 +71,8 @@ $(document).ready(function()
                   <div class="row">
                     <div class="col-md-9">
                         <div class="col-md-12">
-                        <span id="doc-title" class="col-md-12"><h4>{{ $document->title }}</h4></span>
+                        <span id="doc-title" class="col-md-12"><h4>
+                        <a href="/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a></h4></span>
                         </div>
                         <div class="col-md-12"><div id="wordcloud"></div></div>
                     </div>
