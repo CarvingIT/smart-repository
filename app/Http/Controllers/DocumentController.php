@@ -138,6 +138,12 @@ class DocumentController extends Controller
             // also update the text_content of the document
             $d->text_content = $d->text_content . $meta_string;
 
+### Code to edit title of documen starts
+	     if(!empty($request->title)){
+		$d->title = $request->title;
+	     }
+### Code to edit title of documen ends
+
             try{
                 $d->save();
                 Session::flash('alert-success', 'Document uploaded successfully!');
