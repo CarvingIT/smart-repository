@@ -97,7 +97,7 @@ $( document ).ready(function() {
                    <label for="display_order" class="col-md-12 col-form-label text-md-right">Display Order</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="text" name="display_order" id="display_order" class="form-control" placeholder="A number" value="{{ $edit_field->display_order}}" />
+                    <input type="text" name="display_order" id="display_order" class="form-control" placeholder="A number" value="{{ $edit_field->display_order}}" required />
                     </div>
                    </div>
                 
