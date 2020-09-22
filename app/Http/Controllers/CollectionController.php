@@ -9,6 +9,7 @@ use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Elasticsearch\ClientBuilder;
+use App\StorageTypes;
 
 class CollectionController extends Controller
 {
@@ -29,7 +30,9 @@ class CollectionController extends Controller
         else{
             $collection = \App\Collection::find($collection_id);
         }
-        return view('collection-form', ['collection'=>$collection,'activePage'=>'Collection', 'titlePage'=>'Collection']);
+	#$storage_types = StorageTypes::all();
+	$storage_disks =  config('filesystems.disks');
+        return view('collection-form', ['collection'=>$collection,'storage_disks'=>$storage_disks,'activePage'=>'Collection', 'titlePage'=>'Collection']);
     }
 
     public function list(){
@@ -59,7 +62,7 @@ class CollectionController extends Controller
          $c->name = $request->input('collection_name');
          $c->description = $request->input('description');
          $c->type = empty($request->input('collection_type'))?'Public':$request->input('collection_type');
-         $c->description = $request->input('description');
+         $c->storage_drive = $request->input('storage_drive');
          $c->require_approval = $request->input('require_approval');
          $c->user_id = Auth::user()->id;
          try{

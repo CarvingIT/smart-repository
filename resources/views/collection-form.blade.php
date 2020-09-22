@@ -77,6 +77,19 @@ $(document).ready(function() {
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
+                   <label for="storage_disks" class="col-md-12 col-form-label text-md-right">Storage Drive</label> 
+                    </div>
+                    <div class="col-md-8">
+			<select name="storage_drive" class="selectpicker">
+		// Storage Disks
+				@foreach($storage_disks as $disk => $type)
+					<option value="{{ $disk }}" @if($collection->storage_drive == $disk) selected @endif>{{ $disk }}</option>
+				@endforeach
+			</select>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                    <div class="col-md-4">
                    <label for="maintainer" class="col-md-12 col-form-label text-md-right">Maintainer</label> 
 			       </div>
                     <div class="col-md-8">
