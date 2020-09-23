@@ -63,6 +63,17 @@ return [
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
         ],
+	
+	'sftp' => [
+    		'driver' => 'sftp',
+    		'host' => '162.241.149.43',
+    		'port' => 22,
+    		'username' => 'shraddha',
+    		'password' => 'Shraddha123!',
+    		'privateKey' => '',
+    		'root' => '/home/shraddha/CITPL_SR',
+    		'timeout' => 100,
+	],
 
     ],
 

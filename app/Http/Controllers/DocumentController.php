@@ -82,10 +82,20 @@ class DocumentController extends Controller
         else{
             $d = new Document;
         }
+
+        $collection = \App\Collection::find($collection_id);
+	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
+
 	if($request->hasFile('document')){
 		$filename = $request->file('document')->getClientOriginalName();
             	$new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
+	
+		### Saved on chosen collection storage drive.
+		$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename, $storage_drive);
+
+		### Saved locally for text extraction
 		$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename);
+
 		$filesize = $request->file('document')->getClientSize();
 		$mimetype = $request->file('document')->getMimeType();
 
