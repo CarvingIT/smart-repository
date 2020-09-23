@@ -66,7 +66,7 @@ class CrawlHandler extends CrawlObserver{
 			fwrite($fh, $content);
 			fclose($fh);
 			$text = $this->extractText($tmp_path, $mime_type);
-			//unlink($tmp_path);
+			unlink($tmp_path);
 			return $text;
 		}
 		return ''; // default; if $ext is empty 
