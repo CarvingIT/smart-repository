@@ -17,7 +17,7 @@ class Urls extends Migration
             $table->bigIncrements('id');
             $table->integer('collection_id')->unsigned();
             $table->string('title')->nullable();
-            $table->string('url');
+            $table->string('url')->unique();
             $table->string('type');
             $table->longText('text_content')->nullable();
 	    $table->binary('browsershot')->nullable();
