@@ -31,6 +31,7 @@ class CrawlHandler extends CrawlObserver{
 			$url_model->type = $mime_type;
 			$url_model->text_content = $this->getText($mime_type, $content);
 			$url_model->title = $this->getTitle($mime_type, $content);
+			$url_model->size = strlen($content);
 			$url_model->save();
 		}
    }

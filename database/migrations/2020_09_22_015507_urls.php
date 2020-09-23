@@ -18,6 +18,7 @@ class Urls extends Migration
             $table->integer('collection_id')->unsigned();
             $table->string('title')->nullable();
             $table->string('url')->unique();
+	    $table->bigInteger('size')->nullable();
             $table->string('type');
             $table->longText('text_content')->nullable();
 	    $table->binary('browsershot')->nullable();
@@ -30,7 +31,7 @@ class Urls extends Migration
         });
 
        // Full Text Index
-       DB::statement('ALTER TABLE documents ADD FULLTEXT fulltext_index_urls (title, text_content)');
+       DB::statement('ALTER TABLE urls ADD FULLTEXT fulltext_index (title, text_content)');
     }
 
     /**

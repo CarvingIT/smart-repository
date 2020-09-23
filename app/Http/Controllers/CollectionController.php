@@ -259,8 +259,8 @@ class CollectionController extends Controller
 	    $has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
         $total_count = \App\Document::where('collection_id', $request->collection_id)->count();
         $results_data = $this->datatableFormatResults(
-                array('request'=>$request, 'documents'=>$documents->get(), 'has_approval'=>$has_approval)
-        );
+               array('request'=>$request, 'documents'=>$documents->get(), 'has_approval'=>$has_approval)
+       	);
         $results= array(
             'data'=>$results_data,
             'draw'=>(int) $request->draw,
@@ -273,10 +273,12 @@ class CollectionController extends Controller
 
     // db search (default)
     public function searchDB($request){
-        // if approval is involved, get list of documents based on permissions of the logged in user
-	    $has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
+	$collection = \App\Collection::find($request->collection_id);
         $columns = array('type', 'title', 'size', 'updated_at');
-        if(Auth::user()){ // and has permission APPROVE on this collection!!!
+	$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
+	if($collection->content_type == 'Uploaded documents'){
+        // if approval is involved, get list of documents based on permissions of the logged in user
+            if(Auth::user()){ // and has permission APPROVE on this collection!!!
         	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
 	    }
 	    else{
@@ -287,6 +289,10 @@ class CollectionController extends Controller
         	    $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id)->whereNotNull('approved_on');
 		    }
 	    }
+	}
+	else if($collection->content_type == 'Web resources'){
+        	$documents_filtered = \App\Url::where('collection_id','=',$request->collection_id);
+	}
         // total number of viewable records
         $total_documents = $documents_filtered->count(); 
 
@@ -331,11 +337,14 @@ class CollectionController extends Controller
         $request = $data['request'];
         $has_approval = $data['has_approval'];
 
+	$collection = \App\Collection::find($request->collection_id);
+
         $results_data = array();
         foreach($documents as $d){
+            $action_icons = '';
+	    if($collection->content_type == 'Uploaded documents'){
             $revisions = $d->revisions;
             $r_count = count($revisions);
-            $action_icons = '';
             if($r_count > 1){
                 $filter_count = ($r_count > 9) ? '' : '_'.$r_count;
                 $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
@@ -356,6 +365,7 @@ class CollectionController extends Controller
                 $action_icons .= '<a class="btn btn-danger btn-link" href="/document/'.$d->id.'/delete" title="Delete document"><i class="material-icons">delete</i></a>';
                 }
             }
+	    } // if collection's content-type == Uploaded documents
             $results_data[] = array(
                 'type' => array('display'=>'<a href="/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
                 'title' => $d->title,
@@ -364,7 +374,6 @@ class CollectionController extends Controller
                 'actions' => $action_icons);
         }
         return $results_data;
-
     }
 
     public function addMetaFilter(Request $request){
