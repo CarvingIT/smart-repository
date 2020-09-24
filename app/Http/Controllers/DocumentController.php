@@ -10,8 +10,11 @@ use Illuminate\Support\Facades\Validator;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use Session;
 
+
+
 class DocumentController extends Controller
 {
+
     public function loadDocument($document_id){
         $doc = \App\Document::find($document_id);
         $ext = pathinfo($doc->path, PATHINFO_EXTENSION);
@@ -20,7 +23,34 @@ class DocumentController extends Controller
         if(in_array($ext, $open_in_browser_types)){
             return response()->download(storage_path('app/'.$doc->path), null, [], null);
         }
-        return response()->download(storage_path('app/'.$doc->path));
+        #return response()->download(storage_path('app/'.$doc->path));
+
+	## New code
+	$exists = Storage::disk('sftp')->exists($doc->path);
+	try{
+        	$file_url = $doc->path;
+		$file_name  = $doc->path;//"VoteMix-Event-Entry-Ticket.pdf";
+
+		$mime = Storage::disk('sftp')->getDriver()->getMimetype($file_url);
+		$size = Storage::disk('sftp')->getDriver()->getSize($file_url);
+
+    		$response =  [
+      		'Content-Type' => $mime,
+      		'Content-Length' => $size,
+      		'Content-Description' => 'File Transfer',
+      		'Content-Disposition' => "attachment; filename={$file_name}",
+      		'Content-Transfer-Encoding' => 'binary',
+    		];
+
+    		ob_end_clean();
+
+    		return \Response::make(Storage::disk('sftp')->get($file_url), 200, $response);
+	}
+	catch(Exception $e){
+  		return $this->respondInternalError( $e->getMessage(), 'object', 500);
+	}
+
+	## New code ends
     }
     
     public function recordHit($document_id){
@@ -94,7 +124,7 @@ class DocumentController extends Controller
 		$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename, $storage_drive);
 
 		### Saved locally for text extraction
-		$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename);
+		$local_filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename);
 
 		$filesize = $request->file('document')->getClientSize();
 		$mimetype = $request->file('document')->getMimeType();
@@ -113,7 +143,13 @@ class DocumentController extends Controller
             	$d->path = $filepath;
 
             	try{
-			    $d->text_content = utf8_encode($this->extractText($d));
+			    #$d->text_content = utf8_encode($this->extractText($d));
+			    $d->text_content = utf8_encode($this->extractText($local_filepath, $mimetype));
+			    ### Delete the file if the storage drive is other than local drive.
+			    ### Command to delete / unlink the file locally.
+			    if($storage_drive != 'local'){
+			    Storage::delete($local_filepath);
+			    }
             	}
             	catch(\Exception $e){
                		\Log::error($e->getMessage());
@@ -183,7 +219,8 @@ class DocumentController extends Controller
 		$d->type = $mimetype;
         $d->path = 'smartarchive_assets/'.$collection_id.'/0/'.$new_filename;
         try{
-            $d->text_content = utf8_encode($dc->extractText($d));
+            #$d->text_content = utf8_encode($dc->extractText($d));
+            $d->text_content = utf8_encode($dc->extractText($d->path,$mimetype));
         }
         catch(\Exception $e){
             echo $e->getMessage();
@@ -245,25 +282,25 @@ class DocumentController extends Controller
         return response()->download(storage_path('app/'.$doc->path));
     }
 
-    public function extractText($d){
+    public function extractText($filepath, $mimetype){
         $text = '';
-        if($d->type == 'application/pdf'){
+        if($mimetype == 'application/pdf'){
             $parser = new \Smalot\PdfParser\Parser();
-            $pdf = $parser->parseFile(storage_path('app/'.$d->path));
+            $pdf = $parser->parseFile(storage_path('app/'.$filepath));
             $text = $pdf->getText();
             //$text = str_replace(array('&', '%', '$', "\n"), ' ', $text);
             $text = str_replace(array('&', '%', '$'), ' ', $text);
         }
-        else if(preg_match('/^image\//', $d->type)){
+        else if(preg_match('/^image\//', $mimetype)){
             // try OCR
             $d->is_ocr = 1;
-            $text = utf8_encode((new TesseractOCR(storage_path('app/'.$d->path)))->run());
+            $text = utf8_encode((new TesseractOCR(storage_path('app/'.$filepath)))->run());
         }
-        else if(preg_match('/^text\//', $d->type)){
-            $text = file_get_contents(storage_path('app/'.$d->path));
+        else if(preg_match('/^text\//', $mimetype)){
+            $text = file_get_contents(storage_path('app/'.$filepath));
         }
         else{ // for doc, docx, ppt, pptx, xls, xlsx
-	        $doc = new \App\DocXtract(storage_path('app/'.$d->path));
+	        $doc = new \App\DocXtract(storage_path('app/'.$filepath));
 		    $text = $doc->convertToText();
         }
         return $text;
