@@ -285,8 +285,14 @@ class DocumentController extends Controller
         }
     }
 
-    public function showDetails($document_id){
-        $d = Document::find($document_id);
+    public function showDetails($collection_id, $document_id){
+	$c = \App\Collection::find($collection_id);
+	if($c->content_type == 'Web resources'){
+		$d = \App\Url::find($document_id);
+	}
+	else {
+        	$d = Document::find($document_id);
+	}
         return view('document-details', ['document'=>$d, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
     }
 
