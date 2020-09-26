@@ -16,6 +16,12 @@ class CollectionContentType extends Migration
 	Schema::table('collections', function (Blueprint $table) {
   	  $table->enum('content_type', ['Uploaded documents', 'Web resources'])->default('Uploaded documents');
 	});
+	// new table for storing top domain names to be spidered
+        Schema::create('spidered_domains', function(Blueprint $table){
+            $table->bigIncrements('id');
+            $table->bigInteger('collection_id')->unsigned();
+	    $table->string('web_address');
+	});
     }
 
     /**
@@ -28,5 +34,7 @@ class CollectionContentType extends Migration
 	Schema::table('collections', function (Blueprint $table) {
     	$table->dropColumn('content_type');
 	});
+
+	Schema::dropIfExists('spidered_domains');
     }
 }

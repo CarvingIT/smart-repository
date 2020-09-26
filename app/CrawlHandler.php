@@ -7,9 +7,10 @@ use Psr\Http\Message\UriInterface;
 use App\Url;
 
 class CrawlHandler extends CrawlObserver{
+   var $collection_id = null;
 
    public function willCrawl(UriInterface $url) {
-	//echo "Starting crawling $url\n";
+	echo "Starting crawling $url\n";
    }
 
    public function crawled(UriInterface $url, ResponseInterface $response, ?UriInterface $foundOnUrl = null){
@@ -25,14 +26,21 @@ class CrawlHandler extends CrawlObserver{
 			$headers = $response->getHeaders();
 			$content_type_ar = explode(";",$headers['Content-Type'][0]);
 			$mime_type = $content_type_ar[0];
-			$url_model = new Url;
-			$url_model->collection_id = 1; // this should be dynamic
-			$url_model->url = (string)$url;
+			$url = (string)$url;
+			$url_query = Url::where('collection_id', $this->collection_id)->where('url',$url);
+			$url_model = ($url_query->count() == 1) ? $url_query->first() : new Url;
+			$url_model->collection_id = $this->collection_id; 
+			$url_model->url = $url;
 			$url_model->type = $mime_type;
 			$url_model->text_content = $this->getText($mime_type, $content);
 			$url_model->title = $this->getTitle($mime_type, $content);
 			$url_model->size = strlen($content);
-			$url_model->save();
+			try{
+				$url_model->save();
+			}
+			catch(\Exception $e){
+				echo "ERROR: ".$e->getMessage()."\n"; // log error to a log file instead of to the standard output
+			}
 		}
    }
 
@@ -112,5 +120,9 @@ class CrawlHandler extends CrawlObserver{
                 $text = $doc->convertToText();
         }
         return $text;
+   }
+
+   public function setCollectionId($collection_id){
+   	$this->collection_id = $collection_id;
    }
 }
