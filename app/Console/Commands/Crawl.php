@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Spatie\Crawler\Crawler;
 use Spatie\Crawler\CrawlSubdomains;
+use App\Collection;
+use App\SpideredDomain;
 
 class Crawl extends Command
 {
@@ -13,7 +15,7 @@ class Crawl extends Command
      *
      * @var string
      */
-    protected $signature = 'SR:Crawl';
+    protected $signature = 'SR:Crawl {collection_id : ID of the collection}';
 
     /**
      * The console command description.
@@ -39,10 +41,20 @@ class Crawl extends Command
      */
     public function handle()
     {
-	    $url = \GuzzleHttp\Psr7\uri_for('http://firstray.in');
+        $collection_id = $this->argument('collection_id');
+        $c = Collection::find($collection_id);
+        echo "Crawling domains of ".$c->name."\n";
+
+	$domains = SpideredDomain::where('collection_id', $collection_id)->get();
+
+	foreach($domains as $d){
+        $url = \GuzzleHttp\Psr7\uri_for($d->web_address);
+	$crawl_handler = new \App\CrawlHandler();
+	$crawl_handler->setCollectionId($collection_id);
 	    Crawler::create()
-    		->setCrawlObserver(new \App\CrawlHandler())
+    		->setCrawlObserver($crawl_handler)
 		->setCrawlProfile(new CrawlSubdomains($url))
     		->startCrawling($url);
+	}
     }
 }
