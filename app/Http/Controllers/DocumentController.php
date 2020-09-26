@@ -11,28 +11,31 @@ use thiagoalessio\TesseractOCR\TesseractOCR;
 use Session;
 
 
-
 class DocumentController extends Controller
 {
 
     public function loadDocument($document_id){
         $doc = \App\Document::find($document_id);
+	$collection_id = $doc->collection_id;
+	$collection = \App\Collection::find($collection_id);
+	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
+
         $ext = pathinfo($doc->path, PATHINFO_EXTENSION);
         $open_in_browser_types = explode(',',env('FILE_EXTENSIONS_TO_OPEN_IN_BROWSER'));
         $this->recordHit($document_id);
-        if(in_array($ext, $open_in_browser_types)){
+        /*if(in_array($ext, $open_in_browser_types)){
             return response()->download(storage_path('app/'.$doc->path), null, [], null);
-        }
+        }*/
         #return response()->download(storage_path('app/'.$doc->path));
 
 	## New code
-	$exists = Storage::disk('sftp')->exists($doc->path);
+	$exists = Storage::disk($storage_drive)->exists($doc->path);
 	try{
         	$file_url = $doc->path;
-		$file_name  = $doc->path;//"VoteMix-Event-Entry-Ticket.pdf";
+		$file_name  = $doc->path;			//"VoteMix-Event-Entry-Ticket.pdf";
 
-		$mime = Storage::disk('sftp')->getDriver()->getMimetype($file_url);
-		$size = Storage::disk('sftp')->getDriver()->getSize($file_url);
+		$mime = Storage::disk($storage_drive)->getDriver()->getMimetype($file_url);
+		$size = Storage::disk($storage_drive)->getDriver()->getSize($file_url);
 
     		$response =  [
       		'Content-Type' => $mime,
@@ -44,7 +47,7 @@ class DocumentController extends Controller
 
     		ob_end_clean();
 
-    		return \Response::make(Storage::disk('sftp')->get($file_url), 200, $response);
+    		return \Response::make(Storage::disk($storage_drive)->get($file_url), 200, $response);
 	}
 	catch(Exception $e){
   		return $this->respondInternalError( $e->getMessage(), 'object', 500);
