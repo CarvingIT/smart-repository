@@ -26,8 +26,7 @@ return [
     |
     */
 
-    #'cloud' => env('FILESYSTEM_CLOUD', 's3'),
-    'cloud' => env('FILESYSTEM_CLOUD', 'sftp'),
+    'cloud' => env('FILESYSTEM_CLOUD', 's3'),
 
     /*
     |--------------------------------------------------------------------------
@@ -76,6 +75,16 @@ return [
     		'timeout' => 100,
 	],
 
+	'ftp' => [
+    		'driver' => 'ftp',
+    		'host' => 'sr.carvingit.com',
+    		'port' => 21,
+    		'username' => 'srcarvingit',
+    		'password' => 'F3uv4&h3HuLT',
+    		'privateKey' => '',
+    		'root' => '/',
+    		'timeout' => 100,
+	],
     ],
 
 ];
