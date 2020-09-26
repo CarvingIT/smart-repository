@@ -72,14 +72,23 @@ $(document).ready(function()
                     <div class="col-md-9">
                         <div class="col-md-12">
                         <span id="doc-title" class="col-md-12"><h4>
-                        <a href="/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a></h4></span>
+			@if($c->content_type == 'Uploaded documents')
+			<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+			@else
+			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
+			@endif
+			{{ $document->title }}</a></h4></span>
                         </div>
                         <div class="col-md-12"><div id="wordcloud"></div></div>
                     </div>
                     <div class="col-md-3">
                         <div class="col-md-12">
                         <span id="doc-download-open" class="col-md-12">
-                        <a href="/document/{{$document->id}}" target="_new">
+			@if($c->content_type == 'Uploaded documents')
+			<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+			@else
+			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
+			@endif
                         <img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>
                         </span>
                         </div>
@@ -87,10 +96,12 @@ $(document).ready(function()
                         <label for="doc-size" class="col-md-12">Size</label>
                         <span id="doc-size" class="col-md-12">{{ $document->human_filesize($document->size) }}</span>
                         </div>
+			@if($c->content_type == 'Uploaded documents')
                         <div class="col-md-12">
                         <label for="doc-creator" class="col-md-12">Created by</label>
                         <span id="doc-creator" class="col-md-12">{{ $document->owner->name }}</span>
                         </div>
+			@endif
                         <div class="col-md-12">
                         <label for="doc-updated" class="col-md-12">Updated</label>
                         <span id="doc-updated" class="col-md-12">{{ $document->updated_at }}</span>
@@ -99,6 +110,7 @@ $(document).ready(function()
                         <label for="doc-type" class="col-md-12">Type</label>
                         <span id="doc-type" class="col-md-12">{{ $document->type }}</span>
                         </div>
+			@if($c->content_type == 'Uploaded documents')
                         @foreach($document->meta as $m)
                         @if(!empty($meta_labels[$m->meta_field_id]))
                             <div class="col-md-12">
@@ -107,6 +119,7 @@ $(document).ready(function()
                             </div>
                         @endif
                         @endforeach
+			@endif
                     </div>
                   </div>
 
