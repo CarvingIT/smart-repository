@@ -5,9 +5,11 @@ use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use App\Url;
+use Elasticsearch\ClientBuilder;
 
 class CrawlHandler extends CrawlObserver{
    var $collection_id = null;
+   var $crawl_client = null;
 
    public function willCrawl(UriInterface $url) {
 	echo "Starting crawling $url\n";
@@ -36,10 +38,22 @@ class CrawlHandler extends CrawlObserver{
 			$url_model->title = $this->getTitle($mime_type, $content);
 			$url_model->size = strlen($content);
 			try{
-				$url_model->save();
+			$url_model->save();
+		    	// Update elastic index
+            	   	$body = $url_model->toArray();
+		   	$body['collection_id'] = $this->collection_id;
+            			$params = [
+                			'index' => 'sr_urls',
+                			'id'    => $url_model->id,
+                			'body'  => $body
+            			];
+
+            		$response = $this->crawl_client->index($params);
+            		print_r($response);
 			}
 			catch(\Exception $e){
-				echo "ERROR: ".$e->getMessage()."\n"; // log error to a log file instead of to the standard output
+				// log error to a log file instead of to the standard output
+				echo "ERROR: ".$e->getMessage()."\n"; 
 			}
 		}
    }
@@ -124,5 +138,9 @@ class CrawlHandler extends CrawlObserver{
 
    public function setCollectionId($collection_id){
    	$this->collection_id = $collection_id;
+   }
+
+   public function setCrawlClient($client){
+	   $this->crawl_client = $client;
    }
 }

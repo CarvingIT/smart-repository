@@ -7,6 +7,7 @@ use Spatie\Crawler\Crawler;
 use Spatie\Crawler\CrawlSubdomains;
 use App\Collection;
 use App\SpideredDomain;
+use Elasticsearch\ClientBuilder;
 
 class Crawl extends Command
 {
@@ -15,7 +16,8 @@ class Crawl extends Command
      *
      * @var string
      */
-    protected $signature = 'SR:Crawl {collection_id : ID of the collection}';
+	protected $signature = 'SR:Crawl {collection_id : ID of the collection}
+				{--site= : Optional. Crawl only this site for this collection}';
 
     /**
      * The console command description.
@@ -44,17 +46,32 @@ class Crawl extends Command
         $collection_id = $this->argument('collection_id');
         $c = Collection::find($collection_id);
         echo "Crawling domains of ".$c->name."\n";
+        $site = $this->option('site');
 
+	if(empty($site)){
 	$domains = SpideredDomain::where('collection_id', $collection_id)->get();
+		foreach($domains as $d){
+			$this->crawlSite($collection_id, $d);
+		}
+	}
+	else{ // $site is not empty
+		$this->crawlSite($collection_id, $site);
+	}
+    }
 
-	foreach($domains as $d){
-        $url = \GuzzleHttp\Psr7\uri_for($d->web_address);
+    private function crawlSite($collection_id, $site_address){
+        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+        $hosts = explode(",",$elastic_hosts);
+        $client = ClientBuilder::create()->setHosts($hosts)->build();
+
+        $url = \GuzzleHttp\Psr7\uri_for($site_address);
 	$crawl_handler = new \App\CrawlHandler();
 	$crawl_handler->setCollectionId($collection_id);
+	$crawl_handler->setCrawlClient($client);
+
 	    Crawler::create()
     		->setCrawlObserver($crawl_handler)
 		->setCrawlProfile(new CrawlSubdomains($url))
     		->startCrawling($url);
-	}
     }
 }
