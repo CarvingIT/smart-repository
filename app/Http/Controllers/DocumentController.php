@@ -12,7 +12,7 @@ use Session;
 
 class DocumentController extends Controller
 {
-    public function loadDocument($document_id){
+    public function loadDocument($collection_id,$document_id){
         $doc = \App\Document::find($document_id);
         $ext = pathinfo($doc->path, PATHINFO_EXTENSION);
         $open_in_browser_types = explode(',',env('FILE_EXTENSIONS_TO_OPEN_IN_BROWSER'));
@@ -181,6 +181,7 @@ class DocumentController extends Controller
         }
             $d->save();
             $dc->createDocumentRevision($d);
+	    return $d;
     }
 
     public function createDocumentRevision($d){
