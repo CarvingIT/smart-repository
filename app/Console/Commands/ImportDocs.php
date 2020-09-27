@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Elasticsearch\ClientBuilder;
 
 class ImportDocs extends Command
 {
@@ -39,6 +40,10 @@ class ImportDocs extends Command
      */
     public function handle()
     {
+        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+        $hosts = explode(",",$elastic_hosts);
+        $client = ClientBuilder::create()->setHosts($hosts)->build();
+
         $collection_id = $this->argument('collection_id');
         $dir = $this->option('dir');
         $csv = $this->option('csv');
@@ -52,8 +57,19 @@ class ImportDocs extends Command
             foreach($list as $f){
                 if(is_file($dir.'/'.$f)){
                     try{
-                    \App\Http\Controllers\DocumentController::importFile($collection_id, $dir.'/'.$f);
+                    $d = \App\Http\Controllers\DocumentController::importFile($collection_id, $dir.'/'.$f);
                     echo $dir.'/'.$f."\n";
+		    // Update elastic index
+            	   $body = $d->toArray();
+		   $body['collection_id'] = $collection_id;
+            		$params = [
+                		'index' => 'sr_documents',
+                		'id'    => $d->id,
+                		'body'  => $body
+            		];
+
+            		$response = $client->index($params);
+            		print_r($response);
                     }
                     catch(\Exception $e){
                     echo "!! Error while importing $f\n";

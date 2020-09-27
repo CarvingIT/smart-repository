@@ -13,8 +13,7 @@ use Session;
 
 class DocumentController extends Controller
 {
-
-    public function loadDocument($document_id){
+    public function loadDocument($collection_id,$document_id){
         $doc = \App\Document::find($document_id);
 	$collection_id = $doc->collection_id;
 	$collection = \App\Collection::find($collection_id);
@@ -231,6 +230,7 @@ class DocumentController extends Controller
         }
             $d->save();
             $dc->createDocumentRevision($d);
+	    return $d;
     }
 
     public function createDocumentRevision($d){

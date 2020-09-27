@@ -227,6 +227,16 @@ class CollectionController extends Controller
             ]
         ];
         */
+	$collection = \App\Collection::find($request->collection_id);
+	if($collection->content_type == 'Uploaded documents'){
+        $elastic_index = 'sr_documents';
+        $documents = \App\Document::where('collection_id', $request->collection_id);
+	}
+	else{
+        $elastic_index = 'sr_urls';
+        $documents = \App\Url::where('collection_id', $request->collection_id);
+	}
+        $total_count = $documents->count();
 
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $search_term = $request->search['value'];
@@ -241,9 +251,9 @@ class CollectionController extends Controller
             $params['body']['query']['bool']['filter']['term']['collection_id']=$request->collection_id;
         }
         $columns = array('type', 'title', 'size', 'updated_at');
-        $documents = \App\Document::where('collection_id', $request->collection_id);
-
         if(!empty($params)){
+	    $params['index'] = $elastic_index;
+	    $params['size'] = 100;// set a max size returned by ES
             $response = $client->search($params);
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
@@ -251,6 +261,7 @@ class CollectionController extends Controller
             }
             $documents = $documents->whereIn('id', $document_ids);
         }
+	$filtered_count = $documents->count();
         // get Meta filtered documents
         $all_meta_filters = Session::get('meta_filters');
         if(!empty($all_meta_filters[$request->collection_id])){
@@ -260,7 +271,6 @@ class CollectionController extends Controller
              ->limit($request->length)->offset($request->start);
 
 	    $has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
-        $total_count = \App\Document::where('collection_id', $request->collection_id)->count();
         $results_data = $this->datatableFormatResults(
                array('request'=>$request, 'documents'=>$documents->get(), 'has_approval'=>$has_approval)
        	);
@@ -268,7 +278,7 @@ class CollectionController extends Controller
             'data'=>$results_data,
             'draw'=>(int) $request->draw,
             'recordsTotal'=> $total_count,
-            'recordsFiltered' => $documents->count(),
+            'recordsFiltered' => $filtered_count,
             'error'=> '',
         );
         return json_encode($results);

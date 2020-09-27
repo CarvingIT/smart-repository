@@ -13,6 +13,10 @@ class Collection extends Model
         return $this->hasMany('App\Document');
     }
 
+    public function urls(){
+        return $this->hasMany('App\Url');
+    }
+
     public function meta_fields(){
         return $this->hasMany('App\MetaField');
     }
