@@ -355,6 +355,14 @@ class CollectionController extends Controller
         $results_data = array();
         foreach($documents as $d){
             $action_icons = '';
+
+	    if($collection->content_type == 'Uploaded documents'){
+		$action_icons .= '<a class="btn btn-primary btn-link" href="/collection/'.$request->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+	    }
+  	    else if ($collection->content_type == 'Web resources'){		
+		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
+	    }
+		$action_icons .= '<a class="btn btn-primary btn-link" href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">info</i></a>';
 	    if($collection->content_type == 'Uploaded documents'){
             $revisions = $d->revisions;
             $r_count = count($revisions);

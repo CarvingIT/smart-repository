@@ -113,7 +113,7 @@ $(document).ready(function() {
                             <th>Title</th>
                             <th>Size</th>
                             <th>Created</th>
-                            <th class="text-right">Actions</th>
+                            <th class="text-right"><!--Actions--></th>
                             </tr>
                         </thead>
                     </table>
