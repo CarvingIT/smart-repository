@@ -11,9 +11,14 @@ $(document).ready(function() {
            { "className": 'text-right dt-nowrap', "aTargets": [2,3]},
            { "className": 'td-actions text-right dt-nowrap', "aTargets": [4]}
      ],
+    "processing":true,
     "order": [[ 3, "desc" ]],
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
+    "language": 
+	{          
+	"processing": "<img src='/i/processing.gif'>",
+	},
     "columns":[
        {data:"type",
           render:{
@@ -35,7 +40,7 @@ $(document).ready(function() {
             }
         },
         {data:"actions"},
-    ]
+    ],
     });
 } );
 </script>

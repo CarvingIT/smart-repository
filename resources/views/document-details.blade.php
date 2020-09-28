@@ -79,7 +79,7 @@ $(document).ready(function()
 			@endif
 			{{ $document->title }}</a></h4></span>
                         </div>
-                        <div class="col-md-12"><div id="wordcloud"></div></div>
+                        <div class="col-md-12"><div id="wordcloud"><img src='/i/processing.gif'></div></div>
                     </div>
                     <div class="col-md-3">
                         <div class="col-md-12">
