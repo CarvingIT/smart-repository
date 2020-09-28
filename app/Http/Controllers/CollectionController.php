@@ -357,19 +357,20 @@ class CollectionController extends Controller
             $action_icons = '';
 
 	    if($collection->content_type == 'Uploaded documents'){
+            	$revisions = $d->revisions;
+            	$r_count = count($revisions);
+            	if($r_count > 1){
+               		$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
+                	$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
+            	}
 		$action_icons .= '<a class="btn btn-primary btn-link" href="/collection/'.$request->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
 	    }
   	    else if ($collection->content_type == 'Web resources'){		
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
 	    }
-		$action_icons .= '<a class="btn btn-primary btn-link" href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">info</i></a>';
+
+	    $action_icons .= '<a class="btn btn-primary btn-link" href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">info</i></a>';
 	    if($collection->content_type == 'Uploaded documents'){
-            $revisions = $d->revisions;
-            $r_count = count($revisions);
-            if($r_count > 1){
-                $filter_count = ($r_count > 9) ? '' : '_'.$r_count;
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
-            }
             if(Auth::user()){
                 if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
 			if(!empty($d->approved_on)){
