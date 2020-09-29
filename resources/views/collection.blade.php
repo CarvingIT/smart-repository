@@ -60,9 +60,11 @@ $(document).ready(function() {
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="Manage Users of this collection" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
+		    @if($collection->content_type == 'Uploaded documents')	
                     <a title="Manage meta information fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+		    @endif
 		  @endif
-                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE'))
+                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
                     <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">add</i></a>
 		  @endif
                   @if(count($collection->meta_fields)>0)
