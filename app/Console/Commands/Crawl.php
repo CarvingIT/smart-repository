@@ -64,12 +64,12 @@ class Crawl extends Command
     private function crawlSite($collection_id, $site_address, $sleep){
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)->build();
+        $elastic_client = ClientBuilder::create()->setHosts($hosts)->build();
 
         $url = \GuzzleHttp\Psr7\uri_for($site_address);
 	$crawl_handler = new \App\CrawlHandler();
 	$crawl_handler->setCollectionId($collection_id);
-	$crawl_handler->setCrawlClient($client);
+	$crawl_handler->setElasticClient($elastic_client);
 
 	/*
 		Client options that need to be enabled/added

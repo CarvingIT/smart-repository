@@ -9,7 +9,7 @@ use Elasticsearch\ClientBuilder;
 
 class CrawlHandler extends CrawlObserver{
    var $collection_id = null;
-   var $crawl_client = null;
+   var $elastic_client = null;
 
    public function willCrawl(UriInterface $url) {
 	echo "Starting crawling $url\n";
@@ -48,7 +48,7 @@ class CrawlHandler extends CrawlObserver{
                 			'body'  => $body
             			];
 
-            		$response = $this->crawl_client->index($params);
+            		$response = $this->elastic_client->index($params);
             		print_r($response);
 			}
 			catch(\Exception $e){
@@ -142,7 +142,7 @@ class CrawlHandler extends CrawlObserver{
    	$this->collection_id = $collection_id;
    }
 
-   public function setCrawlClient($client){
-	   $this->crawl_client = $client;
+   public function setElasticClient($client){
+	   $this->elastic_client = $client;
    }
 }
