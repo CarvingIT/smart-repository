@@ -17,7 +17,8 @@ class Crawl extends Command
      * @var string
      */
 	protected $signature = 'SR:Crawl {collection_id : ID of the collection}
-				{--site= : Optional. Crawl only this site for this collection}';
+				{--site= : Optional. Crawl only this site for this collection}
+				{--sleep=1000 : Optional. Sleep n milliseconds between two http requests}';
 
     /**
      * The console command description.
@@ -47,19 +48,20 @@ class Crawl extends Command
         $c = Collection::find($collection_id);
         echo "Crawling domains of ".$c->name."\n";
         $site = $this->option('site');
+	$sleep = $this->option('sleep');
 
 	if(empty($site)){
 	$domains = SpideredDomain::where('collection_id', $collection_id)->get();
 		foreach($domains as $d){
-			$this->crawlSite($collection_id, $d);
+			$this->crawlSite($collection_id, $d, $sleep);
 		}
 	}
 	else{ // $site is not empty
-		$this->crawlSite($collection_id, $site);
+		$this->crawlSite($collection_id, $site, $sleep);
 	}
     }
 
-    private function crawlSite($collection_id, $site_address){
+    private function crawlSite($collection_id, $site_address, $sleep){
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
         $client = ClientBuilder::create()->setHosts($hosts)->build();
@@ -69,7 +71,14 @@ class Crawl extends Command
 	$crawl_handler->setCollectionId($collection_id);
 	$crawl_handler->setCrawlClient($client);
 
+	/*
+		Client options that need to be enabled/added
+		allow_redirects = true
+		cookies = true 
+		also need to set auth information
+	 */
 	    Crawler::create()
+		->setDelayBetweenRequests($sleep)
     		->setCrawlObserver($crawl_handler)
 		->setCrawlProfile(new CrawlSubdomains($url))
     		->startCrawling($url);
