@@ -11,6 +11,17 @@ class CrawlHandler extends CrawlObserver{
    var $collection_id = null;
    var $elastic_client = null;
 
+   public function __construct($collection_id){
+	   $this->collection_id = $collection_id;
+	   $this->setElasticClient();
+   }
+
+   private function setElasticClient(){
+        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+        $hosts = explode(",",$elastic_hosts);
+        $this->elastic_client = ClientBuilder::create()->setHosts($hosts)->build();
+   }
+
    public function willCrawl(UriInterface $url) {
 	echo "Starting crawling $url\n";
    }
@@ -140,9 +151,5 @@ class CrawlHandler extends CrawlObserver{
 
    public function setCollectionId($collection_id){
    	$this->collection_id = $collection_id;
-   }
-
-   public function setElasticClient($client){
-	   $this->elastic_client = $client;
    }
 }

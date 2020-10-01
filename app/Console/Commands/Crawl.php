@@ -8,6 +8,8 @@ use Spatie\Crawler\CrawlSubdomains;
 use App\Collection;
 use App\SpideredDomain;
 use Elasticsearch\ClientBuilder;
+use GuzzleHttp\Client as GuzzleHttpClient;
+use PHPHtmlParser\Dom;
 
 class Crawl extends Command
 {
@@ -53,23 +55,61 @@ class Crawl extends Command
 	if(empty($site)){
 	$domains = SpideredDomain::where('collection_id', $collection_id)->get();
 		foreach($domains as $d){
-			$this->crawlSite($collection_id, $d, $sleep);
+			$crawl_client_options = ['base_uri'=> $d->web_address, 'cookies'=>true, 'allow_redirects'=>true];
+			$crawl_client = new GuzzleHttpClient($crawl_client_options);
+			$crawler = new Crawler($crawl_client);
+
+			if(!empty($d->auth_info)){// auth info is not empty
+				// create a guzzle http client and use that after authentication
+				// more code needed here
+				$auth_info = json_decode($d->auth_info);
+				print_r($auth_info);
+				$response = $crawl_client->request('GET', $auth_info->entry_url);
+				$html_string = $response->getBody();
+				$dom = new Dom;
+				$dom->loadStr($html_string);
+				$dom_identifier = $auth_info->login_form_dom_identifier;
+				$form_number = $auth_info->form_element_number;
+				$form = $dom->find($dom_identifier)[$form_number];
+				$dom->loadStr($form->innerHtml);
+				$inputs = $dom->find('input');
+				$form_params = array();
+				foreach($inputs as $input){
+					$form_params[$input->name] = $input->value;
+				}
+				// post the data
+				foreach($auth_info->inputs as $input){
+					$form_params[$input->name] = $input->value;
+				}
+				//$response2 = $crawl_client->request('POST','/login',[
+				$response2 = $crawl_client->request(
+					$auth_info->login_form_method,
+					$auth_info->login_form_action,[
+					'form_params'=> $form_params
+				]);
+			}
+
+			$this->crawlSite($collection_id, $d->web_address, $crawler, $sleep);
 		}
 	}
-	else{ // $site is not empty
-		$this->crawlSite($collection_id, $site, $sleep);
+	else{ // $site is not empty which is passed from the command line
+		$crawl_client_options = ['base_uri'=> $site, 'cookies'=>true, 'allow_redirects'=>true];
+		$crawl_client = new GuzzleHttpClient($crawl_client_options);
+		$crawler = new Crawler($crawl_client);
+		$this->crawlSite($collection_id, $site, $crawler, $sleep);
 	}
     }
 
-    private function crawlSite($collection_id, $site_address, $sleep){
+    private function crawlSite($collection_id, $site_address, $crawler, $sleep){
+	/*
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
         $elastic_client = ClientBuilder::create()->setHosts($hosts)->build();
-
+	 */
         $url = \GuzzleHttp\Psr7\uri_for($site_address);
-	$crawl_handler = new \App\CrawlHandler();
-	$crawl_handler->setCollectionId($collection_id);
-	$crawl_handler->setElasticClient($elastic_client);
+	$crawl_handler = new \App\CrawlHandler($collection_id);
+	//$crawl_handler->setCollectionId($collection_id);
+	//$crawl_handler->setElasticClient($elastic_client);
 
 	/*
 		Client options that need to be enabled/added
@@ -77,7 +117,8 @@ class Crawl extends Command
 		cookies = true 
 		also need to set auth information
 	 */
-	    Crawler::create()
+	    //Crawler::create()
+		$crawler
 		->setDelayBetweenRequests($sleep)
     		->setCrawlObserver($crawl_handler)
 		->setCrawlProfile(new CrawlSubdomains($url))
