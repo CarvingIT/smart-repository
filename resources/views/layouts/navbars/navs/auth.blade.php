@@ -3,6 +3,7 @@
   <div class="container">
     <div class="navbar-wrapper">
       <!--a class="navbar-brand" href="#">{{$titlePage}}</a-->
+	<a class="navbar-brand" href="/"><img src="/i/logo_site_name1.png"></a>
     </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
     <span class="sr-only">Toggle navigation</span>

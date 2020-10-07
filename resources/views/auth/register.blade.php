@@ -23,7 +23,7 @@
             </div-->
           </div>
           <div class="card-body ">
-            <p class="card-description text-center">{{ __('Be Classical') }}</p>
+            <!--p class="card-description text-center">{{ __('Be Classical') }}</p-->
             <div class="bmd-form-group{{ $errors->has('name') ? ' has-danger' : '' }}">
               <div class="input-group">
                 <div class="input-group-prepend">
