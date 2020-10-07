@@ -1,9 +1,18 @@
+@php
+use \App\Sysconfig;
+$config_details = Sysconfig::all();
+foreach($config_details as $details){
+        if($details['param'] == 'company_logo'){
+                $logo = $details['value'];
+        }
+}
+@endphp
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top ">
   <div class="container">
     <div class="navbar-wrapper">
       <!--a class="navbar-brand" href="#">{{$titlePage}}</a-->
-	<a class="navbar-brand" href="/"><img src="/i/logo_site_name1.png"></a>
+	<a class="navbar-brand" href="/"><img src="{{ $logo }}"></a>
     </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
     <span class="sr-only">Toggle navigation</span>
