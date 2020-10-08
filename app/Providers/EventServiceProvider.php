@@ -18,6 +18,12 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+	'App\Events\DocumentSaved'=>[
+		'App\Listeners\DocumentSaved',
+	],
+	'App\Events\DocumentDeleted'=>[
+		'App\Listeners\DocumentDeleted',
+	],
     ];
 
     /**

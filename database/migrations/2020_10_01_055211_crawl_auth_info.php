@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddStorageDriveColumn extends Migration
+class CrawlAuthInfo extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddStorageDriveColumn extends Migration
      */
     public function up()
     {
-        Schema::table('collections', function (Blueprint $table) {
-		$table->string('storage_drive')->after('require_approval')->nullable($value = true);
+        Schema::table('spidered_domains', function (Blueprint $table) {
+		$table->text('auth_info')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddStorageDriveColumn extends Migration
      */
     public function down()
     {
-        Schema::table('collections', function (Blueprint $table) {
-		$table->dropColumn('storage_drive');
+        Schema::table('spidered_domains', function (Blueprint $table) {
+		$table->dropColumn('auth_info');
         });
     }
 }

@@ -9,7 +9,18 @@ use Elasticsearch\ClientBuilder;
 
 class CrawlHandler extends CrawlObserver{
    var $collection_id = null;
-   var $crawl_client = null;
+   var $elastic_client = null;
+
+   public function __construct($collection_id){
+	   $this->collection_id = $collection_id;
+	   $this->setElasticClient();
+   }
+
+   private function setElasticClient(){
+        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+        $hosts = explode(",",$elastic_hosts);
+        $this->elastic_client = ClientBuilder::create()->setHosts($hosts)->build();
+   }
 
    public function willCrawl(UriInterface $url) {
 	echo "Starting crawling $url\n";
@@ -48,7 +59,7 @@ class CrawlHandler extends CrawlObserver{
                 			'body'  => $body
             			];
 
-            		$response = $this->crawl_client->index($params);
+            		$response = $this->elastic_client->index($params);
             		print_r($response);
 			}
 			catch(\Exception $e){
@@ -72,7 +83,9 @@ class CrawlHandler extends CrawlObserver{
 		return $matches[1];
 	}
 	else{
-		return ''; // code needs to be handled for mime-types other than text/html
+		$text = $this->getText($mime_type, $content);
+		$title = strtok($text, "\n");
+		return $title; // code needs to be handled for mime-types other than text/html
 	}
    }
 
@@ -122,11 +135,11 @@ class CrawlHandler extends CrawlObserver{
             $text = $pdf->getText();
             $text = str_replace(array('&', '%', '$'), ' ', $text);
         }
-        else if(preg_match('/^image\//', $d->type)){
+        else if(preg_match('/^image\//', $mime_type)){
             // try OCR
             $text = utf8_encode((new TesseractOCR($path))->run());
         }
-        else if(preg_match('/^text\//', $d->type)){
+        else if(preg_match('/^text\//', $mime_type)){
             $text = file_get_contents($path);
         }
         else{ // for doc, docx, ppt, pptx, xls, xlsx
@@ -138,9 +151,5 @@ class CrawlHandler extends CrawlObserver{
 
    public function setCollectionId($collection_id){
    	$this->collection_id = $collection_id;
-   }
-
-   public function setCrawlClient($client){
-	   $this->crawl_client = $client;
    }
 }

@@ -170,6 +170,7 @@ class DocumentController extends Controller
             // create revision
             $this->createDocumentRevision($d);
 	}
+	else{ // no document is uploaded
             	if(!empty($request->input('approved_on'))){
             	$d->approved_by = \Auth::user()->id;
 		$d->approved_on = now();
@@ -190,7 +191,7 @@ class DocumentController extends Controller
 	     if(!empty($request->title)){
 		$d->title = $request->title;
 	     }
-### Code to edit title of documen ends
+### Code to edit title of document ends
 
             try{
                 $d->save();
@@ -199,6 +200,7 @@ class DocumentController extends Controller
             catch(\Exception $e){
                 Session::flash('alert-danger', $e->getMessage());
             }
+	} // else ends (document not uploaded)
            return redirect('/collection/'.$request->input('collection_id')); 
     }
 
