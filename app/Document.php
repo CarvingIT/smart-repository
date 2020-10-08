@@ -4,11 +4,15 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+use App\Events\DocumentSaved;
+use App\Events\DocumentDeleted;
 
 class Document extends Model
 {
     use SoftDeletes;
     use FullTextSearch;
+    use Notifiable;
 
     /**
      * The columns of the full text index
@@ -16,6 +20,11 @@ class Document extends Model
     protected $searchable = [
         'title',
         'text_content'
+    ];
+
+    protected $dispatchesEvents = [
+        'saved' => DocumentSaved::class,
+        'deleted' => DocumentDeleted::class,
     ];
 
     public function icon($path = null){
@@ -76,4 +85,7 @@ class Document extends Model
         return $this->belongsTo('App\User', 'created_by');
     }
 
+    public function collection(){
+	 return $this->belongsTo('App\Collection','collection_id');
+    }
 }
