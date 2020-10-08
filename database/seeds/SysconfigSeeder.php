@@ -11,13 +11,10 @@ class SysconfigSeeder extends Seeder
      */
     public function run()
     {
-        //add system related details
 	DB::table('sysconfig')->insert(
             [
-                'param'=>'company_logo',
+                'param'=>'logo_url',
                 'value'=>'/i/logo_site_name1.png',
-                'created_at'=>NOW(),
-                'updated_at'=>NOW(),
             ]
         );
     }
