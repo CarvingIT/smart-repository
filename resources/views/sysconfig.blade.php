@@ -1,4 +1,4 @@
-@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'activePage'=>'System Config'])
+@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'activePage'=>'System Config','title'=>'Smart Repository'])
 
 @section('content')
 <div class="container">
@@ -12,14 +12,16 @@
                 </div>
 
                 <div class="card-body">
-                    @if (session('status'))
-                        <div class="alert alert-success" role="alert">
+		    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                        @if(Session::has('alert-' . $msg))
+                        <div class="alert alert-<?php echo $msg; ?>">
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <i class="material-icons">close</i>
                         </button>
-                        <span>{{ session('status') }}</span>
+                        <span>{{ Session::get('alert-' . $msg) }}</span>
                         </div>
-                    @endif
+                        @endif
+                    @endforeach
 
                    <form method="post" action="/admin/sysconfig">
                     @csrf()
@@ -101,6 +103,19 @@
                     </div>
                    </div>
                 
+                   <div class="form-group row">
+                    <div class="col-md-12">
+                        <h4>Site Configuration</h4>
+		            </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="logo_url" class="col-md-12 col-form-label text-md-right">Logo URL</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="{{$sysconfig['logo_url'] }}" />
+                    </div>
+                   </div>
                    <div class="form-group row mb-0"><div class="col-md-12 offset-md-4"><button type="submit" class="btn btn-primary">
                                     Save
                                 </button> 

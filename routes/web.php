@@ -89,6 +89,7 @@ Route::post('/admin/saveuser', 'UserController@save')->middleware('admin');
 Route::get('/admin/user/{user_id}/delete','UserController@delete')->middleware('admin');
 // system config
 Route::get('/admin/sysconfig','SysConfigController@index')->middleware('admin');
+Route::post('/admin/sysconfig','SysConfigController@save')->middleware('admin');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');

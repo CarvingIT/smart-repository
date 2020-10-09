@@ -17,7 +17,7 @@ $is_demo = env('is_demo');
 	@if(!empty($sysconfig['logo_url']))
 	<img src="{{ $sysconfig['logo_url'] }}">
 	@else
-	{{ $title }}
+	{{$title}}
 	@endif
 	</a>
     </div>
