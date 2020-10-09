@@ -1,11 +1,11 @@
 @php
 use \App\Sysconfig;
 $config_details = Sysconfig::all();
+$sysconfig = array();
 foreach($config_details as $details){
-        if($details['param'] == 'company_logo'){
-                $logo = $details['value'];
-        }
+	$sysconfig[$details['param']] = $details['value'];
 }
+$is_demo = env('is_demo');
 @endphp
 <!-- Navbar -->
 <!--nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top "-->
@@ -13,7 +13,13 @@ foreach($config_details as $details){
   <div class="container">
     <div class="navbar-wrapper">
       <!--a class="navbar-brand" href="/">{{ __('Smart Repository') }}</a-->
-	<a class="navbar-brand" href="/"><img src="{{ $logo }}"></a>
+	<a class="navbar-brand" href="/">
+	@if(!empty($sysconfig['logo_url']))
+	<img src="{{ $sysconfig['logo_url'] }}">
+	@else
+	{{ $title }}
+	@endif
+	</a>
     </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
     <span class="sr-only">Toggle navigation</span>
@@ -28,6 +34,7 @@ foreach($config_details as $details){
             <i class="material-icons">library_books</i> {{ __('Collections') }}
           </a>
         </li>
+	@if(isset($is_demo) && $is_demo == 0)
         <li class="nav-item{{ $activePage == 'features' ? ' active' : '' }}">
           <a href="/features" class="nav-link">
             <i class="material-icons">featured_play_list</i> {{ __('Features') }}
@@ -38,6 +45,7 @@ foreach($config_details as $details){
             <i class="material-icons">question_answer</i> {{ __('FAQ') }}
           </a>
         </li>
+	@endif
         <li class="nav-item{{ $activePage == 'contact' ? ' active' : '' }}">
           <a href="/contact" class="nav-link">
             <i class="material-icons">contacts</i> {{ __('Contact') }}

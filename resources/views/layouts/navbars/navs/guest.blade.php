@@ -5,6 +5,7 @@ $sysconfig = array();
 foreach($config_details as $details){
 	$sysconfig[$details['param']] = $details['value'];
 }
+$is_demo = env('is_demo');
 @endphp
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
@@ -31,6 +32,7 @@ foreach($config_details as $details){
             <i class="material-icons">library_books</i> {{ __('Collections') }}
           </a>
         </li>
+	@if(isset($is_demo) && $is_demo == 0)
         <li class="nav-item{{ $activePage == 'features' ? ' active' : '' }}">
           <a href="/features" class="nav-link">
             <i class="material-icons">featured_play_list</i> {{ __('Features') }}
@@ -41,6 +43,7 @@ foreach($config_details as $details){
             <i class="material-icons">question_answer</i> {{ __('FAQ') }}
           </a>
         </li>
+	@endif
         <li class="nav-item{{ $activePage == 'contact' ? ' active' : '' }}">
           <a href="/contact" class="nav-link">
             <i class="material-icons">contacts</i> {{ __('Contact') }}

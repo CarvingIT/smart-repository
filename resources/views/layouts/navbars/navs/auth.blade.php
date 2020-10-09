@@ -1,10 +1,9 @@
 @php
 use \App\Sysconfig;
 $config_details = Sysconfig::all();
+$sysconfig = array();
 foreach($config_details as $details){
-        if($details['param'] == 'company_logo'){
-                $logo = $details['value'];
-        }
+	$sysconfig[$details['param']] = $details['value'];
 }
 @endphp
 <!-- Navbar -->
@@ -12,7 +11,13 @@ foreach($config_details as $details){
   <div class="container">
     <div class="navbar-wrapper">
       <!--a class="navbar-brand" href="#">{{$titlePage}}</a-->
-	<a class="navbar-brand" href="/"><img src="{{ $logo }}"></a>
+	<a class="navbar-brand" href="/">
+	@if(!empty($sysconfig['logo_url']))
+	<img src="{{ $sysconfig['logo_url'] }}">
+	@else
+	{{ $title }}
+	@endif
+	</a>
     </div>
     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
     <span class="sr-only">Toggle navigation</span>
