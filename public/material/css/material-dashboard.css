@@ -631,6 +631,9 @@ figure {
 img {
   vertical-align: middle;
   border-style: none;
+}
+
+.logo_img{
   height:75px;
 }
 

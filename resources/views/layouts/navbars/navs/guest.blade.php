@@ -13,7 +13,7 @@ $is_demo = env('is_demo');
     <div class="navbar-wrapper">
       <a class="navbar-brand" href="/">
 	@if(!empty($sysconfig['logo_url']))
-	<img src="{{ $sysconfig['logo_url'] }}">
+	<img class="logo_img" src="{{ $sysconfig['logo_url'] }}">
 	@else
 	{{$title}}
 	@endif
