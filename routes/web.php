@@ -65,7 +65,7 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
-Route::get('/document/{document_id}/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
+Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
 // Document details (meta)
