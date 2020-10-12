@@ -27,6 +27,19 @@ $(document).ready(function() {
             minLength: 1,
         });
     });
+
+function hideStorageDriveField(){
+var e = document.getElementById("content_type");
+var content_type = e.options[e.selectedIndex].value;
+alert(content_type);
+if(content_type=='Web resources'){
+	document.getElementById("storage_drive").style.display = 'none';
+}
+else{
+	document.getElementById("storage_drive").style.display = 'block';
+}
+}
+
 </script>
 @endpush
 
@@ -80,15 +93,16 @@ $(document).ready(function() {
                    <label for="content-type" class="col-md-12 col-form-label text-md-right">Content Type</label> 
                     </div>
                     <div class="col-md-8">
-			<select name="content_type" class="selectpicker">
+			<select name="content_type" class="selectpicker" id="content_type" onchange="hideStorageDriveField();">
 			            <option value="Uploaded documents" @if($collection->content_type == 'Uploaded documents') selected @endif>Uploaded Documents</option>
 			            <option value="Web resources" @if($collection->content_type == 'Web resources') selected @endif>Web resources</option>
 			</select>
                     </div>
                    </div>
+		   <div id="storage_drive"> <!-- Storage Drive div used to toggle as per content_type option -->
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="storage_disks" class="col-md-12 col-form-label text-md-right">Storage Drive</label> 
+                   	<label for="storage_disks" class="col-md-12 col-form-label text-md-right">Storage Drive</label> 
                     </div>
                     <div class="col-md-8">
 			<select name="storage_drive" class="selectpicker">
@@ -98,6 +112,7 @@ $(document).ready(function() {
 			</select>
                     </div>
                    </div>
+                   </div><!-- Storage Drive div ends -->
                    <div class="form-group row">
                     <div class="col-md-4">
                    <label for="maintainer" class="col-md-12 col-form-label text-md-right">Maintainer</label> 
