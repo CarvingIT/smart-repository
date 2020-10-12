@@ -32,7 +32,7 @@ $is_demo = env('is_demo');
             <i class="material-icons">library_books</i> {{ __('Collections') }}
           </a>
         </li>
-	@if(isset($is_demo) && $is_demo == 0)
+	@if(isset($is_demo) && $is_demo == 1)
         <li class="nav-item{{ $activePage == 'features' ? ' active' : '' }}">
           <a href="/features" class="nav-link">
             <i class="material-icons">featured_play_list</i> {{ __('Features') }}
