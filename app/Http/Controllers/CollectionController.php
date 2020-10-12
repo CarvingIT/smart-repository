@@ -385,7 +385,7 @@ class CollectionController extends Controller
                 $action_icons .= '<a class="btn btn-success btn-link" href="/document/'.$d->id.'/edit" title="Create a new revision"><i class="material-icons">edit</i></a>';
                 }
                 if(Auth::user()->canDeleteDocument($d->id)){
-                $action_icons .= '<a class="btn btn-danger btn-link" href="/document/'.$d->id.'/delete" title="Delete document"><i class="material-icons">delete</i></a>';
+                $action_icons .= '<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog('.$d->id.');" title="Delete document"><i class="material-icons">delete</i></span>';
                 }
             }
 	    } // if collection's content-type == Uploaded documents

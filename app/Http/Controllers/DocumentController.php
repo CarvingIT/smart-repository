@@ -261,10 +261,14 @@ class DocumentController extends Controller
         return $title;
     }
 
-    public function deleteDocument($document_id){
-        $d = \App\Document::find($document_id);
-        $collection_id = $d->collection_id;
-        $d->delete();
+    public function deleteDocument(Request $request){
+        $document_id = $request->document_id;
+       	$d = \App\Document::find($document_id);
+       	$collection_id = $d->collection_id;
+	if(!empty($request->delete_captcha) && 
+		$request->delete_captcha == $request->delete_captcha){
+        	$d->delete();
+	}
         return redirect('/collection/'.$collection_id); 
     }
 

@@ -3,7 +3,10 @@
 @section('content')
 @push('js')
 <script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/jquery-ui.js" defer></script>
+<link href="/css/jquery-ui.css" rel="stylesheet">
 <script>
+var deldialog;
 $(document).ready(function() {
     $('#documents').DataTable({
     "aoColumnDefs": [
@@ -42,9 +45,42 @@ $(document).ready(function() {
         {data:"actions"},
     ],
     });
+
 } );
+
+function showDeleteDialog(document_id){
+	str = randomString(6);
+	$('#text_captcha').text(str);
+	$('#hidden_captcha').text(str);
+	$('#delete_doc_id').val(document_id);
+        deldialog = $( "#deletedialog" ).dialog({
+		title: 'Are you sure ?',
+		resizable: true
+        });
+}
+
+function randomString(length) {
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
 </script>
 @endpush
+	    <div id="deletedialog" style="display:none;">
+		<form name="deletedoc" method="post" action="/document/delete">
+		@csrf
+		<p>Enter <span id="text_captcha"></span> to delete</p>
+		<input type="text" name="delete_captcha" value="" />
+		<input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
+		<input type="hidden" id="delete_doc_id" name="document_id" value="" />
+		<button class="btn btn-danger" type="submit" value="delete">Delete</button>
+		</form>
+	    </div>
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
