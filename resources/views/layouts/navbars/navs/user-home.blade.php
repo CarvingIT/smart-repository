@@ -6,7 +6,7 @@ foreach($config_details as $details){
 	$sysconfig[$details['param']] = $details['value'];
 }
 $is_demo = env('IS_DEMO');
-$site_name = env('SITE_NAME');
+$app_name = env('APP_NAME');
 @endphp
 <!-- Navbar -->
 <!--nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top "-->
@@ -18,7 +18,7 @@ $site_name = env('SITE_NAME');
 	@if(!empty($sysconfig['logo_url']))
 	<img class="logo_img" src="{{ $sysconfig['logo_url'] }}">
 	@else
-	{{$site_name}}
+	{{$app_name}}
 	@endif
 	</a>
     </div>
