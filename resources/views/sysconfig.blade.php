@@ -25,10 +25,11 @@
 
                    <form method="post" action="/admin/sysconfig">
                     @csrf()
+<!--
                    <div class="form-group row">
                     <div class="col-md-12">
                         <h4>Email configuration</h4>
-		            </div>
+		    </div>
                    </div>
 
                    <div class="form-group row">
@@ -102,7 +103,7 @@
                     <input type="text" name="elastic_hosts" id="elastic_hosts" class="form-control" placeholder="Comma Separated list of hosts" value="" />
                     </div>
                    </div>
-                
+-->                
                    <div class="form-group row">
                     <div class="col-md-12">
                         <h4>Site Configuration</h4>

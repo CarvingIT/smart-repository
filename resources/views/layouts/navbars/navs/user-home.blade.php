@@ -65,6 +65,7 @@ $app_name = env('APP_NAME');
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('User Management') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Collection Management') }}</a>
+            <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
             <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
             @endif
             <div class="dropdown-divider"></div>

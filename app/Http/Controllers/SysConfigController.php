@@ -18,9 +18,14 @@ class SysConfigController extends Controller
     }
 
     public function save(Request $request){
-         $c = new \App\Sysconfig;
+
+        $c = new \App\Sysconfig;
 	foreach ($request->except('_token') as $key => $part) {
 		if(!empty($part)){
+		$logo_details = \App\Sysconfig::where('param','=',$key);
+            	if($logo_details){
+               		$logo_details->delete();
+            	}
 			$c->param = $key;
 			$c->value = $part;
 		}

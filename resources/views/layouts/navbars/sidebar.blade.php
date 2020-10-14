@@ -62,6 +62,12 @@
                 <span class="sidebar-normal"> {{ __('Collection Management') }}</span>
               </a>
             </li>
+            <li class="nav-item{{ $activePage == 'system-configuration' ? ' active' : '' }}">
+              <a class="nav-link" href="/admin/sysconfig">
+          	<i class="material-icons">view_list</i>
+                <span class="sidebar-normal"> {{ __('System Configuration') }} </span>
+              </a>
+            </li>
           </ul>
         </div>
       </li>
