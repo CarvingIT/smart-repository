@@ -114,7 +114,7 @@
                    <label for="logo_url" class="col-md-12 col-form-label text-md-right">Logo URL</label> 
 		           </div>
                     <div class="col-md-9">
-                    <input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="{{$sysconfig['logo_url'] }}" />
+                    <input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" />
                     </div>
                    </div>
                    <div class="form-group row mb-0"><div class="col-md-12 offset-md-4"><button type="submit" class="btn btn-primary">
