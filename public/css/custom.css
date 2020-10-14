@@ -76,3 +76,6 @@ div.dataTables_wrapper div.dataTables_processing {
 padding-bottom:2%;
 }
 
+a.navbar-brand{
+	color:#333 !important;
+}
