@@ -34,4 +34,20 @@ class HomeController extends Controller
 	$my_collection_list = $my_collection->collection_list();
         return view('dashboard',['my_collections' => $my_collection_list, 'collections' => $collections, 'title'=>'Home','activePage'=>'Home','titlePage' => 'Home']);
     }
+
+    public function welcome()
+    {
+	$is_demo = env('IS_DEMO');
+	if($is_demo == 0){
+		return redirect('/collections');
+	}
+	else{
+		return redirect('/welcome');
+	}
+
+    }
+	
+
+
+####
 }

@@ -19,16 +19,13 @@ class DocumentController extends Controller
 	$collection = \App\Collection::find($collection_id);
 	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
 
-        $ext = pathinfo($doc->path, PATHINFO_EXTENSION);
-        $open_in_browser_types = explode(',',env('FILE_EXTENSIONS_TO_OPEN_IN_BROWSER'));
         $this->recordHit($document_id);
-        /*if(in_array($ext, $open_in_browser_types)){
-            return response()->download(storage_path('app/'.$doc->path), null, [], null);
-        }*/
-        #return response()->download(storage_path('app/'.$doc->path));
 
 	## New code
-	$exists = Storage::disk($storage_drive)->exists($doc->path);
+	$download_file = $this->downloadFile($doc,$storage_drive);
+	return $download_file;
+
+/*	$exists = Storage::disk($storage_drive)->exists($doc->path);
 	try{
         	$file_url = $doc->path;
 		$file_name  = $doc->path;			//"VoteMix-Event-Entry-Ticket.pdf";
@@ -51,7 +48,7 @@ class DocumentController extends Controller
 	catch(Exception $e){
   		return $this->respondInternalError( $e->getMessage(), 'object', 500);
 	}
-
+*/
 	## New code ends
     }
     
@@ -283,12 +280,14 @@ class DocumentController extends Controller
 
     public function loadRevision($revision_id){
         $doc = \App\DocumentRevision::find($revision_id);
-        $open_in_browser_types = explode(',', env('FILE_EXTENSIONS_TO_OPEN_IN_BROWSER'));
-        $ext = pathinfo($doc->path, PATHINFO_EXTENSION);
-        if(in_array($ext, $open_in_browser_types)){
-            return response()->download(storage_path('app/'.$doc->path), null, [], null);
-        }
-        return response()->download(storage_path('app/'.$doc->path));
+
+	$collection_id = $doc->collection_id;
+        $collection = \App\Collection::find($collection_id);
+        $storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
+
+        ## New code
+        $download_file = $this->downloadFile($doc,$storage_drive);
+        return $download_file;
     }
 
     public function extractText($filepath, $mimetype){
@@ -387,4 +386,31 @@ class DocumentController extends Controller
     return isset($formulas[$to]) ? $formulas[$to] : 0;
 }
 
+function downloadFile($doc,$storage_drive){
+	$exists = Storage::disk($storage_drive)->exists($doc->path);
+        try{
+                $file_url = $doc->path;
+                $file_name  = $doc->path;                       //"VoteMix-Event-Entry-Ticket.pdf";
+
+                $mime = Storage::disk($storage_drive)->getDriver()->getMimetype($file_url);
+                $size = Storage::disk($storage_drive)->getDriver()->getSize($file_url);
+
+                $response =  [
+                'Content-Type' => $mime,
+                'Content-Length' => $size,
+                'Content-Description' => 'File Transfer',
+                'Content-Disposition' => "attachment; filename={$file_name}",
+                'Content-Transfer-Encoding' => 'binary',
+                ];
+
+                ob_end_clean();
+
+                return \Response::make(Storage::disk($storage_drive)->get($file_url), 200, $response);
+        }
+        catch(Exception $e){
+                return $this->respondInternalError( $e->getMessage(), 'object', 500);
+        }
+}
+
+### End of class
 }

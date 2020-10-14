@@ -5,7 +5,7 @@ $sysconfig = array();
 foreach($config_details as $details){
 	$sysconfig[$details['param']] = $details['value'];
 }
-$is_demo = env('is_demo');
+$is_demo = env('IS_DEMO');
 @endphp
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">

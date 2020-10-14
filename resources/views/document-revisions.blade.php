@@ -49,7 +49,9 @@ $(document).ready(function() {
                         $i++;
                         @endphp
                     <tr>
-                        <td><img class="file-icon" src="/i/file-types/{{ ($dr->document)->icon($dr->path) }}.png" /></td>
+                        <td>
+			<a href="/document-revision/{{$dr->id}}" target="_new">
+			<img class="file-icon" src="/i/file-types/{{ ($dr->document)->icon($dr->path) }}.png" /></a></td>
                         <td data-order="{{ $dr->created_at }}">
                         <a href="/document-revision/{{$dr->id}}" target="_new">{{ date('F d, Y', strtotime($dr->created_at)) }}</a>
                         </td>
