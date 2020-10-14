@@ -12,13 +12,13 @@
 */
 
 
-/*
+
 Route::get('/', function () {
     return view('welcome');
 });
-*/
 
-Route::get('/','HomeController@welcome');
+
+Route::get('/','GuestController@welcome');
 
 Route::get('/welcome', function () {
     return view('welcome');
