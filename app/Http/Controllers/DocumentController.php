@@ -8,6 +8,8 @@ use App\DocumentRevision;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use thiagoalessio\TesseractOCR\TesseractOCR;
+use NlpTools\Similarity\CosineSimilarity;
+use App\Curation;
 use Session;
 
 
@@ -355,8 +357,13 @@ class DocumentController extends Controller
         $d = Document::find($document_id);
         $rev1 = DocumentRevision::find($rev1_id);
         $rev2 = DocumentRevision::find($rev2_id);
+	$cos_sim = new CosineSimilarity();
+	$token_counts1 = Curation::getWordWeights($rev1->text_content);
+	$token_counts2 = Curation::getWordWeights($rev2->text_content);
+	$cosine_similarity = $cos_sim->similarity($token_counts1, $token_counts2);
         return view('revision-diff', 
             ['document'=>$d, 'rev1'=>$rev1, 'rev2'=>$rev2,
+	    'cosine_similarity' => round($cosine_similarity*100, 2),
             'activePage'=>'Diff in Revisions']);
     }
 
