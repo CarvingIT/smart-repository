@@ -16,6 +16,7 @@
                   </div>
             </div>
             <div class="row">
+		<div class="col-md-12"><h3>Similarity: {{ $cosine_similarity }}%</h3></div>
                 <div class="col-md-6"><h4>{{ $rev1->created_at }} ({{ $rev1->user->name }})</h4></div>
                 <div class="col-md-6"><h4>{{ $rev2->created_at }} ({{ $rev2->user->name }})</h4></div>
             </div>
