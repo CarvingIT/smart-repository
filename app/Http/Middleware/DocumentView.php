@@ -16,7 +16,7 @@ class DocumentView
     public function handle($request, Closure $next)
     {
         $document = \App\Document::find($request->route('document_id'));
-	if($document->collection->content_type == 'Uploaded documents'){ // restriction only for Uploaded documents
+	if($document && $document->collection->content_type == 'Uploaded documents'){ // restriction only for Uploaded documents
         $document = \App\Document::find($request->document_id);
         if($document->collection->type != 'Public' && 
             !($request->user() && $request->user()->hasPermission($document->collection->id, 'VIEW'))){

@@ -66,6 +66,7 @@ table.dataTable thead th, table.dataTable thead td{
 }
 #wordcloud{
     padding:auto;
+    min-height:200px;
 }
 
 div.dataTables_wrapper div.dataTables_processing {
