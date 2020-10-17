@@ -320,11 +320,18 @@ class CollectionController extends Controller
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $documents_filtered = $documents_filtered->search($request->search['value']);
         }
+
             $filtered_count = $documents_filtered->count();
+        if(!empty($request->embedded)){ 		
+            $documents = $documents_filtered->limit($request->length)->offset($request->start)->get();
+       	    $results_data = $this->datatableFormatResultsEmbedded(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
+	}
+	else{
             $documents = $documents_filtered->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
             ->limit($request->length)->offset($request->start)->get();
+            $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
+	}
         
-        $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
         $results= array(
             'data'=>$results_data,
             'draw'=>(int) $request->draw,
@@ -522,5 +529,26 @@ class CollectionController extends Controller
 	return $collections;
     }
 
+
+    private function datatableFormatResultsEmbedded($data){
+        $documents = $data['documents'];
+        $request = $data['request'];
+
+	$collection = \App\Collection::find($request->collection_id);
+
+        $results_data = array();
+
+        foreach($documents as $d){
+            $results_data[] = array(
+                'type' => array('display'=>'<a href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="'.env('APP_URL').'/i/file-types/'.$d->icon().'.png" style="width:50px;"/></a>', 'filetype'=>$d->icon()),
+                'title' => '<a href="'.env('APP_URL').'/collection/'.$request->collection_id.'/document/'.$d->id.'/details" target="_blank">'.$d->title.'</a>',
+                'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
+                'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                );
+        }
+        return $results_data;
+    }
+
+##########################################
 ## Class Ends
 }
