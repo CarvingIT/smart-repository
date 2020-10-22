@@ -396,9 +396,10 @@ class CollectionController extends Controller
                 }
             }
 	    } // if collection's content-type == Uploaded documents
+	    $title = $d->title.': '. substr($d->text_content, 0, 100).' ...';
             $results_data[] = array(
                 'type' => array('display'=>'<a href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
-                'title' => $d->title,
+                'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'actions' => $action_icons);
