@@ -90,6 +90,7 @@ class CrawlHandler extends CrawlObserver{
    }
 
    private function getText($mime_type, $content){
+	try{
 	if($mime_type == 'text/html'){
 		$html = new \Html2Text\Html2Text($content);
 		return $html->getText();
@@ -106,6 +107,11 @@ class CrawlHandler extends CrawlObserver{
 			return $text;
 		}
 		return ''; // default; if $ext is empty 
+	}
+	}
+	catch(\Exception $e){
+		// log error to a log file instead of to the standard output
+		echo "ERROR: ".$e->getMessage()."\n"; 
 	}
    }
 
