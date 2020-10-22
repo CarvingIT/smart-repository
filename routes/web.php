@@ -51,6 +51,9 @@ Route::post('/collection/{collection_id}/upload','DocumentController@upload')->m
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('collection_view');
 Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm');
 
+// Collection-user management
+Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('collection_view');
+
 Route::get('autocomplete', 'UserController@autoComplete')->name('autocomplete');
 
 Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@showCollectionUserForm');
