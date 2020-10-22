@@ -117,8 +117,7 @@ class Crawl extends Command
 		->setDelayBetweenRequests($sleep)
     		->setCrawlObserver($crawl_handler)
 		->setCrawlProfile(new CrawlSubdomains($url))
-		->executeJavaScript()
-		//->setBrowsershot($browsershot)
+		//->executeJavaScript()
     		->startCrawling($url);
     }
 }
