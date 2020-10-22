@@ -36,6 +36,7 @@ class CrawlHandler extends CrawlObserver{
 			while($c = $body->read(1024)){
 				$content .= $c;
 			}
+			try{
 			$headers = $response->getHeaders();
 			$content_type_ar = explode(";",$headers['Content-Type'][0]);
 			$mime_type = $content_type_ar[0];
@@ -48,7 +49,6 @@ class CrawlHandler extends CrawlObserver{
 			$url_model->text_content = $this->getText($mime_type, $content);
 			$url_model->title = $this->getTitle($mime_type, $content);
 			$url_model->size = strlen($content);
-			try{
 			$url_model->save();
 		    	// Update elastic index
             	   	$body = $url_model->toArray();

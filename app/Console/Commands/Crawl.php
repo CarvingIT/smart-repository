@@ -10,6 +10,7 @@ use App\SpideredDomain;
 use Elasticsearch\ClientBuilder;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use PHPHtmlParser\Dom;
+//use Spatie\Browsershot\Browsershot;
 
 class Crawl extends Command
 {
@@ -55,6 +56,13 @@ class Crawl extends Command
 	if(empty($site)){
 	$domains = SpideredDomain::where('collection_id', $collection_id)->get();
 		foreach($domains as $d){
+		
+		/*
+		Client options that need to be enabled/added
+		allow_redirects = true
+		cookies = true 
+		also need to set auth information
+	 	*/
 			$crawl_client_options = ['base_uri'=> $d->web_address, 'cookies'=>true, 'allow_redirects'=>true];
 			$crawl_client = new GuzzleHttpClient($crawl_client_options);
 			$crawler = new Crawler($crawl_client);
@@ -101,27 +109,16 @@ class Crawl extends Command
     }
 
     private function crawlSite($collection_id, $site_address, $crawler, $sleep){
-	/*
-        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
-        $hosts = explode(",",$elastic_hosts);
-        $elastic_client = ClientBuilder::create()->setHosts($hosts)->build();
-	 */
         $url = \GuzzleHttp\Psr7\uri_for($site_address);
 	$crawl_handler = new \App\CrawlHandler($collection_id);
-	//$crawl_handler->setCollectionId($collection_id);
-	//$crawl_handler->setElasticClient($elastic_client);
 
-	/*
-		Client options that need to be enabled/added
-		allow_redirects = true
-		cookies = true 
-		also need to set auth information
-	 */
 	    //Crawler::create()
 		$crawler
 		->setDelayBetweenRequests($sleep)
     		->setCrawlObserver($crawl_handler)
 		->setCrawlProfile(new CrawlSubdomains($url))
+		->executeJavaScript()
+		//->setBrowsershot($browsershot)
     		->startCrawling($url);
     }
 }
