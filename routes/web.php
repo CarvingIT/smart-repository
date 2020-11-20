@@ -53,6 +53,7 @@ Route::get('/collection/{collection_id}/user', 'CollectionController@showCollect
 
 // Collection-user management
 Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('collection_view');
+Route::post('/collection/{collection_id}/savecollectionurls', 'CollectionController@saveCollectionUrls');
 
 Route::get('autocomplete', 'UserController@autoComplete')->name('autocomplete');
 
