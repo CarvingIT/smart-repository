@@ -5,6 +5,8 @@ use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 use App\Url;
+use App\UrlSuppression;
+use App\DesiredUrl;
 use Elasticsearch\ClientBuilder;
 
 class CrawlHandler extends CrawlObserver{
@@ -23,11 +25,17 @@ class CrawlHandler extends CrawlObserver{
    }
 
    public function willCrawl(UriInterface $url) {
-	echo "Starting crawling $url\n";
+	//echo "Starting crawling $url\n";
    }
 
    public function crawled(UriInterface $url, ResponseInterface $response, ?UriInterface $foundOnUrl = null){
-	//echo "Crawled $url\n";
+	// check restrictions 
+	   // do not save if it does not match desired_urls or is in suppression list
+	   if(!$this->canSave($url)){
+		   //echo "Suppressing ".(string) $url.'.';
+		   return null;
+	   }
+
 	$status_code = $response->getStatusCode();
 		if($status_code == '200'){
 			$body = $response->getBody();
@@ -90,6 +98,7 @@ class CrawlHandler extends CrawlObserver{
    }
 
    private function getText($mime_type, $content){
+	try{
 	if($mime_type == 'text/html'){
 		$html = new \Html2Text\Html2Text($content);
 		return $html->getText();
@@ -106,6 +115,11 @@ class CrawlHandler extends CrawlObserver{
 			return $text;
 		}
 		return ''; // default; if $ext is empty 
+	}
+	}
+	catch(\Exception $e){
+		// log error to a log file instead of to the standard output
+		echo "ERROR: ".$e->getMessage()."\n"; 
 	}
    }
 
@@ -151,5 +165,27 @@ class CrawlHandler extends CrawlObserver{
 
    public function setCollectionId($collection_id){
    	$this->collection_id = $collection_id;
+   }
+
+   public function canSave($url){
+	   $desired_list = DesiredUrl::where('collection_id', $this->collection_id)->get();
+	   if(!empty($desired_list)){
+		   foreach($desired_list as $d_u){
+		   	$pattern = '#'.$d_u->url_start_pattern.'#';
+		   	$subject_url = (string) $url;
+		   	if(preg_match($pattern, $subject_url)) return true;
+			else return false;
+		   }
+	   }
+
+	   $suppression_list = UrlSuppression::where('collection_id', $this->collection_id)->get();
+	   if(!empty($suppression_list)){
+	   foreach($suppression_list as $s){
+		   $pattern = '#'.$s->url_start_pattern.'#';
+		   $subject_url = (string) $url;
+		   if(preg_match($pattern, $subject_url)) return false;
+	   }
+	   }
+	   return true;
    }
 }

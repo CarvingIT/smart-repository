@@ -51,6 +51,10 @@ Route::post('/collection/{collection_id}/upload','DocumentController@upload')->m
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('collection_view');
 Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm');
 
+// Collection-user management
+Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('collection_view');
+Route::post('/collection/{collection_id}/savecollectionurls', 'CollectionController@saveCollectionUrls');
+
 Route::get('autocomplete', 'UserController@autoComplete')->name('autocomplete');
 
 Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@showCollectionUserForm');
@@ -91,11 +95,11 @@ Route::get('/reports/uploads', 'ReportsController@uploads');
 Route::get('/admin','AdminController@index')->name('adminhome');
 Route::get('/admin/collectionmanagement', 'CollectionController@index')->middleware('admin');
 Route::get('/admin/collection-form/{collection_id}', 'CollectionController@add_edit_collection')->middleware('admin');
-Route::get('/admin/collection-form/{collection_id}/delete', 'CollectionController@deleteCollection')->middleware('admin');
+Route::post('/admin/collection-form/delete', 'CollectionController@deleteCollection')->middleware('admin');
 Route::post('/admin/savecollection', 'CollectionController@save')->middleware('admin');
 Route::get('/admin/usermanagement', 'UserController@index')->middleware('admin');
 Route::post('/admin/saveuser', 'UserController@save')->middleware('admin');
-Route::get('/admin/user/{user_id}/delete','UserController@delete')->middleware('admin');
+Route::post('/admin/user/delete','UserController@destroy')->middleware('admin');
 // system config
 Route::get('/admin/sysconfig','SysConfigController@index')->middleware('admin');
 Route::post('/admin/sysconfig','SysConfigController@save')->middleware('admin');

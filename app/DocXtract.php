@@ -88,8 +88,16 @@ function pptx_to_text(){
         while(($xml_index = $zip_handle->locateName("ppt/slides/slide".$slide_number.".xml")) !== false){
             $xml_datas = $zip_handle->getFromIndex($xml_index);
             $xml_handle = new \DOMDocument();
+	    //$xml_handle->preserveWhiteSpace = true;
             $xml_handle->loadXML($xml_datas, LIBXML_NOENT | LIBXML_XINCLUDE | LIBXML_NOERROR | LIBXML_NOWARNING);
-            $output_text .= strip_tags($xml_handle->saveXML());
+	    //$xml_handle->formatOutput = true;
+            //$output_text .= "\n".strip_tags($xml_handle->saveXML());
+            $output_text .= $xml_handle->saveXML();
+	    $output_text = preg_replace('#</p:#', "\n</p:", $output_text);
+	    $output_text = preg_replace('#</a:#', "\n</a:", $output_text);
+	    $output_text = strip_tags($output_text);
+	    $output_text = preg_replace( "/[\r\n]+/", "\n", $output_text );
+
             $slide_number++;
         }
         if($slide_number == 1){
