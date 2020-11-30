@@ -34,9 +34,14 @@
 		}
 		//print_r($curation);
 		foreach($curation as $c => $list){
-			echo "<h3>$c</h3>";
+			echo "<h3>".$c." (".count($list).")</h3>";
 			foreach($list as $l){
-				echo "<p>".$l->context->text."</p>";
+				$offset = $l->context->offset;
+				$length = $l->context->length;
+				$context_text = $l->context->text;
+				$problem_word = substr($context_text, $offset, $length);
+				$context_text = substr_replace($context_text, '<span class="lang_problem">'.$problem_word.'</span>', $offset, $length);
+				echo '<p>'.$context_text.'</p>';
 			}
 		}
 		}

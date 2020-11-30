@@ -80,3 +80,7 @@ padding-bottom:2%;
 a.navbar-brand{
 	color:#333 !important;
 }
+
+.lang_problem{
+	background-color:yellow;
+}
