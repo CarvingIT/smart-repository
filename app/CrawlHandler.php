@@ -25,14 +25,14 @@ class CrawlHandler extends CrawlObserver{
    }
 
    public function willCrawl(UriInterface $url) {
-	echo "Starting crawling $url\n";
+	//echo "Starting crawling $url\n";
    }
 
    public function crawled(UriInterface $url, ResponseInterface $response, ?UriInterface $foundOnUrl = null){
 	// check restrictions 
 	   // do not save if it does not match desired_urls or is in suppression list
 	   if(!$this->canSave($url)){
-		   echo "Suppressing ".(string) $url.'.';
+		   //echo "Suppressing ".(string) $url.'.';
 		   return null;
 	   }
 

@@ -7,4 +7,5 @@ use Illuminate\Database\Eloquent\Model;
 class SpideredDomain extends Model
 {
 	protected $table = 'spidered_domains';
+	public $timestamps = false;
 }

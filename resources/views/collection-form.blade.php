@@ -31,7 +31,7 @@ $(document).ready(function() {
 function hideStorageDriveField(){
 var e = document.getElementById("content_type");
 var content_type = e.options[e.selectedIndex].value;
-alert(content_type);
+//alert(content_type);
 if(content_type=='Web resources'){
 	document.getElementById("storage_drive").style.display = 'none';
 }

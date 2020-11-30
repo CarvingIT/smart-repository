@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 use Elasticsearch\ClientBuilder;
 use App\StorageTypes;
+use App\SpideredDomain;
+use App\DesiredUrl;
+use App\UrlSuppression;
 
 class CollectionController extends Controller
 {
@@ -320,11 +323,18 @@ class CollectionController extends Controller
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $documents_filtered = $documents_filtered->search($request->search['value']);
         }
+
             $filtered_count = $documents_filtered->count();
+        if(!empty($request->embedded)){ 		
+            $documents = $documents_filtered->limit($request->length)->offset($request->start)->get();
+       	    $results_data = $this->datatableFormatResultsEmbedded(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
+	}
+	else{
             $documents = $documents_filtered->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
             ->limit($request->length)->offset($request->start)->get();
+            $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
+	}
         
-        $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
         $results= array(
             'data'=>$results_data,
             'draw'=>(int) $request->draw,
@@ -495,13 +505,21 @@ class CollectionController extends Controller
         $search_log_entry->save();
     }
 
-    public function deleteCollection($collection_id){
-        $collection = \App\Collection::find($collection_id);
+    public function deleteCollection(Request $request){
+        $collection = \App\Collection::find($request->collection_id);
 
     	if ($collection != null) {
-       	 	if($collection->delete())
+	if(!empty($request->delete_captcha) &&
+                $request->delete_captcha == $request->delete_captcha){
+       	 	if($collection->delete()){
             	Session::flash('alert-success', 'Collection deleted successfully!');
        	 	return redirect('/admin/collectionmanagement');
+		}
+        }
+        else{
+                Session::flash('alert-danger', 'Please fill Captcha');
+                return redirect('/admin/collectionmanagement');
+        }
     	}
 
     }
@@ -523,5 +541,103 @@ class CollectionController extends Controller
 	return $collections;
     }
 
+
+    private function datatableFormatResultsEmbedded($data){
+        $documents = $data['documents'];
+        $request = $data['request'];
+
+	$collection = \App\Collection::find($request->collection_id);
+
+        $results_data = array();
+
+        foreach($documents as $d){
+	    $title = $d->title.'<br />'. substr($d->text_content, 0, 100).' ...';
+            $results_data[] = array(
+                'type' => array('display'=>'<a href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="'.env('APP_URL').'/i/file-types/'.$d->icon().'.png" style="width:20px;"/></a>', 'filetype'=>$d->icon()),
+                'title' => '<a href="'.env('APP_URL').'/collection/'.$request->collection_id.'/document/'.$d->id.'/details" target="_blank">'.$title.'</a>',
+                'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
+                'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                );
+        }
+        return $results_data;
+    }
+
+    public function collectionUrls($collection_id){
+        if($collection_id == 'new'){
+            $collection = new \App\Collection();
+        }
+        else{
+            $collection = \App\Collection::find($collection_id);
+        }
+        return view('save_exclude_sites', ['collection'=>$collection,'activePage'=>'Collection', 'titlePage'=>'Collection']);
+    }
+
+    public function saveCollectionUrls(Request $request){
+	$domain_link = $request->spidered_domain;
+	$existing_domains = array();
+	$sd = SpideredDomain::all();
+	foreach($sd as $domain){
+		$existing_domains[] = $domain->web_address;
+	}		
+	if(!in_array($domain_link,$existing_domains)){
+		$sd = new \App\SpideredDomain;
+		$sd->collection_id = $request->input('collection_id');
+		$sd->web_address = $domain_link;
+         	try{
+	    	$sd->save();
+		$last_insert_id = $sd->id;
+		if(!empty($request->input('save_urls'))){
+		$this->saveDesiredUrls($last_insert_id,$request);		
+		}
+		elseif(!empty($request->input('exclude_urls'))){
+		$this->excludeUrls($last_insert_id,$request);		
+		}
+            	Session::flash('alert-success', 'Site URLs saved successfully!');
+            	return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
+         	}
+         	catch(\Exception $e){
+            	Session::flash('alert-danger', $e->getMessage());
+            	return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
+         	}
+	} ##if ends for existing domains check
+	else{
+            	Session::flash('alert-danger', 'Domain already spidered.');
+            	return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
+	}
+/*
+use App\SpideredDomain;
+use App\DesiredUrl;
+use App\UrlSuppression;
+*/
+    }
+
+    public function saveDesiredUrls($spidered_domain_id, $request){
+	$url_start_patterns = explode("\n",$request->input('save_urls'));
+	$collection_id = $request->input('collection_id');
+#DB::enableQueryLog();
+	foreach($url_start_patterns as $url){
+		$su = new \App\DesiredUrl;	
+		$su->collection_id = $collection_id;
+		$su->url_start_pattern = rtrim(ltrim($url));
+		$su->spidered_domain_id = $spidered_domain_id;
+	    	$su->save();
+	}
+#dd(DB::getQueryLog());
+    }	
+
+    public function excludeUrls($spidered_domain_id, $request){
+	$url_start_patterns = explode("\n",$request->input('save_urls'));
+	$collection_id = $request->input('collection_id');
+#DB::enableQueryLog();
+	foreach($url_start_patterns as $url){
+		$su = new \App\UrlSuppression;
+		$su->collection_id = $collection_id;
+		$su->url_start_pattern = rtrim(ltrim($url));
+		$su->spidered_domain_id = $spidered_domain_id;
+	    	$su->save();
+	}
+#dd(DB::getQueryLog());
+    }	
+##########################################
 ## Class Ends
 }

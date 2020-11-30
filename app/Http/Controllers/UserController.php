@@ -7,6 +7,7 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Session;
 
 
 
@@ -105,10 +106,18 @@ class UserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(User  $user)
+    public function destroy(Request $request)
     {
-        $user->delete();
-
-        return redirect()->route('user.index')->withStatus(__('User successfully deleted.'));
+	$user = \App\User::findOrFail($request->user_id);
+	if(!empty($request->delete_captcha) &&
+                $request->delete_captcha == $request->delete_captcha){
+        	$user->delete();
+		Session::flash('alert-success', 'User successfully deleted.');
+        	return redirect()->route('user.index');
+        }
+	else{
+		Session::flash('alert-danger', 'Please fill Captcha');
+        	return redirect('/user');
+        }
     }
 }
