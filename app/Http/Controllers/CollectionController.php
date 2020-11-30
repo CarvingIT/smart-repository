@@ -505,8 +505,8 @@ class CollectionController extends Controller
         $search_log_entry->save();
     }
 
-    public function deleteCollection($collection_id){
-        $collection = \App\Collection::find($collection_id);
+    public function deleteCollection(Request $request){
+        $collection = \App\Collection::find($request->collection_id);
 
     	if ($collection != null) {
        	 	if($collection->delete())

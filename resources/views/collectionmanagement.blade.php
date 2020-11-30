@@ -1,14 +1,40 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar','title'=>'Smart Repository'])
 
 @section('content')
-
+<!--
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+-->
+<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/jquery-ui.js" defer></script>
+<link href="/css/jquery-ui.css" rel="stylesheet">
 
 <script>
 $(document).ready(function() {
     $('#collections').DataTable();
 } );
+
+function showDeleteDialog(collection_id){
+        str = randomString(6);
+        $('#text_captcha').text(str);
+        $('#hidden_captcha').text(str);
+        $('#delete_collection_id').val(collection_id);
+        deldialog = $( "#deletedialog" ).dialog({
+                title: 'Are you sure ?',
+                resizable: true
+        });
+}
+
+function randomString(length) {
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
 </script>
 <div class="container">
 <div class="container-fluid">
@@ -57,17 +83,27 @@ $(document).ready(function() {
                             <td>{{ $c->created_at }}</td>
                             <td class="td-actions text-right">
                                 <a rel="tooltip" class="btn btn-success btn-link" href="/admin/collection-form/{{$c->id}}">
-				<!--img class="material-icons" src="/i/pencil-edit-button.png" width=20% /-->
 				<i class="material-icons">edit</i>
                                 <div class="ripple-container"></div>
 				</a>
-                                <a rel="tooltip" class="btn btn-danger btn-link" href="/admin/collection-form/{{$c->id}}/delete">
-				<!--img class="material-icon" src="/i/trash.png" style="width:20%;" /-->
-				<i class="material-icons">close</i>
+                                <!--a rel="tooltip" class="btn btn-danger btn-link" href="/admin/collection-form/{{$c->id}}/delete">
+				<i class="material-icons">delete</i>
                                 <div class="ripple-container"></div>
-				</a>
+				</a-->
+			<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $c->id }});" title="Delete Collection"><i class="material-icons">delete</i></span>
                             </td>    <!-- use font awesome icons or image icons -->
                         </tr>
+            <div id="deletedialog" style="display:none;">
+                <form name="deletedoc" method="post" action="/admin/collection-form/delete">
+                @csrf
+                <p>Enter <span id="text_captcha"></span> to delete</p>
+                <input type="text" name="delete_captcha" value="" />
+                <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
+                <input type="hidden" id="delete_collection_id" name="collection_id" value="{{ $c->id }}" />
+                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+                </form>
+            </div>
+
                         @endforeach
                         </tbody>
                     </table>
