@@ -405,7 +405,7 @@ class DocumentController extends Controller
     return isset($formulas[$to]) ? $formulas[$to] : 0;
 }
 
-function downloadFile($doc,$storage_drive){
+public function downloadFile($doc,$storage_drive){
 	$exists = Storage::disk($storage_drive)->exists($doc->path);
         try{
                 $file_url = $doc->path;
@@ -429,6 +429,34 @@ function downloadFile($doc,$storage_drive){
         catch(Exception $e){
                 return $this->respondInternalError( $e->getMessage(), 'object', 500);
         }
+}
+
+public function proofRead($collection_id,$document_id){
+	$d = \App\Document::find($document_id);
+	$client = new \GuzzleHttp\Client();
+	$connection_error = null;
+	$lang_issues = null;
+	try{
+	$response = $client->request('POST', env('LANG_TOOL_URL'),
+		[ 
+		   'form_params'=>[
+			'language'=>'en-US',
+			'text'=>$d->text_content,
+		   ]
+		]
+	);
+ 	if($response->getStatusCode() == 200){
+		$lang_issues = json_decode((string) $response->getBody());
+	}
+	else{
+		// error
+		$reason = $response->getReasonPhrase();
+	}
+	}
+	catch(\Exception $e){
+		$connection_error = $e->getMessage();
+	}
+        return view('proof-reading', ['document'=>$d, 'lang_issues'=>$lang_issues, 'connection_error' => $connection_error]);
 }
 
 ### End of class
