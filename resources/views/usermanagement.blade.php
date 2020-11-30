@@ -53,20 +53,9 @@ function randomString(length) {
                     	</button>
                         <span>{{ Session::get('alert-' . $msg) }}</span>
                   	</div>
-
                         @endif
                     @endforeach
                     </div>
-
-                   <form method="post" action="/admin/saveuser">
-                    @csrf()
-                   <label for="name">Name</label> 
-                   <input type="text" name="name" id="name" value="" />
-                   <label for="email">Email</label> 
-                   <input type="text" name="email" id="email" value="" />
-
-                   <input type="submit" value="Submit" />
-                   </form> 
                 </div>
             </div>
 	-->
@@ -76,18 +65,18 @@ function randomString(length) {
 		</div>
 
                 <div class="card-body">
-                @if (session('status'))
-                  <div class="row">
-                    <div class="col-sm-12">
-                      <div class="alert alert-success">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                          <i class="material-icons">close</i>
-                        </button>
-                        <span>{{ session('status') }}</span>
-                      </div>
+                    <div class="flash-message">
+                    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                        @if(Session::has('alert-' . $msg))
+			<div class="alert alert-<?php echo $msg; ?>">
+                    	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      	<i class="material-icons">close</i>
+                    	</button>
+                        <span>{{ Session::get('alert-' . $msg) }}</span>
+                  	</div>
+                        @endif
+                    @endforeach
                     </div>
-                  </div>
-                @endif
                 <div class="row">
                   <div class="col-12 text-right">
                     <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary" title="Add User"><i class="material-icons">add</i></a>

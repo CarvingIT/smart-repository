@@ -509,9 +509,17 @@ class CollectionController extends Controller
         $collection = \App\Collection::find($request->collection_id);
 
     	if ($collection != null) {
-       	 	if($collection->delete())
+	if(!empty($request->delete_captcha) &&
+                $request->delete_captcha == $request->delete_captcha){
+       	 	if($collection->delete()){
             	Session::flash('alert-success', 'Collection deleted successfully!');
        	 	return redirect('/admin/collectionmanagement');
+		}
+        }
+        else{
+                Session::flash('alert-danger', 'Please fill Captcha');
+                return redirect('/admin/collectionmanagement');
+        }
     	}
 
     }

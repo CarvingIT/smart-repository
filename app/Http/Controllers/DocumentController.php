@@ -267,8 +267,14 @@ class DocumentController extends Controller
 	if(!empty($request->delete_captcha) && 
 		$request->delete_captcha == $request->delete_captcha){
         	$d->delete();
+                Session::flash('alert-success', 'Document deleted successfully.');
+        	return redirect('/collection/'.$collection_id); 
 	}
-        return redirect('/collection/'.$collection_id); 
+	else{
+                Session::flash('alert-danger', 'Please fill Captcha');
+        	return redirect('/collection/'.$collection_id); 
+        }
+
     }
 
 	public function documentRevisions($document_id)
