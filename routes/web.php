@@ -83,6 +83,7 @@ Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevi
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
 // Document details (meta)
 Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
 // See Diff in revisions
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
 
