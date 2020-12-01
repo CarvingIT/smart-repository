@@ -22,7 +22,7 @@ class DocXtract{
                 $outtext .= $thisline."\n";
               }
           }
-         $outtext = preg_replace("/[^a-zA-Z0-9\s\,\.\-\n\r\t@\/\_\(\)]/","",$outtext);
+         $outtext = preg_replace("/[^a-zA-Z0-9\s\,\.\-\n\r\t@\/\_\(\)]/"," ",$outtext);
         return $outtext;
     }
 
@@ -50,6 +50,7 @@ class DocXtract{
 
         $content = str_replace('</w:r></w:p></w:tc><w:tc>', " ", $content);
         $content = str_replace('</w:r></w:p>', "\r\n", $content);
+        $content = str_replace('<w:p ', "\r\n<w:p ", $content);
         $striped_content = strip_tags($content);
 
         return $striped_content;

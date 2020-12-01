@@ -306,6 +306,7 @@ class DocumentController extends Controller
             $text = $pdf->getText();
             //$text = str_replace(array('&', '%', '$', "\n"), ' ', $text);
             $text = str_replace(array('&', '%', '$'), ' ', $text);
+	    $text = str_replace("\t","",$text);
         }
         else if(preg_match('/^image\//', $mimetype)){
             // try OCR
