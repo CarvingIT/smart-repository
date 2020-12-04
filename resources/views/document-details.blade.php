@@ -91,9 +91,11 @@ $(document).ready(function()
 			@endif
                         <img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>
                         </span>
+			@if(Auth::user() && (Auth::user()->hasPermission($collection->id, 'MAINTAINER') || Auth::user()->hasPermission($collection->id, 'EDIT_ANY')))
                         <span id="doc-proofread" class="col-md-12">
 			<a href="/collection/{{$c->id}}/document/{{$document->id}}/proofread"><img class="file-icon" src="/i/proofread.png" /></a>
 			</span>
+			@endif
                         </div>
                         <div class="col-md-12">
                         <label for="doc-size" class="col-md-12">Size</label>
