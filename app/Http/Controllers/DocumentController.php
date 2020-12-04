@@ -11,6 +11,8 @@ use thiagoalessio\TesseractOCR\TesseractOCR;
 use NlpTools\Similarity\CosineSimilarity;
 use App\Curation;
 use Session;
+#echo (new TesseractOCR('/home/shraddha/projects/labwidgets/images/text.png'))->run();
+#exit;
 
 
 class DocumentController extends Controller
@@ -300,16 +302,19 @@ class DocumentController extends Controller
 
     public function extractText($filepath, $mimetype){
         $text = '';
+	$enable_OCR = env('ENABLE_OCR');
         if($mimetype == 'application/pdf'){
+	echo $mimetype;
+	exit;
             $parser = new \Smalot\PdfParser\Parser();
             $pdf = $parser->parseFile(storage_path('app/'.$filepath));
             $text = $pdf->getText();
             //$text = str_replace(array('&', '%', '$', "\n"), ' ', $text);
             $text = str_replace(array('&', '%', '$'), ' ', $text);
         }
-        else if(preg_match('/^image\//', $mimetype)){
+        else if(preg_match('/^image\//', $mimetype) && ($enable_OCR==1)){
             // try OCR
-            $d->is_ocr = 1;
+            #$d->is_ocr = 1;
             $text = utf8_encode((new TesseractOCR(storage_path('app/'.$filepath)))->run());
         }
         else if(preg_match('/^text\//', $mimetype)){
@@ -356,7 +361,7 @@ class DocumentController extends Controller
 	else {
         	$d = Document::find($document_id);
 	}
-        return view('document-details', ['document'=>$d, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
+        return view('document-details', ['document'=>$d, 'collection'=>$c, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
     }
 
     public function showRevisionDiff($document_id, $rev1_id, $rev2_id){
