@@ -145,20 +145,26 @@ class CollectionController extends Controller
     }
 
     public function saveUser(Request $request){
+	/*
+	// WHY IS THIS VALIDATION NEEDED ? 
+	// Just check if the user exists in the database
 	$request->validate([
     	'user_id' => 'email:rfc,dns'
 	]);
+	 */
         $user = \App\User::where('email','=',$request->user_id)->first();
         // first delete all permissions on the collection
-        \App\UserPermission::where('collection_id','=',$request->collection_id)
+	if($user){
+	    \App\UserPermission::where('collection_id','=',$request->collection_id)
             ->where('user_id','=',$user->id)->delete(); 
-        foreach($request->permission as $p){
+          foreach($request->permission as $p){
             $user_permission = new \App\UserPermission;
             $user_permission->user_id = $user->id;
             $user_permission->collection_id = $request->collection_id;
             $user_permission->permission_id = $p; 
             $user_permission->save();
-        }
+          }
+	}
         return $this->collectionUsers($request->collection_id);
     }
 
