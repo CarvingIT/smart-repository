@@ -23,8 +23,7 @@ class DocumentAdd
             !$request->user()->hasPermission($request->collection_id, 'EDIT_OWN') 
             )
         ){
-            // Use a view for error pages
-            return response('Access Denied', 403)->header('Content-Type', 'text/plain');
+		abort(403);
         }
         return $next($request);
     }

@@ -16,8 +16,7 @@ class DocumentEdit
     public function handle($request, Closure $next)
     {
         if(!$request->user() || !$request->user()->canEditDocument($request->document_id)){
-            // Use a view for error pages
-            return response('Access Denied', 403)->header('Content-Type', 'text/plain');
+		abort(403);
         }
         return $next($request);
     }

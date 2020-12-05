@@ -20,8 +20,7 @@ class DocumentView
         $document = \App\Document::find($request->document_id);
         if($document->collection->type != 'Public' && 
             !($request->user() && $request->user()->hasPermission($document->collection->id, 'VIEW'))){
-            // Use a view for error pages
-            return response('Access Denied', 403)->header('Content-Type', 'text/plain');
+	    abort(403);
         }
 	}
         return $next($request);

@@ -16,7 +16,7 @@ class Maintainer
     public function handle($request, Closure $next)
     {
         if(!$request->user() || !$request->user()->hasPermission($request->collection_id, 'MAINTAINER')){
-            return response('Access Denied', 403)->header('Content-Type', 'text/plain');
+		abort(403);
         }
         return $next($request);
     }
