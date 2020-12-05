@@ -176,17 +176,6 @@ class DocumentController extends Controller
             	$d->approved_by = \Auth::user()->id;
 		$d->approved_on = now();
             	}
-            // extract meta
-            $meta = $this->getMetaDataFromRequest($request);
-            // put all meta values in a string
-            $meta_string = '';
-            foreach($meta as $m){
-                $meta_string .= ' '.$m['field_value'].' ';
-            }
-            // save meta data
-            $this->saveMetaData($d->id, $meta);
-            // also update the text_content of the document
-            $d->text_content = $d->text_content . $meta_string;
 
 ### Code to edit title of documen starts
 	     if(!empty($request->title)){
@@ -202,7 +191,19 @@ class DocumentController extends Controller
                 Session::flash('alert-danger', $e->getMessage());
             }
 	} // else ends (document not uploaded)
-           return redirect('/collection/'.$request->input('collection_id')); 
+
+        // extract meta
+        $meta = $this->getMetaDataFromRequest($request);
+        // put all meta values in a string
+        $meta_string = '';
+        foreach($meta as $m){
+            $meta_string .= ' '.$m['field_value'].' ';
+        }
+        // save meta data
+        $this->saveMetaData($d->id, $meta);
+        // also update the text_content of the document
+        $d->text_content = $d->text_content . $meta_string;
+        return redirect('/collection/'.$request->input('collection_id')); 
     }
 
     public static function importFile($collection_id, $path, $meta=[]){
