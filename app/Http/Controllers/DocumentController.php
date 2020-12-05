@@ -305,8 +305,6 @@ class DocumentController extends Controller
         $text = '';
 	$enable_OCR = env('ENABLE_OCR');
         if($mimetype == 'application/pdf'){
-	echo $mimetype;
-	exit;
             $parser = new \Smalot\PdfParser\Parser();
             $pdf = $parser->parseFile(storage_path('app/'.$filepath));
             $text = $pdf->getText();
