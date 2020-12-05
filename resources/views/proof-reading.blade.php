@@ -25,7 +25,7 @@
                       <div class="col-md-12">
 	@php
 		if(!empty($connection_error)){
-			echo "ERROR: Language tool service is not accessible!";
+			echo "This service is not currently running. Please contact your administrator.";
 		}
 		else{
 		$curation = array();

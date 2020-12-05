@@ -85,7 +85,7 @@ $(document).ready(function()
                         <div class="col-md-12">
                         <span id="doc-download-open" class="col-md-12">
 			@if($c->content_type == 'Uploaded documents')
-			<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+			<a title="Download" href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
@@ -93,7 +93,7 @@ $(document).ready(function()
                         </span>
 			@if(Auth::user() && (Auth::user()->hasPermission($collection->id, 'MAINTAINER') || Auth::user()->hasPermission($collection->id, 'EDIT_ANY')))
                         <span id="doc-proofread" class="col-md-12">
-			<a href="/collection/{{$c->id}}/document/{{$document->id}}/proofread"><img class="file-icon" src="/i/proofread.png" /></a>
+			<a title="Proofread" href="/collection/{{$c->id}}/document/{{$document->id}}/proofread"><img class="file-icon" src="/i/proofread.png" /></a>
 			</span>
 			@endif
                         </div>
