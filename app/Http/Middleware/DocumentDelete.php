@@ -16,7 +16,7 @@ class DocumentDelete
     public function handle($request, Closure $next)
     {
         if(!$request->user() || !$request->user()->canDeleteDocument($request->document_id)){
-		abort(403);
+		abort(403, 'Forbidden');
         }
         return $next($request);
     }

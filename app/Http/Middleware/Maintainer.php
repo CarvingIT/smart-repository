@@ -16,7 +16,7 @@ class Maintainer
     public function handle($request, Closure $next)
     {
         if(!$request->user() || !$request->user()->hasPermission($request->collection_id, 'MAINTAINER')){
-		abort(403);
+		abort(403, 'Forbidden');
         }
         return $next($request);
     }

@@ -23,7 +23,7 @@ class DocumentAdd
             !$request->user()->hasPermission($request->collection_id, 'EDIT_OWN') 
             )
         ){
-		abort(403);
+		abort(403, 'Forbidden');
         }
         return $next($request);
     }

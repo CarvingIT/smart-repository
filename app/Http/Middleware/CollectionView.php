@@ -17,7 +17,7 @@ class CollectionView
     {
         $collection = \App\Collection::find($request->collection_id);
         if($collection->type != 'Public' && !$request->user()->hasPermission($request->collection_id, 'VIEW')){
-		abort(403);
+		abort(403, 'Forbidden');
         }
         return $next($request);
     }

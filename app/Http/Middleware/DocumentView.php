@@ -20,7 +20,7 @@ class DocumentView
         $document = \App\Document::find($request->document_id);
         if($document->collection->type != 'Public' && 
             !($request->user() && $request->user()->hasPermission($document->collection->id, 'VIEW'))){
-	    abort(403);
+	    abort(403, 'Forbidden');
         }
 	}
         return $next($request);
