@@ -17,6 +17,11 @@ use Session;
 
 class DocumentController extends Controller
 {
+
+    public function list(Request $request){
+        return view('all_documents');
+    }
+
     public function loadDocument($collection_id,$document_id){
         $doc = \App\Document::find($document_id);
 	$collection_id = $doc->collection_id;

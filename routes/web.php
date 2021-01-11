@@ -39,6 +39,7 @@ Auth::routes(['verify'=>true]);
 #Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/collections', 'CollectionController@list');
+Route::get('/documents', 'DocumentController@list');
 
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
 
@@ -63,6 +64,8 @@ Route::get('/collection/{collection_id}/remove-user/{user_id}', 'CollectionContr
 
 //search within a collection
 Route::get('/collection/{collection_id}/search', 'CollectionController@search')->middleware('collection_view');
+// search all accessible documents
+Route::get('/documents/search', 'CollectionController@search');
 
 // Meta information
 Route::get('/collection/{collection_id}/meta', 'CollectionController@metaInformation')->middleware('maintainer');

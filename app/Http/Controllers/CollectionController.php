@@ -38,7 +38,7 @@ class CollectionController extends Controller
         return view('collection-form', ['collection'=>$collection,'storage_disks'=>$storage_disks,'activePage'=>'Collection', 'titlePage'=>'Collection']);
     }
 
-    public function list(){
+    public function userCollections(){
         /*
          Get all public collections 
          plus collections to which the current user has access.
@@ -52,6 +52,11 @@ class CollectionController extends Controller
             }
         }
         $collections = Collection::whereIn('id', $user_collections)->orWhere('type','=','Public')->get();
+	return $collections;
+    }
+
+    public function list(){
+	$collections = $this->userCollections();
         return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections]);
     }
 
@@ -237,14 +242,34 @@ class CollectionController extends Controller
             ]
         ];
         */
-	$collection = \App\Collection::find($request->collection_id);
-	if($collection->content_type == 'Uploaded documents'){
-        $elastic_index = 'sr_documents';
-        $documents = \App\Document::where('collection_id', $request->collection_id);
+
+	if(!empty($request->collection_id)){
+		$collection = \App\Collection::find($request->collection_id);
+		if($collection->content_type == 'Uploaded documents'){
+        	$elastic_index = 'sr_documents';
+        	$documents = \App\Document::where('collection_id', $request->collection_id);
+		}
+		else{
+        	$elastic_index = 'sr_urls';
+        	$documents = \App\Url::where('collection_id', $request->collection_id);
+		}
 	}
-	else{
-        $elastic_index = 'sr_urls';
-        $documents = \App\Url::where('collection_id', $request->collection_id);
+	else {
+		// search all documents
+		$collections = $this->userCollections();
+		$collection_ids = array();
+		foreach($collections as $c){
+			$collection_ids[] = $c->id;
+		}
+		$collection_type = $request->collection_type;
+		if($collection_type == 'Web resources'){
+        		$documents = \App\Url::whereIn('collection_id', $collection_ids);
+        		$elastic_index = 'sr_urls';
+		}
+		else{
+        		$documents = \App\Document::whereIn('collection_id', $collection_ids);
+        		$elastic_index = 'sr_documents';
+		}
 	}
         $total_count = $documents->count();
 
@@ -258,7 +283,9 @@ class CollectionController extends Controller
             foreach($words as $w){
                 $params['body']['query']['bool']['must'][]['wildcard']['text_content']=$w.'*';
             }
-            $params['body']['query']['bool']['filter']['term']['collection_id']=$request->collection_id;
+	    if(!empty($request->collection_id)){
+            	$params['body']['query']['bool']['filter']['term']['collection_id']=$request->collection_id;
+	    }
         }
         $columns = array('type', 'title', 'size', 'updated_at');
         if(!empty($params)){
@@ -367,13 +394,20 @@ class CollectionController extends Controller
         $request = $data['request'];
         $has_approval = $data['has_approval'];
 
-	$collection = \App\Collection::find($request->collection_id);
+	if(!empty($request->collection_id)){
+		$collection = \App\Collection::find($request->collection_id);
+		$content_type = $collection->content_type;
+	}
+	else{
+		// default content type 
+		$content_type = 'Uploaded documents';
+	}
 
         $results_data = array();
         foreach($documents as $d){
             $action_icons = '';
 
-	    if($collection->content_type == 'Uploaded documents'){
+	    if($content_type == 'Uploaded documents'){
             	$revisions = $d->revisions;
             	$r_count = count($revisions);
             	if($r_count > 1){
@@ -382,12 +416,12 @@ class CollectionController extends Controller
             	}
 		$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$request->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
 	    }
-  	    else if ($collection->content_type == 'Web resources'){		
+  	    else if ($content_type == 'Web resources'){		
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
 	    }
 
 	    $action_icons .= '<a class="btn btn-primary btn-link" title="Information and more" href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">info</i></a>';
-	    if($collection->content_type == 'Uploaded documents'){
+	    if($content_type == 'Uploaded documents'){
             if(Auth::user()){
                 if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
 			if(!empty($d->approved_on)){
@@ -407,7 +441,7 @@ class CollectionController extends Controller
 	    } // if collection's content-type == Uploaded documents
 	    $title = $d->title.': '. substr($d->text_content, 0, 100).' ...';
             $results_data[] = array(
-                'type' => array('display'=>'<a href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
+                'type' => array('display'=>'<a href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
                 'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
@@ -532,6 +566,7 @@ class CollectionController extends Controller
 
     public function collection_list(){
         /*
+	 !! LOOKS LIKE A DUPLICATE FUNCTION of list() !!
          Get all public collections 
          plus collections to which the current user has access.
          Access to members-only collection is determined by db_table:user_permissions 
