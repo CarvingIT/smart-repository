@@ -298,18 +298,26 @@ class CollectionController extends Controller
             }
             $documents = $documents->whereIn('id', $document_ids);
         }
-	$filtered_count = $documents->count();
         // get Meta filtered documents
         $all_meta_filters = Session::get('meta_filters');
         if(!empty($all_meta_filters[$request->collection_id])){
             $documents = $this->getMetaFilteredDocuments($request, $documents);
         }
-        $documents = $documents->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
-             ->limit($request->length)->offset($request->start);
 
-	    $has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
+	// get approval exception 
+	// the exceptions will be removed from the models with ->whereNotIn 
+	$approval_exceptions = $this->getApprovalExceptions($documents);
+
+	$filtered_count = $documents->count() - count($approval_exceptions);
+	$documents = $documents->whereNotIn('id', $approval_exceptions)
+		->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
+             ->limit($request->length)->offset($request->start)->get();
+
+	$has_approval = \App\Collection::where('id','=',$request->collection_id)
+		->where('require_approval','=','1')->get();
+
         $results_data = $this->datatableFormatResults(
-               array('request'=>$request, 'documents'=>$documents->get(), 'has_approval'=>$has_approval)
+               array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval)
        	);
         $results= array(
             'data'=>$results_data,
@@ -387,6 +395,22 @@ class CollectionController extends Controller
         }
 
         return json_encode($results);
+    }
+
+    private function getApprovalExceptions($documents){
+	    $doc_col = $documents->get();
+	    $filtered_docs = $doc_col->filter(function($d, $key){
+		    if($d->collection->require_approval == 1 && 
+			    !Auth::user()->hasPermission($d->collection->id, 'APPROVE') &&
+		    	    empty($d->approved_on)){
+			    return true;
+		    }
+	    });
+	    $filtered_ids = array();
+	    foreach($filtered_docs as $d){
+		    $filtered_ids[] = $d->id;
+	    }
+	    return $filtered_ids;
     }
 
     private function datatableFormatResults($data){
