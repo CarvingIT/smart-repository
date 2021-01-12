@@ -405,7 +405,9 @@ class CollectionController extends Controller
                 'meta_query'=>'',
                 'results'=>$filtered_count);
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-            $this->logSearchQuery($search_log_data);
+	    if(!empty($request->collection_id)){
+            	$this->logSearchQuery($search_log_data);
+	    }
         }
 
         return json_encode($results);

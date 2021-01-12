@@ -30,7 +30,12 @@ $app_name = env('APP_NAME');
       <ul class="navbar-nav">
         <li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
-            <i class="material-icons">library_books</i> {{ __('Collections') }}
+            <i class="material-icons">list</i> {{ __('Collections') }}
+          </a>
+        </li>
+        <li class="nav-item{{ $activePage == 'documents' ? ' active' : '' }}">
+          <a href="/documents" class="nav-link">
+            <i class="material-icons">library_books</i> {{ __('All Documents') }}
           </a>
         </li>
 	@if(isset($is_demo) && $is_demo == 1)
