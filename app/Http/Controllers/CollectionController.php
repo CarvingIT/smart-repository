@@ -331,47 +331,61 @@ class CollectionController extends Controller
 
     // db search (default)
     public function searchDB($request){
-	$collection = \App\Collection::find($request->collection_id);
+	if(!empty($request->collection_id)){
+		$collection = \App\Collection::find($request->collection_id);
+		if($collection->content_type == 'Uploaded documents'){
+        	$documents = \App\Document::where('collection_id', $request->collection_id);
+		}
+		else{
+        	$documents = \App\Url::where('collection_id', $request->collection_id);
+		}
+	}
+	else {
+		// search all documents
+		$collections = $this->userCollections();
+		$collection_ids = array();
+		foreach($collections as $c){
+			$collection_ids[] = $c->id;
+		}
+		$collection_type = $request->collection_type;
+		if($collection_type == 'Web resources'){
+        		$documents = \App\Url::whereIn('collection_id', $collection_ids);
+        		$elastic_index = 'sr_urls';
+		}
+		else{
+        		$documents = \App\Document::whereIn('collection_id', $collection_ids);
+        		$elastic_index = 'sr_documents';
+		}
+	}
         $columns = array('type', 'title', 'size', 'updated_at');
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
-	if($collection->content_type == 'Uploaded documents'){
-        // if approval is involved, get list of documents based on permissions of the logged in user
-            if(Auth::user()){ // and has permission APPROVE on this collection!!!
-        	$documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
-	    }
-	    else{
-		    if($has_approval->isEmpty()){
-        	    $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id);
-		    }
-		    else{
-        	    $documents_filtered = \App\Document::where('collection_id','=',$request->collection_id)->whereNotNull('approved_on');
-		    }
-	    }
-	}
-	else if($collection->content_type == 'Web resources'){
-        	$documents_filtered = \App\Url::where('collection_id','=',$request->collection_id);
-	}
+	//
         // total number of viewable records
-        $total_documents = $documents_filtered->count(); 
+        $total_documents = $documents->count(); 
 
         // get Meta filtered documents
         $all_meta_filters = Session::get('meta_filters');
         if(!empty($all_meta_filters[$request->collection_id])){
-            $documents_filtered = $this->getMetaFilteredDocuments($request, $documents_filtered);
+            $documents = $this->getMetaFilteredDocuments($request, $documents);
         }
 
         // content search
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-            $documents_filtered = $documents_filtered->search($request->search['value']);
+            $documents = $documents->search($request->search['value']);
         }
+	// get approval exception 
+	// the exceptions will be removed from the models with ->whereNotIn 
+	$approval_exceptions = $this->getApprovalExceptions($documents);
+	$filtered_count = $documents->count() - count($approval_exceptions);
 
-            $filtered_count = $documents_filtered->count();
         if(!empty($request->embedded)){ 		
-            $documents = $documents_filtered->limit($request->length)->offset($request->start)->get();
+		$documents = $documents->whereNotIn('id', $approval_exceptions)
+			 ->limit($request->length)->offset($request->start)->get();
        	    $results_data = $this->datatableFormatResultsEmbedded(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
 	}
 	else{
-            $documents = $documents_filtered->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
+		$documents = $documents->whereNotIn('id', $approval_exceptions)
+			 ->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
             ->limit($request->length)->offset($request->start)->get();
             $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
 	}
