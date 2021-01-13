@@ -77,9 +77,7 @@ function randomString(length) {
         <div class="col-md-12">
             <div class="card">
 		<div class="card-header card-header-primary">
-                <h4 class="card-title ">
-            	<a href="/collections">Collections</a> :: All documents
-		</h4>
+                <h4 class="card-title ">All documents</h4>
         	</div>
 	        <div class="card-body">
 		<div class="table-responsive">

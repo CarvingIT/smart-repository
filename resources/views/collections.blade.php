@@ -14,7 +14,7 @@
                 <span class="card-title"><a href="/collection/{{ $c->id }}" title="Click here to view documents">{{ $c->name }}</a> ({{ count($c->documents) }}) 
             </span>
             </div>
-                  <div class="card-body">
+                  <div class="card-body" style="height:100px; overflow:scroll;">
                   {{ $c->description }}
                  </div>
             </div>
