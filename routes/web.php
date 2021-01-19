@@ -17,6 +17,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/lang/{locale}', function ($locale) {
+    App::setLocale($locale);
+    return redirect('/');
+});
+
 
 Route::get('/','GuestController@welcome');
 
