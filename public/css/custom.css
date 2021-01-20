@@ -84,3 +84,11 @@ a.navbar-brand{
 .lang_problem{
 	background-color:yellow;
 }
+
+.ks-input-suggestions{
+	z-index:1;
+}
+
+#collection_search::placeholder{
+	line-height:2;
+}

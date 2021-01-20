@@ -4,11 +4,12 @@
 @push('js')
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.js" defer></script>
+<script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
 <script>
 var deldialog;
 $(document).ready(function() {
-    $('#documents').DataTable({
+    oTable = $('#documents').DataTable({
     "aoColumnDefs": [
            { "bSortable": false, "aTargets": [4]},
            { "className": 'text-right dt-nowrap', "aTargets": [2,3]},
@@ -80,6 +81,23 @@ function randomString(length) {
                 <h4 class="card-title ">All documents</h4>
         	</div>
 	        <div class="card-body">
+		@if(!empty(env('TRANSLITERATION')))
+		   <div class="col-12 text-right">
+		   <input type="text" id="collection_search" placeholder="Search" />
+			<style>
+			.dataTables_filter {
+			display: none;
+			}
+			</style>
+		   </div>
+		<script>
+			let searchbox = document.getElementById("collection_search");
+			enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
+			$('#collection_search').keyup(function(){
+      			oTable.search($(this).val()).draw() ;
+			})
+		</script>
+		@endif
 		<div class="table-responsive">
                     <table id="documents" class="table">
                         <thead class="text-primary">
