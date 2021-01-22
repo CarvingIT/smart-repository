@@ -151,8 +151,14 @@ class DocumentController extends Controller
             	$d->path = $filepath;
 
             	try{
-			    #$d->text_content = utf8_encode($this->extractText($d));
-			    $d->text_content = utf8_encode($this->extractText($local_filepath, $mimetype));
+			    $text_content = $this->extractText($local_filepath, $mimetype);
+			    $current_encoding = mb_detect_encoding($text_content, 'auto');
+			    if($current_encoding != 'UTF-8'){
+			    	$d->text_content = utf8_encode($this->extractText($local_filepath, $mimetype));
+			    }
+			    else{
+				$d->text_content = $text_content;
+			    }
 			    ### Delete the file if the storage drive is other than local drive.
 			    ### Command to delete / unlink the file locally.
 			    if($storage_drive != 'local'){
