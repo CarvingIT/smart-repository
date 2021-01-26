@@ -11,9 +11,6 @@ use thiagoalessio\TesseractOCR\TesseractOCR;
 use NlpTools\Similarity\CosineSimilarity;
 use App\Curation;
 use Session;
-#echo (new TesseractOCR('/home/shraddha/projects/labwidgets/images/text.png'))->run();
-#exit;
-
 
 class DocumentController extends Controller
 {
@@ -235,8 +232,8 @@ class DocumentController extends Controller
 		$d->type = $mimetype;
         $d->path = 'smartarchive_assets/'.$collection_id.'/0/'.$new_filename;
         try{
-            #$d->text_content = utf8_encode($dc->extractText($d));
-            $d->text_content = utf8_encode($dc->extractText($d->path,$mimetype));
+			$text_content = $dc->extractText($d->path,$mimetype);
+            $d->text_content = mb_convert_encoding($text_content, "UTF-8");
         }
         catch(\Exception $e){
             echo $e->getMessage();
@@ -313,22 +310,22 @@ class DocumentController extends Controller
 
     public function extractText($filepath, $mimetype){
         $text = '';
-	$enable_OCR = env('ENABLE_OCR');
+	    $enable_OCR = env('ENABLE_OCR');
+		$ocr_langs = explode(",", env('OCR_langs'));
         if($mimetype == 'application/pdf'){
-	    /*
-            $parser = new \Smalot\PdfParser\Parser();
-            $pdf = $parser->parseFile(storage_path('app/'.$filepath));
-            $text = $pdf->getText();
-            //$text = str_replace(array('&', '%', '$', "\n"), ' ', $text);
-            $text = str_replace(array('&', '%', '$'), ' ', $text);
-	    $text = str_replace("\t","",$text);
-	     */
-	    $text = \Spatie\PdfToText\Pdf::getText(storage_path('app/'.$filepath));
+	    	$text = \Spatie\PdfToText\Pdf::getText(storage_path('app/'.$filepath));
+			if(empty($text) && $enable_OCR==1){ // try OCR 
+				/* this piece of code needs to be replaced with code that works with ocrmypdf
+				*/
+			}
         }
         else if(preg_match('/^image\//', $mimetype) && ($enable_OCR==1)){
             // try OCR
-            #$d->is_ocr = 1;
-            $text = utf8_encode((new TesseractOCR(storage_path('app/'.$filepath)))->run());
+            $text = utf8_encode(
+				(new TesseractOCR(storage_path('app/'.$filepath)))
+				->lang(...$ocr_langs)
+				->run()
+			);
         }
         else if(preg_match('/^text\//', $mimetype)){
             $text = file_get_contents(storage_path('app/'.$filepath));
