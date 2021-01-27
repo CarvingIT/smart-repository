@@ -326,7 +326,7 @@ class CollectionController extends Controller
             'recordsFiltered' => $filtered_count,
             'error'=> '',
         );
-        return json_encode($results);
+        return json_encode($results, JSON_UNESCAPED_UNICODE);
     }
 
     // db search (default)
@@ -409,8 +409,7 @@ class CollectionController extends Controller
             	$this->logSearchQuery($search_log_data);
 	    }
         }
-
-        return json_encode($results);
+        return json_encode($results, JSON_UNESCAPED_UNICODE);
     }
 
     private function getApprovalExceptions($documents){
@@ -480,6 +479,8 @@ class CollectionController extends Controller
             }
 	    } // if collection's content-type == Uploaded documents
 	    $title = $d->title.': '. substr($d->text_content, 0, 100).' ...';
+	    $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
+	    //$title = $d->title;
             $results_data[] = array(
                 'type' => array('display'=>'<a href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
                 'title' => $title,
