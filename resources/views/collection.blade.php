@@ -89,7 +89,7 @@ function randomString(length) {
             <div class="card">
 		<div class="card-header card-header-primary">
                 <h4 class="card-title ">
-            	<a href="/collections">Collections</a> :: {{ $collection->name }}
+            	<a href="/collections">{{ __('Collections') }}</a> :: {{ $collection->name }}
 		</h4>
             </div>
         <div class="card-body">

@@ -1,4 +1,12 @@
 {
-	'All Documents':'सर्व कागदपत्रे'
-
+"Collections":"संग्रहाची यादी ",
+"All Documents":"सर्व दस्तऐवज",
+"Contact":"संपर्क",
+"Register":"नोंदणी ",
+"Login":"लॉगिन",
+"Forgot password?":"पासवर्ड विसरला?",
+"Create new account": "खाते उघडा",
+"Lets Go":"चला",
+"Sign in with your registered email address and the password":"तुमचा ई-मेल ऍड्रेस आणि पासवर्ड वापरून लॉगिन करा",
+"Create account":"खाते उघडा"
 }
