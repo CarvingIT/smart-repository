@@ -478,7 +478,8 @@ class CollectionController extends Controller
                 }
             }
 	    } // if collection's content-type == Uploaded documents
-	    $title = $d->title.': '. substr($d->text_content, 0, 100).' ...';
+	    //$title = $d->title.': '. substr($d->text_content, 0, 100).' ...';
+	    $title = $d->title;
 	    $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
 	    //$title = $d->title;
             $results_data[] = array(
