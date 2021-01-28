@@ -11,8 +11,10 @@
                 <div class="card-body">
                     <p>If you would like to request a demo, have any questions or suggest a feature, we shall be glad to hear from you!</p>
                     <p>
-                    Email: <a href="mailto:info@carvingit.com">info@carvingit.com</a><br/>
-                    Phone: +91 9420121704, +91 8605789833
+                    Email: 
+					<a href="mailto:{{ env('CONTACT_EMAIL','info@carvingit.com') }}">{{ env('CONTACT_EMAIL', 'info@carvingit.com') }}</a>
+					<br/>
+                    Phone: {{ env('CONTACT_PHONE', '+91 9420121704, +91 8605789833') }}
                     </p>
                 </div>
             </div>
