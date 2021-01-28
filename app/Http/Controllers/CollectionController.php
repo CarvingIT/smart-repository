@@ -459,7 +459,7 @@ class CollectionController extends Controller
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
 	    }
 
-	    $action_icons .= '<a class="btn btn-primary btn-link" title="Information and more" href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">info</i></a>';
+	    $action_icons .= '<a class="btn btn-primary btn-link" title="Information and more" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">info</i></a>';
 	    if($content_type == 'Uploaded documents'){
             if(Auth::user()){
                 if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
