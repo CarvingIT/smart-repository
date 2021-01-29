@@ -46,7 +46,7 @@
 		<div class="form-group row">
 			@foreach($collection->meta_fields as $m)
            <div class="col-md-3"><input name="meta_fields[]" type="checkbox" value="{{ $m->id }}" 
-			@if(is_array($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ $m->label }}</div>
+			@if(!empty($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ $m->label }}</div>
 			@endforeach
 		</div>
 		</div>
