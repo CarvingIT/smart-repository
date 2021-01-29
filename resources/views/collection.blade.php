@@ -9,7 +9,7 @@
 @php
 $column_config = json_decode($collection->column_config);
 list($hide_type, $hide_title, $hide_size, $hide_creation_time) = array(false, false, false, false);
-if($column_config){
+if(!empty($collection->column_config)){
 	if($column_config->type != 1) $hide_type = true;
 	if($column_config->title != 1) $hide_title = true;
 	if($column_config->size != 1) $hide_size = true;
@@ -25,7 +25,18 @@ $(document).ready(function() {
 		{ "targets":[1], "className":'text-left' @if($hide_title) ,"visible":false @endif},
 		{ "targets":[2], "className":'text-right dt-nowrap' @if($hide_size) ,"visible":false @endif},
 		{ "targets":[3], "className":'text-right dt-nowrap' @if($hide_creation_time) ,"visible":false @endif},
-		{ "targets":[4], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
+		@php
+			$i = 4;
+		foreach($collection->meta_fields as $m){
+			$visible = 'false';
+			if(is_array($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)){
+				$visible = 'true';
+			}
+			echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
+			$i++;
+		}
+		@endphp	
+		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
     "processing":true,
     "order": [[ 3, "desc" ]],
@@ -55,6 +66,9 @@ $(document).ready(function() {
               'sort': 'updated_date'
             }
         },
+		@foreach($collection->meta_fields as $m)
+		{data:"meta_{{$m->id}}"},
+		@endforeach
         {data:"actions"},
     ],
     });
@@ -184,6 +198,10 @@ function randomString(length) {
                             <th>Title</th>
                             <th>Size</th>
                             <th>Created</th>
+							<!-- meta fields -->
+							@foreach($collection->meta_fields as $m)
+							<th>{{ $m->label }}</th>
+							@endforeach
                             <th class="text-right"><!--Actions--></th>
                             </tr>
                         </thead>

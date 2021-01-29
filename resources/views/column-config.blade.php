@@ -35,14 +35,20 @@
 	   	<div class="col-md-12">
 		<div class="form-group row">
            <div class="col-md-3"><input name="type" type="checkbox" value="1" 
-			@if($column_config->type == 1) checked="checked" @endif /> Type</div>
+			@if($column_config && $column_config->type == 1) checked="checked" @endif /> Type</div>
            <div class="col-md-3"><input name="title" type="checkbox" value="1" 
-			@if($column_config->title == 1) checked="checked" @endif /> Title</div>
+			@if($column_config && $column_config->title == 1) checked="checked" @endif /> Title</div>
            <div class="col-md-3"><input name="size" type="checkbox" value="1"
-			@if($column_config->size == 1) checked="checked" @endif /> Size</div>
+			@if($column_config && $column_config->size == 1) checked="checked" @endif /> Size</div>
            <div class="col-md-3"><input name="creation_time" type="checkbox" value="1"
-			@if($column_config->creation_time == 1) checked="checked" @endif /> Creation time</div>
+			@if($column_config && $column_config->creation_time == 1) checked="checked" @endif /> Creation time</div>
 		   </div>
+		<div class="form-group row">
+			@foreach($collection->meta_fields as $m)
+           <div class="col-md-3"><input name="meta_fields[]" type="checkbox" value="{{ $m->id }}" 
+			@if(is_array($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ $m->label }}</div>
+			@endforeach
+		</div>
 		</div>
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">

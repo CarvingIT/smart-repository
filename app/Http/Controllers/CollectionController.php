@@ -483,16 +483,20 @@ class CollectionController extends Controller
 	    $title = $d->title;
 	    $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
 	    //$title = $d->title;
-        $results_data[] = array(
+        $result = array(
                 'type' => array('display'=>'<a href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
                 'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
-                'actions' => $action_icons);
-
-		if(!empty($collection->column_config)){
-			// code needed for meta information here
+                'actions' => $action_icons
+			);
+		if($collection){
+			foreach($collection->meta_fields as $m){
+			$result['meta_'.$m->id] = $d->meta_value($m->id);
+			}
 		}
+
+		$results_data[] = $result;
 		} // foreach ends
         return $results_data;
     }
@@ -716,7 +720,6 @@ use App\UrlSuppression;
     public function excludeUrls($spidered_domain_id, $request){
 	$url_start_patterns = explode("\n",$request->input('save_urls'));
 	$collection_id = $request->input('collection_id');
-#DB::enableQueryLog();
 	foreach($url_start_patterns as $url){
 		$su = new \App\UrlSuppression;
 		$su->collection_id = $collection_id;
@@ -724,7 +727,6 @@ use App\UrlSuppression;
 		$su->spidered_domain_id = $spidered_domain_id;
 	    	$su->save();
 	}
-#dd(DB::getQueryLog());
     }	
 
 	// column-config
@@ -738,7 +740,8 @@ use App\UrlSuppression;
 		$col_config = array('title' => $request->input('title'),
 			'type'=>$request->input('type'),
 			'creation_time'=>$request->input('creation_time'),
-			'size'=>$request->input('size')
+			'size'=>$request->input('size'),
+			'meta_fields'=>$request->input('meta_fields')
 		);
 		$collection->column_config = json_encode($col_config);
 		$collection->save();
