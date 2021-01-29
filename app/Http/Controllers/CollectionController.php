@@ -306,10 +306,12 @@ class CollectionController extends Controller
 
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
-	$approval_exceptions = $this->getApprovalExceptions($documents);
+	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
+	$documents = $this->approvalFilter($request, $documents);
+	//$documents = $documents->get();
+	$filtered_count = $documents->count(); 
 
-	$filtered_count = $documents->count() - count($approval_exceptions);
-	$documents = $documents->whereNotIn('id', $approval_exceptions)
+	$documents = $documents
 		->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
              ->limit($request->length)->offset($request->start)->get();
 
@@ -375,16 +377,17 @@ class CollectionController extends Controller
         }
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
-	$approval_exceptions = $this->getApprovalExceptions($documents);
-	$filtered_count = $documents->count() - count($approval_exceptions);
+	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
+	$documents = $this->approvalFilter($request, $documents);
+	$filtered_count = $documents->count(); //- count($approval_exceptions);
 
         if(!empty($request->embedded)){ 		
-		$documents = $documents->whereNotIn('id', $approval_exceptions)
+		$documents = $documents
 			 ->limit($request->length)->offset($request->start)->get();
        	    $results_data = $this->datatableFormatResultsEmbedded(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
 	}
 	else{
-		$documents = $documents->whereNotIn('id', $approval_exceptions)
+		$documents = $documents
 			 ->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
             ->limit($request->length)->offset($request->start)->get();
             $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
@@ -412,7 +415,44 @@ class CollectionController extends Controller
         return json_encode($results, JSON_UNESCAPED_UNICODE);
     }
 
-    private function getApprovalExceptions($documents){
+    private function approvalFilter($request, $documents){
+		if(empty($request->collection_id)){ // this is a search within all documents
+			// approved where approval is needed
+			$documents = $documents
+				->where(function ($Q){
+					$Q->whereNotNull('approved_on')
+					->whereHas('collection',function ($q){
+							$q->where('require_approval',1);
+					});
+				})
+				->orWhere(function($Q){
+					$Q->whereHas('collection', function($q){
+						$q->where('require_approval', 0)
+						->orWhereNull('require_approval');
+					});
+				});
+			return $documents;
+		}
+		$collection = Collection::find($request->collection_id);
+		if($collection->content_type == 'Web resources'){
+			// all
+			return $documents;
+		}
+		else if($collection->content_type == 'Uploaded documents'){
+			if($collection->require_approval == 1){ 
+				if(Auth::user()->hasPermission($collection->id, 'APPROVE')){ // return all
+					return $documents;
+				}
+				else{ // return only approved
+					$documents = $documents->whereNotNull('approved_on');	
+					return $documents;
+				}
+			}
+			else{ 
+				return $documents;
+			}
+		}
+		/*
 	    $doc_col = $documents->get();
 	    $filtered_docs = $doc_col->filter(function($d, $key){
 		    if($d->collection->require_approval == 1 && 
@@ -426,6 +466,7 @@ class CollectionController extends Controller
 		    $filtered_ids[] = $d->id;
 	    }
 	    return $filtered_ids;
+		*/
     }
 
     private function datatableFormatResults($data){
@@ -490,7 +531,7 @@ class CollectionController extends Controller
                 'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'actions' => $action_icons
 			);
-		if($collection){
+		if(!empty($collection)){
 			foreach($collection->meta_fields as $m){
 			$result['meta_'.$m->id] = $d->meta_value($m->id);
 			}

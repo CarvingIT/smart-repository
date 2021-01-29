@@ -202,7 +202,7 @@ function randomString(length) {
 							@foreach($collection->meta_fields as $m)
 							<th>{{ $m->label }}</th>
 							@endforeach
-                            <th class="text-right"><!--Actions--></th>
+                            <th>Actions</th>
                             </tr>
                         </thead>
                     </table>
