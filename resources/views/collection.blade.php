@@ -27,13 +27,15 @@ $(document).ready(function() {
 		{ "targets":[3], "className":'text-right dt-nowrap' @if($hide_creation_time) ,"visible":false @endif},
 		@php
 			$i = 4;
+		if(!empty($column_config->meta_fields)){
 		foreach($collection->meta_fields as $m){
 			$visible = 'false';
-			if(is_array($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)){
+			if(in_array($m->id, $column_config->meta_fields)){
 				$visible = 'true';
 			}
 			echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
 			$i++;
+		}
 		}
 		@endphp	
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
