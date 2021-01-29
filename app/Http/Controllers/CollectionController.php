@@ -436,6 +436,7 @@ class CollectionController extends Controller
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		$content_type = $collection->content_type;
+		$column_config = json_decode($collection->column_config);	
 	}
 	else{
 		// default content type 
@@ -482,13 +483,17 @@ class CollectionController extends Controller
 	    $title = $d->title;
 	    $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
 	    //$title = $d->title;
-            $results_data[] = array(
+        $results_data[] = array(
                 'type' => array('display'=>'<a href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
                 'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'actions' => $action_icons);
-        }
+
+		if(!empty($collection->column_config)){
+			// code needed for meta information here
+		}
+		} // foreach ends
         return $results_data;
     }
 
@@ -721,6 +726,23 @@ use App\UrlSuppression;
 	}
 #dd(DB::getQueryLog());
     }	
-##########################################
-## Class Ends
+
+	// column-config
+	public function showColumnConfigForm(Request $request){
+		$collection = Collection::find($request->collection_id);
+        return view('column-config', ['collection'=>$collection]);
+	}
+	
+	public function saveColumnConfig(Request $request){
+		$collection = Collection::find($request->collection_id);
+		$col_config = array('title' => $request->input('title'),
+			'type'=>$request->input('type'),
+			'creation_time'=>$request->input('creation_time'),
+			'size'=>$request->input('size')
+		);
+		$collection->column_config = json_encode($col_config);
+		$collection->save();
+		return redirect('/collection/'.$collection->id);
+	}
+
 }

@@ -6,14 +6,26 @@
 <script src="/js/jquery-ui.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
+@php
+$column_config = json_decode($collection->column_config);
+list($hide_type, $hide_title, $hide_size, $hide_creation_date) = array(false, false, false, false);
+if($column_config){
+	if($column_config->type != 1) $hide_type = true;
+	if($column_config->title != 1) $hide_title = true;
+	if($column_config->size != 1) $hide_size = true;
+	if($column_config->creation_time != 1) $hide_creation_time = true;
+}
+@endphp
 <script>
 var deldialog;
 $(document).ready(function() {
     oTable = $('#documents').DataTable({
-    "aoColumnDefs": [
-           { "bSortable": false, "aTargets": [4]},
-           { "className": 'text-right dt-nowrap', "aTargets": [2,3]},
-           { "className": 'td-actions text-right dt-nowrap', "aTargets": [4]}
+    "columnDefs": [
+		{ "targets":[0], "className":'text-center', @if($hide_type)"visible":false @endif},
+		{ "targets":[1], "className":'text-left' @if($hide_title) ,"visible":false @endif},
+		{ "targets":[2], "className":'text-right dt-nowrap' @if($hide_size) ,"visible":false @endif},
+		{ "targets":[3], "className":'text-right dt-nowrap' @if($hide_creation_time) ,"visible":false @endif},
+		{ "targets":[4], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
     "processing":true,
     "order": [[ 3, "desc" ]],
@@ -99,6 +111,7 @@ function randomString(length) {
                     <a title="Manage Users of this collection" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
                     <a title="Manage meta information fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+                    <a title="Show/hide columns in list view" href="/collection/{{ $collection->id }}/column-config" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
 		    @elseif($collection->content_type == 'Web resources')	
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
 		    @endif
