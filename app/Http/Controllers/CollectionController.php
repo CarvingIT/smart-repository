@@ -419,18 +419,20 @@ class CollectionController extends Controller
 		if(empty($request->collection_id)){ // this is a search within all documents
 			// approved where approval is needed
 			$documents = $documents
-				->where(function ($Q){
+			->where(function($query){
+				$query->where(function ($Q){
 					$Q->whereNotNull('approved_on')
 					->whereHas('collection',function ($q){
 							$q->where('require_approval',1);
 					});
-				})
-				->orWhere(function($Q){
+				});
+				$query->orWhere(function($Q){
 					$Q->whereHas('collection', function($q){
 						$q->where('require_approval', 0)
 						->orWhereNull('require_approval');
 					});
 				});
+			});
 			return $documents;
 		}
 		$collection = Collection::find($request->collection_id);
