@@ -503,7 +503,9 @@ class CollectionController extends Controller
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
 	    }
 
+		if(env('ENABLE_INFO_PAGE') == 1){
 	    $action_icons .= '<a class="btn btn-primary btn-link" title="Information and more" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">info</i></a>';
+		}
 	    if($content_type == 'Uploaded documents'){
             if(Auth::user()){
                 if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
@@ -527,7 +529,8 @@ class CollectionController extends Controller
 	    $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
 	    //$title = $d->title;
         $result = array(
-                'type' => array('display'=>'<a href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
+                //'type' => array('display'=>'<a href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
+                'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
@@ -688,7 +691,8 @@ class CollectionController extends Controller
         foreach($documents as $d){
 	    $title = $d->title.'<br />'. substr($d->text_content, 0, 100).' ...';
             $results_data[] = array(
-                'type' => array('display'=>'<a href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="'.env('APP_URL').'/i/file-types/'.$d->icon().'.png" style="width:20px;"/></a>', 'filetype'=>$d->icon()),
+                //'type' => array('display'=>'<a href="/collection/'.$request->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="'.env('APP_URL').'/i/file-types/'.$d->icon().'.png" style="width:20px;"/></a>', 'filetype'=>$d->icon()),
+                'type' => array('display'=>'<img class="file-icon" src="'.env('APP_URL').'/i/file-types/'.$d->icon().'.png" style="width:20px;"/>', 'filetype'=>$d->icon()),
                 'title' => '<a href="'.env('APP_URL').'/collection/'.$request->collection_id.'/document/'.$d->id.'/details" target="_blank">'.$title.'</a>',
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),

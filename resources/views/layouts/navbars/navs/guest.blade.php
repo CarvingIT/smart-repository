@@ -7,6 +7,8 @@ foreach($config_details as $details){
 }
 $is_demo = env('IS_DEMO');
 $app_name = env('APP_NAME');
+$has_collection_list = env('ENABLE_COLLECTION_LIST');
+$collections = \App\Collection::all();
 @endphp
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
@@ -28,16 +30,29 @@ $app_name = env('APP_NAME');
     </button>
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
+	@if($has_collection_list == 1)
         <li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
             <i class="material-icons">list</i> {{ __('Collections') }}
           </a>
         </li>
+	@else
+		@foreach($collections as $c)
+        <li class="nav-item">
+          <a href="/collection/{{ $c->id }}" class="nav-link">
+            <i class="material-icons">list</i>{{ $c->name }}
+          </a>
+        </li>
+		@endforeach
+
+	@endif
+	@if(env('ENABLE_COMMON_SEARCH') == 1)
         <li class="nav-item{{ $activePage == 'documents' ? ' active' : '' }}">
           <a href="/documents" class="nav-link">
             <i class="material-icons">library_books</i> {{ __('All Documents') }}
           </a>
         </li>
+	@endif
 	@if(isset($is_demo) && $is_demo == 1)
         <li class="nav-item{{ $activePage == 'features' ? ' active' : '' }}">
           <a href="/features" class="nav-link">

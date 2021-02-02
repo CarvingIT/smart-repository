@@ -175,23 +175,37 @@ function randomString(length) {
                    @endif
                @endforeach
             </div>
-		@if(!empty(env('TRANSLITERATION')))
-		   <div class="col-12 text-right">
-		   <input type="text" id="collection_search" placeholder="Search" />
+		<div class="card search-filters-card">
+
+		<div class="row">
+		   <div class="col-3">
+		   <label for="title_search">Title</label>
+		   <input type="text" class="search-field" id="title_search" />
+		   </div>
+		   <div class="col-6">
+		   </div>
+		   <div class="col-3">
+		   <label for="collection_search">Full text</label>
+		   <input type="text" class="search-field" id="collection_search" />
 			<style>
 			.dataTables_filter {
 			display: none;
 			}
 			</style>
 		   </div>
+		</div>
+		</div>
 		<script>
 			let searchbox = document.getElementById("collection_search");
+			let titlesearchbox = document.getElementById("title_search");
+			@if(!empty(env('TRANSLITERATION')))
 			enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
+			enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
+			@endif
 			$('#collection_search').keyup(function(){
       			oTable.search($(this).val()).draw() ;
 			})
 		</script>
-		@endif
 		   <div class="table-responsive">
                     <table id="documents" class="table">
                         <thead class="text-primary">
@@ -204,7 +218,7 @@ function randomString(length) {
 							@foreach($collection->meta_fields as $m)
 							<th>{{ $m->label }}</th>
 							@endforeach
-                            <th>Actions</th>
+                            <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
                             </tr>
                         </thead>
                     </table>

@@ -89,6 +89,13 @@ a.navbar-brand{
 	z-index:1;
 }
 
-#collection_search::placeholder{
+.search-field::placeholder{
 	line-height:2;
+}
+a.nav-link{
+	margin-right:0 !important;
+}
+.search-filters-card{
+	background-color:#eee;
+	padding:10px;
 }

@@ -6,7 +6,7 @@
 <div class="row justify-content-center">
       <div class="col-md-12">
 <div class="card">
-<div class="card-header card-header-primary"><h4 class="card-title">Smart Repository</h4></div>
+<div class="card-header card-header-primary"><h4 class="card-title">PUNE NAGAR VACHAN MANDIR</h4></div>
 <div class="card-body">
     <img class="img-responsive" style="float:left;" src="/i/wordcloud.png" />
     <h3>Welcome to the demo site!</h3>
