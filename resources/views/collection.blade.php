@@ -149,9 +149,17 @@ function randomString(length) {
                 $meta_labels[$m->id] = $m->label;
             }
             $all_meta_filters = Session::get('meta_filters');
+			$title_filter = Session::get('title_filter');
+			$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
         @endphp
-        @if(count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]))
-            <strong>Current Filters:</strong>
+		@if(!empty($title_filter[$collection->id]))
+			<span class="filtertag">Title contains <i>{{ $title_filter[$collection->id]}}</i>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removetitlefilter">
+                <i class="tinyicon material-icons">delete</i>
+                </a>
+                </span>
+		@endif
+		@if($show_meta_filters)
         @foreach( $all_meta_filters[$collection->id] as $m)
             <span class="filtertag">
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
@@ -177,24 +185,40 @@ function randomString(length) {
             </div>
 		<div class="card search-filters-card">
 
-		<div class="row">
-		   <div class="col-3">
-		   <label for="title_search">Title</label>
-		   <input type="text" class="search-field" id="title_search" />
-		   </div>
-		   <div class="col-6">
-		   </div>
-		   <div class="col-3">
-		   <label for="collection_search">Full text</label>
-		   <input type="text" class="search-field" id="collection_search" />
+		<div class="row text-center">
+		   <div class="col-12">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
+			@csrf
+		   <label for="title_search" class="search-label">Title</label>
+		   <input type="text" class="search-field" id="title_search" name="title_filter"/>
+			</form>
+			@foreach($meta_fields as $m)
+			@if($m->type == 'Text')
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
+		   <label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
+		   <input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
+		   <input type="hidden" name="meta_field" value="{{ $m->id }}" />
+		   <input type="hidden" name="operator" value="contains" />
+			</form>
+			@endif
+			@endforeach
+			</div>
+		</div>
+		<div class="row text-center">
+		   <div class="col-12">
+		   <input type="text" class="search-field" id="collection_search" placeholder="Full text" />
 			<style>
 			.dataTables_filter {
 			display: none;
 			}
 			</style>
 		   </div>
+		   <div class="col-12 text-center">
+           <!--<i class="material-icons">search</i>-->
+		   </div>
 		</div>
-		</div>
+		</div><!-- search-filters-card -->
 		<script>
 			let searchbox = document.getElementById("collection_search");
 			let titlesearchbox = document.getElementById("title_search");

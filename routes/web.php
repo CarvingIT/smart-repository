@@ -83,9 +83,12 @@ Route::post('/collection/{collection_id}/column-config', 'CollectionController@s
 
 Route::get('/collection/{collection_id}/metafilters', 'CollectionController@metaFiltersForm');
 Route::post('/collection/{collection_id}/metafilters', 'CollectionController@addMetaFilter');
+Route::post('/collection/{collection_id}/quickmetafilters', 'CollectionController@replaceMetaFilter');
+Route::post('/collection/{collection_id}/quicktitlefilter', 'CollectionController@replaceTitleFilter');
 
 Route::get('/collection/{collection_id}/removefilter/{field_id}', 'CollectionController@removeMetaFilter');
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllMetaFilters');
+Route::get('/collection/{collection_id}/removetitlefilter', 'CollectionController@removeTitleFilter');
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');

@@ -179,6 +179,14 @@ class CollectionController extends Controller
         return $this->collectionUsers($collection_id);
     }
 
+    public function getTitleFilteredDocuments($request, $documents){
+        $title_filter = Session::get('title_filter');
+		if(!empty($title_filter[$request->collection_id])){
+			$documents = $documents->where('title','like','%'.$title_filter[$request->collection_id].'%');
+		}
+		return $documents;
+	}
+
     public function getMetaFilteredDocuments($request, $documents){
         $all_meta_filters = Session::get('meta_filters');
         $meta_filters = empty($all_meta_filters[$request->collection_id])?null:$all_meta_filters[$request->collection_id];
@@ -298,6 +306,10 @@ class CollectionController extends Controller
             }
             $documents = $documents->whereIn('id', $document_ids);
         }
+        // get title filtered documents
+		if(!empty(Session::get('title_filter'))){
+            $documents = $this->getTitleFilteredDocuments($request, $documents);
+		}
         // get Meta filtered documents
         $all_meta_filters = Session::get('meta_filters');
         if(!empty($all_meta_filters[$request->collection_id])){
@@ -365,6 +377,10 @@ class CollectionController extends Controller
         // total number of viewable records
         $total_documents = $documents->count(); 
 
+        // get title filtered documents
+		if(!empty(Session::get('title_filter'))){
+            $documents = $this->getTitleFilteredDocuments($request, $documents);
+		}
         // get Meta filtered documents
         $all_meta_filters = Session::get('meta_filters');
         if(!empty($all_meta_filters[$request->collection_id])){
@@ -561,6 +577,36 @@ class CollectionController extends Controller
         Session::put('meta_filters', $meta_filters);
         return redirect('/collection/'.$request->collection_id.'/metafilters');
     }
+
+    public function replaceMetaFilter(Request $request){
+        // set filters in session and return to the collection view 
+        $meta_filters = Session::get('meta_filters');
+        if(!empty($request->meta_value)){
+			$new_meta_filters = array();
+			if($meta_filters && is_array($meta_filters[$request->collection_id])){
+			foreach($meta_filters[$request->collection_id] as $m){
+				if($m['field_id'] != $request->meta_field){
+					$new_meta_filters[$request->collection_id][] = $m;
+				}
+			}
+			}
+            $new_meta_filters[$request->collection_id][] = array(
+                'filter_id'=>\Uuid::generate()->string,
+                'field_id'=>$request->meta_field,
+                'operator'=>$request->operator,
+                'value'=>$request->meta_value
+            );
+        }
+        Session::put('meta_filters', $new_meta_filters);
+        return redirect('/collection/'.$request->collection_id);
+    }
+
+	public function replaceTitleFilter(Request $request){
+		$title_filter = Session::get('title_filter');
+		$title_filter[$request->collection_id] = $request->title_filter;
+		Session::put('title_filter', $title_filter);
+        return redirect('/collection/'.$request->collection_id);
+	}
     
     public function metaInformation($collection_id, $meta_field_id=null){
         $collection = \App\Collection::find($collection_id);
@@ -624,6 +670,13 @@ class CollectionController extends Controller
         Session::put('meta_filters', $all_meta_filters);
         return redirect('/collection/'.$collection_id);
     }
+
+	public function removeTitleFilter($collection_id){
+		$title_filter = Session::get('title_filter');
+		$title_filter[$collection_id] = null;
+        Session::put('title_filter', $title_filter);
+        return redirect('/collection/'.$collection_id);
+	}
 
     public function removeAllMetaFilters($collection_id){
         $all_meta_filters = Session::get('meta_filters');

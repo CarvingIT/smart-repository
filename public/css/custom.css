@@ -92,10 +92,28 @@ a.navbar-brand{
 .search-field::placeholder{
 	line-height:2;
 }
+
+.search-field{
+	margin-bottom:5px;
+	line-height:3;
+}
+
+#collection_search{
+	width:90%;
+}
+
 a.nav-link{
 	margin-right:0 !important;
 }
 .search-filters-card{
 	background-color:#eee;
 	padding:10px;
+	border:2px purple solid;
+}
+
+.search-label{
+	margin-bottom:0;
+}
+.inline-form{
+	display:inline !important;
 }
