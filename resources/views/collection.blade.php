@@ -117,7 +117,7 @@ function randomString(length) {
             <div class="card">
 		<div class="card-header card-header-primary">
                 <h4 class="card-title ">
-            	<a href="/collections">{{ __('Collections') }}</a> :: {{ $collection->name }}
+            	@if(env('ENABLE_COLLECTION_LIST') == 1)<a href="/collections">{{ __('Collections') }}</a> ::@endif {{ $collection->name }}
 		</h4>
             </div>
         <div class="card-body">
@@ -189,11 +189,14 @@ function randomString(length) {
 		   <div class="col-12">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
-		   <label for="title_search" class="search-label">Title</label>
-		   <input type="text" class="search-field" id="title_search" name="title_filter"/>
+			<div class="float-container">
+		   		<label for="title_search" class="search-label">Title</label>
+		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
+			</div>
 			</form>
 			@foreach($meta_fields as $m)
 			@if($m->type == 'Text')
+			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
 		   <label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
@@ -201,18 +204,22 @@ function randomString(length) {
 		   <input type="hidden" name="meta_field" value="{{ $m->id }}" />
 		   <input type="hidden" name="operator" value="contains" />
 			</form>
+			</div>
 			@endif
 			@endforeach
 			</div>
 		</div>
 		<div class="row text-center">
 		   <div class="col-12">
-		   <input type="text" class="search-field" id="collection_search" placeholder="Full text" />
+			<div class="float-container" style="width:100%;">
+			<label for="collection_search">Full text search</label>
+		    <input type="text" class="search-field" id="collection_search" />
 			<style>
 			.dataTables_filter {
 			display: none;
 			}
 			</style>
+		   </div>
 		   </div>
 		   <div class="col-12 text-center">
            <!--<i class="material-icons">search</i>-->
@@ -223,6 +230,10 @@ function randomString(length) {
 			let searchbox = document.getElementById("collection_search");
 			let titlesearchbox = document.getElementById("title_search");
 			@if(!empty(env('TRANSLITERATION')))
+				@foreach($collection->meta_fields as $m)
+				let m_{{$m->id}}_searchbox = document.getElementById("meta_{{$m->id}}_search");
+				enableTransliteration(m_{{$m->id}}_searchbox, '{{ env('TRANSLITERATION') }}');
+				@endforeach
 			enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
 			enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
 			@endif
