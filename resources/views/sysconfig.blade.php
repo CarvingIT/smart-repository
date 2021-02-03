@@ -117,6 +117,38 @@
                     <input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" />
                     </div>
                    </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="favicon_url" class="col-md-12 col-form-label text-md-right">Favicon URL</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="home_page" class="col-md-12 col-form-label text-md-right">Home page info</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <textarea name="home_page" id="home_page" class="form-control">@if(!empty($sysconfig['home_page'])) {{$sysconfig['home_page'] }} @endif</textarea>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="contact_page" class="col-md-12 col-form-label text-md-right">Contact info</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <textarea name="contact_page" id="logo_url" class="form-control">@if(!empty($sysconfig['contact_page'])) {{$sysconfig['contact_page'] }} @endif</textarea>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="bg_image" class="col-md-12 col-form-label text-md-right">Background Image</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <input type="text" name="bg_image" id="bg_image" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['bg_image'])) {{$sysconfig['bg_image'] }} @endif" />
+                    </div>
+                   </div>
                    <div class="form-group row mb-0"><div class="col-md-12 offset-md-4"><button type="submit" class="btn btn-primary">
                                     Save
                                 </button> 

@@ -18,27 +18,14 @@ class SysConfigController extends Controller
     }
 
     public function save(Request $request){
-
-        $c = new \App\Sysconfig;
+	\DB::table('sysconfig')->delete();
 	foreach ($request->except('_token') as $key => $part) {
-		if(!empty($part)){
-		$logo_details = \App\Sysconfig::where('param','=',$key);
-            	if($logo_details){
-               		$logo_details->delete();
-            	}
-			$c->param = $key;
-			$c->value = $part;
-		}
+    	$c = new \App\Sysconfig;
+		$c->param = $key;
+		$c->value = $part;
+		$c->save();
 	}
-         try{
-            $c->save();
-            Session::flash('alert-success', 'System Configuration saved successfully!');
-         }
-         catch(\Exception $e){
-            Session::flash('alert-danger', $e->getMessage());
-            return redirect('/admin/sysconfig');
-         }
-            return redirect('/admin/sysconfig');
+        Session::flash('alert-success', 'System Configuration saved successfully!');
+        return redirect('/admin/sysconfig');
     }
-	
 } // Class ends
