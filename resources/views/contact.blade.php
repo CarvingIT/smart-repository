@@ -1,6 +1,13 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
 
 @section('content')
+@php
+	$conf = \App\Sysconfig::all();
+	$settings = array();
+	foreach($conf as $c){
+		$settings[$c->param] = $c->value;
+	}
+@endphp
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -9,13 +16,7 @@
                 <div class="card-header card-header-primary"><h4 class="card-title">Contact Us</h4></div>
 
                 <div class="card-body">
-                    <p>If you would like to request a demo, have any questions or suggest a feature, we shall be glad to hear from you!</p>
-                    <p>
-                    Email: 
-					<a href="mailto:{{ env('CONTACT_EMAIL','info@carvingit.com') }}">{{ env('CONTACT_EMAIL', 'info@carvingit.com') }}</a>
-					<br/>
-                    Phone: {{ env('CONTACT_PHONE', '+91 9420121704, +91 8605789833') }}
-                    </p>
+					{!! $settings['contact_page'] !!}
                 </div>
             </div>
         </div>
