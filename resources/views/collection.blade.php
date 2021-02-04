@@ -153,7 +153,7 @@ function randomString(length) {
 			$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
         @endphp
 		@if(!empty($title_filter[$collection->id]))
-			<span class="filtertag">Title contains <i>{{ $title_filter[$collection->id]}}</i>
+			<span class="filtertag">{{ __('Title contains')}} <i>{{ $title_filter[$collection->id]}}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removetitlefilter">
                 <i class="tinyicon material-icons">delete</i>
                 </a>
@@ -190,7 +190,7 @@ function randomString(length) {
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
 			<div class="float-container">
-		   		<label for="title_search" class="search-label">Title</label>
+		   		<label for="title_search" class="search-label">{{ __('Title') }}</label>
 		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
 			</div>
 			</form>
@@ -215,7 +215,7 @@ function randomString(length) {
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
-				<option>Subject</option>
+				<option>{{ $m->label }}</option>
 				@foreach($options as $o)
 				<option>{{ $o }}</option>
 				@endforeach
@@ -232,7 +232,7 @@ function randomString(length) {
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">Full text search</label>
+			<label for="collection_search">{{ __('Full text search') }}</label>
 		    <input type="text" class="search-field" id="collection_search" />
 			<style>
 			.dataTables_filter {
@@ -251,10 +251,10 @@ function randomString(length) {
                     <table id="documents" class="table">
                         <thead class="text-primary">
                             <tr>
-                            <th>Type</th>
-                            <th>Title</th>
-                            <th>Size</th>
-                            <th>Created</th>
+                            <th>{{ __('Type')}}</th>
+                            <th>{{__('Title')}}</th>
+                            <th>{{__('Size')}}</th>
+                            <th>{{__('Created')}}</th>
 			<!-- meta fields -->
 				@foreach($collection->meta_fields as $m)
 				<th>{{ $m->label }}</th>

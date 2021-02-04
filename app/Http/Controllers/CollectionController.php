@@ -581,8 +581,8 @@ class CollectionController extends Controller
     public function replaceMetaFilter(Request $request){
         // set filters in session and return to the collection view 
         $meta_filters = Session::get('meta_filters');
+		$new_meta_filters = array();
         if(!empty($request->meta_value)){
-			$new_meta_filters = array();
 			if($meta_filters && is_array($meta_filters[$request->collection_id])){
 			foreach($meta_filters[$request->collection_id] as $m){
 				if($m['field_id'] != $request->meta_field){
