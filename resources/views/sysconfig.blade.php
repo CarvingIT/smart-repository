@@ -149,6 +149,14 @@
                     <input type="text" name="bg_image" id="bg_image" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['bg_image'])) {{$sysconfig['bg_image'] }} @endif" />
                     </div>
                    </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="banner_image_1" class="col-md-12 col-form-label text-md-right">Banner Image 1</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <input type="text" name="banner_image_1" id="banner_image_1" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['banner_image_1'])) {{$sysconfig['banner_image_1'] }} @endif" />
+                    </div>
+                   </div>
                    <div class="form-group row mb-0"><div class="col-md-12 offset-md-4"><button type="submit" class="btn btn-primary">
                                     Save
                                 </button> 
