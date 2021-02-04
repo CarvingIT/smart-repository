@@ -195,16 +195,36 @@ function randomString(length) {
 			</div>
 			</form>
 			@foreach($meta_fields as $m)
+			@if($column_config && in_array($m->id, $column_config->meta_fields))
 			@if($m->type == 'Text')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
-		   <label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   <input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
-		   <input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   <input type="hidden" name="operator" value="contains" />
+		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
+		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator" value="contains" />
 			</form>
 			</div>
+			@elseif($m->type == 'Select')
+			<div class="float-container">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
+		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();">
+		            @php
+                		$options = explode(",", $m->options);
+            		    @endphp
+				<option>Subject</option>
+				@foreach($options as $o)
+				<option>{{ $o }}</option>
+				@endforeach
+			</select>
+		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator" value="=" />
+			</form>
+			</div>
+			@endif
 			@endif
 			@endforeach
 			</div>
@@ -220,27 +240,13 @@ function randomString(length) {
 			}
 			</style>
 		   </div>
+			{{ __('Press Enter to Initiate Search') }}
 		   </div>
 		   <div class="col-12 text-center">
            <!--<i class="material-icons">search</i>-->
 		   </div>
 		</div>
 		</div><!-- search-filters-card -->
-		<script>
-			let searchbox = document.getElementById("collection_search");
-			let titlesearchbox = document.getElementById("title_search");
-			@if(!empty(env('TRANSLITERATION')))
-				@foreach($collection->meta_fields as $m)
-				let m_{{$m->id}}_searchbox = document.getElementById("meta_{{$m->id}}_search");
-				enableTransliteration(m_{{$m->id}}_searchbox, '{{ env('TRANSLITERATION') }}');
-				@endforeach
-			enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
-			enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
-			@endif
-			$('#collection_search').keyup(function(){
-      			oTable.search($(this).val()).draw() ;
-			})
-		</script>
 		   <div class="table-responsive">
                     <table id="documents" class="table">
                         <thead class="text-primary">
@@ -249,10 +255,10 @@ function randomString(length) {
                             <th>Title</th>
                             <th>Size</th>
                             <th>Created</th>
-							<!-- meta fields -->
-							@foreach($collection->meta_fields as $m)
-							<th>{{ $m->label }}</th>
-							@endforeach
+			<!-- meta fields -->
+				@foreach($collection->meta_fields as $m)
+				<th>{{ $m->label }}</th>
+				@endforeach
                             <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
                             </tr>
                         </thead>
@@ -264,4 +270,24 @@ function randomString(length) {
     </div>
 </div>
 </div>
+		<script>
+			@if(!empty(env('TRANSLITERATION')))
+				let searchbox = document.getElementById("collection_search");
+				enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
+				let titlesearchbox = document.getElementById("title_search");
+				enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
+
+				@foreach($collection->meta_fields as $m)
+					@if($m->type != 'Text') @continue @endif
+					@if($column_config && in_array($m->id, $column_config->meta_fields))
+					let m_{{$m->id}}_searchbox = document.getElementById("meta_{{$m->id}}_search");
+					enableTransliteration(m_{{$m->id}}_searchbox, '{{ env('TRANSLITERATION') }}');
+					@endif
+				@endforeach
+			@endif
+
+			$('#collection_search').keyup(function(){
+      			oTable.search($(this).val()).draw() ;
+			})
+		</script>
 @endsection
