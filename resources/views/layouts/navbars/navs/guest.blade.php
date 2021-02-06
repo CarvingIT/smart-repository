@@ -30,6 +30,11 @@ $collections = \App\Collection::all();
     </button>
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
+        <li class="nav-item{{ $activePage == 'home' ? ' active' : '' }}">
+          <a href="/" class="nav-link">
+            <i class="material-icons">home</i> {{ __('Home') }}
+          </a>
+        </li>
 	@if($has_collection_list == 1)
         <li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
