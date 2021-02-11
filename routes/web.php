@@ -159,3 +159,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'ProfileController@password']);
 });
 
+// redirect registration to login if registration is disabled
+if(env('ENABLE_REGISTRATION') != 1){
+	Route::redirect('register', 'login', 301);
+}
