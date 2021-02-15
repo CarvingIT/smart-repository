@@ -130,7 +130,7 @@
                    <label for="home_page" class="col-md-12 col-form-label text-md-right">Home page info</label> 
 		           </div>
                     <div class="col-md-9">
-                    <textarea name="home_page" id="home_page" class="form-control">@if(!empty($sysconfig['home_page'])) {{$sysconfig['home_page'] }} @endif</textarea>
+                    <textarea name="home_page" id="home_page" class="page_content">@if(!empty($sysconfig['home_page'])) {{$sysconfig['home_page'] }} @endif</textarea>
                     </div>
                    </div>
                    <div class="form-group row">
@@ -138,7 +138,7 @@
                    <label for="contact_page" class="col-md-12 col-form-label text-md-right">Contact info</label> 
 		           </div>
                     <div class="col-md-9">
-                    <textarea name="contact_page" id="logo_url" class="form-control">@if(!empty($sysconfig['contact_page'])) {{$sysconfig['contact_page'] }} @endif</textarea>
+                    <textarea name="contact_page" id="logo_url" class="page_content">@if(!empty($sysconfig['contact_page'])) {{$sysconfig['contact_page'] }} @endif</textarea>
                     </div>
                    </div>
                    <div class="form-group row">
@@ -169,4 +169,38 @@
     </div>
 </div>
 </div>
+
+                        <script src="/js/tinymce/tinymce.min.js"></script>
+                        <script>
+                            tinymce.init({
+                                selector: '.page_content',
+                                plugins: [
+                                    "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+                                    "searchreplace wordcount visualblocks visualchars code fullscreen",
+                                    "insertdatetime media table nonbreaking save contextmenu directionality paste"
+                                ],
+                                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+                                relative_urls: false,
+                                remove_script_host: false,
+                                convert_urls: true,
+                                force_br_newlines: true,
+                                force_p_newlines: false,
+                forced_root_block: '', // Needed for 3.x
+				/*
+                  file_picker_callback (callback, value, meta) {
+        let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth
+        let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight
+
+        tinymce.activeEditor.windowManager.openUrl({
+          url : '/file-manager/tinymce5',
+          title : 'Laravel File manager',
+          width : x * 0.8,
+          height : y * 0.8,
+          onMessage: (api, message) => {
+            callback(message.content, { text: message.text })
+          }
+        })
+      }, */
+                            });</script>
+
 @endsection
