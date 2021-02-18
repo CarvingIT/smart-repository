@@ -837,11 +837,14 @@ use App\UrlSuppression;
 	
 	public function saveColumnConfig(Request $request){
 		$collection = Collection::find($request->collection_id);
-		$col_config = array('title' => $request->input('title'),
+		$col_config = array(
+			'title' => $request->input('title'),
+			'title_search' => $request->input('title_search'),
 			'type'=>$request->input('type'),
 			'creation_time'=>$request->input('creation_time'),
 			'size'=>$request->input('size'),
-			'meta_fields'=>$request->input('meta_fields')
+			'meta_fields'=>$request->input('meta_fields'),
+			'meta_fields_search'=>$request->input('meta_fields_search')
 		);
 		$collection->column_config = json_encode($col_config);
 		$collection->save();

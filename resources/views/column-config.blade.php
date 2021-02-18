@@ -33,20 +33,33 @@
 			$column_config = json_decode($collection->column_config);
 		@endphp
 	   	<div class="col-md-12">
+		<h4>Display Columns</h4>
 		<div class="form-group row">
            <div class="col-md-3"><input name="type" type="checkbox" value="1" 
-			@if($column_config && $column_config->type == 1) checked="checked" @endif /> Type</div>
+			@if(!empty($column_config->type) && $column_config->type == 1) checked="checked" @endif /> Type</div>
            <div class="col-md-3"><input name="title" type="checkbox" value="1" 
-			@if($column_config && $column_config->title == 1) checked="checked" @endif /> Title</div>
+			@if(!empty($column_config->title) && $column_config->title == 1) checked="checked" @endif /> Title</div>
            <div class="col-md-3"><input name="size" type="checkbox" value="1"
-			@if($column_config && $column_config->size == 1) checked="checked" @endif /> Size</div>
+			@if(!empty($column_config->size) && $column_config->size == 1) checked="checked" @endif /> Size</div>
            <div class="col-md-3"><input name="creation_time" type="checkbox" value="1"
-			@if($column_config && $column_config->creation_time == 1) checked="checked" @endif /> Creation time</div>
-		   </div>
+			@if(!empty($column_config->creation_time) && $column_config->creation_time == 1) checked="checked" @endif /> Creation time</div>
+		</div>
 		<div class="form-group row">
 			@foreach($collection->meta_fields as $m)
            <div class="col-md-3"><input name="meta_fields[]" type="checkbox" value="{{ $m->id }}" 
 			@if(!empty($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ $m->label }}</div>
+			@endforeach
+		</div>
+
+		<h4>Search Fields</h4>
+		<div class="form-group row">
+           <div class="col-md-3"><input name="title_search" type="checkbox" value="1" 
+			@if(!empty($column_config->title_search) && $column_config->title_search == 1) checked="checked" @endif /> Title</div>
+		</div>
+		<div class="form-group row">
+			@foreach($collection->meta_fields as $m)
+           <div class="col-md-3"><input name="meta_fields_search[]" type="checkbox" value="{{ $m->id }}" 
+			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search)) checked="checked" @endif /> {{ $m->label }}</div>
 			@endforeach
 		</div>
 		</div>

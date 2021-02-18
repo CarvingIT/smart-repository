@@ -141,35 +141,9 @@ function randomString(length) {
                   </div>
         </div>
             <p>{{ $collection->description }}</p>
-        <p>
         @php
             $meta_fields = $collection->meta_fields;
-            $meta_labels = array();
-            foreach($meta_fields as $m){
-                $meta_labels[$m->id] = $m->label;
-            }
-            $all_meta_filters = Session::get('meta_filters');
-			$title_filter = Session::get('title_filter');
-			$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
-        @endphp
-		@if(!empty($title_filter[$collection->id]))
-			<span class="filtertag">{{ __('Title contains')}} <i>{{ $title_filter[$collection->id]}}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removetitlefilter">
-                <i class="tinyicon material-icons">delete</i>
-                </a>
-                </span>
-		@endif
-		@if($show_meta_filters)
-        @foreach( $all_meta_filters[$collection->id] as $m)
-            <span class="filtertag">
-            {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
-                <i class="tinyicon material-icons">delete</i>
-                </a>
-                </span>
-        @endforeach
-        @endif
-        </p>
+		@endphp
 
             <div class="flash-message">
                @foreach (['danger', 'warning', 'success', 'info'] as $msg)
@@ -187,6 +161,7 @@ function randomString(length) {
 
 		<div class="row text-center">
 		   <div class="col-12">
+			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
 			<div class="float-container">
@@ -194,8 +169,9 @@ function randomString(length) {
 		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
 			</div>
 			</form>
+			@endif
 			@foreach($meta_fields as $m)
-			@if($column_config && in_array($m->id, $column_config->meta_fields))
+			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
 			@if($m->type == 'Text')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
@@ -204,6 +180,16 @@ function randomString(length) {
 		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
 		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator" value="contains" />
+			</form>
+			</div>
+			@elseif($m->type == 'Date' || $m->type == 'Numeric')
+			<div class="float-container">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
+		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
+		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator" value="=" />
 			</form>
 			</div>
 			@elseif($m->type == 'Select')
@@ -247,6 +233,38 @@ function randomString(length) {
 		   </div>
 		</div>
 		</div><!-- search-filters-card -->
+		<!-- show filters -->
+		<div>
+        <p>
+		@php
+            $meta_labels = array();
+            foreach($meta_fields as $m){
+                $meta_labels[$m->id] = $m->label;
+            }
+            $all_meta_filters = Session::get('meta_filters');
+			$title_filter = Session::get('title_filter');
+			$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
+        @endphp
+		@if(!empty($title_filter[$collection->id]))
+			<span class="filtertag">{{ __('Title contains')}} <i>{{ $title_filter[$collection->id]}}</i>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removetitlefilter">
+                <i class="tinyicon material-icons">delete</i>
+                </a>
+                </span>
+		@endif
+		@if($show_meta_filters)
+        @foreach( $all_meta_filters[$collection->id] as $m)
+            <span class="filtertag">
+            {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <i class="tinyicon material-icons">delete</i>
+                </a>
+                </span>
+        @endforeach
+        @endif
+        </p>
+		</div>
+		<!-- display of applied filters ends -->
 		   <div class="table-responsive">
                     <table id="documents" class="table">
                         <thead class="text-primary">
@@ -279,7 +297,7 @@ function randomString(length) {
 
 				@foreach($collection->meta_fields as $m)
 					@if($m->type != 'Text') @continue @endif
-					@if($column_config && in_array($m->id, $column_config->meta_fields))
+					@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
 					let m_{{$m->id}}_searchbox = document.getElementById("meta_{{$m->id}}_search");
 					enableTransliteration(m_{{$m->id}}_searchbox, '{{ env('TRANSLITERATION') }}');
 					@endif
