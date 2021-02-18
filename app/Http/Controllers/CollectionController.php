@@ -685,6 +685,16 @@ class CollectionController extends Controller
         return redirect('/collection/'.$collection_id);
     }
 
+	public function removeAllFilters($collection_id){
+		$title_filter = Session::get('title_filter');
+		$title_filter[$collection_id] = null;
+        Session::put('title_filter', $title_filter);
+        $all_meta_filters = Session::get('meta_filters');
+        $all_meta_filters[$collection_id] = null;
+        Session::put('meta_filters', $all_meta_filters);
+        return redirect('/collection/'.$collection_id);
+	}
+
     public function logSearchQuery($data){
         $search_log_entry = new \App\Searches;
         $search_log_entry->collection_id = $data['collection_id']; 

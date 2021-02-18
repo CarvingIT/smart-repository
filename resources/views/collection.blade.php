@@ -248,7 +248,7 @@ function randomString(length) {
 		@if(!empty($title_filter[$collection->id]))
 			<span class="filtertag">{{ __('Title contains')}} <i>{{ $title_filter[$collection->id]}}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removetitlefilter">
-                <i class="tinyicon material-icons">delete</i>
+                <i class="tinyicon material-icons">close</i>
                 </a>
                 </span>
 		@endif
@@ -257,11 +257,16 @@ function randomString(length) {
             <span class="filtertag">
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
-                <i class="tinyicon material-icons">delete</i>
+                <i class="tinyicon material-icons">close</i>
                 </a>
                 </span>
         @endforeach
         @endif
+		@if(!empty($title_filter[$collection->id]) || $show_meta_filters)
+                <a title="{{ __('Remove all filters') }}" href="/collection/{{ $collection->id }}/removeallfilters">
+                <i class="tinyicon material-icons">delete_forever</i>
+                </a>
+		@endif
         </p>
 		</div>
 		<!-- display of applied filters ends -->
