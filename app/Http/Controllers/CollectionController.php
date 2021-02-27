@@ -861,4 +861,35 @@ use App\UrlSuppression;
 		return redirect('/collection/'.$collection->id);
 	}
 
+	public function export($collection_id){
+		$documents = \App\Document::where('collection_id', $collection_id)->get();
+		$collection = \App\Collection::find($collection_id);
+		$meta_fields = $collection->meta_fields;
+		$filename = $collection->name;
+		header("Content-type: text/csv");
+		header("Content-Disposition: attachment; filename={$filename}.tsv");
+		header("Pragma: no-cache");
+		header("Expires: 0");
+		echo 'id'."\t".'title'."\t";
+		foreach($meta_fields as $m){
+			echo $m->label."\t";
+		}
+		echo "\n";
+		foreach($documents as $d){
+			// remove tab spaces from the title, if present
+			echo $d->id."\t".preg_replace("/\t/", " ", $d->title)."\t";
+			foreach($meta_fields as $m){
+				if(!empty($d->meta_value($m->id))){
+					echo $d->meta_value($m->id);
+				}
+				else{
+					echo " - ";
+				}
+				echo "\t";
+			}
+			echo "\n";
+		}
+		exit;
+	}
+
 }

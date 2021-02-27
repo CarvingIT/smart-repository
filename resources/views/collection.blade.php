@@ -138,6 +138,9 @@ function randomString(length) {
                   @if(count($collection->meta_fields)>0)
                     <a href="/collection/{{ $collection->id }}/metafilters" title="Set Filters" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
                   @endif
+                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
+                    <a href="/collection/{{ $collection->id }}/export" title="Export meta data" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
+				  @endif
                   </div>
         </div>
             <p>{{ $collection->description }}</p>
