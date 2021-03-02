@@ -880,7 +880,7 @@ use App\UrlSuppression;
 			echo $d->id."\t".preg_replace("/\t/", " ", $d->title)."\t";
 			foreach($meta_fields as $m){
 				if(!empty($d->meta_value($m->id))){
-					echo $d->meta_value($m->id);
+					echo preg_replace("/\t/"," ", $d->meta_value($m->id));
 				}
 				else{
 					echo " - ";
