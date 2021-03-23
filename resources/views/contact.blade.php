@@ -16,7 +16,9 @@
                 <div class="card-header card-header-primary"><h4 class="card-title">Contact Us</h4></div>
 
                 <div class="card-body">
+					@if(!empty($settings['contact_page']))
 					{!! $settings['contact_page'] !!}
+					@endif
                 </div>
             </div>
         </div>
