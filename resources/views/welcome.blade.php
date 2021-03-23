@@ -20,7 +20,9 @@
     			<img class="img-responsive" src="{{ $settings['banner_image_1'] }}" />
 				@endif
 				</div>
+				@if(!empty($settings['home_page']))
 				{!! $settings['home_page'] !!}
+				@endif
 			</div>
 		</div>
       </div>
