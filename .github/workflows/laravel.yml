@@ -28,7 +28,7 @@ jobs:
       run: |
         mkdir -p database
         touch database/database.sqlite
-   	- name: Migrate and Seed the database
+    - name: Migrate and Seed the database
       env:
         DB_CONNECTION: sqlite
         DB_DATABASE: database/database.sqlite
