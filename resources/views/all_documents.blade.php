@@ -104,10 +104,10 @@ function randomString(length) {
                     <table id="documents" class="table">
                         <thead class="text-primary">
                             <tr>
-                            <th>Type</th>
-                            <th>Title</th>
-                            <th>Size</th>
-                            <th>Created</th>
+                            <th>{{__('Type')}}</th>
+                            <th>{{__('Title')}}</th>
+                            <th>{{__('Size')}}</th>
+                            <th>{{__('Created')}}</th>
                             <th class="text-right"><!--Actions--></th>
                             </tr>
                         </thead>

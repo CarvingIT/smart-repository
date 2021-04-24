@@ -283,7 +283,7 @@ function randomString(length) {
                             <th>{{__('Created')}}</th>
 			<!-- meta fields -->
 				@foreach($collection->meta_fields as $m)
-				<th>{{ $m->label }}</th>
+				<th>{{ __($m->label) }}</th>
 				@endforeach
                             <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
                             </tr>
