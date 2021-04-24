@@ -11,7 +11,7 @@ jobs:
   laravel-tests:
     services:
       mysql:
-        image: mariadb:10.4.15
+        image: mariadb:10.3.25
         env:
             MYSQL_ALLOW_EMPTY_PASSWORD: yes
             MYSQL_DATABASE: SR_test
