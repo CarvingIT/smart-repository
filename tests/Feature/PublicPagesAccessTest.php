@@ -13,9 +13,9 @@ class PublicPagesAccessTest extends TestCase
      *
      * @return void
      */
-    public function testExample()
+    public function testAccess()
     {
-        $response = $this->get('/welcome');
+        $response = $this->get('/');
         $response->assertStatus(200);
         $response = $this->get('/collections');
         $response->assertStatus(200);

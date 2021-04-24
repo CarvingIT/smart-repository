@@ -10,16 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-
-
-/*
-Route::get('/', function () {
-    return view('welcome');
-});
-*/
 Route::view('/','welcome');
-Route::view('/welcome','welcome');
 
 Route::get('/lang/{locale}', function ($locale) {
     App::setLocale($locale);
