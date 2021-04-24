@@ -1,4 +1,4 @@
-name: Laravel
+name: Laravel with php7.4
 
 on:
   push:
