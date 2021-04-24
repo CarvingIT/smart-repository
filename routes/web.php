@@ -22,13 +22,6 @@ Route::get('/lang/{locale}', function ($locale) {
     return redirect('/');
 });
 
-
-Route::get('/','GuestController@welcome');
-
-Route::get('/welcome', function () {
-    return view('welcome');
-});
-
 Route::get('/contact', function () {
     return view('contact');
 });
