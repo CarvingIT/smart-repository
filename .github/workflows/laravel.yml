@@ -13,9 +13,8 @@ jobs:
       mysql:
         image: mariadb:10.3.25
         env:
-            DB_PASSWORD: SR_test123
+            MYSQL_ROOT_PASSWORD: SR_test123
             MYSQL_DATABASE: SR_test
-            DB_USERNAME: SR_test
         ports:
             - 3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
@@ -39,7 +38,7 @@ jobs:
       env:
         DB_CONNECTION: mysql
         DB_DATABASE: SR_test
-        DB_USERNAME: SR_test
+        DB_USERNAME: root
         DB_PASSWORD: SR_test123
       run: php artisan migrate:fresh --seed
     - name: Execute tests (Unit and Feature tests) via PHPUnit
