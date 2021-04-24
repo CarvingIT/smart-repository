@@ -81,9 +81,10 @@ function randomString(length) {
                 <h4 class="card-title ">{{__('All Documents')}}</h4>
         	</div>
 	        <div class="card-body">
+		<div class="card search-filters-card">
 		@if(!empty(env('TRANSLITERATION')))
 		   <div class="col-12 text-right">
-		   <input type="text" id="collection_search" placeholder="Search" />
+		   <input type="text" id="collection_search" placeholder="{{__('Search')}}" />
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -97,6 +98,7 @@ function randomString(length) {
       			oTable.search($(this).val()).draw() ;
 			})
 		</script>
+		</div>
 		@endif
 		<div class="table-responsive">
                     <table id="documents" class="table">

@@ -179,7 +179,7 @@ function randomString(length) {
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
-		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
+		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
 		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
 		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator" value="contains" />
