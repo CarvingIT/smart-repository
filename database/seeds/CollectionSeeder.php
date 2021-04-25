@@ -56,5 +56,13 @@ class CollectionSeeder extends Seeder
 		'permission_id'=>1
 	    ]
 	);
+        DB::table('user_permissions')->insert(
+            [
+		'user_id'=>1,
+		'collection_id'=>3,
+		'permission_id'=>1
+	    ]
+	);
+
     }
 }

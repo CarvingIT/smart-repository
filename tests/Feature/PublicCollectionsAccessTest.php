@@ -27,4 +27,9 @@ class PublicCollectionsAccessTest extends TestCase
         $response = $this->get('/collection/3');
         $response->assertStatus(403);
 	}
+
+	public function testNonExistentCollectionAccess(){
+        $response = $this->get('/collection/1000'); // something that is not likely to exist
+        $response->assertStatus(403); // purposefully returning 403 status code
+	}
 }
