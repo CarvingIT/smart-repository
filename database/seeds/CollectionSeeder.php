@@ -31,6 +31,16 @@ class CollectionSeeder extends Seeder
             ]
         );
 
+        DB::table('collections')->insert(
+            [
+                'name'=>'Private collection',
+                'description'=>'Members only collection for testing',
+                'type'=>'Members Only',
+                'user_id'=>1,
+		'content_type'=>'Uploaded documents'
+            ]
+        );
+
 	// set first user as the maintainer for these collections
         DB::table('user_permissions')->insert(
             [

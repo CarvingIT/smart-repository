@@ -15,9 +15,12 @@ class CollectionView
      */
     public function handle($request, Closure $next)
     {
+		$user = \Auth::user();
         $collection = \App\Collection::find($request->collection_id);
-        if($collection->type != 'Public' && !$request->user()->hasPermission($request->collection_id, 'VIEW')){
-		abort(403, 'Forbidden');
+
+        if(!$collection || ($collection->type != 'Public' && 
+			(!$user || !$request->user()->hasPermission($request->collection_id, 'VIEW')))){
+			abort(403, 'Forbidden');
         }
         return $next($request);
     }

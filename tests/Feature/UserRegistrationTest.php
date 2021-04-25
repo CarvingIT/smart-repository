@@ -8,6 +8,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UserRegistrationTest extends TestCase
 {
+	use WithFaker;
+
     /**
      * A basic feature test example.
      *
@@ -30,20 +32,22 @@ class UserRegistrationTest extends TestCase
     public function testRegistration()
     {
 		putenv("ENABLE_REGISTRATION=1");
+		$faker = $this->faker;
+		$password = $faker->password;
 		$response = $this->followingRedirects()
-				->post('/register', ['name' => 'Jaee', 'email'=>'jaee404@gmail.com', 
-				'password'=>'jaee1234', 'password_confirmation'=>'jaee1234']);
+				->post('/register', ['name' => $faker->name, 'email'=>$faker->email, 
+				'password'=>$password, 'password_confirmation'=>$password]);
         $response->assertStatus(200)->assertSeeText('Verify Your Email Address');
     }
 
 	public function testWrongPassword(){
-		$response = $this->json('POST', '/login', ['email'=>'jaee404@gmail.com', 
+		$response = $this->json('POST', '/login', ['email'=>'ketan@carvingit.com', 
 				'password'=>'jaee23']);
         $response->assertStatus(422);
 	}
 	public function testLogin(){
-		$response = $this->json('POST', '/login', ['email'=>'jaee404@gmail.com', 
-				'password'=>'jaee1234']);
+		$response = $this->json('POST', '/login', ['email'=>'ketan@carvingit.com', 
+				'password'=>'ketan123']);
         $response->assertRedirect('/collections');
 	}
 }
