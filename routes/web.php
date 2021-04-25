@@ -29,7 +29,6 @@ Route::get('/faq', function () {
 
 Auth::routes(['verify'=>true]);
 
-#Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/collections', 'CollectionController@list');
 Route::get('/documents', 'DocumentController@list');
@@ -108,9 +107,10 @@ Route::post('/admin/user/delete','UserController@destroy')->middleware('admin');
 // system config
 Route::get('/admin/sysconfig','SysConfigController@index')->middleware('admin');
 Route::post('/admin/sysconfig','SysConfigController@save')->middleware('admin');
-Auth::routes();
+//Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
+//Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('table-list', function () {
