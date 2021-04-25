@@ -30,11 +30,17 @@ class UserRegistrationTest extends TestCase
     public function testRegistration()
     {
 		putenv("ENABLE_REGISTRATION=1");
-		$response = $this->json('POST', '/register', ['name' => 'Jaee', 'email'=>'jaee404@gmail.com', 
+		$response = $this->followingRedirects()
+				->post('/register', ['name' => 'Jaee', 'email'=>'jaee404@gmail.com', 
 				'password'=>'jaee1234', 'password_confirmation'=>'jaee1234']);
-        $response->assertRedirect('/home');
+        $response->assertStatus(200)->assertSeeText('Verify Your Email Address');
     }
 
+	public function testWrongPassword(){
+		$response = $this->json('POST', '/login', ['email'=>'jaee404@gmail.com', 
+				'password'=>'jaee23']);
+        $response->assertStatus(422);
+	}
 	public function testLogin(){
 		$response = $this->json('POST', '/login', ['email'=>'jaee404@gmail.com', 
 				'password'=>'jaee1234']);
