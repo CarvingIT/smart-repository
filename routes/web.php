@@ -42,12 +42,12 @@ Route::post('/collection/{collection_id}/upload','DocumentController@upload')->m
 
 
 // Collection-user management
-Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('collection_view');
-Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm');
+Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('maintainer');
+Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm')->middleware('maintainer');
 
 // Collection-user management
-Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('collection_view');
-Route::post('/collection/{collection_id}/savecollectionurls', 'CollectionController@saveCollectionUrls');
+Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('maintainer');
+Route::post('/collection/{collection_id}/savecollectionurls', 'CollectionController@saveCollectionUrls')->middleware('maintainer');
 
 Route::get('autocomplete', 'UserController@autoComplete')->name('autocomplete');
 
