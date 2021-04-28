@@ -91,9 +91,9 @@ Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'Docu
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
 
 // reports
-Route::get('/reports', 'ReportsController@index');
-Route::get('/reports/downloads', 'ReportsController@downloads');
-Route::get('/reports/uploads', 'ReportsController@uploads');
+Route::get('/reports', 'ReportsController@index')->middleware('admin');
+Route::get('/reports/downloads', 'ReportsController@downloads')->middleware('admin');
+Route::get('/reports/uploads', 'ReportsController@uploads')->middleware('admin');
 
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');
