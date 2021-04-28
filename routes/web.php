@@ -10,6 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Auth::routes(['verify'=>true]);
+
 Route::view('/','welcome');
 
 Route::get('/lang/{locale}', function ($locale) {
@@ -27,7 +29,6 @@ Route::get('/faq', function () {
     return view('faq');
 });
 
-Auth::routes(['verify'=>true]);
 
 Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/collections', 'CollectionController@list');
@@ -102,12 +103,10 @@ Route::get('/admin/collection-form/{collection_id}', 'CollectionController@add_e
 Route::post('/admin/collection-form/delete', 'CollectionController@deleteCollection')->middleware('admin');
 Route::post('/admin/savecollection', 'CollectionController@save')->middleware('admin');
 Route::get('/admin/usermanagement', 'UserController@index')->middleware('admin');
-Route::post('/admin/saveuser', 'UserController@save')->middleware('admin');
 Route::post('/admin/user/delete','UserController@destroy')->middleware('admin');
 // system config
 Route::get('/admin/sysconfig','SysConfigController@index')->middleware('admin');
 Route::post('/admin/sysconfig','SysConfigController@save')->middleware('admin');
-//Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 //Route::get('/home', 'HomeController@index')->name('home');
@@ -142,7 +141,7 @@ Route::group(['middleware' => 'auth'], function () {
 	})->name('upgrade');
 });
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth', 'admin']], function () {
 	Route::resource('user', 'UserController', ['except' => ['show']]);
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);

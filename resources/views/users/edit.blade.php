@@ -18,7 +18,7 @@
                 </div>
                 <form method="post" action="{{ route('user.update', $user) }}" autocomplete="off">
                 @csrf
-                @method('post')
+                @method('put')
                 <div class="form-group row bmd-form-group">
                   <div class="col-md-4">
                   <label class="col-md-8 col-form-label text-md-right">{{ __('Name') }}</label>
