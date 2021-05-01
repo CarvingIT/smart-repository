@@ -14,7 +14,7 @@
         "fideloper/proxy": "^4.0",
         "html2text/html2text": "^4.3",
         "laravel-frontend-presets/material-dashboard": "^1.0",
-        "laravel/framework": "5.8.*",
+        "laravel/framework": "6.20.*",
         "laravel/tinker": "^1.0",
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/flysystem-sftp": "^1.0",
