@@ -44,6 +44,26 @@ class ImportDocs extends Command
         $hosts = explode(",",$elastic_hosts);
         $client = ClientBuilder::create()->setHosts($hosts)->build();
 
+		// Is elastic search running ?
+		// get the indices and see if an error is returned
+		$params = [ 'index' => 'sr_documents', 
+					    'body'  => [
+    					    'query' => [
+            					'match' => [
+                					'testField' => 'abc'
+            					]
+        					]
+    					]
+				];
+		try{
+			$es_on = true;
+			$results = $client->search($params);
+		}
+		catch(\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
+			echo "ElasticSearch nodes are not available.\n";
+			$es_on = false;
+		}
+
         $collection_id = $this->argument('collection_id');
         $dir = $this->option('dir');
         $csv = $this->option('csv');
@@ -56,25 +76,27 @@ class ImportDocs extends Command
             $list = scandir($dir);
             foreach($list as $f){
                 if(is_file($dir.'/'.$f)){
+                   	$d = \App\Http\Controllers\DocumentController::importFile($collection_id, $dir.'/'.$f);
+                   	echo $dir.'/'.$f."\n";
+	    			// Update elastic index
+					if($es_on){
                     try{
-                    $d = \App\Http\Controllers\DocumentController::importFile($collection_id, $dir.'/'.$f);
-                    echo $dir.'/'.$f."\n";
-		    // Update elastic index
-            	   $body = $d->toArray();
-		   $body['collection_id'] = $collection_id;
-            		$params = [
-                		'index' => 'sr_documents',
-                		'id'    => $d->id,
-                		'body'  => $body
-            		];
+            	    	$body = $d->toArray();
+		   		    	$body['collection_id'] = $collection_id;
+            			$params = [
+                			'index' => 'sr_documents',
+                			'id'    => $d->id,
+                			'body'  => $body
+            			];
 
-            		$response = $client->index($params);
-            		print_r($response);
+            			$response = $client->index($params);
+            			print_r($response);
                     }
                     catch(\Exception $e){
-                    echo "!! Error while importing $f\n";
-                    echo $e->getMessage()."\n";
+                    	echo "!! Error while importing $f\n";
+                    	echo $e->getMessage()."\n";
                     }
+				  } // if ES is on
                 }
             }
         }
