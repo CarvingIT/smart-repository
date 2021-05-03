@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7b125618c1d0ff302d5427863eb9b319",
+    "content-hash": "4d5e76bcd9c49d9d16b57a95151b5f54",
     "packages": [
         {
             "name": "aws/aws-sdk-php",
@@ -2917,6 +2917,168 @@
                 }
             ],
             "time": "2021-04-06T13:56:45+00:00"
+        },
+        {
+            "name": "popphp/pop-mail",
+            "version": "3.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/popphp/pop-mail.git",
+                "reference": "446d7cd57e67048a00cc1fd33fa47b0fe72fafd9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/popphp/pop-mail/zipball/446d7cd57e67048a00cc1fd33fa47b0fe72fafd9",
+                "reference": "446d7cd57e67048a00cc1fd33fa47b0fe72fafd9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.3.0",
+                "popphp/pop-mime": "^1.1.0",
+                "popphp/pop-utils": "^1.2.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pop\\Mail\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nick Sagona",
+                    "email": "dev@nolainteractive.com",
+                    "homepage": "http://www.nolainteractive.com/"
+                }
+            ],
+            "description": "Pop Mail Component for Pop PHP Framework",
+            "homepage": "http://www.popphp.org/",
+            "keywords": [
+                "mail",
+                "mail queue",
+                "php",
+                "pop",
+                "pop php",
+                "send mail"
+            ],
+            "time": "2021-02-12T05:15:31+00:00"
+        },
+        {
+            "name": "popphp/pop-mime",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/popphp/pop-mime.git",
+                "reference": "4250dac084cf3ff7b8c4f852da5e67313eb9d443"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/popphp/pop-mime/zipball/4250dac084cf3ff7b8c4f852da5e67313eb9d443",
+                "reference": "4250dac084cf3ff7b8c4f852da5e67313eb9d443",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pop\\Mime\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nick Sagona",
+                    "email": "dev@nolainteractive.com",
+                    "homepage": "http://www.nolainteractive.com/"
+                }
+            ],
+            "description": "Pop Mime Component for Pop PHP Framework",
+            "homepage": "http://www.popphp.org/",
+            "keywords": [
+                "mime",
+                "mime generator",
+                "mime parser",
+                "php",
+                "pop",
+                "pop php"
+            ],
+            "time": "2021-02-12T03:05:30+00:00"
+        },
+        {
+            "name": "popphp/pop-utils",
+            "version": "1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/popphp/pop-utils.git",
+                "reference": "20a404d5e53b5fc8a7df0bdcb604018dbd065d80"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/popphp/pop-utils/zipball/20a404d5e53b5fc8a7df0bdcb604018dbd065d80",
+                "reference": "20a404d5e53b5fc8a7df0bdcb604018dbd065d80",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Pop\\Utils\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Nick Sagona",
+                    "email": "dev@nolainteractive.com",
+                    "homepage": "http://www.nolainteractive.com/"
+                }
+            ],
+            "description": "Pop Utilities Component for Pop PHP Framework",
+            "homepage": "http://www.popphp.org/",
+            "keywords": [
+                "php",
+                "pop",
+                "pop php",
+                "utilities"
+            ],
+            "time": "2021-02-12T02:34:28+00:00"
         },
         {
             "name": "psr/container",
