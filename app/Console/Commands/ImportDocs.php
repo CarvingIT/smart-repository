@@ -60,7 +60,7 @@ class ImportDocs extends Command
 			$results = $client->search($params);
 		}
 		catch(\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
-			echo "ElasticSearch nodes are not available. When the service starts, re-indexing will have to be done.\n";
+			echo "WARNING: ElasticSearch nodes are not available. When the service starts, re-indexing will have to be done.\n";
 			$es_on = false;
 		}
 
