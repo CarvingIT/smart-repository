@@ -48,6 +48,11 @@ return [
             'root' => storage_path('app'),
         ],
 
+        'ketan_temp' => [
+            'driver' => 'local',
+            'root' => '/home/ketan/tmp',
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
