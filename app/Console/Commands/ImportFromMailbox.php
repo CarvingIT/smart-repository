@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Pop\Mail\Client;
+use Illuminate\Support\Facades\Storage;
 
 class ImportFromMailbox extends Command
 {
@@ -12,7 +13,8 @@ class ImportFromMailbox extends Command
      *
      * @var string
      */
-    protected $signature = 'SR:ImportFromMailbox';
+    protected $signature = 'SR:ImportFromMailbox
+			{--since= : Fetch emails from yyyy-mm-dd}';
 
     /**
      * The console command description.
@@ -38,7 +40,10 @@ class ImportFromMailbox extends Command
      */
     public function handle()
     {
-		echo "Importing emails!\n";
+		// get a date that was 2 days ago
+		$default_since = date('Y-m-d', strtotime('-2 days'));
+		$since = empty($this->option('since')) ? 'SINCE '.$default_since : 'SINCE '.$this->option('since');
+		echo "Importing emails that came since $since.\n";
 
 		$imap = new Client\Imap('imap.gmail.com', 993);
 		$imap->setUsername('carvingtesting@gmail.com')
@@ -48,15 +53,35 @@ class ImportFromMailbox extends Command
 		$imap->open('/ssl');
 
 		// Sorted by date, reverse order (newest first)
-		$ids     = $imap->getMessageIdsBy(SORTDATE, true);
-		$headers = $imap->getMessageHeadersById($ids[0]);
-		$parts   = $imap->getMessageParts($ids[0]);
+		$ids     = $imap->getMessageIdsBy(SORTDATE, true, SE_UID, $since);
 
-		print_r($headers);
+		echo "There are ".count($ids)." emails\n";
+		
+		// exit if there are no emails
+		if(count($ids) == 0) exit;
+		$temp_dir = \Str::uuid();
 
-		// Assuming the first part is an image attachment, display image
-		//header('Content-Type: image/jpeg');
-		//header('Content-Length: ' . strlen($parts[0]->content));
-		echo $parts[0]->content;
+		foreach($ids as $id){
+			$headers = $imap->getMessageHeadersById($id);
+			$parts   = $imap->getMessageParts($id);
+			$attachments = $imap->getMessageAttachments($id);
+
+			echo "parts: ".count($parts)."\n";
+			echo "attachments: ".count($attachments)."\n";
+			//print_r($headers);
+			foreach($attachments as $a){
+				echo $a->type."\n";
+				echo $a->basename."\n";
+				Storage::put('mailbox_imports/'.$temp_dir.'/'.$a->basename, $a->content);
+			}
+			// body of the email
+			//echo $parts[0]->content."\n";
+		}
+		// import all files stored under mailbox_imports/$temp_dir
+		$this->call('SR:ImportDocs', 
+			['collection_id'=> 1, 
+			'--dir'=> storage_path('app').'/mailbox_imports/'.$temp_dir]);
+		// clean contents of mailbox_imports
+		Storage::deleteDirectory('/mailbox_imports/');
     }
 }
