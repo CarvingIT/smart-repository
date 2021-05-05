@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Pop\Mail\Client;
 use Illuminate\Support\Facades\Storage;
 use App\CollectionMailbox;
+use App\MailMessage;
 
 class ImportFromMailbox extends Command
 {
@@ -45,6 +46,7 @@ class ImportFromMailbox extends Command
 		$mailboxes = CollectionMailbox::all();
 		foreach($mailboxes as $mbox){
 			$creds = json_decode($mbox->credentials);
+			$files_fetched = false;
 			// get a date that was 2 days ago
 			$default_since = date('Y-m-d', strtotime('-2 days'));
 			$since = empty($this->option('since')) ? 'SINCE '.$default_since : 'SINCE '.$this->option('since');
@@ -60,13 +62,21 @@ class ImportFromMailbox extends Command
 			// Sorted by date, reverse order (newest first)
 			$ids     = $imap->getMessageIdsBy(SORTDATE, true, SE_UID, $since);
 		
-			echo "There are ".count($ids)." emails\n";
+			echo "There are ".count($ids)." emails.\n";
 		
-			// exit if there are no emails
-			if(count($ids) == 0) exit;
+			// continue if there are no emails
+			if(count($ids) == 0) continue;
 			$temp_dir = \Str::uuid();
 
 			foreach($ids as $id){
+				// check if the id is already processed
+				$message = MailMessage::where('message_id', $id)
+					->where('mailbox_id', $mbox->id)->first();
+				if($message){
+					// message is already processed
+					echo "Message ".$id." already processed.\n";
+					continue;
+				}
 				$headers = $imap->getMessageHeadersById($id);
 				$parts   = $imap->getMessageParts($id);
 				$attachments = $imap->getMessageAttachments($id);
@@ -78,16 +88,29 @@ class ImportFromMailbox extends Command
 					echo $a->type."\n";
 					echo $a->basename."\n";
 					Storage::put('mailbox_imports/'.$temp_dir.'/'.$a->basename, $a->content);
+					$files_fetched = true;
 				}
 				// body of the email
 				//echo $parts[0]->content."\n";
+				// save the message in order to avoid processing again	
+				$message = new MailMessage;
+				$message->mailbox_id = $mbox->id;
+				$message->message_id = $id;
+				$message->save();
 			}
-			// import all files stored under mailbox_imports/$temp_dir
-			$this->call('SR:ImportDocs', 
-				['collection_id'=> 1, 
-				'--dir'=> storage_path('app').'/mailbox_imports/'.$temp_dir]);
-			// clean contents of mailbox_imports
-			Storage::deleteDirectory('/mailbox_imports/');
+			if($files_fetched){
+				try{
+					// import all files stored under mailbox_imports/$temp_dir
+					$this->call('SR:ImportDocs', 
+						['collection_id'=> 1, 
+						'--dir'=> storage_path('app').'/mailbox_imports/'.$temp_dir]);
+					// clean contents of mailbox_imports
+					Storage::deleteDirectory('/mailbox_imports/');
+				}
+				catch(\Exception $e){
+					echo $e->getMessage()."\n";
+				}
+			}
 		}
     }
 }
