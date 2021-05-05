@@ -76,17 +76,57 @@
 			@endforeach
 		</div>
 
-		<h4>{{ __('Map an email address to this collection')}}</h4>
+		<h4>{{ __('IMAP Settings (Map an email address to this collection)')}}</h4>
 		<div class="form-group">
 		<p>{{ __('Attachments sent to this email address will be automatically imported into your collection. You may need the help of your IT staff to fill out the following details.') }}</p>
 			<div class="row">
-				email address
+				<div class="col-md-2 text-right">
+					<label for="email_address">Email address</label>
+				</div>
+				<div class="col-md-10">
+					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="e.g. knowledge@yourdomain.com" value="" />
+				</div>
 			</div>
 			<div class="row">
-				IMAP server and port
+				<div class="col-md-2">
+					<label for="imap_server">IMAP server</label>
+				</div>
+				<div class="col-md-10">
+					<input type="text" class="form-control" name="imap_server" id="imap_server" value="" />
+				</div>
 			</div>
 			<div class="row">
-				Username and password
+				<div class="col-md-2">
+					<label for="server_port">Port</label>
+				</div>
+				<div class="col-md-10">
+					<input type="text" class="form-control" name="server_port" id="server_port" value="" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					<label for="security">SSL/TLS</label>
+				</div>
+				<div class="col-md-10">
+					<select name="security" class="selectpicker" id="security">
+						<option value="ssl">SSL</option>
+						<option value="tls">TLS</option>
+					</select>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-2">
+					<label for="username">Username</label>
+				</div>
+				<div class="col-md-4">
+					<input type="text" name="username" id="username" value="" />
+				</div>
+				<div class="col-md-2">
+					<label for="password">Password</label>
+				</div>
+				<div class="col-md-4">
+					<input type="password" name="password" id="password" value="" />
+				</div>
 			</div>
 			<div class="row">
 			</div>
