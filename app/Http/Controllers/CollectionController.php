@@ -840,12 +840,12 @@ use App\UrlSuppression;
     }	
 
 	// column-config
-	public function showColumnConfigForm(Request $request){
+	public function showSettingsForm(Request $request){
 		$collection = Collection::find($request->collection_id);
-        return view('column-config', ['collection'=>$collection]);
+        return view('collection-settings', ['collection'=>$collection]);
 	}
 	
-	public function saveColumnConfig(Request $request){
+	public function saveSettings(Request $request){
 		$collection = Collection::find($request->collection_id);
 		$col_config = array(
 			'title' => $request->input('title'),

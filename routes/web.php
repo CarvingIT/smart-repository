@@ -67,8 +67,8 @@ Route::get('/collection/{collection_id}/meta/{meta_field_id}', 'CollectionContro
 Route::post('/collection/{collection_id}/meta', 'CollectionController@saveMeta')->middleware('maintainer');
 Route::get('/collection/{collection_id}/meta/{meta_field_id}/delete', 'CollectionController@deleteMetaField')->middleware('maintainer');
 // column config
-Route::get('/collection/{collection_id}/column-config', 'CollectionController@showColumnConfigForm')->middleware('maintainer');
-Route::post('/collection/{collection_id}/column-config', 'CollectionController@saveColumnConfig')->middleware('maintainer');
+Route::get('/collection/{collection_id}/settings', 'CollectionController@showSettingsForm')->middleware('maintainer');
+Route::post('/collection/{collection_id}/settings', 'CollectionController@saveSettings')->middleware('maintainer');
 
 Route::get('/collection/{collection_id}/metafilters', 'CollectionController@metaFiltersForm');
 Route::post('/collection/{collection_id}/metafilters', 'CollectionController@addMetaFilter');
