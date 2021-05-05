@@ -84,7 +84,7 @@
 					<label for="email_address">Email address</label>
 				</div>
 				<div class="col-md-10">
-					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="e.g. knowledge@yourdomain.com" value="@if($mailbox->address) {{ $mailbox->address }} @endif" />
+					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="e.g. knowledge@yourdomain.com" value="@if(!empty($mailbox->address)) {{ $mailbox->address }} @endif" />
 				</div>
 			</div>
 		@php
