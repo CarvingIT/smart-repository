@@ -13,6 +13,7 @@ use App\StorageTypes;
 use App\SpideredDomain;
 use App\DesiredUrl;
 use App\UrlSuppression;
+use App\CollectionMailbox;
 
 class CollectionController extends Controller
 {
@@ -842,7 +843,8 @@ use App\UrlSuppression;
 	// column-config
 	public function showSettingsForm(Request $request){
 		$collection = Collection::find($request->collection_id);
-        return view('collection-settings', ['collection'=>$collection]);
+        return view('collection-settings', ['collection'=>$collection, 
+			'mailbox'=>CollectionMailbox::where('collection_id', $collection->id)->first()]);
 	}
 	
 	public function saveSettings(Request $request){
@@ -858,6 +860,23 @@ use App\UrlSuppression;
 		);
 		$collection->column_config = json_encode($col_config);
 		$collection->save();
+		// configuration of mapping of mailbox
+		$mailbox = CollectionMailbox::where('collection_id', $collection->id)->first();
+		if(empty($mailbox)){
+			$mailbox = new CollectionMailbox;
+		}
+		$cred_array = array(
+			'server_type'=>'IMAP',
+			'server_address'=>$request->input('imap_server'),
+			'server_port'=>$request->input('server_port'),
+			'security'=>$request->input('security'),
+			'username'=>$request->input('username'),
+			'password'=>$request->input('password'),
+		);
+		$mailbox->address = $request->input('email_address');
+		$mailbox->collection_id = $request->input('collection_id');
+		$mailbox->credentials = json_encode($cred_array);
+		$mailbox->save();
 		return redirect('/collection/'.$collection->id);
 	}
 

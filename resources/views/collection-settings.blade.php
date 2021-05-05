@@ -84,15 +84,21 @@
 					<label for="email_address">Email address</label>
 				</div>
 				<div class="col-md-10">
-					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="e.g. knowledge@yourdomain.com" value="" />
+					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="e.g. knowledge@yourdomain.com" value="@if($mailbox->address) {{ $mailbox->address }} @endif" />
 				</div>
 			</div>
+		@php
+			$creds = false;
+			if(!empty($mailbox->credentials)){
+				$creds = json_decode($mailbox->credentials);
+			}
+		@endphp
 			<div class="row">
 				<div class="col-md-2">
 					<label for="imap_server">IMAP server</label>
 				</div>
 				<div class="col-md-10">
-					<input type="text" class="form-control" name="imap_server" id="imap_server" value="" />
+					<input type="text" class="form-control" name="imap_server" id="imap_server" value="@if($creds) {{ $creds->server_address }} @endif" />
 				</div>
 			</div>
 			<div class="row">
@@ -100,7 +106,7 @@
 					<label for="server_port">Port</label>
 				</div>
 				<div class="col-md-10">
-					<input type="text" class="form-control" name="server_port" id="server_port" value="" />
+					<input type="text" class="form-control" name="server_port" id="server_port" value="@if($creds) {{ $creds->server_port }} @endif" />
 				</div>
 			</div>
 			<div class="row">
@@ -109,8 +115,9 @@
 				</div>
 				<div class="col-md-10">
 					<select name="security" class="selectpicker" id="security">
-						<option value="ssl">SSL</option>
-						<option value="tls">TLS</option>
+						<option value="">Security</option>
+						<option value="ssl" @if($creds && $creds->security == 'ssl') {{ 'selected' }} @endif>SSL</option>
+						<option value="tls" @if($creds && $creds->security == 'tls') {{ 'selected' }} @endif>TLS</option>
 					</select>
 				</div>
 			</div>
@@ -119,13 +126,13 @@
 					<label for="username">Username</label>
 				</div>
 				<div class="col-md-4">
-					<input type="text" name="username" id="username" value="" />
+					<input type="text" name="username" id="username" value="@if($creds) {{ $creds->username }} @endif" />
 				</div>
 				<div class="col-md-2">
 					<label for="password">Password</label>
 				</div>
 				<div class="col-md-4">
-					<input type="password" name="password" id="password" value="" />
+					<input type="password" name="password" id="password" value="@if($creds) {{ $creds->password }} @endif" />
 				</div>
 			</div>
 			<div class="row">
