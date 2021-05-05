@@ -45,13 +45,13 @@ class MaintainerAccessTest extends TestCase
         $response->assertStatus(403);
 	}
 
-	public function testAccessToColumnConfig(){
+	public function testAccessToSettings(){
 		$user = \App\User::find(1);
-        $response = $this->actingAs($user)->get('/collection/3/column-config');
+        $response = $this->actingAs($user)->get('/collection/3/settings');
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
 		$user = \App\User::find(2);
-        $response = $this->actingAs($user)->get('/collection/3/column-config');
+        $response = $this->actingAs($user)->get('/collection/3/settings');
         $response->assertStatus(403);
 	}
 
