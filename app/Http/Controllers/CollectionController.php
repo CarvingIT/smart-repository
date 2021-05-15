@@ -865,18 +865,20 @@ use App\UrlSuppression;
 		if(empty($mailbox)){
 			$mailbox = new CollectionMailbox;
 		}
-		$cred_array = array(
-			'server_type'=>'IMAP',
-			'server_address'=>$request->input('imap_server'),
-			'server_port'=>$request->input('server_port'),
-			'security'=>$request->input('security'),
-			'username'=>$request->input('username'),
-			'password'=>$request->input('password'),
-		);
-		$mailbox->address = $request->input('email_address');
-		$mailbox->collection_id = $request->input('collection_id');
-		$mailbox->credentials = json_encode($cred_array);
-		$mailbox->save();
+		if(!empty($request->input('email_address'))){
+			$cred_array = array(
+				'server_type'=>'IMAP',
+				'server_address'=>$request->input('imap_server'),
+				'server_port'=>$request->input('server_port'),
+				'security'=>$request->input('security'),
+				'username'=>$request->input('username'),
+				'password'=>$request->input('password'),
+			);
+			$mailbox->address = $request->input('email_address');
+			$mailbox->collection_id = $request->input('collection_id');
+			$mailbox->credentials = json_encode($cred_array);
+			$mailbox->save();
+		}
 		return redirect('/collection/'.$collection->id);
 	}
 
