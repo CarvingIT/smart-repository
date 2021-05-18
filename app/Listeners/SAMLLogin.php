@@ -28,7 +28,6 @@ class SAMLLogin
      */
     public function handle($event)
     {
-		Log::info('Someone logged in');
 	    $messageId = $event->getSaml2Auth()->getLastMessageId();
 		// Add your own code preventing reuse of a $messageId to stop replay attacks
 
