@@ -24,6 +24,14 @@ class EventServiceProvider extends ServiceProvider
 	'App\Events\DocumentDeleted'=>[
 		'App\Listeners\DocumentDeleted',
 	],
+
+	'Aacotroneo\Saml2\Events\Saml2LoginEvent'=>[
+		'App\Listeners\SAMLLogin',
+	],
+	'Aacotroneo\Saml2\Events\Saml2LogoutEvent'=>[
+		'App\Listeners\SAMLLogout',
+	],
+
     ];
 
     /**

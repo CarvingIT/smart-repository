@@ -83,9 +83,15 @@ $collections = \App\Collection::all();
         </li>
 	@endif
         <li class="nav-item{{ $activePage == 'login' ? ' active' : '' }}">
+		  @if(empty(env('SAML2_LOGIN')))
           <a href="{{ route('login') }}" class="nav-link">
             <i class="material-icons">fingerprint</i> {{ __('Login') }}
           </a>
+		  @else
+          <a href="{{ env('SAML2_LOGIN') }}" class="nav-link">
+            <i class="material-icons">fingerprint</i> {{ __('Login') }}
+          </a>
+		  @endif
         </li>
       </ul>
     </div>

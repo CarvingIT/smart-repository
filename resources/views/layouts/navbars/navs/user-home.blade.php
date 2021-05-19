@@ -78,7 +78,11 @@ $app_name = env('APP_NAME');
 	    <!--
             <div class="dropdown-divider"></div>
 	   -->
+			@if(empty(env('SAML2_SLS')))
             <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a>
+			@else
+            <a class="dropdown-item" href="{{ env('SAML2_SLS') }}">{{ __('Log out') }}</a>
+			@endif
           </div>
         </li>
       </ul>
