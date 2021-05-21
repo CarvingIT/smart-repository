@@ -15,6 +15,13 @@ use App\Collection;
 */
 
 Route::middleware('auth:api')->get('/collections','CollectionController@userCollections'); 
+Route::middleware('auth:api')->get('/collection/{collection_id}/meta-information', function ($collection_id, Request $request){
+	$collection = Collection::find($collection_id);
+	return $collection->meta_fields()->orderby('display_order','ASC')->get();
+}); 
+
+Route::middleware('auth:api')->post('/collection/{collection_id}/upload', 'DocumentController@uploadFile');
+
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

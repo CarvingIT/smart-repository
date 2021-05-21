@@ -93,7 +93,7 @@ class DocumentController extends Controller
    	}
 
 
-	public function upload(Request $request){
+	public function uploadFile(Request $request){
         /*  !!!!
             More work needed here
         */
@@ -172,7 +172,7 @@ class DocumentController extends Controller
             }
             catch(\Exception $e){
                 Session::flash('alert-danger', $e->getMessage());
-                return redirect('/collection/'.$request->input('collection_id')); 
+                //return redirect('/collection/'.$request->input('collection_id')); 
             }
 
             // create revision
@@ -210,8 +210,17 @@ class DocumentController extends Controller
         $this->saveMetaData($d->id, $meta);
         // also update the text_content of the document
         $d->text_content = $d->text_content . $meta_string;
-        return redirect('/collection/'.$request->input('collection_id')); 
+		
+		// more work needed below.
+		// if there are any errors above from the validator, an array of errors should be maintained
+		// if the array of errors is empty, then the status should be successful
+		return ['status'=>'successful'];
     }
+
+	public function upload(Request $request){
+		$this->uploadFile($request);
+        return redirect('/collection/'.$request->input('collection_id')); 
+	}
 
     public static function importFile($collection_id, $path, $meta=[]){
         // get filename and create a new one
