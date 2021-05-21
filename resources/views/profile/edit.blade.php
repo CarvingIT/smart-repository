@@ -1,10 +1,11 @@
-@extends('layouts.app', ['activePage' => 'profile', 'titlePage' => __('User Profile')])
+@extends('layouts.app', ['class'=>'off-canvas-sidebar', 'activePage' => 'profile', 'titlePage' => __('User Profile')])
 
 @section('content')
-  <div class="content">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-12">
+  <div class="container" style="height:auto;">
+      <div class="row align-items-center">
+		<div class="col-md-9 ml-auto mr-auto mb-3 text-center">
+		</div>
+        <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
           <form method="post" action="{{ route('profile.update') }}" autocomplete="off" class="form-horizontal">
             @csrf
             @method('put')
@@ -58,7 +59,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-12">
+        <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
           <form method="post" action="{{ route('profile.password') }}" class="form-horizontal">
             @csrf
             @method('put')
@@ -82,7 +83,7 @@
                   </div>
                 @endif
                 <div class="row">
-                  <label class="col-sm-2 col-form-label" for="input-current-password">{{ __('Current Password') }}</label>
+                  <label class="col-sm-4 col-form-label" for="input-current-password">{{ __('Current Password') }}</label>
                   <div class="col-sm-7">
                     <div class="form-group{{ $errors->has('old_password') ? ' has-danger' : '' }}">
                       <input class="form-control{{ $errors->has('old_password') ? ' is-invalid' : '' }}" input type="password" name="old_password" id="input-current-password" placeholder="{{ __('Current Password') }}" value="" required />
@@ -93,7 +94,7 @@
                   </div>
                 </div>
                 <div class="row">
-                  <label class="col-sm-2 col-form-label" for="input-password">{{ __('New Password') }}</label>
+                  <label class="col-sm-4 col-form-label" for="input-password">{{ __('New Password') }}</label>
                   <div class="col-sm-7">
                     <div class="form-group{{ $errors->has('password') ? ' has-danger' : '' }}">
                       <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" id="input-password" type="password" placeholder="{{ __('New Password') }}" value="" required />
@@ -104,7 +105,7 @@
                   </div>
                 </div>
                 <div class="row">
-                  <label class="col-sm-2 col-form-label" for="input-password-confirmation">{{ __('Confirm New Password') }}</label>
+                  <label class="col-sm-4 col-form-label" for="input-password-confirmation">{{ __('Confirm New Password') }}</label>
                   <div class="col-sm-7">
                     <div class="form-group">
                       <input class="form-control" name="password_confirmation" id="input-password-confirmation" type="password" placeholder="{{ __('Confirm New Password') }}" value="" required />
@@ -119,6 +120,45 @@
           </form>
         </div>
       </div>
-    </div>
+
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
+          <form method="post" action="/user/regenerate-api-token" class="form-horizontal">
+            @csrf
+            <div class="card ">
+              <div class="card-header card-header-primary">
+                <h4 class="card-title">{{ __('API Token') }}</h4>
+              </div>
+              <div class="card-body ">
+              </div>
+              <div class="col-md-12">
+				{{ __('API token will be shown here.') }}<br/>
+                  <div class="row">
+                    <div class="col-md-12">
+                    	<div class="flash-message">
+                    	@foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                        	@if(Session::has('alert-' . $msg))
+                        	<div class="alert alert-<?php echo $msg; ?>">
+								<!--
+                            	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            	<i class="material-icons">close</i>
+                            	</button>
+								-->
+                            	<span>{{ Session::get('alert-' . $msg) }}</span>
+                        	</div>
+                        	@endif
+                    	@endforeach
+                    	</div>
+                    </div>
+                  </div>
+			  </div>
+              <div class="card-footer ml-auto mr-auto">
+                <button type="submit" class="btn btn-primary">{{ __('Regenerate') }}</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
   </div>
 @endsection

@@ -148,6 +148,8 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'ProfileController@password']);
 });
 
+Route::post('/user/regenerate-api-token', 'ApiTokenController@update')->middleware(['auth']);
+
 // redirect registration to login if registration is disabled
 if(env('ENABLE_REGISTRATION') != 1){
 	Route::redirect('register', 'login', 301);
