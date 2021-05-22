@@ -94,22 +94,22 @@ class DocumentController extends Controller
 
 
 	public function uploadFile(Request $request){
-        /*  !!!!
-            More work needed here
-        */
-
-############### Filesize validation code starts
-	$size_limit = ini_get("upload_max_filesize");
-	$actual_size = $this->return_bytes($size_limit); ## Newly added line
-	$collection_id = $request->input('collection_id');
-        $validator = Validator::make($request->all(), [
-	    'document' => 'file|max:'.$actual_size
-        ]);
-	if ($validator->fails()) {
-            Session::flash('alert-danger', 'File size exceeded. The file size should not be more than '.$size_limit.'B.');
-            return redirect('/collection/'.$collection_id.'/upload');
+		$messages = array();
+		$errors = array();
+		$warnings = array();
+		//Filesize validation code starts
+		$size_limit = ini_get("upload_max_filesize");
+		$actual_size = $this->return_bytes($size_limit); ## Newly added line
+		$collection_id = $request->input('collection_id');
+        	$validator = Validator::make($request->all(), [
+	    	'document' => 'file|max:'.$actual_size
+        	]);
+		if ($validator->fails()) {
+            //Session::flash('alert-danger', 'File size exceeded. The file size should not be more than '.$size_limit.'B.');
+            //return redirect('/collection/'.$collection_id.'/upload');
+			return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
         }
-############### Filesize validation code ends
+		// Filesize validation code ends
 
         if(!empty($request->input('document_id'))){
             $d = Document::find($request->input('document_id'));
@@ -119,83 +119,81 @@ class DocumentController extends Controller
         }
 
         $collection = \App\Collection::find($collection_id);
-	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
+		$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
 
-	if($request->hasFile('document')){
-		$filename = $request->file('document')->getClientOriginalName();
-            	$new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
+		if($request->hasFile('document')){
+			$filename = $request->file('document')->getClientOriginalName();
+            $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
 	
-		### Saved on chosen collection storage drive.
-		$filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename, $storage_drive);
+			// Saved on chosen collection storage drive.
+			$filepath = $request->file('document')
+				->storeAs('smartarchive_assets/'.$request
+				->input('collection_id').'/'.\Auth::user()->id,$new_filename, $storage_drive);
 
-		### Saved locally for text extraction
-		$local_filepath = $request->file('document')->storeAs('smartarchive_assets/'.$request->input('collection_id').'/'.\Auth::user()->id,$new_filename);
+			//Saved locally for text extraction
+			$local_filepath = $request->file('document')
+				->storeAs('smartarchive_assets/'.$request
+				->input('collection_id').'/'.\Auth::user()->id,$new_filename);
 
-		$filesize = $request->file('document')->getClientSize();
-		$mimetype = $request->file('document')->getMimeType();
+			$filesize = $request->file('document')->getClientSize();
+			$mimetype = $request->file('document')->getMimeType();
 
-            	if(!empty($request->input('title'))){
-                $d->title = $request->input('title');
-            	}
-            	else{
-                $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
-            	}
-            	$d->collection_id = $request->input('collection_id');
-            	$d->created_by = \Auth::user()->id;
+           	if(!empty($request->input('title'))){
+               $d->title = $request->input('title');
+           	}
+           	else{
+               $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
+           	}
+           	$d->collection_id = $request->input('collection_id');
+           	$d->created_by = \Auth::user()->id;
 
-		$d->size = $filesize;
-		$d->type = $mimetype;
-            	$d->path = $filepath;
+			$d->size = $filesize;
+			$d->type = $mimetype;
+           	$d->path = $filepath;
 
-            	try{
-		    $text_content = $this->extractText($local_filepath, $mimetype);
-		    $current_encoding = mb_detect_encoding($text_content, 'auto');
-		    //echo $current_encoding;
-		    //exit;
-	    	//$d->text_content = utf8_encode($this->extractText($local_filepath, $mimetype));
-			$d->text_content = mb_convert_encoding($text_content, "UTF-8");
-	    	//$d->text_content = call_user_func_array('mb_convert_encoding', array(&$text_content,'HTML-ENTITIES','UTF-8')); 
-		    ### Delete the file if the storage drive is other than local drive.
-		    ### Command to delete / unlink the file locally.
-		    if($storage_drive != 'local'){
-		    Storage::delete($local_filepath);
-		    }
-            	}
-            	catch(\Exception $e){
-               		\Log::error($e->getMessage());
-                	$d->text_content = '';
-            	}
-			//$d->save();
+           	try{
+			    $text_content = $this->extractText($local_filepath, $mimetype);
+		    	$current_encoding = mb_detect_encoding($text_content, 'auto');
+				$d->text_content = mb_convert_encoding($text_content, "UTF-8");
+		    	// Delete the file if the storage drive is other than local drive.
+		    	// Command to delete / unlink the file locally.
+		    	if($storage_drive != 'local'){
+		    		Storage::delete($local_filepath);
+		    	}
+           	}
+           	catch(\Exception $e){
+          		\Log::error($e->getMessage());
+               	$d->text_content = '';
+				$warnings[] = 'No text was indexed. '. $e->getMessage();
+           	}
             try{
                 $d->save();
-                Session::flash('alert-success', 'Document uploaded successfully!');
+				$messages[] = 'Document uploaded successfully!';
             }
             catch(\Exception $e){
-                Session::flash('alert-danger', $e->getMessage());
-                //return redirect('/collection/'.$request->input('collection_id')); 
+				return ['status'=>'failure', 'errors'=>[$e->getMessage()]];
             }
 
             // create revision
             $this->createDocumentRevision($d);
 	}
 	else{ // no document is uploaded
-            	if(!empty($request->input('approved_on'))){
-            	$d->approved_by = \Auth::user()->id;
-		$d->approved_on = now();
-            	}
+         if(!empty($request->input('approved_on'))){
+           	$d->approved_by = \Auth::user()->id;
+			$d->approved_on = now();
+       	}
 
-### Code to edit title of documen starts
-	     if(!empty($request->title)){
-		$d->title = $request->title;
-	     }
-### Code to edit title of document ends
-
-            try{
+	//	Code to edit title of documen starts
+		if(!empty($request->title)){
+			$d->title = $request->title;
+		}
+	// Code to edit title of document ends
+         try{
                 $d->save();
-                Session::flash('alert-success', 'Document uploaded successfully!');
+				$messages[] = 'Document updated successfully!';
             }
             catch(\Exception $e){
-                Session::flash('alert-danger', $e->getMessage());
+				$errors[] = $e->getMessage();
             }
 	} // else ends (document not uploaded)
 
@@ -214,11 +212,17 @@ class DocumentController extends Controller
 		// more work needed below.
 		// if there are any errors above from the validator, an array of errors should be maintained
 		// if the array of errors is empty, then the status should be successful
-		return ['status'=>'successful'];
+		return ['status'=>'successful', 'messages'=>$messages, 'warnings'=>$warnings];
     }
 
 	public function upload(Request $request){
-		$this->uploadFile($request);
+		$upload_status = $this->uploadFile($request);
+		if(!empty($upload_status['messages'])){
+	        Session::flash('alert-success', implode(" ", $upload_status['messages']));
+		}
+		if(!empty($upload_status['warnings'])){
+	        Session::flash('alert-warning', implode(" ", $upload_status['warnings']));
+		}
         return redirect('/collection/'.$request->input('collection_id')); 
 	}
 
