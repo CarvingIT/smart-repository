@@ -22,6 +22,12 @@ Route::middleware('auth:api')->get('/collection/{collection_id}/meta-information
 
 Route::middleware('auth:api')->post('/collection/{collection_id}/upload', 'DocumentController@uploadFile');
 Route::middleware('auth:api')->get('/collection/{collection_id}/search', 'CollectionController@search');
+Route::middleware('auth:api')->get('/user/permissions', function (Request $request){
+    return $request->user()->accessPermissions();
+});
+Route::middleware('auth:api')->get('/permissions', function (Request $request){
+    return \App\Permission::all();
+});
 
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
