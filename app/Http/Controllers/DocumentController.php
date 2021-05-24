@@ -212,7 +212,8 @@ class DocumentController extends Controller
 		// more work needed below.
 		// if there are any errors above from the validator, an array of errors should be maintained
 		// if the array of errors is empty, then the status should be successful
-		return ['status'=>'successful', 'messages'=>$messages, 'warnings'=>$warnings];
+		return ['status'=>'successful', 'document_id'=>$d->id, 
+			'messages'=>$messages, 'warnings'=>$warnings];
     }
 
 	public function upload(Request $request){
@@ -222,6 +223,9 @@ class DocumentController extends Controller
 		}
 		if(!empty($upload_status['warnings'])){
 	        Session::flash('alert-warning', implode(" ", $upload_status['warnings']));
+		}
+		if(!empty($upload_status['errors'])){
+	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
 		}
         return redirect('/collection/'.$request->input('collection_id')); 
 	}

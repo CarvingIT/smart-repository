@@ -324,16 +324,30 @@ class CollectionController extends Controller
 	//$documents = $documents->get();
 	$filtered_count = $documents->count(); 
 
+	$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
+	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 	$documents = $documents
-		->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
+		->orderby($sort_column,$sort_direction)
              ->limit($request->length)->offset($request->start)->get();
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
 		->where('require_approval','=','1')->get();
 
-        $results_data = $this->datatableFormatResults(
+		if($request->is('api/*')){
+			return 
+        	 array(
+            'data'=>$documents,
+            'draw'=>(int) $request->draw,
+            'recordsTotal'=> $total_count,
+            'recordsFiltered' => $filtered_count,
+            'error'=> '',
+        	);
+		}
+		else{
+        	$results_data = $this->datatableFormatResults(
                array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval)
-       	);
+       		);
+		}
         $results= array(
             'data'=>$results_data,
             'draw'=>(int) $request->draw,
@@ -341,6 +355,8 @@ class CollectionController extends Controller
             'recordsFiltered' => $filtered_count,
             'error'=> '',
         );
+		// logging of search is not done here
+		// refer to the searchDB function below
         return json_encode($results, JSON_UNESCAPED_UNICODE);
     }
 
@@ -398,16 +414,37 @@ class CollectionController extends Controller
 	$documents = $this->approvalFilter($request, $documents);
 	$filtered_count = $documents->count(); //- count($approval_exceptions);
 
-        if(!empty($request->embedded)){ 		
+    if(!empty($request->embedded)){ 		
 		$documents = $documents
 			 ->limit($request->length)->offset($request->start)->get();
-       	    $results_data = $this->datatableFormatResultsEmbedded(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
+   	    $results_data = $this->datatableFormatResultsEmbedded(
+			array('request'=>$request, 
+			'documents'=>$documents, 
+			'has_approval'=>$has_approval));
 	}
 	else{
+		$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
+		$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
+		$length = empty($request->length)?10:$request->length;
 		$documents = $documents
-			 ->orderby($columns[$request->order[0]['column']],$request->order[0]['dir'])
-            ->limit($request->length)->offset($request->start)->get();
-            $results_data = $this->datatableFormatResults(array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval));
+			->orderby($sort_column,$sort_direction)
+            ->limit($length)->offset($request->start)->get();
+		if($request->is('api/*')){
+			return 
+        	 array(
+            'data'=>$documents,
+            'draw'=>(int) $request->draw,
+            'recordsTotal'=> \App\Document::where('collection_id',$request->collection_id)->count(),
+            'recordsFiltered' => $filtered_count,
+            'error'=> '',
+        	);
+		}
+		else{
+        	$results_data = $this->datatableFormatResults(
+				array('request'=>$request, 
+				'documents'=>$documents, 
+				'has_approval'=>$has_approval));
+		}
 	}
         
         $results= array(
@@ -425,9 +462,9 @@ class CollectionController extends Controller
                 'meta_query'=>'',
                 'results'=>$filtered_count);
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-	    if(!empty($request->collection_id)){
+	    	if(!empty($request->collection_id)){
             	$this->logSearchQuery($search_log_data);
-	    }
+	    	}
         }
         return json_encode($results, JSON_UNESCAPED_UNICODE);
     }
@@ -493,15 +530,15 @@ class CollectionController extends Controller
         $request = $data['request'];
         $has_approval = $data['has_approval'];
 
-	if(!empty($request->collection_id)){
-		$collection = \App\Collection::find($request->collection_id);
-		$content_type = $collection->content_type;
-		$column_config = json_decode($collection->column_config);	
-	}
-	else{
-		// default content type 
-		$content_type = 'Uploaded documents';
-	}
+		if(!empty($request->collection_id)){
+			$collection = \App\Collection::find($request->collection_id);
+			$content_type = $collection->content_type;
+			$column_config = json_decode($collection->column_config);	
+		}
+		else{
+			// default content type 
+			$content_type = 'Uploaded documents';
+		}
 
         $results_data = array();
         foreach($documents as $d){
