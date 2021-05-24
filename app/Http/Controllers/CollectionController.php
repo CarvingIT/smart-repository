@@ -326,9 +326,10 @@ class CollectionController extends Controller
 
 	$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
+	$length = empty($request->length)?10:$request->length;
 	$documents = $documents
 		->orderby($sort_column,$sort_direction)
-             ->limit($request->length)->offset($request->start)->get();
+             ->limit($length)->offset($request->start)->get();
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
 		->where('require_approval','=','1')->get();
