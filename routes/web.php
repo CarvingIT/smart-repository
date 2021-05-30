@@ -41,6 +41,10 @@ Route::get('/collection/{collection_id}/export', 'CollectionController@export')-
 Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadForm')->middleware('document_add');
 Route::post('/collection/{collection_id}/upload','DocumentController@upload')->middleware('document_add');
 
+// Document import queue via url
+Route::get('/collection/{collection_id}/url-import', 'URLImportController@index')->middleware('document_add');
+Route::post('/collection/{collection_id}/url-import', 'URLImportController@add')->middleware('document_add');
+Route::get('/collection/{collection_id}/import-link/{link_id}/delete', 'URLImportController@delete')->middleware('document_add');
 
 // Collection-user management
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('maintainer');

@@ -69,6 +69,7 @@ $app_name = env('APP_NAME');
 	    <!--
             <a class="dropdown-item" href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
 	    -->
+            <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('User Management') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Collection Management') }}</a>
