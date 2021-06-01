@@ -29,15 +29,6 @@
 @csrf()
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
 		<div class="form-group row">
-	   	   <div class="col-md-3">
-		   <label for="title" class="col-md-12 col-form-label text-md-right">Title</label>
-		   </div>
-           <div class="col-md-9">
-               <input class="form-control" type="title" id="title" name="title" size="40"  
-               placeholder="If left blank, we shall guess!" />
-           </div>
-		</div>
-		<div class="form-group row">
 		   <div class="col-md-3">
 		   <label for="url" class="col-md-12 col-form-label text-md-right">URL</label>
 		   </div>
