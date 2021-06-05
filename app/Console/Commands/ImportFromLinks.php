@@ -47,9 +47,15 @@ class ImportFromLinks extends Command
 			if(preg_match('#([^.]*).google.com/#', $l->url, $subdomain)){
 				// get file ID
 				preg_match('#/d/([^\/]*)/#', $l->url, $matches);
-				$path = $this->googleDrivePublicFileDownload($subdomain[1],$matches[1]);	
-				// import file
-				$f = \App\Http\Controllers\DocumentController::importFile($l->collection_id, $path);
+				try{
+					$path = $this->googleDrivePublicFileDownload($subdomain[1],$matches[1]);	
+					// import file
+					$f = \App\Http\Controllers\DocumentController::importFile($l->collection_id, $path);
+				}
+				catch(\Exception $e){
+					echo "Can not import. ". $e->getMessage()."\n";
+					continue;
+				}
 				$l->delete();
 			}
 			else{
