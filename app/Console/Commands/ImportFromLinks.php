@@ -14,6 +14,7 @@ class ImportFromLinks extends Command
      * @var string
      */
     protected $signature = 'SR:ImportFromLinks';
+	protected $client;
 
     /**
      * The console command description.
@@ -30,6 +31,7 @@ class ImportFromLinks extends Command
     public function __construct()
     {
         parent::__construct();
+		$this->client = new \GuzzleHttp\Client([ 'cookies' => true, 'verify' => false ]);
     }
 
     /**
@@ -66,12 +68,26 @@ class ImportFromLinks extends Command
 
     }
 
-	public function googleDrivePublicFileDownload($subdomain, $file_id){
-		$client = new \GuzzleHttp\Client([ 'verify' => false ]);
+	public function googleDrivePublicFileDownload($subdomain, $file_id, $confirm=null){
+		$client = $this->client;
 		$download_link = $subdomain.'.google.com/uc?export=download&id='.$file_id;
+		if(!empty($confirm)){
+			$download_link = $subdomain.'.google.com/u/0/uc?export=download&confirm='.$confirm.'&id='.$file_id;
+		}
 		echo $download_link."\n";
 		$response = $client->request('GET', $download_link, ['sink' => storage_path().'/links/'.$file_id]);
 		$headers = $response->getHeaders();
+		if(preg_match('#text/html;#', $headers['Content-Type'][0])){
+			$html = $response->getBody();
+			if(preg_match('#&amp;confirm=([^&]*)&amp;#', $html, $matches)){
+				//echo $matches[1];
+				return $this->googleDrivePublicFileDownload($subdomain, $file_id, $matches[1]);
+			}
+		}
+		/*
+		print_r($headers);
+		exit;
+		*/
 		$content_disposition = $headers['Content-Disposition'][0];
 		$parts = explode(";", $content_disposition);
 		//print_r($parts);
