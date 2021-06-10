@@ -25,6 +25,8 @@ class Document extends Model
         'deleted' => DocumentDeleted::class,
     ];
 
+	protected $hidden = ['text_content'];
+
     public function icon($path = null){
         $file_type_icons = array(
             'doc' => 'doc',

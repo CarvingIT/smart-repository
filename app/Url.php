@@ -12,6 +12,10 @@ class Url extends Model
         'text_content'
     ];
 
+	protected $hidden = ['text_content', 'raw_content'];
+
+	protected $appends = ['excerpt'];
+
     public function icon(){
 	$file_type_icons = array(
 		'application/pdf'=>'pdf',
@@ -35,4 +39,17 @@ class Url extends Model
     public function collection(){
 	 return $this->belongsTo('App\Collection','collection_id');
     }
+
+	public function getExcerptAttribute(){
+		if($this->type == 'text/html'){
+			$html = str_replace("\n", '', str_replace("\r", '', $this->raw_content));
+			$start = strpos($html, '<p>');
+			$end = strpos($html, '</p>', $start);
+			$paragraph = substr($html, $start, $end-$start+4);
+			return substr(strip_tags($paragraph), 0, 250);
+		}
+		else{
+			return '';
+		}
+	}
 }
