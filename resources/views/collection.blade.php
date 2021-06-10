@@ -298,7 +298,8 @@ function randomString(length) {
 </div>
 </div>
 		<script>
-			@if(!empty(env('TRANSLITERATION')))
+			@if(!empty(env('TRANSLITERATION')) && $collection->content_type == 'Uploaded documents') 
+				// transliteration in the title box is needed only for collection of types "Uploaded documents"
 				let searchbox = document.getElementById("collection_search");
 				enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
 				let titlesearchbox = document.getElementById("title_search");
