@@ -12,6 +12,7 @@ use Elasticsearch\ClientBuilder;
 class CrawlHandler extends CrawlObserver{
    var $collection_id = null;
    var $elastic_client = null;
+   var $indexing_errors = array();
 
    public function __construct($collection_id){
 	   $this->collection_id = $collection_id;
@@ -72,7 +73,11 @@ class CrawlHandler extends CrawlObserver{
 			}
 			catch(\Exception $e){
 				// log error to a log file instead of to the standard output
-				echo "ERROR: ".$e->getMessage()."\n"; 
+				if(!in_array($e->getCode(), $this->indexing_errors)){
+					echo $e->getCode()." : ";
+					echo "WARNING: ".$e->getMessage()."\n"; 
+					$this->indexing_errors[] = $e->getCode();
+				}
 			}
 		}
    }
