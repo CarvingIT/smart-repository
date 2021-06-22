@@ -33,3 +33,9 @@ Route::middleware('auth:api')->get('/permissions', function (Request $request){
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// revisions of a document
+Route::middleware('auth:api')->get('/document/{document_id}/revisions', function ($document_id){
+	return \App\DocumentRevision::where('document_id','=', $document_id)
+    ->orderBy('id','DESC')->get();
+});
