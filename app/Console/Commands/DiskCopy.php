@@ -43,8 +43,13 @@ class DiskCopy extends Command
 
 		echo "Copying files from disk - $source_disk to disk - $destination_disk.\n";
 		$files = Storage::disk($source_disk)->allFiles('smartarchive_assets');
+		$dest_files = Storage::disk($destination_disk)->allFiles('smartarchive_assets');
+	
 		foreach ($files as $file) {
 			try{
+				if(in_array($file, $dest_files)){
+					echo "Skipping $file \n";
+				}
 				Storage::disk($destination_disk)->put($file, Storage::disk($source_disk)->get($file));
 				echo "Copied ".$file."\n";
 			}
