@@ -49,6 +49,7 @@ class DiskCopy extends Command
 			try{
 				if(in_array($file, $dest_files)){
 					echo "Skipping $file \n";
+					continue;
 				}
 				Storage::disk($destination_disk)->put($file, Storage::disk($source_disk)->get($file));
 				echo "Copied ".$file."\n";
