@@ -49,6 +49,9 @@ class ImportFromLinks extends Command
 			if(preg_match('#([^.]*).google.com/#', $l->url, $subdomain)){
 				// get file ID
 				preg_match('#/d/([^\/]*)/#', $l->url, $matches);
+				if(empty($matches[1])){
+					preg_match('#id=([^&]*)#', $l->url, $matches);
+				}
 				try{
 					$path = $this->googleDrivePublicFileDownload($subdomain[1],$matches[1]);	
 					// import file
@@ -75,7 +78,7 @@ class ImportFromLinks extends Command
 			$download_link = $subdomain.'.google.com/u/0/uc?export=download&confirm='.$confirm.'&id='.$file_id;
 		}
 		echo $download_link."\n";
-		$response = $client->request('GET', $download_link, ['sink' => storage_path().'/links/'.$file_id]);
+		$response = $client->request('GET', $download_link, ['sink' => storage_path('app').'/links/'.$file_id]);
 		$headers = $response->getHeaders();
 		if(preg_match('#text/html;#', $headers['Content-Type'][0])){
 			$html = $response->getBody();
@@ -94,9 +97,9 @@ class ImportFromLinks extends Command
 		$filename = $parts[1];
 		$filename = preg_replace('/filename="/','', $filename);
 		$filename = preg_replace('/"/', '',$filename);
-		//echo $filename;
+		$filename = preg_replace('/ /', '_',$filename);
 		// rename the file
-		rename(storage_path().'/links/'.$file_id, storage_path().'/links/'.$filename);
-		return storage_path().'/links/'.$filename;
+		rename(storage_path('app').'/links/'.$file_id, storage_path('app').'/links/'.$filename);
+		return 'links/'.$filename;
 	}
 }

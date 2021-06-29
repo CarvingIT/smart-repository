@@ -11,6 +11,7 @@ use thiagoalessio\TesseractOCR\TesseractOCR;
 use NlpTools\Similarity\CosineSimilarity;
 use App\Curation;
 use Session;
+use App\Collection;
 
 class DocumentController extends Controller
 {
@@ -236,9 +237,14 @@ class DocumentController extends Controller
         $filename = array_pop($path_dirs);
         $new_filename = '0_'.time().'_'.$filename;
 
-		copy($path, base_path().'/storage/app/smartarchive_assets/'.$collection_id.'/0/'.$new_filename);
-		$filesize = filesize($path);
-		$mimetype = mime_content_type($path); 
+		$collection = Collection::find($collection_id);
+		// fix is needed here
+		//copy($path, base_path().'/storage/app/smartarchive_assets/'.$collection_id.'/0/'.$new_filename);
+		$filecontents = Storage::get($path);
+		Storage::disk($collection->storage_drive)
+			->put('smartarchive_assets/'.$collection_id.'/0/'.$new_filename, $filecontents);
+		$filesize = Storage::size($path);
+		$mimetype = Storage::mimeType($path);
         $d = new Document;
         //echo "$filesize $mimetype\n";
         $dc = new \App\Http\Controllers\DocumentController;
