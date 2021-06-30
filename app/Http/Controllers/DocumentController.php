@@ -238,8 +238,6 @@ class DocumentController extends Controller
         $new_filename = '0_'.time().'_'.$filename;
 
 		$collection = Collection::find($collection_id);
-		// fix is needed here
-		//copy($path, base_path().'/storage/app/smartarchive_assets/'.$collection_id.'/0/'.$new_filename);
 		$filecontents = Storage::get($path);
 		Storage::disk($collection->storage_drive)
 			->put('smartarchive_assets/'.$collection_id.'/0/'.$new_filename, $filecontents);
