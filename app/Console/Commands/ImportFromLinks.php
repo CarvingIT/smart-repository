@@ -59,7 +59,8 @@ class ImportFromLinks extends Command
 				}
 				catch(\Exception $e){
 					echo "Can not import. ". $e->getMessage()."\n";
-					continue;
+					exit;
+					//continue;
 				}
 				$l->delete();
 			}
