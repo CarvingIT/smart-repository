@@ -253,7 +253,7 @@ class DocumentController extends Controller
 		$d->type = $mimetype;
         $d->path = 'smartarchive_assets/'.$collection_id.'/0/'.$new_filename;
         try{
-			$text_content = $dc->extractText($d->path,$mimetype);
+			$text_content = $dc->extractText($path,$mimetype);
             $d->text_content = mb_convert_encoding($text_content, "UTF-8");
         }
         catch(\Exception $e){
