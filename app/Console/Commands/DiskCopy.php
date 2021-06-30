@@ -51,6 +51,7 @@ class DiskCopy extends Command
 					echo "Skipping $file \n";
 					continue;
 				}
+				echo "Copying $file\n";
 				Storage::disk($destination_disk)->put($file, Storage::disk($source_disk)->get($file));
 				echo "Copied ".$file."\n";
 			}

@@ -238,9 +238,9 @@ class DocumentController extends Controller
         $new_filename = '0_'.time().'_'.$filename;
 
 		$collection = Collection::find($collection_id);
-		$filecontents = Storage::get($path);
+		//$filecontents = Storage::get($path);
 		Storage::disk($collection->storage_drive)
-			->put('smartarchive_assets/'.$collection_id.'/0/'.$new_filename, $filecontents);
+			->writeStream('smartarchive_assets/'.$collection_id.'/0/'.$new_filename, Storage::readStream($path));
 		$filesize = Storage::size($path);
 		$mimetype = Storage::mimeType($path);
         $d = new Document;
