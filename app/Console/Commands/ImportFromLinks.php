@@ -55,7 +55,7 @@ class ImportFromLinks extends Command
 				try{
 					$path = $this->googleDrivePublicFileDownload($subdomain[1],$matches[1]);	
 					// import file
-					$f = \App\Http\Controllers\DocumentController::importFile($l->collection_id, $path);
+					$f = \App\Http\Controllers\DocumentController::importFile($l->collection_id, $path, json_decode($l->metadata));
 				}
 				catch(\Exception $e){
 					echo "Can not import. ". $e->getMessage()."\n";

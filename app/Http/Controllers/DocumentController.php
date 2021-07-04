@@ -246,7 +246,7 @@ class DocumentController extends Controller
         $d = new Document;
         //echo "$filesize $mimetype\n";
         $dc = new \App\Http\Controllers\DocumentController;
-        $d->title = $dc->autoDocumentTitle($filename);
+        $d->title = empty($meta['title'])? $dc->autoDocumentTitle($filename) : $meta['title'];
         $d->collection_id = $collection_id;
         $d->created_by = 1;
 		$d->size = $filesize;
@@ -262,6 +262,11 @@ class DocumentController extends Controller
         }
             $d->save();
             $dc->createDocumentRevision($d);
+
+		// save metadata
+		$doc_controller = new \App\Http\Controllers\DocumentController;
+		$doc_controller->saveMetaData($d->id, (array)$meta);
+		// return document model
 	    return $d;
     }
 
@@ -375,6 +380,9 @@ class DocumentController extends Controller
         \App\MetaFieldValue::where('document_id','=', $document_id)->delete();
 
         foreach($meta_data as $m){
+			if(is_object($m)){
+				$m = (array) $m;
+			}
             if(empty($m['field_value'])) continue;
             $m_f = new \App\MetaFieldValue;
             $m_f->document_id = $document_id;
