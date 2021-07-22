@@ -85,7 +85,7 @@ else{
                    <label for="spidered_domain" class="col-md-12 col-form-label text-md-right">Spidered Domain</label> 
                     </div>
                     <div class="col-md-8">
-                    <input type="text" name="spidered_domain" id="spidered_domain" class="form-control" placeholder="http://domain.com" value="" required />
+                    <input type="text" name="spidered_domain" id="spidered_domain" class="form-control" placeholder="http://domain.com" value="" />
                     </div>
                    </div>
                    <div class="form-group row">
