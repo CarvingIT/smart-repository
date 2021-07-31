@@ -126,7 +126,7 @@ class Crawl extends Command
 		foreach($suppressed as $s){
 			Url::where([
 					['collection_id', '=', $collection_id],
-					['url', 'like', $s->url_start_pattern]
+					['url', 'like', $s->url_start_pattern.'%']
 				])->delete();
 		}
 	}
