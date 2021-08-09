@@ -43,8 +43,9 @@ class PurgeDeleted extends Command
 		foreach($trashed_docs as $d){
 			echo "Deleting ". $d->id." - ". $d->title." from storage - ".$d->collection->storage_drive."\n";
 			// Purging policy - number of days after which orphan/soft-deleted files will get deleted
-			// The value is a static value 30 which needs to be updated after policy configuration is in place.
-			if(strtotime($d->deleted_at) + 30*24*60*60 < time()){
+			// The default value is 30 
+			$purge_after_days = empty(env('PURGE_AFTER_DAYS'))?30:env('PURGE_AFTER_DAYS');
+			if(strtotime($d->deleted_at) + $purge_after_days*24*60*60 < time()){
 				try{
 					Storage::disk($d->collection->storage_drive)->delete($d->path);
 				}
