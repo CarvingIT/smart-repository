@@ -593,6 +593,8 @@ class CollectionController extends Controller
 			);
 		if(!empty($collection)){
 			foreach($collection->meta_fields as $m){
+			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
+			if(!in_array($m->id, $column_config_meta_fields)) continue;
 			$result['meta_'.$m->id] = $d->meta_value($m->id);
 			}
 		}

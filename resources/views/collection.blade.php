@@ -27,15 +27,15 @@ $(document).ready(function() {
 		{ "targets":[3], "className":'text-right dt-nowrap' @if($hide_creation_time) ,"visible":false @endif},
 		@php
 			$i = 4;
-		if(!empty($column_config->meta_fields)){
-		foreach($collection->meta_fields as $m){
-			$visible = 'false';
-			if(in_array($m->id, $column_config->meta_fields)){
+			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
+			foreach($column_config_meta_fields as $m_id){
+				$m = \App\MetaField::find($m_id);
+				$visible = 'false';
+				if(in_array($m->id, $column_config_meta_fields)){
 				$visible = 'true';
 			}
 			echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
 			$i++;
-		}
 		}
 		@endphp	
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
@@ -68,7 +68,10 @@ $(document).ready(function() {
               'sort': 'updated_date'
             }
         },
-		@foreach($collection->meta_fields as $m)
+		@foreach($column_config_meta_fields as $m_id)
+			@php
+			$m = \App\MetaField::find($m_id);
+			@endphp
 		{data:"meta_{{$m->id}}"},
 		@endforeach
         {data:"actions"},
@@ -146,7 +149,7 @@ function randomString(length) {
         </div>
             <p>{{ $collection->description }}</p>
         @php
-            $meta_fields = $collection->meta_fields;
+            $meta_fields = empty($collection->meta_fields)? array() : $collection->meta_fields;
 		@endphp
 
             <div class="flash-message">
@@ -284,12 +287,14 @@ function randomString(length) {
                             <th>{{__('Created')}}</th>
 			<!-- meta fields -->
 				@foreach($collection->meta_fields as $m)
+				@if(in_array($m->id,$column_config_meta_fields))
 				<th>{{ __($m->label) }}</th>
+				@endif
 				@endforeach
-                            <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
-                            </tr>
-                        </thead>
-                    </table>
+                <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
+                </tr>
+                </thead>
+               </table>
 		    </div>
                  </div>
             </div>
