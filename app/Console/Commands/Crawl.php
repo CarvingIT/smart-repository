@@ -10,6 +10,8 @@ use App\SpideredDomain;
 use Elasticsearch\ClientBuilder;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use PHPHtmlParser\Dom;
+use App\UrlSuppression;
+use App\Url;
 //use Spatie\Browsershot\Browsershot;
 
 class Crawl extends Command
@@ -49,6 +51,12 @@ class Crawl extends Command
     {
         $collection_id = $this->argument('collection_id');
         $c = Collection::find($collection_id);
+		// remove suppressed URLs for this collection (if crawled earlier)
+		echo "Removing suppressed URLs that were crawled earlier.\n";
+		$this->removeSuppressed($collection_id);
+		echo "Removing old that were crawled earlier but may not be there in the current site.\n";
+		$this->removeUrlsCrawledBeforeXDays($collection_id, 2);
+
         echo "Crawling domains of ".$c->name."\n";
         $site = $this->option('site');
 	$sleep = $this->option('sleep');
@@ -56,13 +64,6 @@ class Crawl extends Command
 	if(empty($site)){
 	$domains = SpideredDomain::where('collection_id', $collection_id)->get();
 		foreach($domains as $d){
-		
-		/*
-		Client options that need to be enabled/added
-		allow_redirects = true
-		cookies = true 
-		also need to set auth information
-	 	*/
 			$crawl_client_options = ['base_uri'=> $d->web_address, 'cookies'=>true, 'allow_redirects'=>true];
 			$crawl_client = new GuzzleHttpClient($crawl_client_options);
 			$crawler = new Crawler($crawl_client);
@@ -110,8 +111,7 @@ class Crawl extends Command
 
     private function crawlSite($collection_id, $site_address, $crawler, $sleep){
         $url = \GuzzleHttp\Psr7\uri_for($site_address);
-	$crawl_handler = new \App\CrawlHandler($collection_id);
-
+		$crawl_handler = new \App\CrawlHandler($collection_id);
 	    //Crawler::create()
 		$crawler
 		->setDelayBetweenRequests($sleep)
@@ -120,4 +120,21 @@ class Crawl extends Command
 		//->executeJavaScript()
     		->startCrawling($url);
     }
+
+	private function removeSuppressed($collection_id){
+		$suppressed = UrlSuppression::where('collection_id', $collection_id)->get();
+		foreach($suppressed as $s){
+			Url::where([
+					['collection_id', '=', $collection_id],
+					['url', 'like', $s->url_start_pattern.'%']
+				])->delete();
+		}
+	}
+
+	private function removeUrlsCrawledBeforeXDays($collection_id,$days){
+		Url::where([
+			['collection_id', '=', $collection_id],
+			['updated_at', '<=', Carbon::now()->subDays($days)->toDateTimeString()]
+		])->delete();
+	}
 }

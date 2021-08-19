@@ -808,11 +808,24 @@ class CollectionController extends Controller
     public function collectionUrls($collection_id){
         if($collection_id == 'new'){
             $collection = new \App\Collection();
+			$spidered_domains = null;
+			$desired = null;
+			$excluded = null;
         }
         else{
             $collection = \App\Collection::find($collection_id);
+			$spidered_domains = \App\SpideredDomain::where('collection_id', $collection_id)->get();
+			$desired = \App\DesiredUrl::where('collection_id', $collection_id)->get();
+			$excluded = \App\UrlSuppression::where('collection_id', $collection_id)->get();
         }
-        return view('save_exclude_sites', ['collection'=>$collection,'activePage'=>'Collection', 'titlePage'=>'Collection']);
+        return view('save_exclude_sites', 
+			['collection'=>$collection,
+			'activePage'=>'Collection', 
+			'titlePage'=>'Collection',
+			'spidered_domains'=>$spidered_domains,
+			'desired'=>$desired,
+			'excluded'=>$excluded,
+			]);
     }
 
     public function saveCollectionUrls(Request $request){
@@ -826,22 +839,24 @@ class CollectionController extends Controller
 		$sd = new \App\SpideredDomain;
 		$sd->collection_id = $request->input('collection_id');
 		$sd->web_address = $domain_link;
-         	try{
-	    	$sd->save();
-		$last_insert_id = $sd->id;
-		if(!empty($request->input('save_urls'))){
-		$this->saveDesiredUrls($last_insert_id,$request);		
-		}
-		elseif(!empty($request->input('exclude_urls'))){
-		$this->excludeUrls($last_insert_id,$request);		
-		}
-            	Session::flash('alert-success', 'Site URLs saved successfully!');
-            	return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
-         	}
-         	catch(\Exception $e){
-            	Session::flash('alert-danger', $e->getMessage());
-            	return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
-         	}
+       	try{
+			if(!empty($domain_link)){
+		   		$sd->save();
+				$domain_id = $sd->id;
+			}
+			if(!empty($request->input('save_urls'))){
+				$this->saveDesiredUrls($request);		
+			}
+			if(!empty($request->input('exclude_urls'))){
+				$this->excludeUrls($request);		
+			}
+           	Session::flash('alert-success', 'Site URLs saved successfully!');
+           	return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
+        }
+       	catch(\Exception $e){
+           	Session::flash('alert-danger', $e->getMessage());
+           	return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
+       	}
 	} ##if ends for existing domains check
 	else{
             	Session::flash('alert-danger', 'Domain already spidered.');
@@ -854,31 +869,43 @@ use App\UrlSuppression;
 */
     }
 
-    public function saveDesiredUrls($spidered_domain_id, $request){
+    public function saveDesiredUrls($request){
 	$url_start_patterns = explode("\n",$request->input('save_urls'));
 	$collection_id = $request->input('collection_id');
 #DB::enableQueryLog();
 	foreach($url_start_patterns as $url){
+		if(empty($url)) continue;
 		$su = new \App\DesiredUrl;	
 		$su->collection_id = $collection_id;
 		$su->url_start_pattern = rtrim(ltrim($url));
-		$su->spidered_domain_id = $spidered_domain_id;
-	    	$su->save();
+    	$su->save();
 	}
-#dd(DB::getQueryLog());
     }	
 
-    public function excludeUrls($spidered_domain_id, $request){
-	$url_start_patterns = explode("\n",$request->input('save_urls'));
+    public function excludeUrls($request){
+	$url_start_patterns = explode("\n",$request->input('exclude_urls'));
 	$collection_id = $request->input('collection_id');
 	foreach($url_start_patterns as $url){
+		if(empty($url)) continue;
 		$su = new \App\UrlSuppression;
 		$su->collection_id = $collection_id;
 		$su->url_start_pattern = rtrim(ltrim($url));
-		$su->spidered_domain_id = $spidered_domain_id;
-	    	$su->save();
+    	$su->save();
 	}
     }	
+
+	public function removeSpideredDomain(Request $request){
+		\App\SpideredDomain::find($request->domain_id)->delete();
+		return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
+	}
+	public function removeDesiredLink(Request $request){
+		\App\DesiredUrl::find($request->link_id)->delete();
+		return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
+	}
+	public function removeExcludedLink(Request $request){
+		\App\UrlSuppression::find($request->link_id)->delete();
+		return redirect('/collection/'.$request->collection_id.'/save_exclude_sites');
+	}
 
 	// column-config
 	public function showSettingsForm(Request $request){

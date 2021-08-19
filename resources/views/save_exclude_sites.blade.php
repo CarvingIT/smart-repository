@@ -82,33 +82,42 @@ else{
                     <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="spidered_domain" class="col-md-12 col-form-label text-md-right">Spidered Domain</label> 
+                   <label for="spidered_domain" class="col-md-12 col-form-label text-md-right">Spidered Domains</label> 
                     </div>
                     <div class="col-md-8">
-                    <input type="text" name="spidered_domain" id="spidered_domain" class="form-control" placeholder="http://domain.com" value="" required />
+					@foreach($spidered_domains as $d)
+						<div><a href="/collection/{{ $collection->id }}/remove-spidered-domain/{{ $d->id }}"><i class="material-icons">delete</i></a>{{ $d->web_address }}</div>
+					@endforeach
+                    <input type="text" name="spidered_domain" id="spidered_domain" class="form-control" placeholder="http://domain.com" value="" />
                     </div>
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="save_urls" class="col-md-12 col-form-label text-md-right">Save</label> 
+                   <label for="save_urls" class="col-md-12 col-form-label text-md-right">Desired Links</label> 
                     </div>
                     <div class="col-md-8">
-                    <textarea name="save_urls" id="save_urls" class="form-control" placeholder="sub_directory1
-sub_directory2" value="" /></textarea>
+					@foreach($desired as $d)
+						<div><a href="/collection/{{ $collection->id }}/remove-desired-link/{{ $d->id }}"><i class="material-icons">delete</i></a>{{ $d->url_start_pattern }}</div>
+					@endforeach
+                    <textarea name="save_urls" id="save_urls" class="form-control" placeholder="http://domain.com/sub_directory1
+http://domain.com/sub_directory2" value="" /></textarea>
                     </div>
                    </div>
                    <div class="form-group row">
                      <div class="col-md-4">
-                     <label for="exclude_urls" class="col-md-12 col-form-label text-md-right">Exclude</label> 
+                     <label for="exclude_urls" class="col-md-12 col-form-label text-md-right">Excluded Links</label> 
 		     </div>
                     <div class="col-md-8">
+					@foreach($excluded as $d)
+						<div><a href="/collection/{{ $collection->id }}/remove-excluded-link/{{ $d->id }}"><i class="material-icons">delete</i></a>{{ $d->url_start_pattern }}</div>
+					@endforeach
                     <textarea name="exclude_urls" id="exclude_urls" class="form-control" value="" 
-			placeholder="sub_directory1
-sub_directory2"></textarea>
+			placeholder="http://domain.com/sub_directory1
+http://domain.com/sub_directory2"></textarea>
                     </div>
                    </div>
                    <div class="form-group row mb-0"><div class="col-md-8 offset-md-4"><button type="submit" class="btn btn-primary">
-                                    Save
+                                    Add
                           </button> 
                      </div></div> 
                    </form> 

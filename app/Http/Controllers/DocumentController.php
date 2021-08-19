@@ -11,6 +11,7 @@ use thiagoalessio\TesseractOCR\TesseractOCR;
 use NlpTools\Similarity\CosineSimilarity;
 use App\Curation;
 use Session;
+use App\Collection;
 
 class DocumentController extends Controller
 {
@@ -236,20 +237,23 @@ class DocumentController extends Controller
         $filename = array_pop($path_dirs);
         $new_filename = '0_'.time().'_'.$filename;
 
-		copy($path, base_path().'/storage/app/smartarchive_assets/'.$collection_id.'/0/'.$new_filename);
-		$filesize = filesize($path);
-		$mimetype = mime_content_type($path); 
+		$collection = Collection::find($collection_id);
+		//$filecontents = Storage::get($path);
+		Storage::disk($collection->storage_drive)
+			->writeStream('smartarchive_assets/'.$collection_id.'/0/'.$new_filename, Storage::readStream($path));
+		$filesize = Storage::size($path);
+		$mimetype = Storage::mimeType($path);
         $d = new Document;
         //echo "$filesize $mimetype\n";
         $dc = new \App\Http\Controllers\DocumentController;
-        $d->title = $dc->autoDocumentTitle($filename);
+        $d->title = empty($meta['title'])? $dc->autoDocumentTitle($filename) : $meta['title'];
         $d->collection_id = $collection_id;
         $d->created_by = 1;
 		$d->size = $filesize;
 		$d->type = $mimetype;
         $d->path = 'smartarchive_assets/'.$collection_id.'/0/'.$new_filename;
         try{
-			$text_content = $dc->extractText($d->path,$mimetype);
+			$text_content = $dc->extractText($path,$mimetype);
             $d->text_content = mb_convert_encoding($text_content, "UTF-8");
         }
         catch(\Exception $e){
@@ -258,6 +262,11 @@ class DocumentController extends Controller
         }
             $d->save();
             $dc->createDocumentRevision($d);
+
+		// save metadata
+		$doc_controller = new \App\Http\Controllers\DocumentController;
+		$doc_controller->saveMetaData($d->id, (array)$meta);
+		// return document model
 	    return $d;
     }
 
@@ -371,6 +380,9 @@ class DocumentController extends Controller
         \App\MetaFieldValue::where('document_id','=', $document_id)->delete();
 
         foreach($meta_data as $m){
+			if(is_object($m)){
+				$m = (array) $m;
+			}
             if(empty($m['field_value'])) continue;
             $m_f = new \App\MetaFieldValue;
             $m_f->document_id = $document_id;

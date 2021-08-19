@@ -18,6 +18,17 @@ class URLImportController extends Controller
 		$import_link = new ImportLink;
 		$import_link->collection_id = $request->collection_id;
 		$import_link->url = $request->url;
+		// add metadata here
+		$all_params = $request->all();
+        $metadata = array();
+        foreach($all_params as $p=>$v){
+            if(preg_match('/^meta_field_/', $p)){
+                $field_id = str_replace('meta_field_','', $p);
+                array_push($metadata, array('field_id'=>$field_id, 'field_value'=>$v));
+            }
+		}
+		$import_link->title = $request->title;
+		$import_link->metadata = json_encode($metadata);
 		$import_link->save();
 		return redirect('/collection/'.$request->collection_id.'/url-import');
 	}
