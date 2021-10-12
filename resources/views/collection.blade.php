@@ -233,7 +233,7 @@ function randomString(length) {
 			}
 			</style>
 		   </div>
-			{{ __('Press Enter to Initiate Search') }}
+			{{ __('Start typing to initiate search') }}
 		   </div>
 		   <div class="col-12 text-center">
            <!--<i class="material-icons">search</i>-->
