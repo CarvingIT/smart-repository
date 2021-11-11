@@ -25,85 +25,6 @@
 
                    <form method="post" action="/admin/sysconfig">
                     @csrf()
-<!--
-                   <div class="form-group row">
-                    <div class="col-md-12">
-                        <h4>Email configuration</h4>
-		    </div>
-                   </div>
-
-                   <div class="form-group row">
-                   <div class="col-md-3">
-                     <label for="smtp_server" class="col-md-12 col-form-label text-md-right">SMTP Server</label> 
-		           </div>
-                    <div class="col-md-9">
-                    <input type="text" name="smtp_server" id="smtp_server" class="form-control" placeholder="SMTP server" value="" />
-                    </div>
-                   </div>
-                   <div class="form-group row">
-                   <div class="col-md-3">
-                     <label for="smtp_user" class="col-md-12 col-form-label text-md-right">SMTP User</label> 
-		           </div>
-                    <div class="col-md-9">
-                    <input type="text" name="smtp_user" id="smtp_user" class="form-control" placeholder="SMTP username" value="" />
-                    </div>
-                   </div>
-                   <div class="form-group row">
-                   <div class="col-md-3">
-                     <label for="smtp_password" class="col-md-12 col-form-label text-md-right">SMTP Password</label> 
-		           </div>
-                    <div class="col-md-9">
-                    <input type="password" name="smtp_password" id="smtp_password" class="form-control" placeholder="SMTP password" value="" />
-                    </div>
-                   </div>
-
-                   <div class="form-group row">
-                   <div class="col-md-3">
-                     <label for="smtp_port" class="col-md-12 col-form-label text-md-right">SMTP Port</label> 
-		           </div>
-                    <div class="col-md-9">
-                    <input type="text" name="smtp_port" id="smtp_port" class="form-control" placeholder="SMTP port" value="" />
-                    </div>
-                   </div>
-                   <div class="form-group row">
-                   <div class="col-md-3">
-                     <label for="smtp_protection" class="col-md-12 col-form-label text-md-right">SMTP Protection</label> 
-		           </div>
-                    <div class="col-md-9">
-                        <select name="smtp_protection" id="smtp_protection" class="form-control selectpicker">
-                            <option value="">Select</option>
-                            <option value="plain">Plain</option>
-                            <option value="ssl">SSL</option>
-                            <option value="tls">TLS</option>
-                        </select>
-                    </div>
-                   </div>
-                   <div class="form-group row">
-                    <div class="col-md-12">
-                        <h4>Search Preferences</h4>
-		            </div>
-                   </div>
-                   <div class="form-group row">
-                   <div class="col-md-3">
-                     <label for="search_mode" class="col-md-12 col-form-label text-md-right">Mode of search</label> 
-		           </div>
-                    <div class="col-md-9">
-                        <select name="search_mode" id="search_mode" class="form-control selectpicker">
-                            <option value="">Select Mode of Search</option>
-                            <option value="database">Database</option>
-                            <option value="elastic">Elastic search</option>
-                        </select>
-                    </div>
-                   </div>
-                   <div class="form-group row">
-                   <div class="col-md-3">
-                     <label for="elastic_hosts" class="col-md-12 col-form-label text-md-right">Elastic Hosts</label> 
-		           </div>
-                    <div class="col-md-9">
-                    <input type="text" name="elastic_hosts" id="elastic_hosts" class="form-control" placeholder="Comma Separated list of hosts" value="" />
-                    </div>
-                   </div>
--->                
                    <div class="form-group row">
                     <div class="col-md-12">
                         <h4>Site Configuration</h4>
@@ -139,6 +60,14 @@
 		           </div>
                     <div class="col-md-9">
                     <textarea name="contact_page" id="logo_url" class="page_content">@if(!empty($sysconfig['contact_page'])) {{$sysconfig['contact_page'] }} @endif</textarea>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="overridingcss" class="col-md-12 col-form-label text-md-right">Overriding CSS</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <textarea name="overridingcss" id="overridingcss">@if(!empty($sysconfig['overridingcss'])) {{$sysconfig['overridingcss'] }} @endif</textarea>
                     </div>
                    </div>
                    <div class="form-group row">

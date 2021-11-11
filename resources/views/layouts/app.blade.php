@@ -54,6 +54,19 @@ foreach($config as $c){
         <script src="{{ asset('material') }}/js/settings.js"></script>
 
         @stack('js')
+	<!-- overriding css -->
+	<style>
+@php
+    $conf = \App\Sysconfig::all();
+    $settings = array();
+    foreach($conf as $c){
+        $settings[$c->param] = $c->value;
+    }
+@endphp
+                    @if(!empty($settings['overridingcss']))
+                    {!! $settings['overridingcss'] !!}
+					@endif
+	</style>
     </head>
     <body class="{{ $class ?? '' }}">
         @auth()

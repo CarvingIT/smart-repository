@@ -133,3 +133,9 @@ a.nav-link{
   display:inline-block;
   margin:3px;
 }
+
+textarea#overridingcss{
+	width:100%;
+	height:130px !important;
+	resize:both !important;
+}
