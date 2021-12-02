@@ -19,7 +19,7 @@ class MetaInformation extends Migration
             $table->string('label');
             $table->string('placeholder');
             $table->enum('type', ['Text','Numeric', 'Select', 'Date']);
-            $table->string('options',255)->nullable();
+            $table->text('options')->nullable();
             $table->integer('display_order');
             $table->timestamps();
             $table->softDeletes();
