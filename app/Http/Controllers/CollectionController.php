@@ -199,18 +199,18 @@ class CollectionController extends Controller
 				$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
 			}
 		}
+		$meta_filters = array();
 		if(count($meta_filters_query)>0){
 			$meta_filters = $meta_filters_query;
-			print_r($meta_filters);exit;
-			//$meta_filters = [];
 		}
 		else{
 			// else take from the session
         	$all_meta_filters = Session::get('meta_filters');
-        	$meta_filters = empty($all_meta_filters[$request->collection_id])?null:$all_meta_filters[$request->collection_id];
+        	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
 		}
         foreach($meta_filters as $mf){
             if($mf['operator'] == '='){
+				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
                 $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
                     }
