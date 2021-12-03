@@ -189,10 +189,28 @@ class CollectionController extends Controller
 	}
 
     public function getMetaFilteredDocuments($request, $documents){
-        $all_meta_filters = Session::get('meta_filters');
-        $meta_filters = empty($all_meta_filters[$request->collection_id])?null:$all_meta_filters[$request->collection_id];
+		// check if meta filters are present in the query
+		$query_params = $request->query();
+		$meta_filters_query = array();
+		foreach($query_params as $p=>$v){
+			if(preg_match('/^meta_(\d*)/', $p, $matches)){
+				// currently, no support for operator in the query string parameters
+				// default operator is '='
+				$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+			}
+		}
+		$meta_filters = array();
+		if(count($meta_filters_query)>0){
+			$meta_filters = $meta_filters_query;
+		}
+		else{
+			// else take from the session
+        	$all_meta_filters = Session::get('meta_filters');
+        	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
+		}
         foreach($meta_filters as $mf){
             if($mf['operator'] == '='){
+				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
                 $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
                     }
@@ -312,10 +330,10 @@ class CollectionController extends Controller
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
         // get Meta filtered documents
-        $all_meta_filters = Session::get('meta_filters');
-        if(!empty($all_meta_filters[$request->collection_id])){
+        //$all_meta_filters = Session::get('meta_filters');
+        //if(!empty($all_meta_filters[$request->collection_id])){
             $documents = $this->getMetaFilteredDocuments($request, $documents);
-        }
+        //}
 
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
@@ -400,10 +418,10 @@ class CollectionController extends Controller
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
         // get Meta filtered documents
-        $all_meta_filters = Session::get('meta_filters');
-        if(!empty($all_meta_filters[$request->collection_id])){
+        //$all_meta_filters = Session::get('meta_filters');
+        //if(!empty($all_meta_filters[$request->collection_id])){
             $documents = $this->getMetaFilteredDocuments($request, $documents);
-        }
+        //}
 
         // content search
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){

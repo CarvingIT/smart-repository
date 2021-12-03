@@ -307,8 +307,10 @@ function randomString(length) {
 				// transliteration in the title box is needed only for collection of types "Uploaded documents"
 				let searchbox = document.getElementById("collection_search");
 				enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
+			   @if(!empty($column_config->title_search) && $column_config->title_search == 1)
 				let titlesearchbox = document.getElementById("title_search");
 				enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
+			   @endif
 
 				@foreach($collection->meta_fields as $m)
 					@if($m->type != 'Text') @continue @endif
