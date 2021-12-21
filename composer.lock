@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b4083e9f02997a95593761e51936da02",
+    "content-hash": "e827437435ac34a45e510f647ddc6506",
     "packages": [
         {
             "name": "aacotroneo/laravel-saml2",
@@ -644,6 +644,62 @@
                 }
             ],
             "time": "2020-05-25T17:44:05+00:00"
+        },
+        {
+            "name": "dragomirt/pdf-to-text",
+            "version": "1.5.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dragomirt/pdf-to-text.git",
+                "reference": "73723bbc569aeae1888e09c786df1bdea2081825"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dragomirt/pdf-to-text/zipball/73723bbc569aeae1888e09c786df1bdea2081825",
+                "reference": "73723bbc569aeae1888e09c786df1bdea2081825",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.3|^8.0",
+                "symfony/process": "^4.0|^5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^8.0|^9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Spatie\\PdfToText\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Dragomir Țurcanu",
+                    "email": "dtu@dragomirt.com",
+                    "homepage": "https://dragomirt.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Extract text from a pdf",
+            "homepage": "https://github.com/dragomirt/pdf-to-text",
+            "keywords": [
+                "OCR",
+                "dragomirt",
+                "pdf",
+                "pdf-to-text",
+                "spatie"
+            ],
+            "funding": [
+                {
+                    "url": "https://spatie.be/open-source/support-us",
+                    "type": "custom"
+                }
+            ],
+            "time": "2021-12-02T10:08:57+00:00"
         },
         {
             "name": "dragonmantank/cron-expression",
@@ -4214,6 +4270,7 @@
                     "type": "tidelift"
                 }
             ],
+            "abandoned": "symfony/mailer",
             "time": "2021-01-12T09:35:59+00:00"
         },
         {

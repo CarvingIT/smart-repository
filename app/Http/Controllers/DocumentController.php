@@ -12,6 +12,7 @@ use NlpTools\Similarity\CosineSimilarity;
 use App\Curation;
 use Session;
 use App\Collection;
+use Spatie\PdfToText\Pdf;
 
 class DocumentController extends Controller
 {
@@ -343,6 +344,13 @@ class DocumentController extends Controller
 			if(empty($text) && $enable_OCR==1){ // try OCR 
 				/* this piece of code needs to be replaced with code that works with ocrmypdf
 				*/
+				$text = (new Pdf())
+                ->setPdf(storage_path('app/'.$filepath))
+                ->setOptions(['layout'])
+                ->setScanOptions(['-l eng', '--skip-text'])
+                ->decrypt()
+                ->scan()
+                ->text();
 			}
         }
         else if(preg_match('/^image\//', $mimetype) && ($enable_OCR==1)){
