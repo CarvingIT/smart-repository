@@ -14,6 +14,7 @@ class DocumentCreateTest extends TestCase
      *
      * @return void
      */
+	/*
     public function testFileUploadByMaintainer()
     {
 		$user = \App\User::find(1);
@@ -31,6 +32,7 @@ class DocumentCreateTest extends TestCase
 			['collection_id'=>1, 'document'=>$filename,]);
         $response->assertStatus(403);
     }
+	*/
 
 	private function randomString()
     {
