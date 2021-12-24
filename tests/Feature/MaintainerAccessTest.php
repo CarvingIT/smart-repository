@@ -45,7 +45,6 @@ class MaintainerAccessTest extends TestCase
         $response->assertStatus(403);
 	}
 
-	/*
 	public function testAccessToSettings(){
 		$user = \App\User::find(1);
         $response = $this->actingAs($user)->get('/collection/3/settings');
@@ -55,7 +54,6 @@ class MaintainerAccessTest extends TestCase
         $response = $this->actingAs($user)->get('/collection/3/settings');
         $response->assertStatus(403);
 	}
-	*/
 
 	public function testAccessToUpload(){
 		$user = \App\User::find(1);

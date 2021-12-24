@@ -29,6 +29,7 @@ class UserRegistrationTest extends TestCase
         $response->assertStatus(422);
 	}
 
+/*
     public function testRegistration()
     {
 		putenv("ENABLE_REGISTRATION=1");
@@ -39,6 +40,7 @@ class UserRegistrationTest extends TestCase
 				'password'=>$password, 'password_confirmation'=>$password]);
         $response->assertStatus(200)->assertSeeText('Verify Your Email Address');
     }
+	*/
 
 	public function testWrongPassword(){
 		$response = $this->json('POST', '/login', ['email'=>'ketan@carvingit.com', 
