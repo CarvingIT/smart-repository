@@ -290,7 +290,8 @@ class DocumentController extends Controller
 
     public function autoDocumentTitle($filename){
         $filename_chunks = explode(".",$filename);
-        $title = $filename_chunks[0];
+		$file_ext = array_pop($filename_chunks);
+		$title = implode('.', $filename_chunks);
         $title = str_replace('_',' ',$title);
         $title = str_replace('-',' ',$title);
         $title = ucfirst($title);
