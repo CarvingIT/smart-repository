@@ -87,7 +87,8 @@
         @else
         <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
             @php
-                $options = sort(explode(",", $f->options));
+                $options = explode(",", $f->options);
+				sort($options);
             @endphp
             <option value="">{{ $f->placeholder }}</option>
             @foreach($options as $o)
