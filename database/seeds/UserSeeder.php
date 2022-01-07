@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
             [
                 'name'=>'Ketan Kulkarni',
                 'email'=>'ketan@carvingit.com',
-                'password'=>bcrypt('ketan123'),
+                'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
@@ -27,7 +27,7 @@ class UserSeeder extends Seeder
             [
                 'name'=>'Shraddha Kulkarni',
                 'email'=>'shraddha@carvingit.com',
-                'password'=>bcrypt('shraddha123'),
+                'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
             [
                 'name'=>'Rutuja Bhoyar',
                 'email'=>'rutuja@carvingit.com',
-                'password'=>bcrypt('rutuja123'),
+                'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
@@ -45,7 +45,7 @@ class UserSeeder extends Seeder
             [
                 'name'=>'Rupali Patil',
                 'email'=>'rupali@carvingit.com',
-                'password'=>bcrypt('rupali123'),
+                'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
             [
                 'name'=>'Shweta Minde',
                 'email'=>'shweta@carvingit.com',
-                'password'=>bcrypt('shweta123'),
+                'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
@@ -63,7 +63,7 @@ class UserSeeder extends Seeder
             [
                 'name'=>'Priyanka Jadhav',
                 'email'=>'priyanka@carvingit.com',
-                'password'=>bcrypt('priyanka123'),
+                'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
