@@ -15,7 +15,7 @@ foreach($config_details as $details){
 	@if(!empty($sysconfig['logo_url']))
 	<img src="{{ $sysconfig['logo_url'] }}">
 	@else
-	{{ $title }}
+	<img src="/i/your-logo.png" />
 	@endif
 	</a>
     </div>

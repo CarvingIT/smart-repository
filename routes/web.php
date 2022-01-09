@@ -157,6 +157,11 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 
 Route::post('/user/regenerate-api-token', 'ApiTokenController@update')->middleware(['auth']);
 
+// Oauth
+Route::get('auth/social', '\App\Http\Controllers\Auth\LoginController@show')->name('social.login');
+Route::get('oauth/{driver}', '\App\Http\Controllers\Auth\LoginController@redirectToProvider')->name('social.oauth');
+Route::get('oauth/{driver}/callback', '\App\Http\Controllers\Auth\LoginController@handleProviderCallback')->name('social.callback');
+
 // redirect registration to login if registration is disabled
 if(env('ENABLE_REGISTRATION') != 1){
 	Route::redirect('register', 'login', 301);
