@@ -10,9 +10,9 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Auth::routes(['verify'=>false]);
+Auth::routes(['verify'=>true]);
 Route::get('/email/verify', function () {
-    return view('auth.verify-email');
+    return view('auth.verify');
 })->middleware('auth')->name('verification.notice');
 
 Route::view('/','welcome');
