@@ -151,7 +151,7 @@ Route::group(['middleware' => 'auth'], function () {
 	})->name('upgrade');
 });
 
-Route::group(['middleware' => ['auth', 'admin']], function () {
+Route::group(['middleware' => ['auth']], function () {
 	Route::resource('user', 'UserController', ['except' => ['show']]);
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);
