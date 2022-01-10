@@ -49,7 +49,7 @@ class UserRegistrationTest extends TestCase
 	}
 	public function testLogin(){
 		$response = $this->json('POST', '/login', ['email'=>'ketan@carvingit.com', 
-				'password'=>'ketan123']);
+				'password'=>'SmartPass!@#']);
         $response->assertRedirect('/collections');
 	}
 }

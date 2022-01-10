@@ -18,7 +18,7 @@ $collections = \App\Collection::all();
 	@if(!empty($sysconfig['logo_url']))
 	<img class="logo_img" src="{{ $sysconfig['logo_url'] }}">
 	@else
-	{{$app_name}}
+	<img class="logo_img" src="/i/your-logo.png" />
 	@endif
       </a>
     </div>
