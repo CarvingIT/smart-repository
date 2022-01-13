@@ -6,7 +6,10 @@
 
 <script type="text/javascript">
 $( document ).ready(function() {
-    $("#options-field").hide();
+  var options_field_val = $('#type').val();
+	if(options_field_val != 'Select'){
+    	$("#options-field").hide();
+	}
 
   $("#type").change(function() {
     var val = $(this).val();
