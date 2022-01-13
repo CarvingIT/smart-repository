@@ -181,8 +181,12 @@ class CollectionController extends Controller
     }
 
     public function getTitleFilteredDocuments($request, $documents){
-        $title_filter = Session::get('title_filter');
-		if(!empty($title_filter[$request->collection_id])){
+        //$title_filter = Session::get('title_filter');
+        $title_filter = empty(Session::get('title_filter'))?$request->title_filter:Session::get('title_filter');
+		if(!empty($request->title_filter)){
+                        $documents = $documents->where('title','like','%'.$request->title_filter.'%');
+                }
+		else if(!empty($title_filter[$request->collection_id])){
 			$documents = $documents->where('title','like','%'.$title_filter[$request->collection_id].'%');
 		}
 		return $documents;
@@ -326,7 +330,7 @@ class CollectionController extends Controller
             $documents = $documents->whereIn('id', $document_ids);
         }
         // get title filtered documents
-		if(!empty(Session::get('title_filter'))){
+		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
         // get Meta filtered documents
@@ -414,7 +418,7 @@ class CollectionController extends Controller
         $total_documents = $documents->count(); 
 
         // get title filtered documents
-		if(!empty(Session::get('title_filter'))){
+		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
         // get Meta filtered documents
