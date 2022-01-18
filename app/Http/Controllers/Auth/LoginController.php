@@ -92,7 +92,7 @@ class LoginController extends Controller
 		// check if domain is in the list of allowed domains for Social login
 		if(env('SOCIAL_LOGIN_ALLOWED_DOMAINS')){
 			$allowed_domains = explode(",", env('SOCIAL_LOGIN_ALLOWED_DOMAINS'));
-			$email_parts = explode("@", $providerUser->getEmail()->first());
+			$email_parts = explode("@", $providerUser->getEmail());
 
 			if(!in_array($email_parts[1], $allowed_domains)){
 				$this->sendFailedResponse("Your email address is not allowed.");
