@@ -95,7 +95,7 @@ class LoginController extends Controller
 			$email_parts = explode("@", $providerUser->getEmail());
 
 			if(!in_array($email_parts[1], $allowed_domains)){
-				$this->sendFailedResponse("Your email address is not allowed.");
+				return $this->sendFailedResponse("Your email address is not allowed.");
 			}
 		}
         // check for already has account
