@@ -70,6 +70,7 @@ $(document).ready(function() {
                     @foreach(\App\Permission::all() as $p)
 			@if(count($collection_has_approval)==0 && $p->name == 'APPROVE')
 			@else
+				@if($p->name != "VIEW")
                    <div class="form-group row">
                    <label for="permission" class="col-md-4 col-form-label text-md-right"></label> 
                     <div class="col-md-6">
@@ -80,6 +81,9 @@ $(document).ready(function() {
                     />  {{ $p->name }}
                     </div>
                    </div>
+				@else
+					<input type="hidden" name="permission[]" value="{{ $p->id }}" />
+				@endif
 			@endif
                     @endforeach
                    <div class="form-group row mb-0"><div class="col-md-8 offset-md-4"><button type="submit" class="btn btn-primary">
