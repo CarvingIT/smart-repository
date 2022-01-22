@@ -60,6 +60,9 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+		if(!auth()->user()->hasRole('admin')){
+			return abort(403);
+		}
         return view('users.edit', compact('user'));
     }
 
