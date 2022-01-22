@@ -33,6 +33,9 @@ class UserController extends Controller
      */
     public function create()
     {
+		if(!auth()->user()->hasRole('admin')){
+			return abort(403);
+		}
         return view('users.form');
     }
 
