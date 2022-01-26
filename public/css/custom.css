@@ -139,3 +139,7 @@ textarea#overridingcss{
 	height:130px !important;
 	resize:both !important;
 }
+.audit-changes{
+	font-weight:bold;
+	color:blue;
+}

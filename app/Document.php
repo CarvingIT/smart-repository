@@ -16,6 +16,10 @@ class Document extends Model implements Auditable
 
 	protected $auditExclude = [
         'text_content',
+		'id',
+		'created_by',
+		'path',
+		'collection_id'
     ];
     /**
      * The columns of the full text index

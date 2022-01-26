@@ -1,6 +1,17 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'faq','titlePage'=>'FAQ'])
 
 @push('js')
+<link rel="stylesheet" href="/css/jquery-ui.css">
+<script src="/js/jquery-ui.js"></script>
+<script>
+ $( function() {
+      $( "#accordion" ).accordion({
+        'collapsible': true,
+        'active':false,
+        'heightStyle': "content",
+    });
+  } );
+</script>
 <script src="/js/jQWCloudv3.4.1.js"></script>
 <script>
 var docwords = new Array();
@@ -80,6 +91,68 @@ $(document).ready(function()
 			{{ $document->title }}</a></h4></span>
                         </div>
                         <div class="col-md-12"><div id="wordcloud"><img src='/i/processing.gif'></div></div>
+
+						<div class="col-md-12">
+						<h3>Audit Trail</h3>
+						@php
+						$all_audits = [];
+						foreach($document->audits as $a){
+							$audit_metadata = $a->getMetadata();
+							$all_audits[$audit_metadata['audit_created_at']][] = $a;
+						}
+
+						foreach($document->meta as $m){
+							foreach($m->audits as $ma){
+								$audit_metadata = $ma->getMetadata();
+								$all_audits[$audit_metadata['audit_created_at']][] = $ma;
+							}
+						}
+						// ordering of audits
+						krsort($all_audits);
+						@endphp
+
+						<div class="col-md-12" id="accordion">
+						@foreach($all_audits as $k=>$va)
+						<h3>{{ $k }}</h3>
+						<div>
+						@foreach($va as $v)
+							@php
+								$audit_meta = $v->getMetadata();
+								$modified = $v->getModified();
+								$model_type = $v->auditable_type;
+								$model_id = $v->auditable_id;
+							@endphp
+								<p>Audit event: {{ @$audit_meta['audit_event'] }}</p>
+								<p>User: {{ @$audit_meta['user_name'] }}</p>
+								<p>User agent: {{ @$audit_meta['audit_user_agent'] }}</p>
+								<p>URL: {{ @$audit_meta['audit_url'] }}</p>
+								<p>IP Address: {{ @$audit_meta['audit_ip_address'] }}</p>
+								<h4>Modifications</h4>
+								@foreach($modified as $mk => $mv)
+									@php
+									$what_changed = $mk;
+									if($model_type == 'App\MetaFieldValue'){
+										$mfv = App\MetaFieldValue::find($model_id);
+										$what_changed = $mfv->meta_field->label;
+									}
+									@endphp
+								<p>
+								<em class="audit-changes">{{ $what_changed }}</em>
+								@if(@$audit_meta['audit_event'] != 'created')
+									was updated from
+									<em class="audit-changes">{{ @$mv['old'] }}</em>
+									to
+								@endif
+								<em class="audit-changes">{{ @$mv['new'] }}</em>
+								</p>
+								<hr />
+								@endforeach	
+						@endforeach
+						</div>
+						@endforeach
+						</div><!-- accordion ends -->
+						</div>
+					
                     </div>
                     <div class="col-md-3">
                         <div class="col-md-12">
