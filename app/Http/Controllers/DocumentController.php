@@ -386,17 +386,19 @@ class DocumentController extends Controller
 
     public function saveMetaData($document_id, $meta_data){
         // first delete old and then save new 
-        \App\MetaFieldValue::where('document_id','=', $document_id)->delete();
+        //\App\MetaFieldValue::where('document_id','=', $document_id)->delete();
 
         foreach($meta_data as $m){
 			if(is_object($m)){
 				$m = (array) $m;
 			}
-            if(empty($m['field_value'])) continue;
-            $m_f = new \App\MetaFieldValue;
+			$m_f = \App\MetaFieldValue::where('document_id',$document_id)->where('meta_field_id', $m['field_id'])->first();
+			if(empty($m_f)){
+            	$m_f = new \App\MetaFieldValue;
+			}
             $m_f->document_id = $document_id;
             $m_f->meta_field_id = $m['field_id'];
-            $m_f->value = $m['field_value'];
+            $m_f->value = empty($m['field_value']) ? '' : $m['field_value'];
             $m_f->save();
         }
     }

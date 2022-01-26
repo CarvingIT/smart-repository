@@ -22,6 +22,7 @@
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/flysystem-sftp": "^1.0",
         "nlp-tools/nlp-tools": "^0.1.3",
+        "owen-it/laravel-auditing": "^12.0",
         "paquettg/php-html-parser": "^3.1",
         "popphp/pop-mail": "^3.6",
         "smalot/pdfparser": "^0.14.0",
