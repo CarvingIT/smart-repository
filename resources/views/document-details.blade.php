@@ -140,10 +140,10 @@ $(document).ready(function()
 								<em class="audit-changes">{{ $what_changed }}</em>
 								@if(@$audit_meta['audit_event'] != 'created')
 									was updated from
-									<em class="audit-changes">{{ @$mv['old'] }}</em>
+									<em class="audit-changes">@if(!empty($mv['old'])) {{ $mv['old'] }} @else {{ 'NULL' }} @endif </em>
 									to
 								@endif
-								<em class="audit-changes">{{ @$mv['new'] }}</em>
+								<em class="audit-changes">@if(!empty($mv['new'])) {{ $mv['new'] }} @else {{ 'NULL' }} @endif</em>.
 								</p>
 								<hr />
 								@endforeach	
