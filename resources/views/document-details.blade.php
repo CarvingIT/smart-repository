@@ -111,6 +111,9 @@ $(document).ready(function()
 						krsort($all_audits);
 						@endphp
 
+						@if(count($all_audits) == 0)
+							<p>No changes have taken place to the meta information of this document.</p>
+						@else
 						<div class="col-md-12" id="accordion">
 						@foreach($all_audits as $k=>$va)
 						<h3>{{ $k }}</h3>
@@ -151,6 +154,7 @@ $(document).ready(function()
 						</div>
 						@endforeach
 						</div><!-- accordion ends -->
+						@endif
 						</div>
 					
                     </div>
