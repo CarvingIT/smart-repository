@@ -141,11 +141,9 @@ $(document).ready(function()
 									@endphp
 								<p>
 								<em class="audit-changes">{{ $what_changed }}</em>
-								@if(@$audit_meta['audit_event'] != 'created')
 									was updated from
 									<em class="audit-changes">@if(!empty($mv['old'])) {{ $mv['old'] }} @else {{ 'NULL' }} @endif </em>
 									to
-								@endif
 								<em class="audit-changes">@if(!empty($mv['new'])) {{ $mv['new'] }} @else {{ 'NULL' }} @endif</em>.
 								</p>
 								<hr />
