@@ -168,9 +168,11 @@ $(document).ready(function()
                         <img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>
                         </span>
 			@if(Auth::user() && (Auth::user()->hasPermission($collection->id, 'MAINTAINER') || Auth::user()->hasPermission($collection->id, 'EDIT_ANY')))
+					@if(env('ENABLE_PROOFREAD') == 1)
                         <span id="doc-proofread" class="col-md-12">
 			<a title="Proofread" href="/collection/{{$c->id}}/document/{{$document->id}}/proofread"><img class="file-icon" src="/i/proofread.png" /></a>
 			</span>
+					@endif
 			@endif
                         </div>
                         <div class="col-md-12">
