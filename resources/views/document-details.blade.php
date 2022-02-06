@@ -133,6 +133,7 @@ $(document).ready(function()
 								<h4>Modifications</h4>
 								@foreach($modified as $mk => $mv)
 									@php
+									if($mk == 'meta_field_id' || $mk == 'id') continue;
 									$what_changed = $mk;
 									if($model_type == 'App\MetaFieldValue'){
 										$mfv = App\MetaFieldValue::find($model_id);
