@@ -18,7 +18,7 @@ class Collection extends Model
     }
 
     public function meta_fields(){
-        return $this->hasMany('App\MetaField');
+        return $this->hasMany('App\MetaField')->orderBy('display_order');
     }
 
     public function maintainer(){
