@@ -12,6 +12,7 @@ use GuzzleHttp\Client as GuzzleHttpClient;
 use PHPHtmlParser\Dom;
 use App\UrlSuppression;
 use App\Url;
+use Carbon\Carbon;
 //use Spatie\Browsershot\Browsershot;
 
 class Crawl extends Command
