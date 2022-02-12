@@ -24,7 +24,7 @@ $( document ).ready(function() {
 
   $('#metafields').DataTable({
     "aoColumnDefs": [
-            { "bSortable": false, "aTargets": [3]}
+            { "bSortable": false, "aTargets": [4]}
      ],
     "searching": false, 
     "paging": false, 
@@ -118,6 +118,7 @@ $( document ).ready(function() {
                     <table id="metafields" class="table">
                         <thead class=" text-primary">
                             <tr>
+                            <th>#</th>
                             <th>Label</th>
                             <th>Type</th>
                             <th>Options</th>
@@ -127,6 +128,7 @@ $( document ).ready(function() {
                         <tbody>
                     @foreach($meta_fields as $f)
                         <tr>
+                            <td>{{ $f->display_order }}</td>
                             <td>{{ $f->label }}</td>
                             <td>{{ $f->type }}</td>
                             <td>{{ $f->options }}</td>

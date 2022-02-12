@@ -679,7 +679,7 @@ class CollectionController extends Controller
         else{
             $edit_field = \App\MetaField::find($meta_field_id);
         }
-        $meta_fields = $collection->meta_fields()->orderby('display_order','ASC')->get();
+        $meta_fields = $collection->meta_fields;
         return view('metainformation', ['collection'=>$collection, 
                 'edit_field'=>$edit_field, 
                 'meta_fields'=>$meta_fields,
