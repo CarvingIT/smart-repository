@@ -33,6 +33,10 @@ $( document ).ready(function() {
 
 });
 
+function showMetaFieldForm(){
+	$('#metafieldform').show();
+	$('#addmetafieldbutton').hide();
+}
 </script>
 <div class="container">
 <div class="container-fluid">
@@ -41,7 +45,10 @@ $( document ).ready(function() {
             <div class="card">
                 <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Manage Metadata Fields</h4></div>
                 <div class="col-md-12 text-right">
-                <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
+				@if(empty($edit_field->id))
+                <a href="#" id="addmetafieldbutton" onclick="showMetaFieldForm();" class="btn btn-sm btn-primary" title="Add"><i class="material-icons">add</i></a>
+				@endif
+                <a href="/collection/{{ $collection->id }}" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
                 </div>
 
                 <div class="card-body">
@@ -54,7 +61,11 @@ $( document ).ready(function() {
                         </div>
                     @endif
 
-                   <form method="post" action="/collection/{{$collection->id}}/meta">
+                   <form method="post" action="/collection/{{$collection->id}}/meta" id="metafieldform" 
+						@if(empty($edit_field->id))
+						style="display:none;" 
+						@endif
+					>
                     @csrf()
                     <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                     <input type="hidden" name="meta_field_id" value="{{$edit_field->id}}" />
@@ -104,16 +115,15 @@ $( document ).ready(function() {
                     </div>
                    </div>
                 
-                   <div class="form-group row mb-0"><div class="col-md-12 offset-md-4"><button type="submit" class="btn btn-primary">
+                   <div class="form-group row mb-0"><div class="col-md-12 offset-md-4">
+								<button type="submit" class="btn btn-primary">
                                     Save
+                                </button> 
+								<button onclick="document.location.href='/collection/{{$collection->id}}/meta';" class="btn btn-primary">
+                                    Cancel
                                 </button> 
                      </div></div> 
                    </form> 
-                </div>
-            </div>
-            <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title">Metadata Fields</h4></div>
-                <div class="card-body">
 		<div class="table-responsive">
                     <table id="metafields" class="table">
                         <thead class=" text-primary">
@@ -134,14 +144,12 @@ $( document ).ready(function() {
                             <td>{{ $f->options }}</td>
                             <td class="td-actions text-right">
                                 <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}" class="btn btn-success btn-link">
-				<!--img src="/i/pencil-edit-button.png" class="icon" /-->
 				<i class="material-icons">edit</i>
                                 <div class="ripple-container"></div>
 				</a>
                                 <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}/delete" class="btn btn-danger btn-link">
 				<i class="material-icons">delete</i>
                                 <div class="ripple-container"></div>
-				<!--img src="/i/trash.png" class="icon" /-->
 				</a>
                             </td>
                         </tr>
@@ -151,8 +159,6 @@ $( document ).ready(function() {
 		</div>
                 </div>
             </div>
-            
-
         </div>
     </div>
 </div>
