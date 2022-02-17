@@ -464,7 +464,11 @@ public function downloadFile($doc,$storage_drive){
 	$exists = Storage::disk($storage_drive)->exists($doc->path);
         try{
                 $file_url = $doc->path;
-                $file_name  = $doc->path;                       //"VoteMix-Event-Entry-Ticket.pdf";
+                $file_path  = $doc->path;
+				// remove filename prefix
+				$path_parts = explode('/',$file_path);
+				$file_name = array_pop($path_parts);
+				$file_name = preg_replace('/\d*_\d*_/','',$file_name);
 
                 $mime = Storage::disk($storage_drive)->getDriver()->getMimetype($file_url);
                 $size = Storage::disk($storage_drive)->getDriver()->getSize($file_url);
