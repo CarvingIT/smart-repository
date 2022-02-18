@@ -7,13 +7,13 @@
 <script type="text/javascript">
 $( document ).ready(function() {
   var options_field_val = $('#type').val();
-	if(options_field_val != 'Select'){
+	if(options_field_val != 'Select' && options_field_val != 'SelectCombo'){
     	$("#options-field").hide();
 	}
 
   $("#type").change(function() {
     var val = $(this).val();
-    if(val === "Select") {
+    if(val === "Select" || val === "SelectCombo") {
         $("#options-field").show();
     }
     else {
@@ -94,6 +94,7 @@ function showMetaFieldForm(){
                             <option value="Text" @if($edit_field->type == 'Text') selected @endif>Text</option> 
                             <option value="Numeric" @if($edit_field->type == 'Numeric') selected @endif>Numeric</option> 
                             <option value="Select" @if($edit_field->type == 'Select') selected @endif>Select from options</option> 
+                            <option value="SelectCombo" @if($edit_field->type == 'SelectCombo') selected @endif>Select with custom input</option> 
                             <option value="Date" @if($edit_field->type == 'Date') selected @endif>Date</option> 
                         </select>
                     </div>

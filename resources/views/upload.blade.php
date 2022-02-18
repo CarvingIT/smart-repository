@@ -84,7 +84,8 @@
         <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
         @elseif ($f->type == 'Date')
         <input class="form-control" id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
-        @else
+
+        @elseif ($f->type == 'Select')
         <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
             @php
                 $options = explode(",", $f->options);
@@ -98,6 +99,21 @@
             <option value="{{$o}}" @if($o == $document->meta_value($f->id)) selected="selected" @endif >{{$o}}</option>
             @endforeach
         </select>
+		@elseif ($f->type == 'SelectCombo')
+		<input type="text" class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" autocomplete="off" list="optionvalues" placeholder="{{ $f->placeholder }}" />
+		<label>You can select an option or type custom text above.</label>
+		<datalist id="optionvalues">
+            @php
+                $options = explode(",", $f->options);
+				sort($options);
+            @endphp
+            @foreach($options as $o)
+                @php
+                    $o = ltrim(rtrim($o));
+                @endphp
+            <option>{{$o}}</option>
+            @endforeach
+		</datalist>
         @endif
         </div>
     </div>
