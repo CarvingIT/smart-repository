@@ -19,18 +19,8 @@ $(document).ready(function(){
     $("#metafieldselect").on('change',function() {
         var field_type = $(this).children("option:selected").attr('ourtype');
         var field_id = this.value;
-        if(field_type == 'Text'){
-            var o1 = new Option("matches", "=");
-            var o2 = new Option("contains", "contains");
-            $('#operator-select').find('option').remove();
-            $('#operator-select').append(o1);
-            $('#operator-select').append(o2);
 
-            $('#meta-val-cont').html('');
-            var mv_input = $("<input type=\"text\" class=\"form-control col-md-12\" name=\"meta_value\" />"); 
-            $('#meta-val-cont').append(mv_input);
-        }
-        else if(field_type == 'Numeric'){
+        if(field_type == 'Numeric'){
             var o1 = new Option("=", "=");
             var o2 = new Option("<=", "<=");
             var o3 = new Option(">=", ">=");
@@ -73,9 +63,16 @@ $(document).ready(function(){
             }
             meta_select.selectpicker("refresh");
         }
-        else{
+        else { //field_type == 'Text' || field_type == 'SelectCombo'). This is the default
+            var o1 = new Option("matches", "=");
+            var o2 = new Option("contains", "contains");
             $('#operator-select').find('option').remove();
+            $('#operator-select').append(o1);
+            $('#operator-select').append(o2);
+
             $('#meta-val-cont').html('');
+            var mv_input = $("<input type=\"text\" class=\"form-control col-md-12\" name=\"meta_value\" />"); 
+            $('#meta-val-cont').append(mv_input);
         }
         $('#operator-select').selectpicker("refresh");
     }); 
