@@ -71,8 +71,9 @@ $app_name = env('APP_NAME');
 	    -->
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             @if(Auth::user()->hasRole('admin'))
-            <a class="dropdown-item" href="/admin/usermanagement">{{ __('User Management') }}</a>
-            <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Collection Management') }}</a>
+            <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
+            <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>
+            <a class="dropdown-item" href="/admin/storagemanagement">{{ __('Manage Storages') }}</a>
             <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
             <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
             @endif

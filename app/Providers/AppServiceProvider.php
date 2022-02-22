@@ -25,5 +25,20 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+		/*
+		config(['filesystems.disks'=>[
+		    'mysftp'=>[
+            'driver' => 'sftp',
+            'host' => '162.241.149.43',
+            'port' => 22,
+            'username' => 'shraddha',
+            'password' => 'Shraddha123!',
+            'privateKey' => '',
+            'root' => '/home/shraddha/CITPL_SR',
+            'timeout' => 100,
+    		]
+		]
+		]);
+		*/
     }
 }
