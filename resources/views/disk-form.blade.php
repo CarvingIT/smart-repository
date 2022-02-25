@@ -72,14 +72,81 @@ else{
                    <form method="post" action="/admin/savedisk">
                     @csrf()
                     <input type="hidden" name="disk_id" value="{{$disk->id}}" />
+
                    <div class="form-group row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                    <label for="disk_name" class="col-md-12 col-form-label text-md-right">Name</label> 
                     </div>
-                    <div class="col-md-8">
-                    <input type="text" name="disk_name" id="disk_name" class="form-control" placeholder="Give your disk a name" value="{{ $disk->name }}" required />
+                    <div class="col-md-9">
+                    <input type="text" name="disk_name" id="disk_name" class="form-control" placeholder="Give your disk a unique name. Avoid spaces." value="{{ $disk->name }}" required />
                     </div>
                    </div>
+
+                   <div class="form-group row">
+                    <div class="col-md-3">
+                   <label for="driver" class="col-md-12 col-form-label text-md-right">Type/Driver</label> 
+                    </div>
+                    <div class="col-md-9">
+					<select name="driver" class="selectpicker">
+						<option value="ftp">FTP</option>
+						<option value="sftp">SFTP</option>
+						<option value="s3">S3</option>
+					</select>
+                    </div>
+                   </div>
+
+				  <div id="ftp_details">
+
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="host" class="col-md-12 col-form-label text-md-right">Host</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="host" id="host" class="form-control" placeholder="Server address" value="{{ $disk->host }}"/>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="port" class="col-md-12 col-form-label text-md-right">Port</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="port" id="port" class="form-control" placeholder="Port" value="{{ $disk->port }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="username" class="col-md-12 col-form-label text-md-right">Username</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Username" value="{{ $disk->username }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="password" class="col-md-12 col-form-label text-md-right">Password</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" value="{{ $disk->password }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="root" class="col-md-12 col-form-label text-md-right">Root</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="root" id="root" class="form-control" placeholder="Path of the root directory on the server" value="{{ $disk->root }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="timeout" class="col-md-12 col-form-label text-md-right">Timeout</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="timeout" id="timeout" class="form-control" placeholder="Timeout in seconds" value="{{ $disk->timeout }}" />
+                    </div>
+                   </div>
+
+				  </div>
                 
                    <div class="form-group row mb-0"><div class="col-md-8 offset-md-4"><button type="submit" class="btn btn-primary">
                                     Save
