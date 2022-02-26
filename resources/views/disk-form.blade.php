@@ -6,40 +6,22 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 @push('js')
 <script type="text/javascript">
-$(document).ready(function() {
-        //alert("js is working");
-        src = "{{ route('autocomplete') }}";
-        $( "#maintainer" ).autocomplete({
-            source: function( request, response ) {
-                $.ajax({
-                    url: src,
-                    method: 'GET',
-                    dataType: "json",
-                    data: {
-                        term : request.term
-                    },
-                    success: function(data) {
-                        //console.log(data);
-                        response(data);
-                    }
-                });
-            },
-            minLength: 1,
-        });
-    });
-
-function hideStorageDriveField(){
-var e = document.getElementById("content_type");
-var content_type = e.options[e.selectedIndex].value;
-//alert(content_type);
-if(content_type=='Web resources'){
-	document.getElementById("storage_drive").style.display = 'none';
-}
-else{
-	document.getElementById("storage_drive").style.display = 'block';
-}
+function showDriveFields(drive){
+	if(drive == 'ftp' || drive == 'sftp'){
+		$('#ftp_details').show();	
+		$('#s3_details').hide();	
+	}
+	else if (drive == 's3'){
+		$('#ftp_details').hide();	
+		$('#s3_details').show();	
+	}
+	else{}
 }
 
+$(document).ready(function(){
+	showDriveFields($('#driver').val());
+}
+);
 </script>
 @endpush
 
@@ -78,7 +60,7 @@ else{
                    <label for="disk_name" class="col-md-12 col-form-label text-md-right">Name</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="disk_name" id="disk_name" class="form-control" placeholder="Give your disk a unique name. Avoid spaces." value="{{ $disk->name }}" required />
+                    <input type="text" name="disk_name" id="disk_name" class="form-control" placeholder="Only alphabets and numbers; no spaces or special characters." value="{{ $disk->name }}" required />
                     </div>
                    </div>
 
@@ -87,7 +69,8 @@ else{
                    <label for="driver" class="col-md-12 col-form-label text-md-right">Type/Driver</label> 
                     </div>
                     <div class="col-md-9">
-					<select name="driver" class="selectpicker">
+					<select name="driver" class="selectpicker" id="driver" onchange="showDriveFields(this.value);">
+						<option value="">Drive Type</option>
 						<option value="ftp">FTP</option>
 						<option value="sftp">SFTP</option>
 						<option value="s3">S3</option>
@@ -95,7 +78,7 @@ else{
                     </div>
                    </div>
 
-				  <div id="ftp_details">
+				  <div id="ftp_details" style="display:none;">
 
                    <div class="form-group row">
                    <div class="col-md-3">
@@ -143,6 +126,51 @@ else{
                     </div>
                     <div class="col-md-9">
                     <input type="text" name="timeout" id="timeout" class="form-control" placeholder="Timeout in seconds" value="{{ $disk->timeout }}" />
+                    </div>
+                   </div>
+
+				  </div>
+
+				  <div id="s3_details" style="display:none;">
+
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="key" class="col-md-12 col-form-label text-md-right">Key</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="key" id="key" class="form-control" placeholder="S3 key" value="{{ $disk->key }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="secret" class="col-md-12 col-form-label text-md-right">Secret</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="secret" id="secret" class="form-control" placeholder="S3 secret" value="{{ $disk->secret }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="region" class="col-md-12 col-form-label text-md-right">Region</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="region" id="region" class="form-control" placeholder="S3 region" value="{{ $disk->region }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="bucket" class="col-md-12 col-form-label text-md-right">Bucket</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="bucket" id="bucket" class="form-control" placeholder="S3 bucket" value="{{ $disk->bucket }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="endpoint" class="col-md-12 col-form-label text-md-right">Endpoint</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="endpoint" id="endpoint" class="form-control" placeholder="S3 endpoint" value="{{ $disk->endpoint }}" />
                     </div>
                    </div>
 
