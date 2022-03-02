@@ -73,7 +73,7 @@ function randomString(length) {
                         @foreach ($disks as $d)
                         <tr>
                             <td>{{ $d->name }}</td>
-                            <td>{{ $d->type }}</td>
+                            <td>{{ $d->driver }}</td>
                             <td>{{ $d->created_at }}</td>
                             <td class="td-actions text-right">
                                 <a rel="tooltip" class="btn btn-success btn-link" href="/admin/disk-form/{{$d->id}}">
