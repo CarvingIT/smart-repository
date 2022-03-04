@@ -6,6 +6,10 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 @push('js')
 <script type="text/javascript">
+$(document).ready(function(){
+	var driver = $('#driver').val();
+	showDriverFields(driver);
+});
 function showDriveFields(drive){
 	if(drive == 'ftp' || drive == 'sftp'){
 		$('#ftp_details').show();	
@@ -38,7 +42,7 @@ $(document).ready(function(){
                 <div class="card-body">
 		<div class="row">
                   <div class="col-md-12 text-right">
-                      <a href="/admin/diskmanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
+                      <a href="/admin/storagemanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
                   </div>
                 </div>
 
@@ -71,12 +75,15 @@ $(document).ready(function(){
                     <div class="col-md-9">
 					<select name="driver" class="selectpicker" id="driver" onchange="showDriveFields(this.value);">
 						<option value="">Drive Type</option>
-						<option value="ftp">FTP</option>
-						<option value="sftp">SFTP</option>
-						<option value="s3">S3</option>
+						<option value="ftp" @if ($disk->driver == 'ftp') selected @endif>FTP</option>
+						<option value="sftp" @if ($disk->driver == 'sftp') selected @endif>SFTP</option>
+						<option value="s3" @if ($disk->driver == 's3') selected @endif>S3</option>
 					</select>
                     </div>
                    </div>
+					@php
+						$disk_config = json_decode($disk->config);
+					@endphp
 
 				  <div id="ftp_details" style="display:none;">
 
@@ -85,7 +92,7 @@ $(document).ready(function(){
                    <label for="host" class="col-md-12 col-form-label text-md-right">Host</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="host" id="host" class="form-control" placeholder="Server address" value="{{ $disk->host }}"/>
+                    <input type="text" name="host" id="host" class="form-control" placeholder="Server address" value="{{ @$disk_config->host }}"/>
                     </div>
                    </div>
                    <div class="form-group row">
@@ -93,7 +100,7 @@ $(document).ready(function(){
                    <label for="port" class="col-md-12 col-form-label text-md-right">Port</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="port" id="port" class="form-control" placeholder="Port" value="{{ $disk->port }}" />
+                    <input type="text" name="port" id="port" class="form-control" placeholder="Port" value="{{ @$disk_config->port }}" />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -101,7 +108,7 @@ $(document).ready(function(){
                    <label for="username" class="col-md-12 col-form-label text-md-right">Username</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="username" id="username" class="form-control" placeholder="Username" value="{{ $disk->username }}" />
+                    <input type="text" name="username" id="username" class="form-control" placeholder="Username" value="{{ @$disk_config->username }}" />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -109,7 +116,7 @@ $(document).ready(function(){
                    <label for="password" class="col-md-12 col-form-label text-md-right">Password</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" value="{{ $disk->password }}" />
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Password" value="{{ @$disk_config->password }}" />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -117,7 +124,7 @@ $(document).ready(function(){
                    <label for="root" class="col-md-12 col-form-label text-md-right">Root</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="root" id="root" class="form-control" placeholder="Path of the root directory on the server" value="{{ $disk->root }}" />
+                    <input type="text" name="root" id="root" class="form-control" placeholder="Path of the root directory on the server" value="{{ @$disk_config->root }}" />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -125,7 +132,7 @@ $(document).ready(function(){
                    <label for="timeout" class="col-md-12 col-form-label text-md-right">Timeout</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="timeout" id="timeout" class="form-control" placeholder="Timeout in seconds" value="{{ $disk->timeout }}" />
+                    <input type="text" name="timeout" id="timeout" class="form-control" placeholder="Timeout in seconds" value="{{ @$disk_config->timeout }}" />
                     </div>
                    </div>
 
@@ -138,7 +145,7 @@ $(document).ready(function(){
                    <label for="key" class="col-md-12 col-form-label text-md-right">Key</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="key" id="key" class="form-control" placeholder="S3 key" value="{{ $disk->key }}" />
+                    <input type="text" name="key" id="key" class="form-control" placeholder="S3 key" value="{{ @$disk_config->key }}" />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -146,7 +153,7 @@ $(document).ready(function(){
                    <label for="secret" class="col-md-12 col-form-label text-md-right">Secret</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="secret" id="secret" class="form-control" placeholder="S3 secret" value="{{ $disk->secret }}" />
+                    <input type="text" name="secret" id="secret" class="form-control" placeholder="S3 secret" value="{{ @$disk_config->secret }}" />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -154,7 +161,7 @@ $(document).ready(function(){
                    <label for="region" class="col-md-12 col-form-label text-md-right">Region</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="region" id="region" class="form-control" placeholder="S3 region" value="{{ $disk->region }}" />
+                    <input type="text" name="region" id="region" class="form-control" placeholder="S3 region" value="{{ @$disk_config->region }}" />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -162,7 +169,7 @@ $(document).ready(function(){
                    <label for="bucket" class="col-md-12 col-form-label text-md-right">Bucket</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="bucket" id="bucket" class="form-control" placeholder="S3 bucket" value="{{ $disk->bucket }}" />
+                    <input type="text" name="bucket" id="bucket" class="form-control" placeholder="S3 bucket" value="{{ @$disk_config->bucket }}" />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -170,7 +177,7 @@ $(document).ready(function(){
                    <label for="endpoint" class="col-md-12 col-form-label text-md-right">Endpoint</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="endpoint" id="endpoint" class="form-control" placeholder="S3 endpoint" value="{{ $disk->endpoint }}" />
+                    <input type="text" name="endpoint" id="endpoint" class="form-control" placeholder="S3 endpoint" value="{{ @$disk_config->url }}" />
                     </div>
                    </div>
 
