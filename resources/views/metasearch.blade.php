@@ -86,7 +86,7 @@ $(document).ready(function(){
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Set Meta Filters</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Set Filters</h4></div>
                 <div class="col-md-12 text-right">
                 <a href="/collection/{{ $collection->id }}" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
                 </div>
@@ -117,7 +117,7 @@ $(document).ready(function(){
     <div class="form-group row filter-row" id="filter-row">
         <div class="col-md-4 text-right">
             <select id="metafieldselect" class="selectpicker col-md-12" name="meta_field">
-            <option value="">Select Meta field</option>
+            <option value="">Cataloging Field</option>
             @foreach($collection->meta_fields as $f)
             <option value="{{ $f->id }}" ourtype="{{ $f->type }}">{{ $f->label }}</option>
             @endforeach
