@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Disk;
 
 class DisksController extends Controller
@@ -32,20 +33,27 @@ class DisksController extends Controller
 		else{
 			$disk = Disk::find($disk_id);
 		}
-		$disk->name = $request->disk_name;
-		$disk->driver = $request->driver;
-		
-		if($driver == 'ftp' || $driver == 'sftp'){
-			$config = ['driver'=>$driver, 'host'=>$request->host, 'port'=>$request->port,
-			'username'=>$request->username, 'password'=>$request->password,
-			'root'=>$request->root, 'timeout'=>$request->timeout];
-		}
-		else if($driver == 's3'){
-			$config = ['driver'=>$driver,'key'=>$request->key,'secret'=>$request->secret,
-			'region'=>$request->region,'bucket'=>$request->bucket,'url'=>$request->endpoint];
-		}
-		$disk->config = json_encode($config);
-		$disk->save();
+		// add a check to see if a disk-name already exists in config/filesystems
+		// disallow use of the same name
+		$disks = array_keys(config('filesystems.disks'));
+			if(in_array($request->disk_name, $disks)){
+				abort(500, 'This disk exists');
+			}
+			// duplicate disk name check ends 
+			$disk->name = $request->disk_name;
+			$disk->driver = $request->driver;
+			
+			if($driver == 'ftp' || $driver == 'sftp'){
+				$config = ['driver'=>$driver, 'host'=>$request->host, 'port'=>$request->port,
+				'username'=>$request->username, 'password'=>$request->password,
+				'root'=>$request->root, 'timeout'=>$request->timeout];
+			}
+			else if($driver == 's3'){
+				$config = ['driver'=>$driver,'key'=>$request->key,'secret'=>$request->secret,
+				'region'=>$request->region,'bucket'=>$request->bucket,'url'=>$request->endpoint];
+			}
+			$disk->config = json_encode($config);
+			$disk->save();
 		return redirect('/admin/storagemanagement');
 	}
 }
