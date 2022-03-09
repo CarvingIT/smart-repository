@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
+use App\Disk;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,20 +26,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
-		/*
-		config(['filesystems.disks'=>[
-		    'mysftp'=>[
-            'driver' => 'sftp',
-            'host' => '162.241.149.43',
-            'port' => 22,
-            'username' => 'shraddha',
-            'password' => 'Shraddha123!',
-            'privateKey' => '',
-            'root' => '/home/shraddha/CITPL_SR',
-            'timeout' => 100,
-    		]
-		]
-		]);
-		*/
+		$config_disks = config('filesystems.disks');	
+		// get disks defined in the database
+		$db_disks = []; 
+		foreach(Disk::all() as $d){
+			$db_disks[ $d->name ] = json_decode($d->config, true);
+		}
+		$all_disks = array_merge($config_disks, $db_disks);
+		// update the filesystem config with all disks
+		config(['filesystems.disks'=>$all_disks]);
     }
 }
