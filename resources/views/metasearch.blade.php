@@ -20,6 +20,15 @@ $(document).ready(function(){
         var field_type = $(this).children("option:selected").attr('ourtype');
         var field_id = this.value;
 
+		if(field_type == ''){
+            $('#meta-val-cont').hide();
+            $('#operator_cont').hide();
+		}
+		else{
+			$('#operator_cont').show();
+            $('#meta-val-cont').show();
+		}
+
         if(field_type == 'Numeric'){
             var o1 = new Option("=", "=");
             var o2 = new Option("<=", "<=");
@@ -115,20 +124,20 @@ $(document).ready(function(){
         }
     @endphp
     <div class="form-group row filter-row" id="filter-row">
-        <div class="col-md-4 text-right">
-            <select id="metafieldselect" class="selectpicker col-md-12" name="meta_field">
-            <option value="">Cataloging Field</option>
+        <div class="col-md-12 text-center">
+            <select id="metafieldselect" class="selectpicker" name="meta_field">
+            <option value="" ourtype="">Filter</option>
             @foreach($collection->meta_fields as $f)
             <option value="{{ $f->id }}" ourtype="{{ $f->type }}">{{ $f->label }}</option>
             @endforeach
             </select>
         </div>
-        <div id="operator_cont" class="col-md-4">
+        <div id="operator_cont" class="col-md-12 text-center" style="display:none;">
             <select id="operator-select" class="selectpicker" name="operator">
             <option value="">Operator</select>
             </select>
         </div>
-        <div id="meta-val-cont" class="col-md-4">
+        <div id="meta-val-cont" class="col-md-12 text-center">
         </div>
     </div>
 
