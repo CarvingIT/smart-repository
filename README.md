@@ -7,10 +7,12 @@ Smart Repository is a tool for building Knowledge Bases. It is designed to serve
 * Full text search capabilities powered by Elastic search
 * Strong permission control
 * Support for revisions of documents 
-* Support for OCR (experimental)
+* Support for OCR 
 * Localization of interfaces with transliteration in the search-box
-* Custom meta fields and filters 
-* Other features like proofreading, approvals etc can be configured easily.
+* Custom cataloging fields and filters 
+* Other features like single-sign-on, approvals etc can be configured easily.
+* Seamless integration with other applications through APIs
+* Configurable cloud storages
 
 ### Support or Contact
 
