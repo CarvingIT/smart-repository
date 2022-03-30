@@ -213,30 +213,37 @@ class CollectionController extends Controller
         	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
 		}
         foreach($meta_filters as $mf){
+			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filteres like created_at, created_by
+				if($mf['field_id'] == 'created_at'){
+					$documents = $documents->where('created_at', $mf['operator'], $mf['value']);
+				}	
+			continue;// no need to proceed further
+			}
+
             if($mf['operator'] == '='){
 				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
-                $documents->whereHas('meta', function (Builder $query) use($mf){
+                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
                     }
-                )->get();
+                );
             }
             else if($mf['operator'] == '>='){
-                $documents->whereHas('meta', function (Builder $query) use($mf){
+                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', '>=', $mf['value']);
                     }
-                )->get();
+                );
             }
             else if($mf['operator'] == '<='){
-                $documents->whereHas('meta', function (Builder $query) use($mf){
+                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', '<=', $mf['value']);
                     }
-                )->get();
+                );
             }
             else if($mf['operator'] == 'contains'){
-                $documents->whereHas('meta', function (Builder $query) use($mf){
+                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
                     }
-                )->get();
+                );
             }
         }
         return $documents;

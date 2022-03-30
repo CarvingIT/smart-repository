@@ -39,7 +39,7 @@ $(document).ready(function(){
             $('#operator-select').append(o3);
 
             $('#meta-val-cont').html('');
-            var mv_input = $("<input type=\"number\" class=\"form-control col-md-12\" name=\"meta_value\" />"); 
+            var mv_input = $("<input type=\"number\" class=\"form-control col-md-12 text-center\" placeholder=\"Type here a numeric value for filtering\" name=\"meta_value\" />"); 
             $('#meta-val-cont').append(mv_input);
         }
         else if(field_type == 'Date'){
@@ -52,8 +52,9 @@ $(document).ready(function(){
             $('#operator-select').append(o3);
 
             $('#meta-val-cont').html('');
-            var mv_input = $("<input type=\"date\" class=\"form-control col-md-12\" name=\"meta_value\" />"); 
+            var mv_input = $("<input type=\"date\" class=\"form-control col-md-12 text-center\" name=\"meta_value\" />"); 
             $('#meta-val-cont').append(mv_input);
+			$('#meta-val-cont').addClass('text-center');
         }
         else if(field_type == 'Select'){
             var o1 = new Option("matches", "=");
@@ -80,7 +81,7 @@ $(document).ready(function(){
             $('#operator-select').append(o2);
 
             $('#meta-val-cont').html('');
-            var mv_input = $("<input type=\"text\" class=\"form-control col-md-12\" name=\"meta_value\" />"); 
+            var mv_input = $("<input type=\"text\" class=\"form-control col-md-12 text-center\" placeholder=\"Type here the filtering value\" name=\"meta_value\" />"); 
             $('#meta-val-cont').append(mv_input);
         }
         $('#operator-select').selectpicker("refresh");
@@ -88,6 +89,7 @@ $(document).ready(function(){
 
 });
 </script>
+@endphp
 @endpush
 @section('content')
 <div class="container">
@@ -104,10 +106,16 @@ $(document).ready(function(){
             <strong>Current Filters:</strong>
         @foreach( $all_meta_filters[$collection->id] as $m)
             <span class="filtertag">
+			@if (!empty($meta_labels[$m['field_id']]))
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">delete</i>
                 </a>
+			@else
+            {{ $m['field_id'] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <i class="tinyicon material-icons">delete</i>
+			@endif
                 </span>
         @endforeach
         @endif
@@ -127,6 +135,7 @@ $(document).ready(function(){
         <div class="col-md-12 text-center">
             <select id="metafieldselect" class="selectpicker" name="meta_field">
             <option value="" ourtype="">Filter</option>
+            <option value="created_at" ourtype="Date">Record Created</option>
             @foreach($collection->meta_fields as $f)
             <option value="{{ $f->id }}" ourtype="{{ $f->type }}">{{ $f->label }}</option>
             @endforeach

@@ -246,6 +246,9 @@ function randomString(length) {
 		@php
             $meta_labels = array();
             foreach($meta_fields as $m){
+				if(!empty($meta_labels[$m->id]))
+				$meta_labels[$m->id] = $m->id;
+				else
                 $meta_labels[$m->id] = $m->label;
             }
             $all_meta_filters = Session::get('meta_filters');
@@ -262,10 +265,17 @@ function randomString(length) {
 		@if($show_meta_filters)
         @foreach( $all_meta_filters[$collection->id] as $m)
             <span class="filtertag">
+			@if(empty($meta_labels[$m['field_id']]))
+            {{ $m['field_id'] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <i class="tinyicon material-icons">close</i>
+                </a>
+			@else
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
+			@endif
                 </span>
         @endforeach
         @endif
