@@ -74,7 +74,7 @@ function showMetaFieldForm(){
                    <label for="label" class="col-md-12 col-form-label text-md-right">Label</label> 
 		   </div>
                     <div class="col-md-8">
-                    <input type="text" name="label" id="label" class="form-control" placeholder="Label of the field you will be creating" value="{{ $edit_field->label }}" />
+                    <input type="text" name="label" id="label" class="form-control" placeholder="Label of the field you will be creating" value="{{ $edit_field->label }}" required />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -82,7 +82,7 @@ function showMetaFieldForm(){
                    <label for="placeholder" class="col-md-12 col-form-label text-md-right">Placeholder text</label> 
 		   </div>
                     <div class="col-md-8">
-                    <input type="text" name="placeholder" id="placeholder" class="form-control" placeholder="A short description of what you want to store" value="{{ $edit_field->placeholder }}" />
+                    <input type="text" name="placeholder" id="placeholder" class="form-control" placeholder="A short description of what you want to store" value="{{ $edit_field->placeholder }}" required />
                     </div>
                    </div>
                    <div class="form-group row">
