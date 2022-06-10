@@ -31,4 +31,12 @@ class Collection extends Model
             return null;
         }
     }
+
+	public function children(){
+		return $this->hasMany('App\Collection','parent_id');
+	}
+
+	public function parent(){
+		return $this->belongsTo('App\Collection', 'parent_id');
+	}
 }

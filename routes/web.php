@@ -53,6 +53,10 @@ Route::get('/collection/{collection_id}/import-link/{link_id}/delete', 'URLImpor
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('maintainer');
 Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm')->middleware('maintainer');
 
+// child-collection
+Route::get('/collection/{collection_id}/child-collection/{child_collection_id}', 'CollectionController@showChildCollectionForm')->middleware('maintainer');
+Route::post('/collection/{collection_id}/save-child-collection', 'CollectionController@saveChildCollection')->middleware('maintainer');
+
 // Collection-user management
 Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('maintainer');
 Route::get('/collection/{collection_id}/remove-spidered-domain/{domain_id}', 'CollectionController@removeSpideredDomain')->middleware('maintainer');

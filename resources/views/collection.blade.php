@@ -131,12 +131,13 @@ function randomString(length) {
 		    @if($collection->content_type == 'Uploaded documents')	
                     <a title="Manage cataloging fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                     <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
+                    <a title="New Child Collection" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">folder</i></a>
 		    @elseif($collection->content_type == 'Web resources')	
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
 		    @endif
 		  @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">add</i></a>
+                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">book</i></a>
                     <a title="Import via URL" href="/collection/{{ $collection->id }}/url-import" class="btn btn-sm btn-primary"><i class="material-icons">link</i></a>
 		  @endif
                   @if(count($collection->meta_fields)>0)
@@ -147,7 +148,36 @@ function randomString(length) {
 				  @endif
                   </div>
         </div>
+		<div class="row">
+			<div class="col-10">
             <p>{{ $collection->description }}</p>
+			</div>
+			<div class="col-2 text-right">
+		<!-- children collections -->		
+			@if ($collection->children->count() > 0)
+			<div class="navbar-collapse justify-content-end">
+				<ul class="navbar-nav">
+			        <li class="nav-item dropdown">
+          				<a class="btn btn-primary nav-link" title="Sub-collections" href="#" id="childrencollections" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						Sub-collections
+						<i class="material-icons">arrow_downward</i>
+          				</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="childrencollections">
+						@foreach ($collection->children as $child)
+						<a class="dropdown-item" href="/collection/{{ $child->id }}">{{ $child->name }}</a>
+						@endforeach
+					</div>
+					</li>
+				</ul><!-- navbar-nav -->
+			</div>
+			@endif
+			@if ($collection->parent_id) 
+				<a class="btn btn-primary" title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
+						<i class="material-icons">arrow_upward</i>
+				</a>
+			@endif
+			</div><!-- col2 -->
+		</div><!-- row -->
         @php
             $meta_fields = empty($collection->meta_fields)? array() : $collection->meta_fields;
 		@endphp

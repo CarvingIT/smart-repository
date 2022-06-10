@@ -14,6 +14,7 @@ use App\SpideredDomain;
 use App\DesiredUrl;
 use App\UrlSuppression;
 use App\CollectionMailbox;
+use App\UserPermission;
 
 class CollectionController extends Controller
 {
@@ -23,7 +24,7 @@ class CollectionController extends Controller
     }
 
     public function index(){
-        $collections = Collection::all();
+        $collections = Collection::where('parent_id', null)->get();
         return view('collectionmanagement', ['collections'=>$collections, 'activePage'=>'Collections','titlePage'=>'Collections']);
     }
 
@@ -52,7 +53,12 @@ class CollectionController extends Controller
                 array_push($user_collections, $u_p->collection_id);
             }
         }
-        $collections = Collection::whereIn('id', $user_collections)->orWhere('type','=','Public')->get();
+        $collections = Collection::where('parent_id', null)
+			->where(function($q) use($user_collections){
+				$q->whereIn('id', $user_collections)
+				->orWhere('type','=','Public');
+			})
+			->get();
 	return $collections;
     }
 
@@ -1009,4 +1015,31 @@ use App\UrlSuppression;
 		exit;
 	}
 
+	public function showChildCollectionForm(Request $req){
+		if($req->child_collection_id == 'new'){
+			$collection = new Collection;
+		}
+		else{
+			$collection = Collection::find($req->child_collection_id);
+		}
+		return view('child-collection-form',['collection'=>$collection]);
+	}
+
+	public function saveChildCollection(Request $req){
+		$collection = Collection::find($req->collection_id);
+		$child = $collection->replicate();
+		$child->name = $req->collection_name;
+		$child->description = $req->description;
+		$child->parent_id = $collection->id;
+		$child->column_config = null;
+		$child->save();
+		// clone user permissions on the child collection
+		$user_permissions = UserPermission::where('collection_id', $collection->id)->get();
+		foreach($user_permissions as $u_p){
+			$u_p_new = $u_p->replicate();
+			$u_p_new->collection_id = $child->id;
+			$u_p_new->save();
+		}
+		return redirect('/collection/'.$req->collection_id);
+	}
 }
