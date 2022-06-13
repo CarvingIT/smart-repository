@@ -154,8 +154,37 @@ $(document).ready(function()
 						@endforeach
 						</div><!-- accordion ends -->
 						@endif
+
 						</div>
-					
+
+						@if(Auth::user() && Auth::user()->hasPermission($document->collection->id, 'MAINTAINER'))
+						@if ($document->collection->parent_id || $document->collection->children->count() > 0)
+							<div class="col-md-12" id="accordion">
+								<h3>Actions</h3>
+								<form method="post" action="/collection/move_document">
+								@csrf
+								<input type="hidden" name="document_id" value="{{ $document->id }}" />
+								<div class="row">
+								<div class="col-md-9">
+									<select class="selectpicker" name="collection_id">
+										<option value="">Move to - </option>
+										@foreach ($document->collection->children as $c)
+										<option value="{{ $c->id }}">{{ $c->name }}</option>
+										@endforeach
+										@if ($document->collection->parent_id)
+										<option value="{{ $document->collection->parent_id }}">{{$document->collection->parent->name}}</option>
+										@endif
+									</select>
+								</div>
+								<div class="col-md-3">
+									<button type="submit" class="btn btn-primary"> Move </button>
+								</div>
+								</div>
+								</form>
+							</div>	
+						@endif
+						@endif
+
                     </div>
                     <div class="col-md-3">
                         <div class="col-md-12">

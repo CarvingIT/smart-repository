@@ -518,5 +518,13 @@ public function proofRead($collection_id,$document_id){
         return view('proof-reading', ['document'=>$d, 'lang_issues'=>$lang_issues, 'connection_error' => $connection_error]);
 }
 
+public function move(Request $req){
+	// the user needs to be maintainer of both the collections
+	$document = Document::find($req->document_id);
+	$document->collection_id = $req->collection_id;
+	$document->save();
+	return redirect('/collection/'.$req->collection_id.'/document/'.$document->id.'/details');
+}
+
 ### End of class
 }

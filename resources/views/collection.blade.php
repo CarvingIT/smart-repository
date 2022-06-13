@@ -173,7 +173,7 @@ function randomString(length) {
 			@endif
 			@if ($collection->parent_id) 
 				<a class="btn btn-primary" title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
-						<i class="material-icons">arrow_upward</i>
+						. . <i class="material-icons">arrow_upward</i>
 				</a>
 			@endif
 			</div><!-- col2 -->
