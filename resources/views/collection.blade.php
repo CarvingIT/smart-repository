@@ -127,9 +127,9 @@ function randomString(length) {
 		<div class="row">
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a title="Manage Users of this collection" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
+                    <a title="{{ __('Manage Users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
-                    <a title="Manage cataloging fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+                    <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                     <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
                     <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">folder</i></a>
 		    @elseif($collection->content_type == 'Web resources')	
