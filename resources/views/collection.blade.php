@@ -127,7 +127,7 @@ function randomString(length) {
 		<div class="row">
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a title="{{ __('Manage Users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
+                    <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
                     <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                     <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
