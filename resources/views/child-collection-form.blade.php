@@ -10,15 +10,15 @@
         <div class="col-md-9">
             <div class="card">
 		@if (empty($collection->id))
-                <div class="card-header card-header-primary"><h4 class="card-title">New Child Collection</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('New Child Collection') }}</h4></div>
 		@else
-                <div class="card-header card-header-primary"><h4 class="card-title">Edit Child Collection</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Edit Child Collection') }}</h4></div>
 		@endif
 
                 <div class="card-body">
 		<div class="row">
                   <div class="col-md-12 text-right">
-                      <a href="/admin/collectionmanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
+                      <a href="/collection/{{ request()->collection_id }}" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
                   </div>
                 </div>
 
@@ -40,7 +40,7 @@
                    <label for="collection_name" class="col-md-12 col-form-label text-md-right">Name</label> 
                     </div>
                     <div class="col-md-8">
-                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your collection a name" value="{{ $collection->name }}" required />
+                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your {{ __('collection')}} a name" value="{{ $collection->name }}" required />
                     </div>
                    </div>
                    <div class="form-group row">

@@ -20,7 +20,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Collection users</h4>
+            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections')}}</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Collection users</h4>
             </div>
                  <div class="card-body">
 		<div class="row">

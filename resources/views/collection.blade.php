@@ -131,7 +131,7 @@ function randomString(length) {
 		    @if($collection->content_type == 'Uploaded documents')	
                     <a title="Manage cataloging fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                     <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
-                    <a title="New Child Collection" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">folder</i></a>
+                    <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">folder</i></a>
 		    @elseif($collection->content_type == 'Web resources')	
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
 		    @endif
@@ -158,8 +158,8 @@ function randomString(length) {
 			<div class="navbar-collapse justify-content-end">
 				<ul class="navbar-nav">
 			        <li class="nav-item dropdown">
-          				<a class="btn btn-primary nav-link" title="Sub-collections" href="#" id="childrencollections" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						Sub-collections
+          				<a class="btn btn-primary nav-link" title="{{ __('Sub-collections') }}" href="#" id="childrencollections" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						{{ __('Sub-collections') }}
 						<i class="material-icons">arrow_downward</i>
           				</a>
 					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="childrencollections">
