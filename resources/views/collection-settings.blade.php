@@ -75,6 +75,15 @@
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search)) checked="checked" @endif /> {{ $m->label }}</div>
 			@endforeach
 		</div>
+		<h4>{{__('Notifications')}}</h4>
+		<div class="form-group row">
+			<div class="col-md-2 text-right">
+				<label for="slack_webhook">Slack Channel Webhook</label>
+			</div>
+			<div class="col-md-10">
+				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="Slack channel identifier" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
+			</div>
+		</div>
 
 		<h4>{{ __('IMAP Settings (Map an email address to this collection)')}}</h4>
 		<div class="form-group">

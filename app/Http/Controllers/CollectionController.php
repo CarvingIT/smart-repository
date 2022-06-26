@@ -957,6 +957,7 @@ use App\UrlSuppression;
 			'type'=>$request->input('type'),
 			'creation_time'=>$request->input('creation_time'),
 			'size'=>$request->input('size'),
+			'slack_webhook'=>$request->input('slack_webhook'),
 			'meta_fields'=>$request->input('meta_fields'),
 			'meta_fields_search'=>$request->input('meta_fields_search')
 		);
