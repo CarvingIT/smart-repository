@@ -78,10 +78,10 @@
 		<h4>{{__('Notifications')}}</h4>
 		<div class="form-group row">
 			<div class="col-md-2 text-right">
-				<label for="slack_webhook">Slack Channel Webhook</label>
+				<label for="slack_webhook"><img src="/i/Slack_Mark_Web.png" class="icon"/>Slack Webhook</label>
 			</div>
 			<div class="col-md-10">
-				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="Slack channel identifier" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
+				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="Slack webhook url" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
 			</div>
 		</div>
 
