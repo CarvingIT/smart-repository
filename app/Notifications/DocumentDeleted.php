@@ -9,10 +9,9 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Notifications\Messages\SlackMessage;
 
-class DocumentSaved extends Notification
+class DocumentDeleted extends Notification
 {
     use Queueable;
-	protected $document;
 
     /**
      * Create a new notification instance.
@@ -44,27 +43,19 @@ class DocumentSaved extends Notification
      */
     public function toMail($notifiable)
     {
-		Log::debug('Sending notification by email');
         return (new MailMessage)
-                    ->line('Document - '. $this->document->title.' updated.')
-                    ->action('View', url('/collection/'.$this->document->collection->id.'/document/'.$this->document->id.'/details'))
-                    ->line(env('APP_NAME','Smart Repository').' Team');
+                    ->line('The introduction to the notification.')
+                    ->action('Notification Action', url('/'))
+                    ->line('Thank you for using our application!');
     }
 
-	public function toSlack($notifiable){
-		Log::debug('Sending notification by slack');
-		if($this->document->wasRecentlyCreated){
-			return (new SlackMessage)
-			->error()
-			->content('Smart Repository: A new document "'. $this->document->title.'" has been added.');
-		}
-		else{
-			$content = 'Smart Repository: Document - "'. $this->document->title.'" has been updated.';
-			return (new SlackMessage)
-			->error()
-			->content($content);
-		}
-	}
+    public function toSlack($notifiable){
+        Log::debug('Sending document-deleted notification by slack');
+            $content = 'Smart Repository: Document - "'. $this->document->title.'" has been deleted.';
+            return (new SlackMessage)
+            ->error()
+            ->content($content);
+    }
 
     /**
      * Get the array representation of the notification.
