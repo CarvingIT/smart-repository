@@ -70,7 +70,7 @@ $(document).ready(function() {
                     @foreach(\App\Permission::all() as $p)
 			@if(count($collection_has_approval)==0 && $p->name == 'APPROVE')
 			@else
-				@if($p->name != "VIEW")
+				@if($p->name != "VIEW_OWN")
                    <div class="form-group row">
                    <label for="permission" class="col-md-4 col-form-label text-md-right"></label> 
                     <div class="col-md-6">
@@ -78,7 +78,7 @@ $(document).ready(function() {
                     @if(!empty($user_permissions['p'.$p->id]))
                      checked 
                     @endif
-                    />  {{ $p->name }}
+                    />  {{ $p->description }}
                     </div>
                    </div>
 				@else

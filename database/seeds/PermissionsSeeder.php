@@ -12,13 +12,14 @@ class PermissionsSeeder extends Seeder
     public function run()
     {
         $permissions = array( 
-            array('MAINTAINER', 'Administrator of a collection'),
+            array('MAINTAINER', 'Administrator of the collection'),
             array('CREATE', 'Can create content'),
             array('EDIT_ANY', 'Can edit any content'),
             array('EDIT_OWN', 'Can edit own content'),
             array('DELETE_ANY', 'Can delete any content'),
             array('DELETE_OWN', 'Can delete own content'),
-            array('VIEW', 'Can view content'),
+            array('VIEW', 'Can view any content'),
+            array('VIEW_OWN', 'Can view own content'),
 	    array('APPROVE', 'Can approve content'),
         );
         // add permissions
