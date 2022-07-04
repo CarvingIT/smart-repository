@@ -10,6 +10,7 @@
     "require": {
         "php": "^7.1.3",
         "aacotroneo/laravel-saml2": "^2.1",
+        "creativeorange/gravatar": "~1.0",
         "doctrine/dbal": "^2.0",
         "dragomirt/pdf-to-text": "^1.5",
         "elasticsearch/elasticsearch": "^7.0",

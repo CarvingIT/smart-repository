@@ -59,16 +59,19 @@ $app_name = env('APP_NAME');
         </li>
 
         <li class="nav-item dropdown">
-          <a class="nav-link" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link" title="{{ 'Welcome '.Auth::user()->name }}" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			@if (Gravatar::exists(Auth::user()->email))
+			<img src="{{ Gravatar::get(Auth::user()->email) }}" class="icon" />
+			@else
             <i class="material-icons">person</i>
+			@endif
+			<!--
             <p class="d-lg-none d-md-block">
               {{ __('Account') }}
             </p>
+			-->
           </a>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
-	    <!--
-            <a class="dropdown-item" href="{{ route('dashboard') }}">{{ __('Dashboard') }}</a>
-	    -->
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
