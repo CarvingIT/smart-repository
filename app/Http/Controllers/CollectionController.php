@@ -588,7 +588,7 @@ class CollectionController extends Controller
                 	$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
             	}
 		if($d->type == 'application/pdf'){
-			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/pdf-reader" target="_blank"><i class="material-icons">book</i></a>';
+			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/pdf-reader" target="_blank"><i class="material-icons">open_in_browser</i></a>';
 		}
 		else{
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';

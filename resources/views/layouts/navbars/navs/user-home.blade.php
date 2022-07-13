@@ -60,7 +60,7 @@ $app_name = env('APP_NAME');
 
         <li class="nav-item dropdown">
           <a class="nav-link" title="{{ 'Welcome '.Auth::user()->name }}" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-			@if (Gravatar::exists(Auth::user()->email))
+			@if (@Gravatar::exists(Auth::user()->email))
 			<img src="{{ Gravatar::get(Auth::user()->email) }}" class="icon" />
 			@else
             <i class="material-icons">person</i>
