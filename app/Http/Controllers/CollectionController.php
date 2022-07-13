@@ -587,7 +587,12 @@ class CollectionController extends Controller
                		$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
                 	$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
             	}
-		$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+		if($d->type == 'application/pdf'){
+			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/pdf-reader" target="_blank"><i class="material-icons">book</i></a>';
+		}
+		else{
+			$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+		}
 	    }
   	    else if ($content_type == 'Web resources'){		
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';

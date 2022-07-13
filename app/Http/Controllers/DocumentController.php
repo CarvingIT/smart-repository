@@ -32,33 +32,11 @@ class DocumentController extends Controller
 	## New code
 	$download_file = $this->downloadFile($doc,$storage_drive);
 	return $download_file;
-
-/*	$exists = Storage::disk($storage_drive)->exists($doc->path);
-	try{
-        	$file_url = $doc->path;
-		$file_name  = $doc->path;			//"VoteMix-Event-Entry-Ticket.pdf";
-
-		$mime = Storage::disk($storage_drive)->getDriver()->getMimetype($file_url);
-		$size = Storage::disk($storage_drive)->getDriver()->getSize($file_url);
-
-    		$response =  [
-      		'Content-Type' => $mime,
-      		'Content-Length' => $size,
-      		'Content-Description' => 'File Transfer',
-      		'Content-Disposition' => "attachment; filename={$file_name}",
-      		'Content-Transfer-Encoding' => 'binary',
-    		];
-
-    		ob_end_clean();
-
-    		return \Response::make(Storage::disk($storage_drive)->get($file_url), 200, $response);
-	}
-	catch(Exception $e){
-  		return $this->respondInternalError( $e->getMessage(), 'object', 500);
-	}
-*/
-	## New code ends
     }
+
+	public function pdfReader($collection_id, $document_id){
+		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id]);	
+	}
     
     public function recordHit($document_id){
         $hit = new \App\DocumentHit;
