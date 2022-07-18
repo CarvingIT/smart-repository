@@ -50,7 +50,7 @@ class DisksController extends Controller
 			}
 			else if($driver == 's3'){
 				$config = ['driver'=>$driver,'key'=>$request->key,'secret'=>$request->secret,
-				'region'=>$request->region,'bucket'=>$request->bucket,'url'=>$request->endpoint];
+				'region'=>$request->region,'bucket'=>$request->bucket,'endpoint'=>$request->endpoint];
 			}
 			$disk->config = json_encode($config);
 			$disk->save();

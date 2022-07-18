@@ -177,7 +177,7 @@ $(document).ready(function(){
                    <label for="endpoint" class="col-md-12 col-form-label text-md-right">Endpoint</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="endpoint" id="endpoint" class="form-control" placeholder="S3 endpoint" value="{{ @$disk_config->url }}" />
+                    <input type="text" name="endpoint" id="endpoint" class="form-control" placeholder="S3 endpoint" value="{{ @$disk_config->endpoint }}" />
                     </div>
                    </div>
 
