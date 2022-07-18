@@ -16,7 +16,7 @@ function showDeleteDialog(disk_id){
         $('#hidden_captcha').text(str);
         $('#delete_disk_id').val(disk_id);
         deldialog = $( "#deletedialog" ).dialog({
-                title: 'Are you sure ?',
+                title: 'Are you sure you want to delete this storage ?',
                 resizable: true
         });
 }
@@ -80,11 +80,11 @@ function randomString(length) {
 				<i class="material-icons">edit</i>
                                 <div class="ripple-container"></div>
 				</a>
-			<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $d->id }});" title="Delete Disk"><i class="material-icons">delete</i></span>
+			<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $d->id }});" title="Delete Storage"><i class="material-icons">delete</i></span>
                             </td>    <!-- use font awesome icons or image icons -->
                         </tr>
             <div id="deletedialog" style="display:none;">
-                <form name="deletedisk" method="post" action="/admin/disk-form/delete">
+                <form name="deletedisk" method="post" action="/admin/disk/delete">
                 @csrf
                 <p>Enter <span id="text_captcha"></span> to delete</p>
                 <input type="text" name="delete_captcha" value="" />

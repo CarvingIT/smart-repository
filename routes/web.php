@@ -129,6 +129,7 @@ Route::post('/admin/sysconfig','SysConfigController@save')->middleware('admin');
 Route::get('/admin/storagemanagement', 'DisksController@index')->middleware('admin');
 Route::get('/admin/disk-form/{disk_id}', 'DisksController@add_edit_disk')->middleware('admin');
 Route::post('/admin/savedisk', 'DisksController@save')->middleware('admin');
+Route::post('/admin/disk/delete','DisksController@delete')->middleware('admin');
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 //Route::get('/home', 'HomeController@index')->name('home');

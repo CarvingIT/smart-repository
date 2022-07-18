@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Disk;
+use App\Collection;
+use Session;
 
 class DisksController extends Controller
 {
@@ -54,6 +56,17 @@ class DisksController extends Controller
 			}
 			$disk->config = json_encode($config);
 			$disk->save();
+		return redirect('/admin/storagemanagement');
+	}
+
+	public function delete(Request $request){
+		$disk = Disk::find($request->disk_id);
+		if(Collection::where('storage_drive', $disk->name)->count() > 0){
+			Session::flash('alert-danger', 'The disk is in use; cannot delete.');
+		}
+		else{
+			$disk->delete();
+		}
 		return redirect('/admin/storagemanagement');
 	}
 }
