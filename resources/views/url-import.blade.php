@@ -55,7 +55,7 @@
         @elseif ($f->type == 'Numeric')
         <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="" placeholder="{{ __($f->placeholder) }}" />
         @elseif ($f->type == 'Date')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="" placeholder="{{ __($f->placeholder) }}" />
+        <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="" placeholder="{{ __($f->placeholder) }}" />
         @else
         <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
             @php
