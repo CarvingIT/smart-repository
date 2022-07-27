@@ -107,6 +107,9 @@ else{
                     <div class="col-md-8">
 			<select name="storage_drive" class="selectpicker">
 				@foreach($storage_disks as $disk => $type)
+					@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local') 
+						@continue
+					@endif
 			            <option value="{{ $disk }}" @if($collection->storage_drive == $disk) selected @endif>{{ $disk }}</option>
 				@endforeach
 			</select>
