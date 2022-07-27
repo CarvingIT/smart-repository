@@ -47,17 +47,17 @@ class MakeAdmin extends Command
 		$user = User::where('email', $email_address)->first();
 		if(!$user){
 			$user = new User;
+			$user->email = $email_address;
+			$password = Str::uuid()->toString();
+			$user->password = Hash::make($password);
+			$user->name = "Administrator";
+			$user->save();
+			echo "Password: ".$password."\n";
+			echo "You can change the password after logging in to the application.\n";
 		}
-		$user->email = $email_address;
-		$password = Str::uuid()->toString();
-		$user->password = Hash::make($password);
-		$user->name = "Administrator";
-		$user->save();
 		$user_role = new UserRole;
 		$user_role->user_id = $user->id;
 		$user_role->role_id = 1;
 		$user_role->save();
-		echo "Password: ".$password."\n";
-		echo "You can change the password after logging in to the application.\n";
     }
 }
