@@ -73,7 +73,7 @@ class Crawl extends Command
 				// create a guzzle http client and use that after authentication
 				// more code needed here
 				$auth_info = json_decode($d->auth_info);
-				print_r($auth_info);
+				//print_r($auth_info); exit;
 				$response = $crawl_client->request('GET', $auth_info->entry_url);
 				$html_string = $response->getBody();
 				$dom = new Dom;
