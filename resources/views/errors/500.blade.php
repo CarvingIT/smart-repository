@@ -8,9 +8,9 @@
         <div class="col-md-12">
             <div class="card">
 		<div class="card-header card-header-primary">
-		<h4 class="card-title">Error</h4></div>
+		<h4 class="card-title">Oops</h4></div>
                 <div class="card-body">
-		<h3>Oops</h3>
+		<h3>{{ $exception->getMessage() }}</h3>
 		<p>Something went wrong. Please contact the administrator of the site.</p>
                 </div>
             </div>

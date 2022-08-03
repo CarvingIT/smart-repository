@@ -48,6 +48,7 @@ return [
             'root' => storage_path('app'),
         ],
 
+		/*
         'ketan_temp' => [
             'driver' => 'local',
             'root' => '/home/ketan/tmp',
@@ -99,6 +100,7 @@ return [
     		'root' => '/',
     		'timeout' => 100,
 	],
+	*/
     ],
 
 ];

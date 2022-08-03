@@ -14,6 +14,7 @@ use App\SpideredDomain;
 use App\DesiredUrl;
 use App\UrlSuppression;
 use App\CollectionMailbox;
+use App\UserPermission;
 
 class CollectionController extends Controller
 {
@@ -23,7 +24,7 @@ class CollectionController extends Controller
     }
 
     public function index(){
-        $collections = Collection::all();
+        $collections = Collection::where('parent_id', null)->get();
         return view('collectionmanagement', ['collections'=>$collections, 'activePage'=>'Collections','titlePage'=>'Collections']);
     }
 
@@ -39,25 +40,31 @@ class CollectionController extends Controller
         return view('collection-form', ['collection'=>$collection,'storage_disks'=>$storage_disks,'activePage'=>'Collection', 'titlePage'=>'Collection']);
     }
 
-    public function userCollections(){
+    public function userCollections($perms = ['VIEW', 'MAINTAINER']){
         /*
          Get all public collections 
          plus collections to which the current user has access.
          Access to members-only collection is determined by db_table:user_permissions 
         */
-        $user_collections = array();
-        $user_permissions = empty(Auth::user()) ? array() : Auth::user()->accessPermissions();
+        $user_collections = [];
+        $user_permissions = empty(Auth::user()) ? [] : Auth::user()->accessPermissions;
         foreach($user_permissions as $u_p){
-            if(!in_array($u_p->collection_id, $user_collections)){
-                array_push($user_collections, $u_p->collection_id);
+            if(in_array($u_p->permission->name, $perms)
+				&& !in_array($u_p->collection_id, $user_collections)){
+                $user_collections[] = $u_p->collection_id;
             }
         }
-        $collections = Collection::whereIn('id', $user_collections)->orWhere('type','=','Public')->get();
+        $collections = Collection::where('parent_id', null)
+			->where(function($q) use($user_collections){
+				$q->whereIn('id', $user_collections)
+				->orWhere('type','=','Public');
+			})
+			->get();
 	return $collections;
     }
 
     public function list(){
-	$collections = $this->userCollections();
+		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
         return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections]);
     }
 
@@ -213,30 +220,37 @@ class CollectionController extends Controller
         	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
 		}
         foreach($meta_filters as $mf){
+			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filteres like created_at, created_by
+				if($mf['field_id'] == 'created_at'){
+					$documents = $documents->where('created_at', $mf['operator'], $mf['value']);
+				}	
+			continue;// no need to proceed further
+			}
+
             if($mf['operator'] == '='){
 				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
-                $documents->whereHas('meta', function (Builder $query) use($mf){
+                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
                     }
-                )->get();
+                );
             }
             else if($mf['operator'] == '>='){
-                $documents->whereHas('meta', function (Builder $query) use($mf){
+                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', '>=', $mf['value']);
                     }
-                )->get();
+                );
             }
             else if($mf['operator'] == '<='){
-                $documents->whereHas('meta', function (Builder $query) use($mf){
+                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', '<=', $mf['value']);
                     }
-                )->get();
+                );
             }
             else if($mf['operator'] == 'contains'){
-                $documents->whereHas('meta', function (Builder $query) use($mf){
+                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
                     }
-                )->get();
+                );
             }
         }
         return $documents;
@@ -279,6 +293,10 @@ class CollectionController extends Controller
 		if($collection->content_type == 'Uploaded documents'){
         	$elastic_index = 'sr_documents';
         	$documents = \App\Document::where('collection_id', $request->collection_id);
+			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
+				// user can not view any document; just their own
+				$documents = $documents->where('created_by', \Auth::user()->id);
+			}
 		}
 		else{
         	$elastic_index = 'sr_urls';
@@ -299,6 +317,9 @@ class CollectionController extends Controller
 		}
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
+				if(\Auth::user()->id){
+					$documents = $documents->orWhere('created_by', \Auth::user()->id);
+				}
         		$elastic_index = 'sr_documents';
 		}
 	}
@@ -389,6 +410,10 @@ class CollectionController extends Controller
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
         	$documents = \App\Document::where('collection_id', $request->collection_id);
+			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
+				// user can not view any document; just their own
+				$documents = $documents->where('created_by', \Auth::user()->id);
+			}
 		}
 		else{
         	$documents = \App\Url::where('collection_id', $request->collection_id);
@@ -408,6 +433,9 @@ class CollectionController extends Controller
 		}
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
+				if(\Auth::user()->id){
+					$documents = $documents->orWhere('created_by', \Auth::user()->id);
+				}
         		$elastic_index = 'sr_documents';
 		}
 	}
@@ -574,7 +602,12 @@ class CollectionController extends Controller
                		$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
                 	$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
             	}
-		$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+		if($d->type == 'application/pdf'){
+			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/pdf-reader" target="_blank"><i class="material-icons">open_in_browser</i></a>';
+		}
+		else{
+			$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+		}
 	    }
   	    else if ($content_type == 'Web resources'){		
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
@@ -679,7 +712,7 @@ class CollectionController extends Controller
         else{
             $edit_field = \App\MetaField::find($meta_field_id);
         }
-        $meta_fields = $collection->meta_fields()->orderby('display_order','ASC')->get();
+        $meta_fields = $collection->meta_fields;
         return view('metainformation', ['collection'=>$collection, 
                 'edit_field'=>$edit_field, 
                 'meta_fields'=>$meta_fields,
@@ -786,25 +819,6 @@ class CollectionController extends Controller
     	}
 
     }
-
-    public function collection_list(){
-        /*
-	 !! LOOKS LIKE A DUPLICATE FUNCTION of list() !!
-         Get all public collections 
-         plus collections to which the current user has access.
-         Access to members-only collection is determined by db_table:user_permissions 
-        */
-        $user_collections = array();
-        $user_permissions = empty(Auth::user()) ? array() : Auth::user()->accessPermissions();
-        foreach($user_permissions as $u_p){
-            if(!in_array($u_p->collection_id, $user_collections)){
-                array_push($user_collections, $u_p->collection_id);
-            }
-        }
-        $collections = Collection::whereIn('id', $user_collections)->orWhere('type','=','Public')->get();
-	return $collections;
-    }
-
 
     private function datatableFormatResultsEmbedded($data){
         $documents = $data['documents'];
@@ -944,6 +958,7 @@ use App\UrlSuppression;
 			'type'=>$request->input('type'),
 			'creation_time'=>$request->input('creation_time'),
 			'size'=>$request->input('size'),
+			'slack_webhook'=>$request->input('slack_webhook'),
 			'meta_fields'=>$request->input('meta_fields'),
 			'meta_fields_search'=>$request->input('meta_fields_search')
 		);
@@ -1002,4 +1017,31 @@ use App\UrlSuppression;
 		exit;
 	}
 
+	public function showChildCollectionForm(Request $req){
+		if($req->child_collection_id == 'new'){
+			$collection = new Collection;
+		}
+		else{
+			$collection = Collection::find($req->child_collection_id);
+		}
+		return view('child-collection-form',['collection'=>$collection]);
+	}
+
+	public function saveChildCollection(Request $req){
+		$collection = Collection::find($req->collection_id);
+		$child = $collection->replicate();
+		$child->name = $req->collection_name;
+		$child->description = $req->description;
+		$child->parent_id = $collection->id;
+		$child->column_config = null;
+		$child->save();
+		// clone user permissions on the child collection
+		$user_permissions = UserPermission::where('collection_id', $collection->id)->get();
+		foreach($user_permissions as $u_p){
+			$u_p_new = $u_p->replicate();
+			$u_p_new->collection_id = $child->id;
+			$u_p_new->save();
+		}
+		return redirect('/collection/'.$req->collection_id);
+	}
 }

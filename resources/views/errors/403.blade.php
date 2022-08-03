@@ -8,9 +8,9 @@
         <div class="col-md-12">
             <div class="card">
 		<div class="card-header card-header-primary">
-		<h4 class="card-title">{{ $exception->getMessage() }}</h4></div>
+		<h4 class="card-title">Access Denied</h4></div>
                 <div class="card-body">
-		<h3>Access denied</h3>
+		<h3>{{ $exception->getMessage() }}</h3>
 		<p>It is likely that your session has expired. Please login and try again.</p>
                 </div>
             </div>

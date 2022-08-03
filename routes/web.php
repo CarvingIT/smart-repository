@@ -33,6 +33,7 @@ Route::get('/faq', function () {
 });
 
 
+
 Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/collections', 'CollectionController@list');
 Route::get('/documents', 'DocumentController@list');
@@ -43,6 +44,7 @@ Route::get('/collection/{collection_id}/export', 'CollectionController@export')-
 // Document upload/edit
 Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadForm')->middleware('document_add');
 Route::post('/collection/{collection_id}/upload','DocumentController@upload')->middleware('document_add');
+Route::post('/collection/move_document', 'DocumentController@move');
 
 // Document import queue via url
 Route::get('/collection/{collection_id}/url-import', 'URLImportController@index')->middleware('document_add');
@@ -52,6 +54,10 @@ Route::get('/collection/{collection_id}/import-link/{link_id}/delete', 'URLImpor
 // Collection-user management
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('maintainer');
 Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm')->middleware('maintainer');
+
+// child-collection
+Route::get('/collection/{collection_id}/child-collection/{child_collection_id}', 'CollectionController@showChildCollectionForm')->middleware('maintainer');
+Route::post('/collection/{collection_id}/save-child-collection', 'CollectionController@saveChildCollection')->middleware('maintainer');
 
 // Collection-user management
 Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('maintainer');
@@ -91,6 +97,7 @@ Route::get('/collection/{collection_id}/removetitlefilter', 'CollectionControlle
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllFilters');
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
@@ -117,6 +124,12 @@ Route::post('/admin/user/delete','UserController@destroy')->middleware('admin');
 // system config
 Route::get('/admin/sysconfig','SysConfigController@index')->middleware('admin');
 Route::post('/admin/sysconfig','SysConfigController@save')->middleware('admin');
+
+// storage/disk management
+Route::get('/admin/storagemanagement', 'DisksController@index')->middleware('admin');
+Route::get('/admin/disk-form/{disk_id}', 'DisksController@add_edit_disk')->middleware('admin');
+Route::post('/admin/savedisk', 'DisksController@save')->middleware('admin');
+Route::post('/admin/disk/delete','DisksController@delete')->middleware('admin');
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 //Route::get('/home', 'HomeController@index')->name('home');

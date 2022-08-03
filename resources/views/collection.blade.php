@@ -127,27 +127,57 @@ function randomString(length) {
 		<div class="row">
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a title="Manage Users of this collection" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
+                    <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
-                    <a title="Manage meta information fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+                    <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                     <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
+                    <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">create_new_folder</i></a>
 		    @elseif($collection->content_type == 'Web resources')	
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
 		    @endif
 		  @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">add</i></a>
+                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
                     <a title="Import via URL" href="/collection/{{ $collection->id }}/url-import" class="btn btn-sm btn-primary"><i class="material-icons">link</i></a>
 		  @endif
                   @if(count($collection->meta_fields)>0)
                     <a href="/collection/{{ $collection->id }}/metafilters" title="Set Filters" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a href="/collection/{{ $collection->id }}/export" title="Export meta data" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
+                    <a href="/collection/{{ $collection->id }}/export" title="Export collection to CSV" class="btn btn-sm btn-primary"><i class="material-icons">library_books</i></a>
 				  @endif
                   </div>
         </div>
+		<div class="row">
+			<div class="col-10">
             <p>{{ $collection->description }}</p>
+			</div>
+			<div class="col-2 text-right">
+		<!-- children collections -->		
+			@if ($collection->children->count() > 0)
+			<div class="navbar-collapse justify-content-end">
+				<ul class="navbar-nav">
+			        <li class="nav-item dropdown">
+          				<a class="btn btn-primary nav-link" title="{{ __('Sub-collections') }}" href="#" id="childrencollections" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="material-icons">folder</i>
+						<i class="material-icons">subdirectory_arrow_right</i>
+          				</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="childrencollections">
+						@foreach ($collection->children as $child)
+						<a class="dropdown-item" href="/collection/{{ $child->id }}">{{ $child->name }}</a>
+						@endforeach
+					</div>
+					</li>
+				</ul><!-- navbar-nav -->
+			</div>
+			@endif
+			@if ($collection->parent_id) 
+				<a class="btn btn-primary" title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
+						. . <i class="material-icons">arrow_upward</i>
+				</a>
+			@endif
+			</div><!-- col2 -->
+		</div><!-- row -->
         @php
             $meta_fields = empty($collection->meta_fields)? array() : $collection->meta_fields;
 		@endphp
@@ -179,7 +209,7 @@ function randomString(length) {
 			@endif
 			@foreach($meta_fields as $m)
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
-			@if($m->type == 'Text')
+			@if($m->type == 'Text' || $m->type == 'SelectCombo')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
@@ -246,6 +276,9 @@ function randomString(length) {
 		@php
             $meta_labels = array();
             foreach($meta_fields as $m){
+				if(!empty($meta_labels[$m->id]))
+				$meta_labels[$m->id] = $m->id;
+				else
                 $meta_labels[$m->id] = $m->label;
             }
             $all_meta_filters = Session::get('meta_filters');
@@ -262,10 +295,17 @@ function randomString(length) {
 		@if($show_meta_filters)
         @foreach( $all_meta_filters[$collection->id] as $m)
             <span class="filtertag">
+			@if(empty($meta_labels[$m['field_id']]))
+            {{ $m['field_id'] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <i class="tinyicon material-icons">close</i>
+                </a>
+			@else
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
+			@endif
                 </span>
         @endforeach
         @endif
