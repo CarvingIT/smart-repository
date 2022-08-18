@@ -43,6 +43,7 @@ jobs:
         DB_PASSWORD: SR_test123
         DB_PORT: ${{ job.services.mysql.ports[3306] }}
       run: php artisan migrate:fresh --seed
+      run: php artisan db:seed --class=UserSeeder
     - name: Generate key
       run: php artisan key:generate
     - name: Execute tests (Unit and Feature tests) via PHPUnit
