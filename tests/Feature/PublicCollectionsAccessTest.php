@@ -22,7 +22,7 @@ class PublicCollectionsAccessTest extends TestCase
 		*/
         $response = $this->get('/collection/2');
         $response->assertStatus(200)
-			->assertSeeText('test collection');
+			->assertSeeText('test public collection');
     }
 
 	public function testAccessOthersPrivateCollection(){
