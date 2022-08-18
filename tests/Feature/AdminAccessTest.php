@@ -101,6 +101,15 @@ class AdminAccessTest extends TestCase
 				'require_approval'=>0, 
 				'maintainer'=>'ketan@carvingit.com']);
         $response->assertStatus(200);
+		// another collection for testing .. a public collection
+		$response = $this->actingAs($user)->followingRedirects()
+				->json('POST','/admin/savecollection', 
+				['collection_name'=>'test public collection','description' => 'some description', 
+				'content_type' => 'Uploaded documents',
+				'storage_drive'=>'local', 
+				'require_approval'=>0, 
+				'maintainer'=>'ketan@carvingit.com']);
+        $response->assertStatus(200);
 		// non-admin should not get access
 		$user = \App\User::find(2);
         $response = $this->actingAs($user)->get('/admin/collection-form/new');
