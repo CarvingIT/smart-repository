@@ -99,7 +99,7 @@ class AdminAccessTest extends TestCase
 				'content_type' => 'Uploaded documents',
 				'storage_drive'=>'local', 
 				'require_approval'=>0, 
-				'maintainer'=>'shraddha@carvingit.com']);
+				'maintainer'=>'ketan@carvingit.com']);
         $response->assertStatus(200);
 		// non-admin should not get access
 		$user = \App\User::find(2);
@@ -112,7 +112,7 @@ class AdminAccessTest extends TestCase
 		$response = $this->actingAs($user)->followingRedirects()
 				->json('POST','/admin/savecollection', 
 				['collection_name'=>'test collection 4','description' => 'test 3 description', 
-				'collection_id'=>4,
+				'collection_id'=>1,
 				'content_type' => 'Uploaded documents',
 				'storage_drive'=>'local', 
 				'collection_type'=>'Members only',
