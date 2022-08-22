@@ -15,7 +15,6 @@
 @endpush
 
 @section('content')
-@section('content')
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -74,6 +73,15 @@
            <div class="col-md-3"><input name="meta_fields_search[]" type="checkbox" value="{{ $m->id }}" 
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search)) checked="checked" @endif /> {{ $m->label }}</div>
 			@endforeach
+		</div>
+		<h4>{{__('Notifications')}}</h4>
+		<div class="form-group row">
+			<div class="col-md-2 text-right">
+				<label for="slack_webhook"><img src="/i/Slack_Mark_Web.png" class="icon"/>Slack Webhook</label>
+			</div>
+			<div class="col-md-10">
+				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="Slack webhook url" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
+			</div>
 		</div>
 
 		<h4>{{ __('IMAP Settings (Map an email address to this collection)')}}</h4>

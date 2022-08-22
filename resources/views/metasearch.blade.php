@@ -52,7 +52,7 @@ $(document).ready(function(){
             $('#operator-select').append(o3);
 
             $('#meta-val-cont').html('');
-            var mv_input = $("<input type=\"date\" class=\"form-control col-md-12 text-center\" name=\"meta_value\" />"); 
+            var mv_input = $("<input type=\"date\" class=\"text-center\" name=\"meta_value\" />"); 
             $('#meta-val-cont').append(mv_input);
 			$('#meta-val-cont').addClass('text-center');
         }

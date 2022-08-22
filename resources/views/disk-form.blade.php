@@ -14,10 +14,17 @@ function showDriveFields(drive){
 	if(drive == 'ftp' || drive == 'sftp'){
 		$('#ftp_details').show();	
 		$('#s3_details').hide();	
+		$('#google_drive_details').hide();
 	}
 	else if (drive == 's3'){
 		$('#ftp_details').hide();	
 		$('#s3_details').show();	
+		$('#google_drive_details').hide();
+	}
+	else if(drive == 'google'){
+		$('#s3_details').hide();	
+		$('#ftp_details').hide();	
+		$('#google_drive_details').show();
 	}
 	else{}
 }
@@ -75,6 +82,7 @@ $(document).ready(function(){
                     <div class="col-md-9">
 					<select name="driver" class="selectpicker" id="driver" onchange="showDriveFields(this.value);">
 						<option value="">Drive Type</option>
+						<option value="google" @if ($disk->driver == 'google') selected @endif>Google Drive</option>
 						<option value="ftp" @if ($disk->driver == 'ftp') selected @endif>FTP</option>
 						<option value="sftp" @if ($disk->driver == 'sftp') selected @endif>SFTP</option>
 						<option value="s3" @if ($disk->driver == 's3') selected @endif>S3</option>
@@ -177,7 +185,43 @@ $(document).ready(function(){
                    <label for="endpoint" class="col-md-12 col-form-label text-md-right">Endpoint</label> 
                     </div>
                     <div class="col-md-9">
-                    <input type="text" name="endpoint" id="endpoint" class="form-control" placeholder="S3 endpoint" value="{{ @$disk_config->url }}" />
+                    <input type="text" name="endpoint" id="endpoint" class="form-control" placeholder="S3 endpoint" value="{{ @$disk_config->endpoint }}" />
+                    </div>
+                   </div>
+
+				  </div>
+				  <div id="google_drive_details" style="display:none;">
+
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="client_id" class="col-md-12 col-form-label text-md-right">Client ID</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="client_id" id="client_id" class="form-control" placeholder="Client ID" value="{{ @$disk_config->clientId }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="client_secret" class="col-md-12 col-form-label text-md-right">Client Secret</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="client_secret" id="client_secret" class="form-control" placeholder="Client secret" value="{{ @$disk_config->clientSecret }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="refresh_token" class="col-md-12 col-form-label text-md-right">Refresh Token</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="refresh_token" id="refresh_token" class="form-control" placeholder="Refresh Token" value="{{ @$disk_config->refreshToken }}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="folder_id" class="col-md-12 col-form-label text-md-right">Folder ID</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <input type="text" name="folder_id" id="folder_id" class="form-control" placeholder="Folder ID" value="{{ @$disk_config->folderId }}" />
                     </div>
                    </div>
 

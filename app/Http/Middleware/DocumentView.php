@@ -18,8 +18,12 @@ class DocumentView
         $document = \App\Document::find($request->route('document_id'));
 	if($document && $document->collection->content_type == 'Uploaded documents'){ // restriction only for Uploaded documents
         $document = \App\Document::find($request->document_id);
-        if($document->collection->type != 'Public' && 
-            !($request->user() && $request->user()->hasPermission($document->collection->id, 'VIEW'))){
+		$user = $request->user();
+
+        if($document->collection->type != 'Public' 
+            && !($user && $user->hasPermission($document->collection->id, 'VIEW'))
+			&& $document->created_by != $user->id
+		){
 	    abort(403, 'Forbidden');
         }
 	}

@@ -42,12 +42,12 @@ $(document).ready(function() {
                         <tbody>
                     @foreach($collection_users as $user_id=>$perms)
                     <tr>
-                        <td valign="top">
+                        <td>
                         {{ ($perms[0]->user)->email }}
                         </td>
                         <td>
                         @foreach($perms as $p)
-                            {{ ($p->permission)->name }}<br/>
+                            {{ ($p->permission)->description }}<br/>
                         @endforeach
                         </td>
                         <td class="td-actions text-right">

@@ -30,11 +30,5 @@ class HomeController extends Controller
     public function index()
     {
 	return redirect('/collections');
-	/*
-	$collections = Collection::all();
-	$my_collection = new CollectionController;
-	$my_collection_list = $my_collection->collection_list();
-        return view('dashboard',['my_collections' => $my_collection_list, 'collections' => $collections, 'title'=>'Home','activePage'=>'Home','titlePage' => 'Home']);
-	*/
     }
 }

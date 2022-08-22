@@ -32,33 +32,11 @@ class DocumentController extends Controller
 	## New code
 	$download_file = $this->downloadFile($doc,$storage_drive);
 	return $download_file;
-
-/*	$exists = Storage::disk($storage_drive)->exists($doc->path);
-	try{
-        	$file_url = $doc->path;
-		$file_name  = $doc->path;			//"VoteMix-Event-Entry-Ticket.pdf";
-
-		$mime = Storage::disk($storage_drive)->getDriver()->getMimetype($file_url);
-		$size = Storage::disk($storage_drive)->getDriver()->getSize($file_url);
-
-    		$response =  [
-      		'Content-Type' => $mime,
-      		'Content-Length' => $size,
-      		'Content-Description' => 'File Transfer',
-      		'Content-Disposition' => "attachment; filename={$file_name}",
-      		'Content-Transfer-Encoding' => 'binary',
-    		];
-
-    		ob_end_clean();
-
-    		return \Response::make(Storage::disk($storage_drive)->get($file_url), 200, $response);
-	}
-	catch(Exception $e){
-  		return $this->respondInternalError( $e->getMessage(), 'object', 500);
-	}
-*/
-	## New code ends
     }
+
+	public function pdfReader($collection_id, $document_id){
+		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id]);	
+	}
     
     public function recordHit($document_id){
         $hit = new \App\DocumentHit;
@@ -128,9 +106,18 @@ class DocumentController extends Controller
             $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
 	
 			// Saved on chosen collection storage drive.
-			$filepath = $request->file('document')
+			// first make the required directory for Google Drive
+			$storages_needing_dir_creation = ['google'];
+			$driver = config("filesystems.disks.{$storage_drive}.driver");
+			if(in_array($driver, $storages_needing_dir_creation)){
+				$filepath = $request->file('document')
+                ->storeAs(null, $new_filename, $storage_drive);
+			}
+			else{
+				$filepath = $request->file('document')
 				->storeAs('smartarchive_assets/'.$request
 				->input('collection_id').'/'.\Auth::user()->id,$new_filename, $storage_drive);
+			}
 
 			//Saved locally for text extraction
 			$local_filepath = $request->file('document')
@@ -461,7 +448,13 @@ class DocumentController extends Controller
 }
 
 public function downloadFile($doc,$storage_drive){
-	$exists = Storage::disk($storage_drive)->exists($doc->path);
+	//$exists = Storage::disk($storage_drive)->exists($doc->path);
+	$cloud_storages = ['google'];
+	$driver = config("filesystems.disks.{$storage_drive}.driver");
+	if(in_array($driver, $cloud_storages)){
+		return $this->downloadCloudFile($doc, $storage_drive);
+	}
+
         try{
                 $file_url = $doc->path;
                 $file_path  = $doc->path;
@@ -488,6 +481,27 @@ public function downloadFile($doc,$storage_drive){
         catch(Exception $e){
                 return $this->respondInternalError( $e->getMessage(), 'object', 500);
         }
+}
+
+public function downloadCloudFile($doc, $storage_drive){
+	$filename = $doc->path;
+	$dir = '/';
+	$recursive = false;
+	$contents = collect(Storage::disk($storage_drive)->listContents($dir, $recursive));
+
+    $file = $contents
+        ->where('type', '=', 'file')
+        ->where('filename', '=', pathinfo($filename, PATHINFO_FILENAME))
+        ->where('extension', '=', pathinfo($filename, PATHINFO_EXTENSION))
+        ->first(); // there can be duplicate file names!
+
+    //return $file; // array with file info
+
+    $rawData = Storage::disk($storage_drive)->get($file['path']);
+
+    return response($rawData, 200)
+        ->header('ContentType', $file['mimetype'])
+        ->header('Content-Disposition', "attachment; filename='$filename'");
 }
 
 public function proofRead($collection_id,$document_id){

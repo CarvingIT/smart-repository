@@ -127,24 +127,24 @@ function randomString(length) {
 		<div class="row">
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a title="{{ __('Manage Users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
+                    <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
                     <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                     <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
-                    <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">folder</i></a>
+                    <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">create_new_folder</i></a>
 		    @elseif($collection->content_type == 'Web resources')	
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
 		    @endif
 		  @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">book</i></a>
+                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
                     <a title="Import via URL" href="/collection/{{ $collection->id }}/url-import" class="btn btn-sm btn-primary"><i class="material-icons">link</i></a>
 		  @endif
                   @if(count($collection->meta_fields)>0)
                     <a href="/collection/{{ $collection->id }}/metafilters" title="Set Filters" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a href="/collection/{{ $collection->id }}/export" title="Export meta data" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
+                    <a href="/collection/{{ $collection->id }}/export" title="Export collection to CSV" class="btn btn-sm btn-primary"><i class="material-icons">library_books</i></a>
 				  @endif
                   </div>
         </div>
@@ -159,8 +159,8 @@ function randomString(length) {
 				<ul class="navbar-nav">
 			        <li class="nav-item dropdown">
           				<a class="btn btn-primary nav-link" title="{{ __('Sub-collections') }}" href="#" id="childrencollections" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						{{ __('Sub-collections') }}
-						<i class="material-icons">arrow_downward</i>
+						<i class="material-icons">folder</i>
+						<i class="material-icons">subdirectory_arrow_right</i>
           				</a>
 					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="childrencollections">
 						@foreach ($collection->children as $child)
