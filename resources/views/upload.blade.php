@@ -80,6 +80,8 @@
         <div class="col-md-9">
         @if($f->type == 'Text')
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
+        @elseif ($f->type == 'Textarea')
+        <textarea class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" />{{ $document->meta_value($f->id) }}</textarea>
         @elseif ($f->type == 'Numeric')
         <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
         @elseif ($f->type == 'Date')

@@ -92,6 +92,7 @@ function showMetaFieldForm(){
                     <div class="col-md-8">
                         <select class="selectpicker" id="type" name="type">
                             <option value="Text" @if($edit_field->type == 'Text') selected @endif>Text</option> 
+                            <option value="Textarea" @if($edit_field->type == 'Textarea') selected @endif>Textarea</option> 
                             <option value="Numeric" @if($edit_field->type == 'Numeric') selected @endif>Numeric</option> 
                             <option value="Select" @if($edit_field->type == 'Select') selected @endif>Select from options</option> 
                             <option value="SelectCombo" @if($edit_field->type == 'SelectCombo') selected @endif>Select with custom input</option> 
