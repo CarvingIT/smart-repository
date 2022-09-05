@@ -1003,8 +1003,10 @@ use App\UrlSuppression;
 		return redirect('/collection/'.$collection->id);
 	}
 
-	public function export($collection_id){
-		$documents = \App\Document::where('collection_id', $collection_id)->get();
+	public function export(Request $request, $collection_id){
+		$documents = \App\Document::where('collection_id', $collection_id);
+		$documents = $this->getTitleFilteredDocuments($request, $documents);
+		$documents = $this->getMetaFilteredDocuments($request, $documents)->get();
 		$collection = \App\Collection::find($collection_id);
 		$meta_fields = $collection->meta_fields;
 		$filename = $collection->name;
