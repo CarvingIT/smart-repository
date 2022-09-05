@@ -122,6 +122,14 @@
         </div>
     </div>
     @endforeach
+	<div class="form-group row">
+	   <div class="col-md-3 text-right">
+   		   <input id="same_meta_docs" type="checkbox" name="same_meta_docs_upload" value="1" /> 
+	   </div>
+   	   <div class="col-md-9">
+	   		<label for="same_meta_docs" class="col-md-12 col-form-label">Upload more documents of the same field values above</label>
+   	   </div>
+	</div>
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
         <button type="submit" class="btn btn-primary"> Save </button>

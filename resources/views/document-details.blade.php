@@ -227,7 +227,11 @@ $(document).ready(function()
                         @if(!empty($meta_labels[$m->meta_field_id]))
                             <div class="col-md-12">
                             <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
+							@if($m->meta_field->type == 'MultiSelect')
+                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
+							@else
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
+							@endif
                             </div>
                         @endif
                         @endforeach
