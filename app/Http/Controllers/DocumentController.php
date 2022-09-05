@@ -191,7 +191,12 @@ class DocumentController extends Controller
         // put all meta values in a string
         $meta_string = '';
         foreach($meta as $m){
-            $meta_string .= ' '.$m['field_value'].' ';
+			if(is_array($m['field_value'])){
+            	$meta_string .= ' '.json_encode($m['field_value']).' ';
+			}
+			else{
+            	$meta_string .= ' '.$m['field_value'].' ';
+			}
         }
         // save meta data
         $this->saveMetaData($d->id, $meta);

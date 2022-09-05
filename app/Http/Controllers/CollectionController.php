@@ -650,7 +650,12 @@ class CollectionController extends Controller
 			foreach($collection->meta_fields as $m){
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
 			if(!in_array($m->id, $column_config_meta_fields)) continue;
-			$result['meta_'.$m->id] = $d->meta_value($m->id);
+				if($m->type=='MultiSelect' && !empty($d->meta_value($m->id))){
+					$result['meta_'.$m->id] = implode(",",json_decode($d->meta_value($m->id)));
+				}
+				else{
+					$result['meta_'.$m->id] = $d->meta_value($m->id);
+				}
 			}
 		}
 

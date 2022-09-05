@@ -85,8 +85,8 @@
         @elseif ($f->type == 'Date')
         <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
 
-        @elseif ($f->type == 'Select')
-        <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
+        @elseif (in_array($f->type, array('Select', 'MultiSelect')))
+        <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif>
             @php
                 $options = explode(",", $f->options);
 				sort($options);
@@ -96,7 +96,11 @@
                 @php
                     $o = ltrim(rtrim($o));
                 @endphp
-            <option value="{{$o}}" @if($o == $document->meta_value($f->id)) selected="selected" @endif >{{$o}}</option>
+				@if($f->type == 'MultiSelect')
+            	<option value="{{$o}}" @if(in_array($o, json_decode($document->meta_value($f->id)))) selected="selected" @endif >{{$o}}</option>
+				@else
+            	<option value="{{$o}}" @if($o == $document->meta_value($f->id)) selected="selected" @endif >{{$o}}</option>
+				@endif
             @endforeach
         </select>
 		@elseif ($f->type == 'SelectCombo')
