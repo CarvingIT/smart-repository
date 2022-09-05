@@ -686,12 +686,29 @@ class CollectionController extends Controller
 				}
 			}
 			}
-            $new_meta_filters[$request->collection_id][] = array(
-                'filter_id'=>\Uuid::generate()->string,
-                'field_id'=>$request->meta_field,
-                'operator'=>$request->operator,
-                'value'=>$request->meta_value
-            );
+			if($request->operator == 'between'){
+				$range_parts = explode(' to ',ltrim(rtrim($request->meta_value)));
+            	$new_meta_filters[$request->collection_id][] = array(
+                	'filter_id'=>\Uuid::generate()->string,
+                	'field_id'=>$request->meta_field,
+                	'operator'=>'>=',
+                	'value'=> $range_parts[0]
+            	);
+            	$new_meta_filters[$request->collection_id][] = array(
+                	'filter_id'=>\Uuid::generate()->string,
+                	'field_id'=>$request->meta_field,
+                	'operator'=>'<=',
+                	'value'=> $range_parts[1]
+            	);
+			}
+			else{
+            	$new_meta_filters[$request->collection_id][] = array(
+                	'filter_id'=>\Uuid::generate()->string,
+                	'field_id'=>$request->meta_field,
+                	'operator'=>$request->operator,
+                	'value'=>$request->meta_value
+            	);
+			}
         }
         Session::put('meta_filters', $new_meta_filters);
         return redirect('/collection/'.$request->collection_id);

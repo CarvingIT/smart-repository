@@ -102,6 +102,10 @@ function randomString(length) {
 }
 
 </script>
+
+<script src="/js/jquery.daterangepicker.min.js"></script>
+<link rel="stylesheet" href="/js/daterangepicker.css"/>
+
 @endpush
 	    <div id="deletedialog" style="display:none;">
 		<form name="deletedoc" method="post" action="/document/delete">
@@ -202,32 +206,35 @@ function randomString(length) {
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
 			<div class="float-container">
-		   		<label for="title_search" class="search-label">{{ __('Title') }}</label>
-		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
+		   		<label for="title_search" class="search-label">{{ __('Title search') }}</label>
+		   		<input type="text" class="search-field" id="title_search" name="title_filter" placeholder="Add keywords and press enter"/>
 			</div>
 			</form>
 			@endif
 			@foreach($meta_fields as $m)
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
-			@if($m->type == 'Text' || $m->type == 'SelectCombo')
+			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Add keywords and press enter"/>
 		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator" value="contains" />
 			</form>
 			</div>
-			@elseif($m->type == 'Date' || $m->type == 'Numeric')
+			@elseif($m->type == 'Date')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Selete date range and press enter"/>
 		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="=" />
+		   	<input type="hidden" name="operator" value="between" />
 			</form>
+			<script>
+				$('#meta_{{ $m->id }}_search').dateRangePicker();
+			</script>
 			</div>
 			@elseif($m->type == 'Select')
 			<div class="float-container">
@@ -255,7 +262,7 @@ function randomString(length) {
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Full text search') }}</label>
+			<label for="collection_search">{{ __('Start typing to initiate search within the document content') }}</label>
 		    <input type="text" class="search-field" id="collection_search" />
 			<style>
 			.dataTables_filter {
@@ -263,7 +270,6 @@ function randomString(length) {
 			}
 			</style>
 		   </div>
-			{{ __('Start typing to initiate search') }}
 		   </div>
 		   <div class="col-12 text-center">
            <!--<i class="material-icons">search</i>-->
