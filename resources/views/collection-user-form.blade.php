@@ -82,7 +82,13 @@ $(document).ready(function() {
                     </div>
                    </div>
 				@else
+                   <div class="form-group row">
+                   <label for="permission" class="col-md-4 col-form-label text-md-right"></label> 
+                    <div class="col-md-6">
+                    <input type="checkbox" disabled="disabled" checked="checked" name="permission[]" /> {{ __('Can view own documents')}} 
 					<input type="hidden" name="permission[]" value="{{ $p->id }}" />
+                    </div>
+                   </div>
 				@endif
 			@endif
                     @endforeach
