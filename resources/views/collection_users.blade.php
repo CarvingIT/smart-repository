@@ -9,6 +9,7 @@ $(document).ready(function() {
     $('#collection_users').DataTable({
     "aoColumnDefs": [
             { "bSortable": false, "aTargets": [2]},
+			{ "className": 'align-top', "aTargets": [0]},
      ]
     });
 } );

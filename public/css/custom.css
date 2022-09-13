@@ -147,3 +147,9 @@ textarea#overridingcss{
 input::placeholder{
 	font-size:9px;
 }
+
+.align-top{
+	vertical-align:top;
+}
+
+
