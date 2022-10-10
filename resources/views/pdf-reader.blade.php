@@ -3,24 +3,31 @@
 <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
 <style>
 #the-canvas {
-  border: 1px solid black;
+  /*border: 1px solid black;*/
   direction: ltr;
+  background: url('/i/processing.gif') no-repeat;
+  background-position:center;
+  height:100%;
+}
+.canvas-container {
+   width: 100%;
+   text-align:center;
 }
 </style>
 </head>
 <body>
-<div>
-  <button id="prev">Previous</button>
-  <button id="next">Next</button>
-  &nbsp; &nbsp;
+<div class="canvas-container">
+  <button id="prev">&lt;</button>
   <span>Page: <span id="page_num"></span> / <span id="page_count"></span></span>
+  <button id="next">&gt;</button>
   @if (!in_array('pdf',explode(',',env('DOWNLOAD_DISABLED_EXTENSIONS'))))
   <a href="/collection/{{ $collection_id }}/document/{{ $document_id }}">Download</a>
   @endif
 </div>
+<div class="canvas-container">
+  <canvas id="the-canvas"></canvas>
+</div>
 
-<canvas id="the-canvas" style="background: url('/i/processing.gif') no-repeat">
-</canvas>
 <script>
 // If absolute URL from the remote server is provided, configure the CORS
 // header on that server.
