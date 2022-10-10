@@ -7,7 +7,7 @@
   direction: ltr;
   background: url('/i/processing.gif') no-repeat;
   background-position:center;
-  height:100%;
+  min-height:100%;
 }
 .canvas-container {
    width: 100%;
