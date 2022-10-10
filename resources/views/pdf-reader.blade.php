@@ -19,7 +19,8 @@
   @endif
 </div>
 
-<canvas id="the-canvas"></canvas>
+<canvas id="the-canvas" style="background: url('/i/processing.gif') no-repeat">
+</canvas>
 <script>
 // If absolute URL from the remote server is provided, configure the CORS
 // header on that server.
