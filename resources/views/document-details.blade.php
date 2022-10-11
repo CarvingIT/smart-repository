@@ -84,7 +84,11 @@ $(document).ready(function()
                         <div class="col-md-12">
                         <span id="doc-title" class="col-md-12"><h4>
 			@if($c->content_type == 'Uploaded documents')
-			<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				@if($document->type == 'application/pdf')
+            	<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_blank">
+				@else
+				<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				@endif
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
