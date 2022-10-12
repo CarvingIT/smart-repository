@@ -96,7 +96,7 @@
                 @php
                     $o = ltrim(rtrim($o));
                 @endphp
-				@if($f->type == 'MultiSelect')
+				@if($f->type == 'MultiSelect' || $f->type == 'Select')
             	<option value="{{$o}}" @if(@in_array($o, json_decode($document->meta_value($f->id)))) selected="selected" @endif >{{$o}}</option>
 				@else
             	<option value="{{$o}}" @if($o == $document->meta_value($f->id)) selected="selected" @endif >{{$o}}</option>
