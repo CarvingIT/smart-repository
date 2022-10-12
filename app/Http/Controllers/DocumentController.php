@@ -414,7 +414,7 @@ class DocumentController extends Controller
             $m_f->document_id = $document_id;
             $m_f->meta_field_id = $m['field_id'];
 			if(is_array($m['field_value'])){
-				$m['field_value'] = json_encode($m['field_value']);
+				$m['field_value'] = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
 			}
             $m_f->value = empty($m['field_value']) ? '' : $m['field_value'];
             $m_f->save();

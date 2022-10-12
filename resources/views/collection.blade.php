@@ -213,7 +213,7 @@ function randomString(length) {
 			@endif
 			@foreach($meta_fields as $m)
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
-			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'MultiSelect')
+			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
@@ -236,7 +236,7 @@ function randomString(length) {
 				$('#meta_{{ $m->id }}_search').dateRangePicker();
 			</script>
 			</div>
-			@elseif($m->type == 'Select')
+			@elseif($m->type == 'MultiSelect' || $m->type == 'Select')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
@@ -251,7 +251,7 @@ function randomString(length) {
 				@endforeach
 			</select>
 		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="=" />
+		   	<input type="hidden" name="operator" value="contains" />
 			</form>
 			</div>
 			@endif
