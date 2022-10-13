@@ -23,6 +23,7 @@
         "laravel/tinker": "^1.0",
         "league/flysystem-aws-s3-v3": "^1.0",
         "league/flysystem-sftp": "^1.0",
+        "nao-pon/flysystem-google-drive": "~1.1",
         "nlp-tools/nlp-tools": "^0.1.3",
         "owen-it/laravel-auditing": "^12.0",
         "paquettg/php-html-parser": "^3.1",

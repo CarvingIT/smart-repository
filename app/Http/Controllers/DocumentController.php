@@ -13,6 +13,7 @@ use App\Curation;
 use Session;
 use App\Collection;
 use Spatie\PdfToText\Pdf;
+use App\MetaFieldValue;
 
 class DocumentController extends Controller
 {
@@ -37,6 +38,11 @@ class DocumentController extends Controller
 	public function pdfReader($collection_id, $document_id){
 		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id]);	
 	}
+
+	public function mediaPlayer($collection_id, $document_id){
+		$document = Document::find($document_id);
+		return view('media-player',['collection_id'=>$collection_id,'document'=>$document]);	
+	}
     
     public function recordHit($document_id){
         $hit = new \App\DocumentHit;
@@ -53,8 +59,18 @@ class DocumentController extends Controller
             $size_limit = ini_get("upload_max_filesize");	
             $collection = \App\Collection::find($collection_id);
             $document = new \App\Document;
-       		return view('upload', ['collection'=>$collection, 'document'=>$document,'activePage'=>'Upload Document Form','titlePage'=>'Upload Document','size_limit'=>$size_limit]);
+       		return view('upload', ['collection'=>$collection, 'document'=>$document,
+				'activePage'=>'Upload Document Form','titlePage'=>'Upload Document',
+				'size_limit'=>$size_limit]);
    	}
+
+	public function sameMetaUpload(Request $request){
+        $size_limit = ini_get("upload_max_filesize");	
+        $collection = \App\Collection::find($request->collection_id);
+		return view('same-meta-upload',['collection'=> $collection, 
+			'size_limit'=>$size_limit, 'activePage'=>'Upload Document Form',
+			'master_document_id'=>$request->document_id]);
+	}
 
 	public function showEditForm($document_id)
     	{
@@ -106,9 +122,18 @@ class DocumentController extends Controller
             $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
 	
 			// Saved on chosen collection storage drive.
-			$filepath = $request->file('document')
+			// first make the required directory for Google Drive
+			$storages_needing_dir_creation = ['google'];
+			$driver = config("filesystems.disks.{$storage_drive}.driver");
+			if(in_array($driver, $storages_needing_dir_creation)){
+				$filepath = $request->file('document')
+                ->storeAs(null, $new_filename, $storage_drive);
+			}
+			else{
+				$filepath = $request->file('document')
 				->storeAs('smartarchive_assets/'.$request
 				->input('collection_id').'/'.\Auth::user()->id,$new_filename, $storage_drive);
+			}
 
 			//Saved locally for text extraction
 			$local_filepath = $request->file('document')
@@ -177,17 +202,29 @@ class DocumentController extends Controller
             }
 	} // else ends (document not uploaded)
 
+		if(!$request->input('master_document_id')){
         // extract meta
         $meta = $this->getMetaDataFromRequest($request);
         // put all meta values in a string
+		/*
         $meta_string = '';
         foreach($meta as $m){
-            $meta_string .= ' '.$m['field_value'].' ';
+			if(is_array($m['field_value'])){
+            	$meta_string .= ' '.json_encode($m['field_value']).' ';
+			}
+			else{
+            	$meta_string .= ' '.$m['field_value'].' ';
+			}
         }
+		*/
         // save meta data
         $this->saveMetaData($d->id, $meta);
+		}
+		else{
+			$this->duplicateDocumentMetadata($request->input('master_document_id'), $d->id);
+		}
         // also update the text_content of the document
-        $d->text_content = $d->text_content . $meta_string;
+        //$d->text_content = $d->text_content . $meta_string; // do we have to append meta with the document content?
 		
 		// more work needed below.
 		// if there are any errors above from the validator, an array of errors should be maintained
@@ -207,7 +244,12 @@ class DocumentController extends Controller
 		if(!empty($upload_status['errors'])){
 	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
 		}
-        return redirect('/collection/'.$request->input('collection_id')); 
+		if($request->input('same_meta_docs_upload')){
+        	return redirect('/collection/'.$request->input('collection_id').'/document/'.$upload_status['document_id'].'/same-meta-upload'); 
+		}
+		else{
+        	return redirect('/collection/'.$request->input('collection_id')); 
+		}
 	}
 
     public static function importFile($collection_id, $path, $meta=[]){
@@ -376,6 +418,9 @@ class DocumentController extends Controller
 			}
             $m_f->document_id = $document_id;
             $m_f->meta_field_id = $m['field_id'];
+			if(is_array($m['field_value'])){
+				$m['field_value'] = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
+			}
             $m_f->value = empty($m['field_value']) ? '' : $m['field_value'];
             $m_f->save();
         }
@@ -439,7 +484,13 @@ class DocumentController extends Controller
 }
 
 public function downloadFile($doc,$storage_drive){
-	$exists = Storage::disk($storage_drive)->exists($doc->path);
+	//$exists = Storage::disk($storage_drive)->exists($doc->path);
+	$cloud_storages = ['google'];
+	$driver = config("filesystems.disks.{$storage_drive}.driver");
+	if(in_array($driver, $cloud_storages)){
+		return $this->downloadCloudFile($doc, $storage_drive);
+	}
+
         try{
                 $file_url = $doc->path;
                 $file_path  = $doc->path;
@@ -466,6 +517,27 @@ public function downloadFile($doc,$storage_drive){
         catch(Exception $e){
                 return $this->respondInternalError( $e->getMessage(), 'object', 500);
         }
+}
+
+public function downloadCloudFile($doc, $storage_drive){
+	$filename = $doc->path;
+	$dir = '/';
+	$recursive = false;
+	$contents = collect(Storage::disk($storage_drive)->listContents($dir, $recursive));
+
+    $file = $contents
+        ->where('type', '=', 'file')
+        ->where('filename', '=', pathinfo($filename, PATHINFO_FILENAME))
+        ->where('extension', '=', pathinfo($filename, PATHINFO_EXTENSION))
+        ->first(); // there can be duplicate file names!
+
+    //return $file; // array with file info
+
+    $rawData = Storage::disk($storage_drive)->get($file['path']);
+
+    return response($rawData, 200)
+        ->header('ContentType', $file['mimetype'])
+        ->header('Content-Disposition', "attachment; filename='$filename'");
 }
 
 public function proofRead($collection_id,$document_id){
@@ -502,6 +574,17 @@ public function move(Request $req){
 	$document->collection_id = $req->collection_id;
 	$document->save();
 	return redirect('/collection/'.$req->collection_id.'/document/'.$document->id.'/details');
+}
+
+public function duplicateDocumentMetadata($master_doc_id, $target_doc_id){
+	$master_meta_vals = MetaFieldValue::where('document_id', $master_doc_id)->get();	
+	foreach($master_meta_vals as $m_v){
+		$new_meta_val = new MetaFieldValue;
+		$new_meta_val->document_id = $target_doc_id;
+		$new_meta_val->meta_field_id = $m_v->meta_field_id;
+		$new_meta_val->value = $m_v->value;
+		$new_meta_val->save();
+	}
 }
 
 ### End of class

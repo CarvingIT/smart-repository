@@ -605,6 +605,9 @@ class CollectionController extends Controller
 		if($d->type == 'application/pdf'){
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/pdf-reader" target="_blank"><i class="material-icons">open_in_browser</i></a>';
 		}
+		else if(preg_match('/^audio/',$d->type) || preg_match('/^video/',$d->type)){
+			$action_icons .= '<a class="btn btn-primary btn-link" title="Play" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/media-player" target="_blank"><i class="material-icons">play_arrow</i></a>';
+		}
 		else{
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
 		}
@@ -650,7 +653,12 @@ class CollectionController extends Controller
 			foreach($collection->meta_fields as $m){
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
 			if(!in_array($m->id, $column_config_meta_fields)) continue;
-			$result['meta_'.$m->id] = $d->meta_value($m->id);
+				if(($m->type=='MultiSelect' || $m->type == 'Select') && !empty($d->meta_value($m->id))){
+					$result['meta_'.$m->id] = implode(",",json_decode($d->meta_value($m->id)));
+				}
+				else{
+					$result['meta_'.$m->id] = $d->meta_value($m->id);
+				}
 			}
 		}
 
@@ -686,12 +694,29 @@ class CollectionController extends Controller
 				}
 			}
 			}
-            $new_meta_filters[$request->collection_id][] = array(
-                'filter_id'=>\Uuid::generate()->string,
-                'field_id'=>$request->meta_field,
-                'operator'=>$request->operator,
-                'value'=>$request->meta_value
-            );
+			if($request->operator == 'between'){
+				$range_parts = explode(' to ',ltrim(rtrim($request->meta_value)));
+            	$new_meta_filters[$request->collection_id][] = array(
+                	'filter_id'=>\Uuid::generate()->string,
+                	'field_id'=>$request->meta_field,
+                	'operator'=>'>=',
+                	'value'=> $range_parts[0]
+            	);
+            	$new_meta_filters[$request->collection_id][] = array(
+                	'filter_id'=>\Uuid::generate()->string,
+                	'field_id'=>$request->meta_field,
+                	'operator'=>'<=',
+                	'value'=> $range_parts[1]
+            	);
+			}
+			else{
+            	$new_meta_filters[$request->collection_id][] = array(
+                	'filter_id'=>\Uuid::generate()->string,
+                	'field_id'=>$request->meta_field,
+                	'operator'=>$request->operator,
+                	'value'=>$request->meta_value
+            	);
+			}
         }
         Session::put('meta_filters', $new_meta_filters);
         return redirect('/collection/'.$request->collection_id);
@@ -986,8 +1011,10 @@ use App\UrlSuppression;
 		return redirect('/collection/'.$collection->id);
 	}
 
-	public function export($collection_id){
-		$documents = \App\Document::where('collection_id', $collection_id)->get();
+	public function export(Request $request, $collection_id){
+		$documents = \App\Document::where('collection_id', $collection_id);
+		$documents = $this->getTitleFilteredDocuments($request, $documents);
+		$documents = $this->getMetaFilteredDocuments($request, $documents)->get();
 		$collection = \App\Collection::find($collection_id);
 		$meta_fields = $collection->meta_fields;
 		$filename = $collection->name;

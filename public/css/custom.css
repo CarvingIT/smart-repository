@@ -143,3 +143,13 @@ textarea#overridingcss{
 	font-weight:bold;
 	color:blue;
 }
+
+input::placeholder{
+	font-size:9px;
+}
+
+.align-top{
+	vertical-align:top;
+}
+
+

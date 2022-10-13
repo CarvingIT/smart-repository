@@ -16,7 +16,7 @@ class DocumentCreateTest extends TestCase
      */
     public function testFileUploadByMaintainer()
     {
-		$user = \App\User::find(1);
+		$user = \App\User::find(2);
 		$filename = $this->randomString().'.pdf';
 		$file = UploadedFile::fake()->create($filename, 100, 'application/pdf');
         $response = $this->actingAs($user)->followingRedirects()->json('POST','/collection/1/upload',
@@ -24,7 +24,7 @@ class DocumentCreateTest extends TestCase
         $response->assertStatus(200);
 
 		// make sure user who does not have permission can not upload here
-		$user = \App\User::find(2);
+		$user = \App\User::find(1);
 		$filename = $this->randomString().'.pdf';
 		$file = UploadedFile::fake()->create($filename, 100, 'application/pdf');
         $response = $this->actingAs($user)->followingRedirects()->json('POST','/collection/1/upload',
@@ -37,7 +37,7 @@ class DocumentCreateTest extends TestCase
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randstring = '';
         for ($i = 0; $i < 10; $i++) {
-            $randstring .= $characters[rand(0, strlen($characters))];
+            $randstring .= $characters[rand(0, strlen($characters) -1)];
         }
         return $randstring;
     }

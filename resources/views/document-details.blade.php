@@ -84,7 +84,13 @@ $(document).ready(function()
                         <div class="col-md-12">
                         <span id="doc-title" class="col-md-12"><h4>
 			@if($c->content_type == 'Uploaded documents')
-			<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				@if($document->type == 'application/pdf')
+            	<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_blank">
+				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
+            	<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
+				@else
+				<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				@endif
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
@@ -227,7 +233,11 @@ $(document).ready(function()
                         @if(!empty($meta_labels[$m->meta_field_id]))
                             <div class="col-md-12">
                             <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
+							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
+                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
+							@else
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
+							@endif
                             </div>
                         @endif
                         @endforeach

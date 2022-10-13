@@ -85,8 +85,8 @@
         @elseif ($f->type == 'Date')
         <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
 
-        @elseif ($f->type == 'Select')
-        <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}">
+        @elseif (in_array($f->type, array('Select', 'MultiSelect')))
+        <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif>
             @php
                 $options = explode(",", $f->options);
 				sort($options);
@@ -96,7 +96,11 @@
                 @php
                     $o = ltrim(rtrim($o));
                 @endphp
-            <option value="{{$o}}" @if($o == $document->meta_value($f->id)) selected="selected" @endif >{{$o}}</option>
+				@if($f->type == 'MultiSelect' || $f->type == 'Select')
+            	<option value="{{$o}}" @if(@in_array($o, json_decode($document->meta_value($f->id)))) selected="selected" @endif >{{$o}}</option>
+				@else
+            	<option value="{{$o}}" @if($o == $document->meta_value($f->id)) selected="selected" @endif >{{$o}}</option>
+				@endif
             @endforeach
         </select>
 		@elseif ($f->type == 'SelectCombo')
@@ -118,6 +122,14 @@
         </div>
     </div>
     @endforeach
+	<div class="form-group row">
+	   <div class="col-md-3 text-right">
+   		   <input id="same_meta_docs" type="checkbox" name="same_meta_docs_upload" value="1" /> 
+	   </div>
+   	   <div class="col-md-9">
+	   		<label for="same_meta_docs" class="col-md-12 col-form-label">Upload more documents of the same field values above</label>
+   	   </div>
+	</div>
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
         <button type="submit" class="btn btn-primary"> Save </button>

@@ -35,13 +35,6 @@ class DisksController extends Controller
 		else{
 			$disk = Disk::find($disk_id);
 		}
-		// add a check to see if a disk-name already exists in config/filesystems
-		// disallow use of the same name
-		$disks = array_keys(config('filesystems.disks'));
-			if(in_array($request->disk_name, $disks)){
-				abort(500, 'This disk exists');
-			}
-			// duplicate disk name check ends 
 			$disk->name = $request->disk_name;
 			$disk->driver = $request->driver;
 			
@@ -54,8 +47,17 @@ class DisksController extends Controller
 				$config = ['driver'=>$driver,'key'=>$request->key,'secret'=>$request->secret,
 				'region'=>$request->region,'bucket'=>$request->bucket,'endpoint'=>$request->endpoint];
 			}
+			else if($driver == 'google'){
+				$config = ['driver'=>$driver, 'clientId'=>$request->client_id, 'clientSecret' => $request->client_secret,
+				'refreshToken'=> $request->refresh_token, 'folderId' => $request->folder_id];
+			}
 			$disk->config = json_encode($config);
-			$disk->save();
+			try{
+				$disk->save();
+			}
+			catch(\Exception $e){
+				abort(500, 'Could not save the disk. Perhaps, the disk-name exists.');
+			}
 		return redirect('/admin/storagemanagement');
 	}
 

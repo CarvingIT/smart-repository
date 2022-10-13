@@ -176,6 +176,7 @@ return [
         App\Providers\RouteServiceProvider::class,
 		Aacotroneo\Saml2\Saml2ServiceProvider::class,
 		Creativeorange\Gravatar\GravatarServiceProvider::class,
+		App\Providers\GoogleDriveServiceProvider::class,
     ],
 
     /*
