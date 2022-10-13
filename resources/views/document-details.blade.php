@@ -86,6 +86,8 @@ $(document).ready(function()
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
             	<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_blank">
+				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
+            	<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
 				@else
 				<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
 				@endif

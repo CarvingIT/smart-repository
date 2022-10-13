@@ -98,6 +98,7 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('document_view');
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');

@@ -38,6 +38,11 @@ class DocumentController extends Controller
 	public function pdfReader($collection_id, $document_id){
 		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id]);	
 	}
+
+	public function mediaPlayer($collection_id, $document_id){
+		$document = Document::find($document_id);
+		return view('media-player',['collection_id'=>$collection_id,'document'=>$document]);	
+	}
     
     public function recordHit($document_id){
         $hit = new \App\DocumentHit;

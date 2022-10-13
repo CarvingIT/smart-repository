@@ -605,6 +605,9 @@ class CollectionController extends Controller
 		if($d->type == 'application/pdf'){
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/pdf-reader" target="_blank"><i class="material-icons">open_in_browser</i></a>';
 		}
+		else if(preg_match('/^audio/',$d->type) || preg_match('/^video/',$d->type)){
+			$action_icons .= '<a class="btn btn-primary btn-link" title="Play" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/media-player" target="_blank"><i class="material-icons">play_arrow</i></a>';
+		}
 		else{
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
 		}
