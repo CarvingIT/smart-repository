@@ -1014,10 +1014,11 @@ use App\UrlSuppression;
 	public function export(Request $request, $collection_id){
 		$documents = \App\Document::where('collection_id', $collection_id);
 		$documents = $this->getTitleFilteredDocuments($request, $documents);
-		$documents = $this->getMetaFilteredDocuments($request, $documents)->get();
+		$documents = $this->getMetaFilteredDocuments($request, $documents);
+
 		$collection = \App\Collection::find($collection_id);
-		$meta_fields = $collection->meta_fields;
 		$filename = $collection->name;
+		$meta_fields = $collection->meta_fields;
 		header("Content-type: text/csv");
 		header("Content-Disposition: attachment; filename={$filename}.tsv");
 		header("Pragma: no-cache");
@@ -1027,9 +1028,11 @@ use App\UrlSuppression;
 			echo $m->label."\t";
 		}
 		echo "\n";
+		$documents->chunk(10, function($documents){
 		foreach($documents as $d){
 			// remove tab spaces from the title, if present
 			echo $d->id."\t".preg_replace("/\t/", " ", $d->title)."\t";
+			$meta_fields = $d->collection->meta_fields;
 			foreach($meta_fields as $m){
 				if(!empty($d->meta_value($m->id))){
 					echo preg_replace("/\t/"," ", $d->meta_value($m->id));
@@ -1041,6 +1044,7 @@ use App\UrlSuppression;
 			}
 			echo "\n";
 		}
+		});// chunking ends
 		exit;
 	}
 
