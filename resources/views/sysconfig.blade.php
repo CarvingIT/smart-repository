@@ -23,7 +23,7 @@
                         @endif
                     @endforeach
 
-                   <form method="post" action="/admin/sysconfig">
+                   <form method="post" action="/admin/sysconfig" enctype="multipart/form-data">
                     @csrf()
                    <div class="form-group row">
                     <div class="col-md-12">
@@ -35,9 +35,12 @@
                    <label for="logo_url" class="col-md-12 col-form-label text-md-right">Logo URL</label> 
 		           </div>
                     <div class="col-md-9">
-                    <input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" />
+                    <!--input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" /-->
+                   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
+                   <input id="logo_url" type="file" class="form-control-file" name="logo_url">
                     </div>
                    </div>
+
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="favicon_url" class="col-md-12 col-form-label text-md-right">Favicon URL</label> 
