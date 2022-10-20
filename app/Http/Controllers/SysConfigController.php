@@ -12,10 +12,11 @@ class SysConfigController extends Controller
 	$size_limit = ini_get("upload_max_filesize");
 	$config_details = Sysconfig::all();
 	$sysconfig = array();
+	$storage_disks =  config('filesystems.disks');
 	foreach($config_details as $details){
         	$sysconfig[$details['param']] = $details['value'];
 	}
-        return view('sysconfig',['sysconfig'=>$sysconfig,'size_limit'=>$size_limit]);
+        return view('sysconfig',['sysconfig'=>$sysconfig,'size_limit'=>$size_limit,'storage_disks'=>$storage_disks]);
     }
 
     public function save(Request $request){
@@ -24,13 +25,22 @@ class SysConfigController extends Controller
             $filename = $request->file('logo_url')->getClientOriginalName();
             $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
 	    $local_filepath = $request->file('logo_url')
-                                ->storeAs('/public/sysconfig/'.\Auth::user()->id,$new_filename);
+                                ->storeAs('public/',$new_filename,'local');
+	}
+	if($request->hasFile('favicon_url')){
+            $fa_filename = $request->file('favicon_url')->getClientOriginalName();
+            $fa_new_filename = \Auth::user()->id.'_'.time().'_'.$fa_filename;
+	    $local_filepath = $request->file('favicon_url')
+                                ->storeAs('public/',$fa_new_filename,'local');
 	}
 	foreach ($request->except('_token') as $key => $part) {
     	$c = new \App\Sysconfig;
 		$c->param = $key;
-		if($key == 'logo_url'){
+		if($key == 'logo_url'){ 
 		$c->value = $new_filename;
+		}
+		elseif($key == 'favicon_url'){
+		$c->value = $fa_new_filename;
 		}
 		else{
 		$c->value = $part;

@@ -16,7 +16,7 @@ $collections = \App\Collection::all();
     <div class="navbar-wrapper">
       <a class="navbar-brand" href="/">
 	@if(!empty($sysconfig['logo_url']))
-	<img class="logo_img" src="{{ $sysconfig['logo_url'] }}">
+	<img class="logo_img" src="/storage/{{ $sysconfig['logo_url'] }}">
 	@else
 	<img class="logo_img" src="/i/your-logo.png" />
 	@endif

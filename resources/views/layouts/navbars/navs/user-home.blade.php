@@ -16,7 +16,7 @@ $app_name = env('APP_NAME');
       <!--a class="navbar-brand" href="/">{{ __('Smart Repository') }}</a-->
 	<a class="navbar-brand" href="/">
 	@if(!empty($sysconfig['logo_url']))
-	<img class="logo_img" src="{{ $sysconfig['logo_url'] }}">
+	<img class="logo_img" src="/storage/{{ $sysconfig['logo_url'] }}">
 	@else
 	<img class="logo_img" src="/i/your-logo.png" />
 	@endif

@@ -30,6 +30,7 @@
                         <h4>Site Configuration</h4>
 		            </div>
                    </div>
+		  
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="logo_url" class="col-md-12 col-form-label text-md-right">Logo URL</label> 
@@ -46,9 +47,12 @@
                    <label for="favicon_url" class="col-md-12 col-form-label text-md-right">Favicon URL</label> 
 		           </div>
                     <div class="col-md-9">
-                    <input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" />
+                    <!--input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" /-->
+                   <label for='filesize'><font color="red">File size must be less than 50KB.</font></label>
+                   <input id="favicon_url" type="file" class="form-control-file" name="favicon_url">
                     </div>
                    </div>
+
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="home_page" class="col-md-12 col-form-label text-md-right">Home page info</label> 

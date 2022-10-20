@@ -13,7 +13,7 @@ foreach($config_details as $details){
       <!--a class="navbar-brand" href="#">{{$titlePage}}</a-->
 	<a class="navbar-brand" href="/">
 	@if(!empty($sysconfig['logo_url']))
-	<img src="{{ $sysconfig['logo_url'] }}">
+	<img src="/storage/{{ $sysconfig['logo_url'] }}">
 	@else
 	<img src="/i/your-logo.png" />
 	@endif
