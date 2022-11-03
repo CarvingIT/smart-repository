@@ -39,9 +39,10 @@ class SAMLLogin
         'assertion' => $user->getRawSamlAssertion()
     	];
 
-		//Log::info('User info: '.json_encode($userData));
-		Log::info('Username: '.$userData['attributes']['username'][0]);
-        $laravelUser = User::where('email', $userData['attributes']['username'][0])->first();//find user by ID or attribute
+		Log::info('User info: '.json_encode($userData));
+
+        //$laravelUser = User::where('email', $userData['attributes']['username'][0])->first();//find user by ID or attribute
+        $laravelUser = User::where('email', $userData['id'])->first();//find user by ID or attribute
         //if it does not exist create it and go on  or show an error message
 		if($laravelUser){
         	Auth::login($laravelUser);
@@ -51,8 +52,10 @@ class SAMLLogin
 			// create and login
 			Log::info('User does not exist. Need to create.');
 			$laravelUser = new User;
-			$laravelUser->email = $userData['attributes']['username'][0];
-			$laravelUser->name = $userData['attributes']['name'][0];
+			//$laravelUser->email = $userData['attributes']['username'][0]; // this works with SimpleSAMLPHP's IDP
+			// id should always be there
+			$laravelUser->email = $userData['id'];
+			//$laravelUser->name = $userData['attributes']['name'][0];
 			$laravelUser->password = '! Created through SSO';
 			$laravelUser->save();
         	Auth::login($laravelUser);
