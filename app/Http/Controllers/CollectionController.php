@@ -433,7 +433,7 @@ class CollectionController extends Controller
 		}
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
-				if(\Auth::user()->id){
+				if(!empty(\Auth::user()->id)){
 					$documents = $documents->orWhere('created_by', \Auth::user()->id);
 				}
         		$elastic_index = 'sr_documents';
