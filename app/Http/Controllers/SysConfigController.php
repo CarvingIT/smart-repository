@@ -20,7 +20,7 @@ class SysConfigController extends Controller
     }
 
     public function save(Request $request){
-	\DB::table('sysconfig')->delete();
+
 	if($request->hasFile('logo_url')){
             $filename = $request->file('logo_url')->getClientOriginalName();
             $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
@@ -34,7 +34,18 @@ class SysConfigController extends Controller
                                 ->storeAs('public/',$fa_new_filename,'local');
 	}
 	foreach ($request->except('_token') as $key => $part) {
-    	$c = new \App\Sysconfig;
+    	$c = Sysconfig::all();
+	foreach($c as $config){
+		if(($config->param == 'logo_url' && empty($request->file('logo_url'))) || ($config->param == 'favicon_url' && !empty($request->file('favicon_url')))){ 
+			continue; 
+		}
+		else{
+		$c_param = Sysconfig::where('param',$key)->first();
+		if(!empty($c_param)){
+		$c_param->delete();	
+		}
+
+    		$c = new \App\Sysconfig;
 		$c->param = $key;
 		if($key == 'logo_url'){ 
 		$c->value = $new_filename;
@@ -46,7 +57,9 @@ class SysConfigController extends Controller
 		$c->value = $part;
 		}
 		$c->save();
+		}
 	}
+	}## config_key foreach ends
 
         Session::flash('alert-success', 'System Configuration saved successfully!');
         return redirect('/admin/sysconfig');
