@@ -108,7 +108,7 @@ class CrawlHandler extends CrawlObserver{
 	if($mime_type == 'text/html'){
 		#$paragraph = $this->delete_all_between('<script type"text/javascript">', '</script>', $content);
 		$paragraph = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
-//echo "getText".$mime_type; echo $paragraph; exit;
+		//echo "getText".$mime_type; echo $paragraph; exit; //SKK;
 		$html = new \Html2Text\Html2Text($paragraph);
 		//$html = new \Html2Text\Html2Text($content);
 		return $html->getText();
@@ -120,7 +120,12 @@ class CrawlHandler extends CrawlObserver{
 			$fh = fopen($tmp_path,'w+');
 			fwrite($fh, $content);
 			fclose($fh);
+			try{
 			$text = $this->extractText($tmp_path, $mime_type);
+			}
+			catch(\Exception $e){
+			echo $e->getMessage();
+			}
 			unlink($tmp_path);
 			return $text;
 		}
@@ -173,7 +178,10 @@ class CrawlHandler extends CrawlObserver{
         }
         else if(preg_match('/^image\//', $mime_type)){
             // try OCR
-            $text = utf8_encode((new TesseractOCR($path))->run());
+	//	echo "SKK"; echo $path; echo env('ENABLE_OCR'); exit;
+		if(env('ENABLE_OCR') == 1){
+            	$text = utf8_encode((new TesseractOCR($path))->run());
+		}
         }
         else if(preg_match('/^text\//', $mime_type)){
             $text = file_get_contents($path);
