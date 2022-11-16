@@ -15,7 +15,7 @@ foreach($config as $c){
     <title>{{ __('Smart Repository - Knowledge management made easy') }}</title>
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('material') }}/img/apple-icon.png">
 	@if(!empty($settings['favicon_url']))
-    <link rel="icon" type="image/png" href="{{ $settings['favicon_url']}}">
+    <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon_url']}}">
 	@else
     <link rel="icon" type="image/png" href="{{ asset('material') }}/img/favicon.png">
 	@endif
