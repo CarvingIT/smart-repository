@@ -106,7 +106,11 @@ class CrawlHandler extends CrawlObserver{
    private function getText($mime_type, $content){
 	try{
 	if($mime_type == 'text/html'){
-		$html = new \Html2Text\Html2Text($content);
+		#$paragraph = $this->delete_all_between('<script type"text/javascript">', '</script>', $content);
+		$paragraph = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+//echo "getText".$mime_type; echo $paragraph; exit;
+		$html = new \Html2Text\Html2Text($paragraph);
+		//$html = new \Html2Text\Html2Text($content);
 		return $html->getText();
 	}
 	else{
@@ -128,6 +132,18 @@ class CrawlHandler extends CrawlObserver{
 		echo "ERROR: ".$e->getMessage()."\n"; 
 	}
    }
+
+   private function delete_all_between($beginning, $end, $string) {
+        $beginningPos = strpos($string, $beginning);
+        $endPos = strpos($string, $end);
+        if (!$beginningPos || !$endPos) {
+            return $string;
+        }
+
+        $textToDelete = substr($string, $beginningPos, ($endPos + strlen($end)) - $beginningPos);
+
+        return str_replace($textToDelete, '', $string);
+    }
 
    private function getFileExtension($mime_type){
 	$extensions = array('image/jpeg' => 'jpg',
