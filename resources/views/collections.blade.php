@@ -5,6 +5,9 @@
 <div class="container-fluid">
     <div class="row justify-content-center">
         @foreach ($collections as $c)
+		@if($c->content_type == 'Web resources' && env('SHOW_WEB_RESOURCES') != 1)
+			@continue
+		@endif
         <div class="col-sm-12 col-md-4">
             <div class="card">
             <div class="card-header card-header-primary">
