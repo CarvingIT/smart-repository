@@ -58,6 +58,8 @@
           </form>
         </div>
       </div>
+
+	  @if(auth()->user()->password != '! Created through SSO')
       <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
           <form method="post" action="{{ route('profile.password') }}" class="form-horizontal">
@@ -120,6 +122,8 @@
           </form>
         </div>
       </div>
+
+	@endif 
 
       <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
