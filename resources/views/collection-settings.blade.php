@@ -84,31 +84,30 @@
 			@if(!empty($column_config->show_audit_trail) && $column_config->show_audit_trail == 1) checked="checked" @endif /> Show audit trail</div>
 			<hr />
            <div class="col-md-12 row">
-			<div class="col-md-3"><h5>Current label</h5></div>
-			<div class="col-md-3"><h5>Hidden?</h5></div>
+			<div class="col-md-5"><h5>Current label</h5></div>
+			<div class="col-md-2"><h5>Hide Label?</h5></div>
+			<div class="col-md-2"><h5>Hide Field?</h5></div>
 			<div class="col-md-3"><h5>Label override</h5></div>
-			<div class="col-md-3"><h5>Display order</h5></div>
 			</div>
 			
 			@foreach($collection->meta_fields as $m)
            <div class="col-md-12 row">
-			<div class="col-md-3">{{ $m->label }}</div>
+			<div class="col-md-5">{{ $m->label }}</div>
 			@php 
-				$hide = 'meta_hide_'.$m->id; 
 				$display_label = 'meta_display_label_'.$m->id;
-				$display_order = 'meta_display_order_'.$m->id;
 			@endphp
-			<div class="col-md-3">
-			<input name="meta_hide_{{ $m->id }}" type="checkbox" value="1" 
-			@if(!empty($column_config->{$hide})) checked="checked" @endif />
+			<div class="col-md-2">
+			<input name="meta_hide_label[]" type="checkbox" value="{{$m->id}}" 
+			@if(in_array($m->id, $column_config->meta_hide_label)) checked="checked" @endif />
 			</div>
-			<div class="col-md-3">
-			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="Label for display"
-			@if(!empty($column_config->{$display_label})) @endif /> 
+
+			<div class="col-md-2">
+			<input name="meta_hide_field[]" type="checkbox" value="{{$m->id}}" 
+			@if(in_array($m->id, $column_config->meta_hide_field)) checked="checked" @endif />
 			</div>
+
 			<div class="col-md-3">
-			<input name="meta_display_order_{{ $m->id }}" type="number" value="{{ @$column_config->{$display_order} }}" placeholder="Display order"
-			@if(!empty($column_config->{$display_order})) @endif /> 
+			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="Label for display" />
 			</div>
 
 			</div>
