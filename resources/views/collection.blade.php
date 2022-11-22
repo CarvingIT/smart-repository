@@ -10,10 +10,10 @@
 $column_config = json_decode($collection->column_config);
 list($hide_type, $hide_title, $hide_size, $hide_creation_time) = array(false, false, false, false);
 if(!empty($collection->column_config)){
-	if($column_config->type != 1) $hide_type = true;
-	if($column_config->title != 1) $hide_title = true;
-	if($column_config->size != 1) $hide_size = true;
-	if($column_config->creation_time != 1) $hide_creation_time = true;
+	if(@$column_config->type != 1) $hide_type = true;
+	if(@$column_config->title != 1) $hide_title = true;
+	if(@$column_config->size != 1) $hide_size = true;
+	if(@$column_config->creation_time != 1) $hide_creation_time = true;
 }
 @endphp
 <script>

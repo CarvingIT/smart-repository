@@ -653,7 +653,7 @@ class CollectionController extends Controller
 			foreach($collection->meta_fields as $m){
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
 			if(!in_array($m->id, $column_config_meta_fields)) continue;
-				if(($m->type=='MultiSelect' || $m->type == 'Select') && !empty($d->meta_value($m->id))){
+				if(is_array(json_decode($d->meta_value($m->id)))){ // applies to fields of type Select and MultiSelect
 					$result['meta_'.$m->id] = implode(",",json_decode($d->meta_value($m->id)));
 				}
 				else{
@@ -977,16 +977,7 @@ use App\UrlSuppression;
 	
 	public function saveSettings(Request $request){
 		$collection = Collection::find($request->collection_id);
-		$col_config = array(
-			'title' => $request->input('title'),
-			'title_search' => $request->input('title_search'),
-			'type'=>$request->input('type'),
-			'creation_time'=>$request->input('creation_time'),
-			'size'=>$request->input('size'),
-			'slack_webhook'=>$request->input('slack_webhook'),
-			'meta_fields'=>$request->input('meta_fields'),
-			'meta_fields_search'=>$request->input('meta_fields_search')
-		);
+		$col_config = $request->all();
 		$collection->column_config = json_encode($col_config);
 		$collection->save();
 		// configuration of mapping of mailbox

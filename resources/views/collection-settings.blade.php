@@ -74,6 +74,47 @@
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search)) checked="checked" @endif /> {{ $m->label }}</div>
 			@endforeach
 		</div>
+
+
+		<h4>{{__('Info page')}}</h4>
+		<div class="form-group row">
+           <div class="col-md-3"><input name="show_word_cloud" type="checkbox" value="1" 
+			@if(!empty($column_config->show_word_cloud) && $column_config->show_word_cloud == 1) checked="checked" @endif /> Show word cloud</div>
+           <div class="col-md-3"><input name="show_audit_trail" type="checkbox" value="1" 
+			@if(!empty($column_config->show_audit_trail) && $column_config->show_audit_trail == 1) checked="checked" @endif /> Show audit trail</div>
+			<hr />
+           <div class="col-md-12 row">
+			<div class="col-md-3"><h5>Current label</h5></div>
+			<div class="col-md-3"><h5>Hidden?</h5></div>
+			<div class="col-md-3"><h5>Label override</h5></div>
+			<div class="col-md-3"><h5>Display order</h5></div>
+			</div>
+			
+			@foreach($collection->meta_fields as $m)
+           <div class="col-md-12 row">
+			<div class="col-md-3">{{ $m->label }}</div>
+			@php 
+				$hide = 'meta_hide_'.$m->id; 
+				$display_label = 'meta_display_label_'.$m->id;
+				$display_order = 'meta_display_order_'.$m->id;
+			@endphp
+			<div class="col-md-3">
+			<input name="meta_hide_{{ $m->id }}" type="checkbox" value="1" 
+			@if(!empty($column_config->{$hide})) checked="checked" @endif />
+			</div>
+			<div class="col-md-3">
+			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="Label for display"
+			@if(!empty($column_config->{$display_label})) @endif /> 
+			</div>
+			<div class="col-md-3">
+			<input name="meta_display_order_{{ $m->id }}" type="number" value="{{ @$column_config->{$display_order} }}" placeholder="Display order"
+			@if(!empty($column_config->{$display_order})) @endif /> 
+			</div>
+
+			</div>
+			@endforeach
+		</div>
+
 		<h4>{{__('Notifications')}}</h4>
 		<div class="form-group row">
 			<div class="col-md-2 text-right">
