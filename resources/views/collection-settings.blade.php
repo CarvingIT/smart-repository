@@ -59,6 +59,9 @@
 			@if(!empty($column_config->creation_time) && $column_config->creation_time == 1) checked="checked" @endif /> {{ __('Creation time') }}</div>
 
 			@foreach($collection->meta_fields as $m)
+			@if($m->type == 'Textarea')
+				@continue
+			@endif
            <div class="col-md-3"><input name="meta_fields[]" type="checkbox" value="{{ $m->id }}" 
 			@if(!empty($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ __($m->label) }}</div>
 			@endforeach

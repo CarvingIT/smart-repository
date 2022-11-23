@@ -213,7 +213,7 @@ function randomString(length) {
 			@endif
 			@foreach($meta_fields as $m)
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
-			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric')
+			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
