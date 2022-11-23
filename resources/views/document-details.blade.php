@@ -1,5 +1,14 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'faq','titlePage'=>'FAQ'])
 
+@php
+    $c = \App\Collection::find($document->collection_id);
+    $meta_fields = $c->meta_fields;
+    $meta_labels = array();
+    foreach($meta_fields as $mf){
+        $meta_labels[$mf->id] = $mf->label;
+    }
+	$col_config = json_decode($c->column_config);
+@endphp
 @push('js')
 <link rel="stylesheet" href="/css/jquery-ui.css">
 <script src="/js/jquery-ui.js"></script>
@@ -12,6 +21,7 @@
     });
   } );
 </script>
+@if (!empty($col_config->show_word_cloud))
 <script src="/js/jQWCloudv3.4.1.js"></script>
 <script>
 var docwords = new Array();
@@ -52,19 +62,12 @@ $(document).ready(function()
     });
 });
 </script>
+@endif
 @endpush
 @section('content')
 <div class="container">
 <div class="container-fluid">
 
-@php
-    $c = \App\Collection::find($document->collection_id);
-    $meta_fields = $c->meta_fields;
-    $meta_labels = array();
-    foreach($meta_fields as $mf){
-        $meta_labels[$mf->id] = $mf->label;
-    }
-@endphp
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
@@ -80,7 +83,7 @@ $(document).ready(function()
                   </div>
 
                   <div class="row">
-                    <div class="col-md-9">
+                    <div class="col-md-12">
                         <div class="col-md-12">
                         <span id="doc-title" class="col-md-12"><h4>
 			@if($c->content_type == 'Uploaded documents')
@@ -96,8 +99,31 @@ $(document).ready(function()
 			@endif
 			{{ $document->title }}</a></h4></span>
                         </div>
+			@if($c->content_type == 'Uploaded documents')
+					<div class="row">
+                        @foreach($document->meta as $m)
+                        @if(!empty($meta_labels[$m->meta_field_id]))
+							@if ($m->type == 'Textarea')
+                            <div class="col-md-12">
+							@else
+                            <div class="col-md-3">
+							@endif
+                            <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
+							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
+                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
+							@else
+                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
+							@endif
+                            </div>
+                        @endif
+                        @endforeach
+					</div>
+			@endif
+						@if (!empty($col_config->show_word_cloud))
                         <div class="col-md-12"><div id="wordcloud"><img src='/i/processing.gif'></div></div>
+						@endif
 
+						@if (!empty($col_config->show_audit_trail))
 						<div class="col-md-12">
 						<h3>Audit Trail</h3>
 						@php
@@ -162,6 +188,7 @@ $(document).ready(function()
 						@endif
 
 						</div>
+						@endif
 
 						@if(Auth::user() && Auth::user()->hasPermission($document->collection->id, 'MAINTAINER'))
 						@if ($document->collection->parent_id || $document->collection->children->count() > 0)
@@ -228,20 +255,6 @@ $(document).ready(function()
                         <label for="doc-type" class="col-md-12">Type</label>
                         <span id="doc-type" class="col-md-12">{{ $document->type }}</span>
                         </div>
-			@if($c->content_type == 'Uploaded documents')
-                        @foreach($document->meta as $m)
-                        @if(!empty($meta_labels[$m->meta_field_id]))
-                            <div class="col-md-12">
-                            <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
-							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
-                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
-							@else
-                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
-							@endif
-                            </div>
-                        @endif
-                        @endforeach
-			@endif
                     </div>
                   </div>
 
