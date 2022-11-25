@@ -103,7 +103,7 @@ class DocumentController extends Controller
 		if ($validator->fails()) {
             //Session::flash('alert-danger', 'File size exceeded. The file size should not be more than '.$size_limit.'B.');
             //return redirect('/collection/'.$collection_id.'/upload');
-			return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
+		return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
         }
 		// Filesize validation code ends
 
@@ -119,7 +119,7 @@ class DocumentController extends Controller
 
 		if($request->hasFile('document')){
 			$filename = $request->file('document')->getClientOriginalName();
-            $new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
+            		$new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
 	
 			// Saved on chosen collection storage drive.
 			// first make the required directory for Google Drive

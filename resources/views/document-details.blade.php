@@ -88,22 +88,35 @@ $(document).ready(function()
                         <span id="doc-title" class="col-md-12"><h4>
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
-            	<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_blank">
+            			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_blank">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
-            	<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
+				<div style="text-align:center;">
+                        <h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>
+        {{ $document->title }}</h3>
+        <video controls width="400">
+        <source src="/collection/{{ $c->id }}/document/{{ $document->id }}" type="video/mp4">
+        </video>
+        </div>
+            			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
 				@else
 				<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
 				@endif
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
-			{{ $document->title }}</a></h4></span>
+			{{-- $document->title --}}</a></h4></span>
                         </div>
+
 			@if($c->content_type == 'Uploaded documents')
-					<div class="row">
+			<div class="row">
                         @foreach($document->meta as $m)
+
+			@php 
+				$meta_field = App\MetaField::find($m->meta_field_id);
+				$meta_field_type = $meta_field->type;
+			 @endphp
                         @if(!empty($meta_labels[$m->meta_field_id]))
-							@if ($m->type == 'Textarea')
+							@if ($meta_field_type == 'Textarea')
                             <div class="col-md-12">
 							@else
                             <div class="col-md-3">
@@ -112,12 +125,14 @@ $(document).ready(function()
 							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
 							@else
-                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span>
+                            <!--span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span-->
+                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $m->value !!}</div>
+				<br />
 							@endif
                             </div>
                         @endif
                         @endforeach
-					</div>
+			</div><!-- row ends -->
 			@endif
 						@if (!empty($col_config->show_word_cloud))
                         <div class="col-md-12"><div id="wordcloud"><img src='/i/processing.gif'></div></div>
@@ -219,6 +234,9 @@ $(document).ready(function()
 						@endif
 
                     </div>
+
+
+<!--
                     <div class="col-md-3">
                         <div class="col-md-12">
                         <span id="doc-download-open" class="col-md-12">
@@ -257,6 +275,7 @@ $(document).ready(function()
                         </div>
                     </div>
                   </div>
+-->
 
                    </div><!-- card body ends -->
                 </div>

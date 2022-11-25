@@ -1,5 +1,42 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar'])
+@push('js')
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+<script src="https://cdn.tiny.cloud/1/57yud8hji4ltgdkaea05vb4gx1yvvbqdmzx605fgpsauwm10/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+                                selector: '#document_description',
+                                plugins: [
+                                    "advlist autolink lists link image charmap print preview hr anchor pagebreak",
+                                    "searchreplace wordcount visualblocks visualchars code fullscreen",
+                                    "insertdatetime media table nonbreaking save contextmenu directionality paste"
+                                ],
+                                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+                                relative_urls: false,
+                                remove_script_host: false,
+                                convert_urls: true,
+                                force_br_newlines: true,
+                                force_p_newlines: false,
+                                forced_root_block: '', // Needed for 3.x
+                              file_picker_callback (callback, value, meta) {
+        let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth
+        let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight
+	
+	tinymce.activeEditor.windowManager.openUrl({
+          url : '/file-manager/tinymce5',
+          title : 'Laravel File manager',
+          width : x * 0.8,
+          height : y * 0.8,
+          onMessage: (api, message) => {
+            callback(message.content, { text: message.text })
+          }
+        })
+      },
+   });
 
+</script>
+
+@endpush
 @section('content')
 <div class="container">
 <div class="container-fluid">
@@ -81,7 +118,7 @@
         @if($f->type == 'Text')
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
         @elseif ($f->type == 'Textarea')
-        <textarea class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" />{{ $document->meta_value($f->id) }}</textarea>
+        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" />{{ $document->meta_value($f->id) }}</textarea>
         @elseif ($f->type == 'Numeric')
         <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" />
         @elseif ($f->type == 'Date')
