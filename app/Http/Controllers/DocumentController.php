@@ -101,10 +101,10 @@ class DocumentController extends Controller
 	    	'document' => 'file|max:'.$actual_size
         	]);
 		if ($validator->fails()) {
-            //Session::flash('alert-danger', 'File size exceeded. The file size should not be more than '.$size_limit.'B.');
-            //return redirect('/collection/'.$collection_id.'/upload');
+            		//Session::flash('alert-danger', 'File size exceeded. The file size should not be more than '.$size_limit.'B.');
+            		//return redirect('/collection/'.$collection_id.'/upload');
 		return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
-        }
+        	}
 		// Filesize validation code ends
 
         if(!empty($request->input('document_id'))){
@@ -586,6 +586,7 @@ public function duplicateDocumentMetadata($master_doc_id, $target_doc_id){
 		$new_meta_val->save();
 	}
 }
+
 
 ### End of class
 }

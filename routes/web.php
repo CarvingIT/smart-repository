@@ -32,8 +32,6 @@ Route::get('/faq', function () {
     return view('faq');
 });
 
-
-
 Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/collections', 'CollectionController@list');
 Route::get('/documents', 'DocumentController@list');

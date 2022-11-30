@@ -53,6 +53,23 @@
                     </div>
                    </div>
 
+		   <div class="form-group row">
+                    <div class="col-md-3">
+                   <label for="driver" class="col-md-12 col-form-label text-md-right">Media Disk Storage</label>
+                    </div>
+                    <div class="col-md-9">
+					<select name="storage_drive" class="selectpicker">
+                                		@foreach($storage_disks as $disk => $type)
+                                       			@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local')
+                                                		@continue
+                                        		@endif
+                                    		<option value="{{ $disk }}" @if(@$sysconfig['storage_drive'] == $disk) selected @endif>{{ $disk }}</option>
+                                		@endforeach
+                        		</select>
+                    </div>
+                   </div>
+
+
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="home_page" class="col-md-12 col-form-label text-md-right">Home page info</label> 

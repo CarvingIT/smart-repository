@@ -85,26 +85,34 @@ $(document).ready(function()
                   <div class="row">
                     <div class="col-md-12">
                         <div class="col-md-12">
-                        <span id="doc-title" class="col-md-12"><h4>
+                        <span id="doc-title" class="col-md-12"><!--h4-->
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
-            			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_blank">
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
+            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_blank">
+				@elseif($document->type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
-				<div style="text-align:center;">
-                        <h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>
-        {{ $document->title }}</h3>
-        <video controls width="400">
-        <source src="/collection/{{ $c->id }}/document/{{ $document->id }}" type="video/mp4">
-        </video>
-        </div>
+					<div style="text-align:center;">
+                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
+        				<video controls width="400">
+        				<source src="/collection/{{ $c->id }}/document/{{ $document->id }}" type="video/mp4">
+        				</video>
+        				</div>
             			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
+				@elseif($document->type == 'image/jpeg' || $document->type == 'image/png')
+					<div style="text-align:center;">
+                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
+					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}" style="width:50%">
+					</div>
+            			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_blank">
 				@else
-				<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
 				@endif
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
-			{{-- $document->title --}}</a></h4></span>
+			<h4>{{ $document->title }}</h4></a></span>
                         </div>
 
 			@if($c->content_type == 'Uploaded documents')

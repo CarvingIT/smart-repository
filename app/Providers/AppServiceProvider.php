@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use App\Disk;
+use App\Sysconfig;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,6 +37,14 @@ class AppServiceProvider extends ServiceProvider
 			$all_disks = array_merge($config_disks, $db_disks);
 			// update the filesystem config with all disks
 			config(['filesystems.disks'=>$all_disks]);
+
+			/* Media File Manager Disks setting */
+			$sysconfig = array();
+			$config_details = SysConfig::all();
+			foreach($config_details as $details){
+                		$sysconfig[$details['param']] = $details['value'];
+        		}
+			config(['file-manager.diskList'=>[$sysconfig['storage_drive']]]);
 		}
 		catch(\Exception $e){
 			// do nothing
