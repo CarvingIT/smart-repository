@@ -133,7 +133,7 @@
                                     "insertdatetime media table nonbreaking save contextmenu directionality paste"
                                 ],
                                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-                                relative_urls: false,
+                                relative_urls: true,
                                 remove_script_host: false,
                                 convert_urls: true,
                                 force_br_newlines: true,
