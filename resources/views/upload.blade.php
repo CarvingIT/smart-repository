@@ -11,10 +11,10 @@ tinymce.init({
                                     "searchreplace wordcount visualblocks visualchars code fullscreen",
                                     "insertdatetime media table nonbreaking save contextmenu directionality paste"
                                 ],
-                                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+                                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code",
                                 relative_urls: false,
-                                remove_script_host: false,
-                                convert_urls: true,
+                                //remove_script_host: false,
+                                //convert_urls: true,
                                 force_br_newlines: true,
                                 force_p_newlines: false,
                                 forced_root_block: '', // Needed for 3.x
@@ -24,11 +24,13 @@ tinymce.init({
 	
 	tinymce.activeEditor.windowManager.openUrl({
           url : '/file-manager/tinymce5',
-          title : 'Laravel File manager',
+          title : 'File manager',
           width : x * 0.8,
           height : y * 0.8,
           onMessage: (api, message) => {
-            callback(message.content, { text: message.text })
+			//alert(message.content);
+            //callback(message.content, { text: message.text })
+            callback('/media/image/'+message.text, { text: message.text })
           }
         })
       },
