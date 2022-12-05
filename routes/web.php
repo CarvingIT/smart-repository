@@ -93,6 +93,8 @@ Route::get('/collection/{collection_id}/removefilter/{field_id}', 'CollectionCon
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllMetaFilters');
 Route::get('/collection/{collection_id}/removetitlefilter', 'CollectionController@removeTitleFilter');
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllFilters');
+// media route; just like the document download route
+Route::get('/media/i/{filename}', 'MediaController@loadImage');
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');

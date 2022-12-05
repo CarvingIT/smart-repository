@@ -58,14 +58,15 @@
                    <label for="driver" class="col-md-12 col-form-label text-md-right">Media Disk Storage</label>
                     </div>
                     <div class="col-md-9">
-					<select name="storage_drive" class="selectpicker">
-                                		@foreach($storage_disks as $disk => $type)
-                                       			@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local')
-                                                		@continue
-                                        		@endif
-                                    		<option value="{{ $disk }}" @if(@$sysconfig['storage_drive'] == $disk) selected @endif>{{ $disk }}</option>
-                                		@endforeach
-                        		</select>
+					<select name="media_storage_drive" class="selectpicker">
+							<option value="">Select</option>
+                       		@foreach($storage_disks as $disk => $type)
+                       			@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local')
+                             		@continue
+                           		@endif
+                           		<option value="{{ $disk }}" @if(@$sysconfig['media_storage_drive'] == $disk) selected @endif>{{ $disk }}</option>
+                       		@endforeach
+               		</select>
                     </div>
                    </div>
 
