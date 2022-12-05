@@ -30,7 +30,7 @@ tinymce.init({
           onMessage: (api, message) => {
 			//alert(message.content);
             //callback(message.content, { text: message.text })
-            callback('/media/image/'+message.text, { text: message.text })
+            callback('/media/i/'+message.text, { text: message.text })
           }
         })
       },
