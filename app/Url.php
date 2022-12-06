@@ -43,7 +43,8 @@ class Url extends Model
 	public function getExcerptAttribute(){
 		if($this->type == 'text/html'){
 			$paragraph = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $this->raw_content);
-			$html = str_replace("\n", '', str_replace("\r", '', $paragraph));
+			$paragraph = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $paragraph);
+			$html = str_replace("\n", '', str_replace("\r", '', $paragraph));	//SKK
 			//$html = str_replace("\n", '', str_replace("\r", '', $this->text_content));
 			$start = strpos($html, '<p>');
 			$end = strpos($html, '</p>', $start);

@@ -108,6 +108,7 @@ class CrawlHandler extends CrawlObserver{
 	if($mime_type == 'text/html'){
 		#$paragraph = $this->delete_all_between('<script type"text/javascript">', '</script>', $content);
 		$paragraph = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+		$paragraph = preg_replace('#<style(.*?)>(.*?)</style>#is', '', $paragraph);
 		//echo "getText".$mime_type; echo $paragraph; exit; //SKK;
 		$html = new \Html2Text\Html2Text($paragraph);
 		//$html = new \Html2Text\Html2Text($content);
