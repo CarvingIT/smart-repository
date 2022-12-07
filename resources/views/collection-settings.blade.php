@@ -106,7 +106,7 @@
 
 			<div class="col-md-2">
 			<input name="meta_hide_field[]" type="checkbox" value="{{$m->id}}" 
-			@if(is_array(@$column_config->meta_hide_label) && in_array($m->id, $column_config->meta_hide_field)) checked="checked" @endif />
+			@if(is_array(@$column_config->meta_hide_label) && in_array($m->id, @$column_config->meta_hide_field)) checked="checked" @endif />
 			</div>
 
 			<div class="col-md-3">
