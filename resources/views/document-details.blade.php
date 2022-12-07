@@ -117,10 +117,11 @@ $(document).ready(function()
 
 			@if($c->content_type == 'Uploaded documents')
 			<div class="row">
-                        @foreach($document->meta as $m)
+				@foreach($document->collection->meta_fields as $meta_field)
 
 			@php 
-				$meta_field = App\MetaField::find($m->meta_field_id);
+				$m = App\MetaFieldValue::where('document_id', $document->id)->where('meta_field_id', $meta_field->id)->first();
+				if(!$m) continue;
 				$meta_field_type = $meta_field->type;
 			 @endphp
                         @if(!empty($meta_labels[$m->meta_field_id]))
