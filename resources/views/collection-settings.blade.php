@@ -63,7 +63,7 @@
 				@continue
 			@endif
            <div class="col-md-3"><input name="meta_fields[]" type="checkbox" value="{{ $m->id }}" 
-			@if(!empty($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ __($m->label) }}</div>
+			@if(is_array(@$column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ __($m->label) }}</div>
 			@endforeach
 		</div>
 
@@ -106,7 +106,7 @@
 
 			<div class="col-md-2">
 			<input name="meta_hide_field[]" type="checkbox" value="{{$m->id}}" 
-			@if(is_array(@$column_config->meta_hide_label) && in_array($m->id, @$column_config->meta_hide_field)) checked="checked" @endif />
+			@if(is_array(@$column_config->meta_hide_field) && in_array($m->id, @$column_config->meta_hide_field)) checked="checked" @endif />
 			</div>
 
 			<div class="col-md-3">
