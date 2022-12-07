@@ -95,7 +95,7 @@ $(document).ready(function()
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
 					<div style="text-align:center;">
                         		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
-        				<video controls width="400">
+        				<video controls >
         				<source src="/collection/{{ $c->id }}/document/{{ $document->id }}" type="video/mp4">
         				</video>
         				</div>
@@ -112,7 +112,7 @@ $(document).ready(function()
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
-			<h4>{{ $document->title }}</h4></a></span>
+			</span>{{-- don't need this span --}}
                         </div>
 
 			@if($c->content_type == 'Uploaded documents')
