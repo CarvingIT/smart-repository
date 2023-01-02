@@ -35,30 +35,46 @@ class SysConfigController extends Controller
 	}
 	foreach ($request->except('_token') as $key => $part) {
     	$c = Sysconfig::all();
+	if(!empty($c)){ 
 	foreach($c as $config){
 		if(($config->param == 'logo_url' && empty($request->file('logo_url'))) || ($config->param == 'favicon_url' && !empty($request->file('favicon_url')))){ 
 			continue; 
 		}
 		else{
-		$c_param = Sysconfig::where('param',$key)->first();
-		if(!empty($c_param)){
-		$c_param->delete();	
-		}
+			$c_param = Sysconfig::where('param',$key)->first();
+			if(!empty($c_param)){
+				$c_param->delete();	
+			}
 
-    		$c = new \App\Sysconfig;
-		$c->param = $key;
-		if($key == 'logo_url'){ 
-		$c->value = $new_filename;
+    			$c = new \App\Sysconfig;
+			$c->param = $key;
+			if($key == 'logo_url'){ 
+				$c->value = $new_filename;
+			}
+			elseif($key == 'favicon_url'){
+				$c->value = $fa_new_filename;
+			}
+			else{
+				$c->value = $part;
+			}
+			$c->save();
 		}
-		elseif($key == 'favicon_url'){
-		$c->value = $fa_new_filename;
-		}
-		else{
-		$c->value = $part;
-		}
-		$c->save();
-		}
-	}
+	} ## foreach for sysconfig ends
+	}## if of sysconfig not empty ends
+	else{
+		$c = new \App\Sysconfig;
+                        $c->param = $key;
+                        if($key == 'logo_url'){
+                                $c->value = $new_filename;
+                        }
+                        elseif($key == 'favicon_url'){
+                                $c->value = $fa_new_filename;
+                        }
+                        else{
+                                $c->value = $part;
+                        }
+                        $c->save();
+	}## Syscnfig not empty else ends	
 	}## config_key foreach ends
 
         Session::flash('alert-success', 'System Configuration saved successfully!');
