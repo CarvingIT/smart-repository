@@ -14,7 +14,10 @@ $collections = \App\Collection::all();
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
   <div class="container">
     <div class="navbar-wrapper">
-      <a class="navbar-brand" href="/">
+	@php
+		$logo_link = empty(env('SITE_HOME'))?'/':env('SITE_HOME');
+	@endphp
+      <a class="navbar-brand" href="{{ $logo_link }} ">
 	@if(!empty($sysconfig['logo_url']))
 	<img class="logo_img" src="/storage/{{ $sysconfig['logo_url'] }}">
 	@else
