@@ -70,13 +70,13 @@ class CrawlHandler extends CrawlObserver{
             			];
 
             		$response = $this->elastic_client->index($params);
-            		print_r($response);
+            		//print_r($response);
 			}
 			catch(\Exception $e){
 				// log error to a log file instead of to the standard output
 				if(!in_array($e->getCode(), $this->indexing_errors)){
 					echo $e->getCode()." : ";
-					echo "WARNING: ".$e->getMessage()."\n"; 
+					//echo "WARNING: ".$e->getMessage()."\n"; 
 					$this->indexing_errors[] = $e->getCode();
 				}
 			}
@@ -84,7 +84,8 @@ class CrawlHandler extends CrawlObserver{
    }
 
    public function crawlFailed(UriInterface $url, RequestException $requestException, ?UriInterface $foundOnUrl = null){
-	 echo "Failed crawling $url\n";
+	 echo "Removing failed URL- $url\n";
+	 Url::where('collection_id', $this->collection_id)->where('url',(string) $url)->delete();
    }
 
    public function finishedCrawling() {
