@@ -507,12 +507,13 @@ class CollectionController extends Controller
         );
 
         // log search query
+        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
         $search_log_data = array('collection_id'=> $request->collection_id, 
                 'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
                 'search_query'=> $request->search['value'], 
                 'meta_query'=>'',
                 'results'=>$filtered_count);
-        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
+        //if(!empty($request->search['value']) && strlen($request->search['value'])>3){
 	    	if(!empty($request->collection_id)){
             	$this->logSearchQuery($search_log_data);
 	    	}
@@ -547,7 +548,7 @@ class CollectionController extends Controller
 		}
 		else if($collection->content_type == 'Uploaded documents'){
 			if($collection->require_approval == 1){ 
-				if(Auth::user()->hasPermission($collection->id, 'APPROVE')){ // return all
+				if(Auth::user() && Auth::user()->hasPermission($collection->id, 'APPROVE')){ // return all
 					return $documents;
 				}
 				else{ // return only approved
