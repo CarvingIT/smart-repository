@@ -760,6 +760,7 @@ class CollectionController extends Controller
         $meta_field->type = $request->input('type');
         $meta_field->options = $request->input('options');
         $meta_field->display_order = $request->input('display_order');
+        $meta_field->is_required = $request->input('is_required');
         $meta_field->save();
         return $this->metaInformation($request->input('collection_id'));
     }
