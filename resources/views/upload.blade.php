@@ -86,7 +86,7 @@ tinymce.init({
 		   </div>
     		   <div class="col-md-9">
 		   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
-    		   <input id="uploadfile" type="file" class="form-control-file" name="document" @if(empty($document->id)) required @endif> 
+    		   <input id="uploadfile" type="file" class="form-control-file" name="document" @if(empty($document->id)) {{ 'required="required"' }}@endif> 
     		   </div>
 		</div>
 		@if(!empty($document->id))
@@ -119,17 +119,17 @@ tinymce.init({
     		   </div>
         <div class="col-md-9">
         @if($f->type == 'Text')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required="required"' }} @endif />
         @elseif ($f->type == 'Textarea')
-        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{{ $document->meta_value($f->id) }}</textarea>
+        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required="required"' }} @endif >{{ $document->meta_value($f->id) }}</textarea>
         @elseif ($f->type == 'Numeric')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required="required"' }} @endif />
         @elseif ($f->type == 'Date')
-        <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required="required"' }} @endif />
 
         @elseif (in_array($f->type, array('Select', 'MultiSelect')))
         <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif 
-		@if($f->is_required == 1) {{ ' required' }} @endif >
+		@if($f->is_required == 1) {{ ' required="required"' }} @endif >
             @php
                 $options = explode(",", $f->options);
 				sort($options);
@@ -147,7 +147,7 @@ tinymce.init({
             @endforeach
         </select>
 		@elseif ($f->type == 'SelectCombo')
-		<input type="text" class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" autocomplete="off" list="optionvalues" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+		<input type="text" class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" autocomplete="off" list="optionvalues" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required="required"' }} @endif />
 		<label>You can select an option or type custom text above.</label>
 		<datalist id="optionvalues">
             @php
