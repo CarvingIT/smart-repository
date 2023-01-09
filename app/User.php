@@ -90,7 +90,7 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 		// code to check if the collection allows authenticated users with some default permissions
 		$collection_config = json_decode($c->column_config);
-		$auth_user_permissions = $collection_config->auth_user_permissions;
+		$auth_user_permissions = !empty($collection_config->auth_user_permissions)?$collection_config->auth_user_permissions:[];
 		if(in_array($permission_name, $auth_user_permissions)){
 			return true;
 		}
