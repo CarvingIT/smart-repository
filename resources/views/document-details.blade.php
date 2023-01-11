@@ -81,10 +81,24 @@ $(document).ready(function()
                         </a>
                       </div>
                   </div>
+	
+		<div class="card-body">
+                    <div class="flash-message">
+                    @foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                        @if(Session::has('alert-' . $msg))
+                                                <div class="alert alert-<?php echo $msg; ?>">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <i class="material-icons">close</i>
+                                </button>
+                                <span>{{ Session::get('alert-' . $msg) }}</span>
+                        </div>
+                        @endif
+                    @endforeach
+                    </div>
+
 
                   <div class="row">
                     <div class="col-md-12">
-                        <div class="col-md-12">
                         <span id="doc-title" class="col-md-12"><!--h4-->
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
@@ -112,11 +126,12 @@ $(document).ready(function()
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
+			</a>
 			</span>{{-- don't need this span --}}
                         </div>
 
 			@if($c->content_type == 'Uploaded documents')
-			<div class="row">
+			<div class="col-md-12">
 				@foreach($document->collection->meta_fields as $meta_field)
 
 			@php 
@@ -141,6 +156,51 @@ $(document).ready(function()
                             </div>
                         @endif
                         @endforeach
+
+			@if(\Auth::user())
+                  	<div class="col-md-12">
+				<h3>Document Status</h3>
+				@if(!empty($document->approved_on))
+				<h4>Document Approved</h4> 
+				@endif
+
+				@if(\Auth::user()->hasPermission($document->collection_id ,'APPROVE'))
+				<form name="doc_approve" method="post" action="/approve-document">
+				@csrf		
+				<input type="hidden" name="collection_id" value="{{ $document->collection_id }}">
+				<input type="hidden" name="document_id" value="{{ $document->id }}">
+				<input id="approved_on" type="checkbox" name="approved_on" value="1" @if(!empty($document->approved_on)) checked @endif /> &nbsp;Approved
+				<br />
+					@if(!empty($document->approved_on))
+						<p>Please uncheck the checkbox to disapprove the document.</p>
+						<button type="submit" class="btn btn-primary">Disapprove Document</button>
+					@else
+						<p>Please check the checkbox to approve the document.</p>
+						<button type="submit" class="btn btn-primary">Approve Document</button>
+					@endif
+				</form>
+				@endif {{-- has approve permission --}}
+			</div>
+				@if(empty($document->approved_on))
+                  	<div class="col-md-12">
+                   		<h3>Comments</h3>
+				@foreach($comments as $comment)
+				<div>{{ $comment->user->name }}({{ $comment->user->email }}) said: <p>{{ $comment->comment }}</p></div>
+				@endforeach	
+			</div>
+                  	<div class="col-md-12">
+				<form name="comment" action="/save-comment" method="post">
+				@csrf
+				<input type="hidden" name="collection_id" value="{{ $document->collection_id }}">
+				<input type="hidden" name="document_id" value="{{ $document->id }}">
+                   			<h3>Leave a Comment</h3>
+                    			<div id="doc_meta_description" class="col-md-12"><textarea name="comment" id="comment" class="form-control" cols="80" rows="10" value="" placeholder="Enter your comment here" required ></textarea></div>
+					<button type="submit" class="btn btn-primary"> Add Comment </button>
+				</form>	
+                        </div>
+				@endif {{-- display comments only for unapproved documents --}}
+			@endif {{-- display document status and comment section only for logged in user --}}
+
 			</div><!-- row ends -->
 			@endif
 						@if (!empty($col_config->show_word_cloud))
@@ -242,49 +302,8 @@ $(document).ready(function()
 						@endif
 						@endif
 
-                    </div>
 
-
-<!--
-                    <div class="col-md-3">
-                        <div class="col-md-12">
-                        <span id="doc-download-open" class="col-md-12">
-			@if($c->content_type == 'Uploaded documents')
-			<a title="Download" href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
-			@else
-			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
-			@endif
-                        <img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>
-                        </span>
-			@if(Auth::user() && (Auth::user()->hasPermission($collection->id, 'MAINTAINER') || Auth::user()->hasPermission($collection->id, 'EDIT_ANY')))
-					@if(env('ENABLE_PROOFREAD') == 1)
-                        <span id="doc-proofread" class="col-md-12">
-			<a title="Proofread" href="/collection/{{$c->id}}/document/{{$document->id}}/proofread"><img class="file-icon" src="/i/proofread.png" /></a>
-			</span>
-					@endif
-			@endif
-                        </div>
-                        <div class="col-md-12">
-                        <label for="doc-size" class="col-md-12">Size</label>
-                        <span id="doc-size" class="col-md-12">{{ $document->human_filesize($document->size) }}</span>
-                        </div>
-			@if($c->content_type == 'Uploaded documents')
-                        <div class="col-md-12">
-                        <label for="doc-creator" class="col-md-12">Created by</label>
-                        <span id="doc-creator" class="col-md-12">{{ $document->owner->name }}</span>
-                        </div>
-			@endif
-                        <div class="col-md-12">
-                        <label for="doc-updated" class="col-md-12">Updated</label>
-                        <span id="doc-updated" class="col-md-12">{{ $document->updated_at }}</span>
-                        </div>
-                        <div class="col-md-12">
-                        <label for="doc-type" class="col-md-12">Type</label>
-                        <span id="doc-type" class="col-md-12">{{ $document->type }}</span>
-                        </div>
                     </div>
-                  </div>
--->
 
                    </div><!-- card body ends -->
                 </div>

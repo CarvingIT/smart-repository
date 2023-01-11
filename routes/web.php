@@ -43,6 +43,10 @@ Route::get('/collection/{collection_id}/export', 'CollectionController@export')-
 Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadForm')->middleware('document_add');
 Route::post('/collection/{collection_id}/upload','DocumentController@upload')->middleware('document_add');
 Route::post('/collection/move_document', 'DocumentController@move');
+Route::post('/approve-document', 'DocumentController@approveDocument');
+
+//Document Comment
+Route::post('/save-comment', 'CommentController@save');
 
 // Document import queue via url
 Route::get('/collection/{collection_id}/url-import', 'URLImportController@index')->middleware('document_add');

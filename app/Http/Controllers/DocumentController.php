@@ -185,8 +185,12 @@ class DocumentController extends Controller
 	else{ // no document is uploaded
          if(!empty($request->input('approved_on'))){
            	$d->approved_by = \Auth::user()->id;
-			$d->approved_on = now();
-       	}
+		$d->approved_on = now();
+       	 }
+	 else{
+           	$d->approved_by = NULL;
+		$d->approved_on = NULL;
+	}
 
 	//	Code to edit title of documen starts
 		if(!empty($request->title)){
@@ -434,7 +438,9 @@ class DocumentController extends Controller
 	else {
         	$d = Document::find($document_id);
 	}
-        return view('document-details', ['document'=>$d, 'collection'=>$c, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
+	
+	$comments = \App\DocumentComment::where('document_id',$document_id)->orderByDesc('created_at')->get();
+        return view('document-details', ['document'=>$d, 'collection'=>$c, 'comments'=>$comments, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
     }
 
     public function showRevisionDiff($document_id, $rev1_id, $rev2_id){
@@ -585,6 +591,29 @@ public function duplicateDocumentMetadata($master_doc_id, $target_doc_id){
 		$new_meta_val->value = $m_v->value;
 		$new_meta_val->save();
 	}
+}
+
+public function approveDocument(Request $request){
+        $d = Document::find($request->input('document_id'));
+	if(!empty($request->input('approved_on'))){
+                $d->approved_by = \Auth::user()->id;
+                $d->approved_on = now();
+        }
+        else{
+                $d->approved_by = NULL;
+                $d->approved_on = NULL;
+        }
+
+	try{
+                $d->save();
+                Session::flash('alert-success', 'Document status changed successfully!');
+            }
+            catch(\Exception $e){
+                Session::flash('alert-danger', 'Error: '.$e->getMessage());
+            }
+
+        return redirect("/collection/".$request->collection_id."/document/".$request->document_id."/details");
+
 }
 
 
