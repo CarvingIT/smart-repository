@@ -161,7 +161,6 @@ $(document).ready(function()
                   	<div class="col-md-12">
 				<h3>Document Status</h3>
 				@if(!empty($document->approved_on))
-				<h4>Document Approved</h4> 
 				@endif
 
 				@if(\Auth::user()->hasPermission($document->collection_id ,'APPROVE'))
@@ -169,13 +168,14 @@ $(document).ready(function()
 				@csrf		
 				<input type="hidden" name="collection_id" value="{{ $document->collection_id }}">
 				<input type="hidden" name="document_id" value="{{ $document->id }}">
-				<input id="approved_on" type="checkbox" name="approved_on" value="1" @if(!empty($document->approved_on)) checked @endif /> &nbsp;Approved
 				<br />
 					@if(!empty($document->approved_on))
-						<p>Please uncheck the checkbox to disapprove the document.</p>
+						<h4>Document is Approved</h4> 
+						<input id="approved_on" type="hidden" name="approved_on" value=""/>
 						<button type="submit" class="btn btn-primary">Disapprove Document</button>
 					@else
-						<p>Please check the checkbox to approve the document.</p>
+						<h4>Document is Disapproved</h4> 
+						<input id="approved_on" type="hidden" name="approved_on" value="1"/>
 						<button type="submit" class="btn btn-primary">Approve Document</button>
 					@endif
 				</form>
