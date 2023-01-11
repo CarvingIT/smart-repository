@@ -86,7 +86,7 @@ tinymce.init({
 		   </div>
     		   <div class="col-md-9">
 		   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
-    		   <input id="uploadfile" type="file" class="form-control-file" name="document" @if(empty($document->id)) required @endif> 
+    		   <input id="uploadfile" type="file" class="form-control-file" name="document" @if(empty($document->id)) {{ ' required' }}@endif> 
     		   </div>
 		</div>
 		@if(!empty($document->id))

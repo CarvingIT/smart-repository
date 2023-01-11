@@ -45,6 +45,7 @@
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
 		@php
 			$column_config = json_decode($collection->column_config);
+			$permissions = \App\Permission::all();
 		@endphp
 	   	<div class="col-md-12" id="accordion">
 		<h4>{{__('Display Columns')}}</h4>
@@ -78,6 +79,16 @@
 			@endforeach
 		</div>
 
+		<h4>{{__('Default permissions to Authenticated Users')}}</h4>
+		<div class="form-group row">
+			@foreach($permissions as $p)
+			@if ($p->name == 'MAINTAINER')
+				@continue
+			@endif
+           <div class="col-md-3"><input name="auth_user_permissions[]" type="checkbox" value="{{ $p->name }}" 
+			@if(!empty($column_config->auth_user_permissions) && in_array($p->name, $column_config->auth_user_permissions)) checked="checked" @endif /> {{ $p->description }}</div>
+			@endforeach
+		</div>
 
 		<h4>{{__('Info page')}}</h4>
 		<div class="form-group row">
