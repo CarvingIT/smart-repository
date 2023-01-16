@@ -157,7 +157,7 @@ $(document).ready(function()
                         @endif
                         @endforeach
 
-			@if(\Auth::user())
+			@if(\Auth::user() && ($c->require_approval == 1))
                   	<div class="col-md-12">
 				<h3>Document Status</h3>
 				@if(!empty($document->approved_on))
