@@ -37,6 +37,7 @@ tinymce.init({
       },
    });
 
+
 </script>
 
 @endpush
@@ -112,6 +113,7 @@ tinymce.init({
 		</div>
 @endif
 @endif
+	<div class="select-data-container" style="position:fixed; top:25%; z-index:1000;"></div>
     @foreach($collection->meta_fields as $f)
     <div class="form-group row">
 		   <div class="col-md-3">
@@ -128,8 +130,8 @@ tinymce.init({
         <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 
         @elseif (in_array($f->type, array('Select', 'MultiSelect')))
-        <select class="form-control selectpicker" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif 
-		@if($f->is_required == 1) {{ ' required' }} @endif >
+        <select class="form-control selectpicker" title="{{ $f->placeholder }}" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif 
+		@if($f->is_required == 1) {{ ' required' }} @endif data-container=".select-data-container">
             @php
                 $options = explode(",", $f->options);
 				sort($options);
