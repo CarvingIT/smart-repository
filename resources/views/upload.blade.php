@@ -136,13 +136,8 @@ tinymce.init({
         <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 
         @elseif (in_array($f->type, array('Select', 'MultiSelect')))
-<<<<<<< HEAD
-        <select class="form-control selectpicker" title="{{ $f->placeholder }}" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif 
-		@if($f->is_required == 1) {{ ' required' }} @endif data-container=".select-data-container">
-=======
-        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif 
+        <select class="form-control selectsequence" title="{{ $f->placeholder }}" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif 
 		@if($f->is_required == 1) {{ ' required' }} @endif >
->>>>>>> a81758086b38e4d14d5d05ad15d89757474769f2
             @php
                 $options = explode(",", $f->options);
 				sort($options);
