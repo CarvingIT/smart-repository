@@ -52,11 +52,13 @@ $app_name = env('APP_NAME');
           </a>
         </li>
 	@endif
+	@if (env('ENABLE_CONTACT_PAGE', 1) == 1)
         <li class="nav-item{{ $activePage == 'contact' ? ' active' : '' }}">
           <a href="/contact" class="nav-link">
             <i class="material-icons">contacts</i> {{ __('Contact') }}
           </a>
         </li>
+	@endif
 
         <li class="nav-item dropdown">
           <a class="nav-link" title="{{ 'Welcome '.Auth::user()->name }}" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

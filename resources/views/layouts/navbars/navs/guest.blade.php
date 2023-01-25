@@ -73,11 +73,13 @@ $collections = \App\Collection::all();
           </a>
         </li>
 	@endif
+	@if (env('ENABLE_CONTACT_PAGE', 1) == 1)
         <li class="nav-item{{ $activePage == 'contact' ? ' active' : '' }}">
           <a href="/contact" class="nav-link">
             <i class="material-icons">contacts</i> {{ __('Contact') }}
           </a>
         </li>
+	@endif
 	@if(env('ENABLE_REGISTRATION') == 1)
         <li class="nav-item{{ $activePage == 'register' ? ' active' : '' }}">
           <a href="{{ route('register') }}" class="nav-link">
