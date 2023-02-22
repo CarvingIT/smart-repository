@@ -38,6 +38,7 @@ Route::get('/documents', 'DocumentController@list');
 
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
 Route::get('/collection/{collection_id}/export', 'CollectionController@export')->middleware('maintainer');
+Route::get('/collection/{collection_id}/exportxlsx', 'CollectionController@exportXlsx')->middleware('maintainer');
 
 // Document upload/edit
 Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadForm')->middleware('document_add');

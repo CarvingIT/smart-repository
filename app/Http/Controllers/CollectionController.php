@@ -15,6 +15,7 @@ use App\DesiredUrl;
 use App\UrlSuppression;
 use App\CollectionMailbox;
 use App\UserPermission;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class CollectionController extends Controller
 {
@@ -1068,4 +1069,44 @@ use App\UrlSuppression;
 		}
 		return redirect('/collection/'.$req->collection_id);
 	}
+
+	public function exportXlsx(Request $request, $collection_id){
+		$list = $meta_details = [];
+		$filename = '';
+		$documents = \App\Document::where('collection_id', $collection_id);
+		$documents = $this->getTitleFilteredDocuments($request, $documents);
+		$documents = $this->getMetaFilteredDocuments($request, $documents);
+
+		$collection = \App\Collection::find($collection_id);
+		$filename = $collection->name;
+		$meta_fields = $collection->meta_fields;
+		$documents->chunk(10, function($documents){
+                foreach($documents as $d){
+  			$list[] = [$d->id,$d->title];
+			$meta_fields = $d->collection->meta_fields;
+			foreach($meta_fields as $m){
+				if(!empty($d->meta_value($m->id))){
+					$meta_details = [$m->label => $d->meta_value($m->id)];
+				}
+			}
+			(new FastExcel($d))->export('collection.xlsx', function ($d) {
+    				return [
+        			'ID' => $d->id,
+        			'Title' => $d->title,
+        			 'Meta Fields'=> $d->collection->meta_fields,
+    			];
+			});
+		}
+		});
+		exit;
+			(new FastExcel(User::all()))->export('users.csv', function ($user) {
+    				return [
+        			'Email' => $user->email,
+        			'First Name' => $user->firstname,
+        			'Last Name' => strtoupper($user->lastname),
+    			];
+			});
+	}
+
+//Class Ends
 }
