@@ -144,7 +144,7 @@ class DocumentController extends Controller
 			$mimetype = $request->file('document')->getMimeType();
 
            	if(!empty($request->input('title'))){
-               $d->title = $request->input('title');
+               $d->title = htmlentities($request->input('title'));
            	}
            	else{
                $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
@@ -192,9 +192,9 @@ class DocumentController extends Controller
 		$d->approved_on = NULL;
 	}
 
-	//	Code to edit title of documen starts
+	//	Code to edit title of document starts
 		if(!empty($request->title)){
-			$d->title = $request->title;
+			$d->title = htmlentities($request->title);
 		}
 	// Code to edit title of document ends
          try{
@@ -424,6 +424,9 @@ class DocumentController extends Controller
             $m_f->meta_field_id = $m['field_id'];
 			if(is_array($m['field_value'])){
 				$m['field_value'] = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
+			}
+			else{
+				$m['field_value'] = htmlentities($m['field_value']);
 			}
             $m_f->value = empty($m['field_value']) ? '' : $m['field_value'];
             $m_f->save();
