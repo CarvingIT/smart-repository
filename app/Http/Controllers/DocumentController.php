@@ -98,12 +98,22 @@ class DocumentController extends Controller
 		$actual_size = $this->return_bytes($size_limit); ## Newly added line
 		$collection_id = $request->input('collection_id');
         	$validator = Validator::make($request->all(), [
+	    	//'document' => 'file|max:'.$actual_size
 	    	'document' => 'file|max:'.$actual_size
         	]);
 		if ($validator->fails()) {
             		//Session::flash('alert-danger', 'File size exceeded. The file size should not be more than '.$size_limit.'B.');
             		//return redirect('/collection/'.$collection_id.'/upload');
 		return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
+        	}
+
+		$file_type = getenv('FILE_EXTENSIONS_TO_UPLOAD'); 
+        	$validator = Validator::make($request->all(), [
+	    	'document' => 'file|mimes:'.$file_type
+        	]);
+		// Validation for uploaf file type.
+		if ($validator->fails()) {
+		return ['status'=>'failure', 'errors'=>['File type must be of '.$file_type]];
         	}
 		// Filesize validation code ends
 
