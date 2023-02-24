@@ -106,16 +106,16 @@ class DocumentController extends Controller
             		//return redirect('/collection/'.$collection_id.'/upload');
 		return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
         	}
+		// Filesize validation code ends
 
+		// Validation for uploaf file type.
 		$file_type = getenv('FILE_EXTENSIONS_TO_UPLOAD'); 
         	$validator = Validator::make($request->all(), [
 	    	'document' => 'file|mimes:'.$file_type
         	]);
-		// Validation for uploaf file type.
 		if ($validator->fails()) {
-		return ['status'=>'failure', 'errors'=>['File type must be of '.$file_type]];
+		return ['status'=>'failure', 'errors'=>['File type must be one of '.$file_type]];
         	}
-		// Filesize validation code ends
 
         if(!empty($request->input('document_id'))){
             $d = Document::find($request->input('document_id'));
@@ -257,6 +257,10 @@ class DocumentController extends Controller
 		}
 		if(!empty($upload_status['errors'])){
 	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
+		}
+		if($upload_status['status'] == 'failure'){
+	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
+        	return redirect('/collection/'.$request->input('collection_id').'/upload'); 
 		}
 		if($request->input('same_meta_docs_upload')){
         	return redirect('/collection/'.$request->input('collection_id').'/document/'.$upload_status['document_id'].'/same-meta-upload'); 
