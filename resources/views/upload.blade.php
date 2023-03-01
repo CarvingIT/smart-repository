@@ -61,7 +61,7 @@ tinymce.init({
                     <div class="flash-message">
                     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
                         @if(Session::has('alert-' . $msg))
-						<div class="alert alert-<?php echo $msg; ?>">
+				<div class="alert alert-<?php echo $msg; ?>">
                         	<button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         	<i class="material-icons">close</i>
                         	</button>
@@ -82,7 +82,7 @@ tinymce.init({
 		   <label for="title" class="col-md-12 col-form-label text-md-right">Title</label>
 		   </div>
                     <div class="col-md-9">
-                    <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ $document->title }}@endif" 
+                    <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ html_entity_decode($document->title) }}@endif" 
                     placeholder="If left blank, we shall guess!" />
                     </div>
 		</div>
@@ -101,7 +101,7 @@ tinymce.init({
 		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">Uploaded Document</label>
 		   </div>
     		   <div class="col-md-9">
-			@if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ $document->title }} </a> @endif
+			@if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ html_entity_decode($document->title) }} </a> @endif
     		   </div>
 		</div>
 		@endif
@@ -125,13 +125,13 @@ tinymce.init({
     		   </div>
         <div class="col-md-9">
         @if($f->type == 'Text')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
         @elseif ($f->type == 'Textarea')
         <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{{ $document->meta_value($f->id) }}</textarea>
         @elseif ($f->type == 'Numeric')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
         @elseif ($f->type == 'Date')
-        <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 
         @elseif (in_array($f->type, array('Select', 'MultiSelect')))
         <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif 
