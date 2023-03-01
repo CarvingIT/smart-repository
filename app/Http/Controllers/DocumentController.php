@@ -98,6 +98,7 @@ class DocumentController extends Controller
 		$actual_size = $this->return_bytes($size_limit); ## Newly added line
 		$collection_id = $request->input('collection_id');
         	$validator = Validator::make($request->all(), [
+	    	//'document' => 'file|max:'.$actual_size
 	    	'document' => 'file|max:'.$actual_size
         	]);
 		if ($validator->fails()) {
@@ -106,6 +107,15 @@ class DocumentController extends Controller
 		return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
         	}
 		// Filesize validation code ends
+
+		// Validation for uploaf file type.
+		$file_type = getenv('FILE_EXTENSIONS_TO_UPLOAD'); 
+        	$validator = Validator::make($request->all(), [
+	    	'document' => 'file|mimes:'.$file_type
+        	]);
+		if ($validator->fails()) {
+		return ['status'=>'failure', 'errors'=>['File type must be one of '.$file_type]];
+        	}
 
         if(!empty($request->input('document_id'))){
             $d = Document::find($request->input('document_id'));
@@ -144,7 +154,7 @@ class DocumentController extends Controller
 			$mimetype = $request->file('document')->getMimeType();
 
            	if(!empty($request->input('title'))){
-               $d->title = $request->input('title');
+               $d->title = htmlentities($request->input('title'));
            	}
            	else{
                $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
@@ -192,9 +202,9 @@ class DocumentController extends Controller
 		$d->approved_on = NULL;
 	}
 
-	//	Code to edit title of documen starts
+	//	Code to edit title of document starts
 		if(!empty($request->title)){
-			$d->title = $request->title;
+			$d->title = htmlentities($request->title);
 		}
 	// Code to edit title of document ends
          try{
@@ -247,6 +257,10 @@ class DocumentController extends Controller
 		}
 		if(!empty($upload_status['errors'])){
 	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
+		}
+		if($upload_status['status'] == 'failure'){
+	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
+        	return redirect('/collection/'.$request->input('collection_id').'/upload'); 
 		}
 		if($request->input('same_meta_docs_upload')){
         	return redirect('/collection/'.$request->input('collection_id').'/document/'.$upload_status['document_id'].'/same-meta-upload'); 
@@ -424,6 +438,9 @@ class DocumentController extends Controller
             $m_f->meta_field_id = $m['field_id'];
 			if(is_array($m['field_value'])){
 				$m['field_value'] = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
+			}
+			else{
+				$m['field_value'] = htmlentities($m['field_value']);
 			}
             $m_f->value = empty($m['field_value']) ? '' : $m['field_value'];
             $m_f->save();

@@ -15,6 +15,7 @@ use App\DesiredUrl;
 use App\UrlSuppression;
 use App\CollectionMailbox;
 use App\UserPermission;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class CollectionController extends Controller
 {
@@ -1068,4 +1069,57 @@ use App\UrlSuppression;
 		}
 		return redirect('/collection/'.$req->collection_id);
 	}
+
+	public function exportXlsx(Request $request, $collection_id){
+		$list = $meta_details = [];
+		$filename = '';
+		$documents = \App\Document::where('collection_id', $collection_id);
+		$documents = $this->getTitleFilteredDocuments($request, $documents);
+		$documents = $this->getMetaFilteredDocuments($request, $documents);
+
+		$collection = \App\Collection::find($collection_id);
+		$filename = $collection->name;
+		$meta_fields = $collection->meta_fields;
+		$documents = $documents->get();
+		$new_list  = $new_meta_details = [];
+                foreach($documents as $d){
+  			$list = ['ID'=>$d->id,'Title'=>$d->title];
+			$meta_fields = $d->collection->meta_fields;
+			foreach($meta_fields as $m){
+				if(!empty($d->meta_value($m->id))){
+					//$meta_details = [$m->label => $d->meta_value($m->id)];
+					$meta_details = [$m->label => $d->meta_value($m->id)];
+					$list = array_merge($list,$meta_details);
+				}
+			}
+			//print_r($list);
+			//exit;
+			$new_list[] = array_merge($list,$meta_details);
+			//$new_list1 = collect([$new_list]);
+		}
+		return (new FastExcel($new_list))
+    			->download($filename.'.xlsx');
+
+		//new FastExcel::data($new_list)->export('file.xlsx');
+		/*
+			(new FastExcel($new_list))->export('collection.xlsx', function ($new_list) {
+    				return [
+        			'ID' => $new_list['id'],
+        			'Title' => $new_list['title'],
+    				];
+			});
+		*/
+		//exit;
+		/*
+			(new FastExcel(User::all()))->export('users.csv', function ($user) {
+    				return [
+        			'Email' => $user->email,
+        			'First Name' => $user->firstname,
+        			'Last Name' => strtoupper($user->lastname),
+    			];
+			});
+		*/
+	}
+
+//Class Ends
 }

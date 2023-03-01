@@ -14,7 +14,10 @@ $app_name = env('APP_NAME');
   <div class="container">
     <div class="navbar-wrapper">
       <!--a class="navbar-brand" href="/">{{ __('Smart Repository') }}</a-->
-	<a class="navbar-brand" href="/">
+	@php
+		$logo_link = empty(env('SITE_HOME'))?'/':env('SITE_HOME');
+	@endphp
+	<a class="navbar-brand" href="{{ $logo_link }}">
 	@if(!empty($sysconfig['logo_url']))
 	<img class="logo_img" src="/storage/{{ $sysconfig['logo_url'] }}">
 	@else
@@ -52,14 +55,16 @@ $app_name = env('APP_NAME');
           </a>
         </li>
 	@endif
+	@if (env('ENABLE_CONTACT_PAGE', 1) == 1)
         <li class="nav-item{{ $activePage == 'contact' ? ' active' : '' }}">
           <a href="/contact" class="nav-link">
             <i class="material-icons">contacts</i> {{ __('Contact') }}
           </a>
         </li>
+	@endif
 
         <li class="nav-item dropdown">
-          <a class="nav-link" title="{{ 'Welcome '.Auth::user()->name }}" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a class="nav-link" title="" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			@if (@Gravatar::exists(Auth::user()->email))
 			<img src="{{ Gravatar::get(Auth::user()->email) }}" class="icon" />
 			@else
@@ -71,6 +76,7 @@ $app_name = env('APP_NAME');
             </p>
 			-->
           </a>
+			<span class="howdy">Welcome @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif !</span>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             @if(Auth::user()->hasRole('admin'))
