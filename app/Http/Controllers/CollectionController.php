@@ -1071,6 +1071,7 @@ use App\UrlSuppression;
 	}
 
 	public function exportXlsx(Request $request, $collection_id){
+		//echo $collection_id; exit;
 		$list = $meta_details = [];
 		$filename = '';
 		$documents = \App\Document::where('collection_id', $collection_id);
@@ -1086,39 +1087,19 @@ use App\UrlSuppression;
   			$list = ['ID'=>$d->id,'Title'=>$d->title];
 			$meta_fields = $d->collection->meta_fields;
 			foreach($meta_fields as $m){
-				if(!empty($d->meta_value($m->id))){
+				//if(!empty($d->meta_value($m->id))){
 					//$meta_details = [$m->label => $d->meta_value($m->id)];
-					$meta_details = [$m->label => $d->meta_value($m->id)];
+					$meta_details = [$m->label => html_entity_decode($d->meta_value($m->id))];
 					$list = array_merge($list,$meta_details);
-				}
+				//}
 			}
 			//print_r($list);
+			//echo "<hr />";
 			//exit;
-			$new_list[] = array_merge($list,$meta_details);
-			//$new_list1 = collect([$new_list]);
+		$new_list[] = array_merge($list,$meta_details);
 		}
 		return (new FastExcel($new_list))
     			->download($filename.'.xlsx');
-
-		//new FastExcel::data($new_list)->export('file.xlsx');
-		/*
-			(new FastExcel($new_list))->export('collection.xlsx', function ($new_list) {
-    				return [
-        			'ID' => $new_list['id'],
-        			'Title' => $new_list['title'],
-    				];
-			});
-		*/
-		//exit;
-		/*
-			(new FastExcel(User::all()))->export('users.csv', function ($user) {
-    				return [
-        			'Email' => $user->email,
-        			'First Name' => $user->firstname,
-        			'Last Name' => strtoupper($user->lastname),
-    			];
-			});
-		*/
 	}
 
 //Class Ends
