@@ -14,6 +14,7 @@ use Session;
 use App\Collection;
 use Spatie\PdfToText\Pdf;
 use App\MetaFieldValue;
+use App\Sysconfig;
 
 class DocumentController extends Controller
 {
@@ -93,36 +94,48 @@ class DocumentController extends Controller
 		$messages = array();
 		$errors = array();
 		$warnings = array();
+		$file_type='';
+
 		//Filesize validation code starts
 		$size_limit = ini_get("upload_max_filesize");
 		$actual_size = $this->return_bytes($size_limit); ## Newly added line
 		$collection_id = $request->input('collection_id');
         	$validator = Validator::make($request->all(), [
-	    	//'document' => 'file|max:'.$actual_size
-	    	'document' => 'file|max:'.$actual_size
-        	]);
+	    		//'document' => 'file|max:'.$actual_size
+	    		'document' => 'file|max:'.$actual_size
+        		]);
 		if ($validator->fails()) {
-            		//Session::flash('alert-danger', 'File size exceeded. The file size should not be more than '.$size_limit.'B.');
-            		//return redirect('/collection/'.$collection_id.'/upload');
-		return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
+			return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
         	}
 		// Filesize validation code ends
 
-		// Validation for uploaf file type.
-		$file_type = getenv('FILE_EXTENSIONS_TO_UPLOAD'); 
+		// Validation for upload file type.
+		$c = Sysconfig::all();
+        	if(!empty($c)){
+        	   foreach($c as $config){
+			//echo $config;
+			if($config->param == 'upload_file_types' && !empty($config->value)){
+				//echo $config->param; echo $config->value;
+				$file_type=$config->value;
+			}
+		    }
+		}
+		if(empty($file_type)){
+			$file_type = env('FILE_EXTENSIONS_TO_UPLOAD','ppt,pptx,doc,docx,jpg,png'); 
+		}
         	$validator = Validator::make($request->all(), [
-	    	'document' => 'file|mimes:'.$file_type
+	    		'document' => 'file|mimes:'.$file_type
         	]);
 		if ($validator->fails()) {
-		return ['status'=>'failure', 'errors'=>['File type must be one of '.$file_type]];
+			return ['status'=>'failure', 'errors'=>['File type must be one of '.$file_type]];
         	}
 
-        if(!empty($request->input('document_id'))){
-            $d = Document::find($request->input('document_id'));
-        }
-        else{
-            $d = new Document;
-        }
+        	if(!empty($request->input('document_id'))){
+            		$d = Document::find($request->input('document_id'));
+        	}
+        	else{
+            		$d = new Document;
+        	}
 
         $collection = \App\Collection::find($collection_id);
 		$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
