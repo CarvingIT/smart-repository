@@ -1087,17 +1087,24 @@ use App\UrlSuppression;
   			$list = ['ID'=>$d->id,'Title'=>$d->title];
 			$meta_fields = $d->collection->meta_fields;
 			foreach($meta_fields as $m){
-				//if(!empty($d->meta_value($m->id))){
+				if($m->type=='MultiSelect' || $m->type == 'Select'){
+					$details_select = trim($d->meta_value($m->id),'[]');
+					$details_select = preg_replace('/"/',"",$details_select);
+					//$meta_details = [$m->label => $d->meta_value($m->id)];
+					$meta_details = [$m->label => $details_select];
+				}
+				else{
 					//$meta_details = [$m->label => $d->meta_value($m->id)];
 					$meta_details = [$m->label => html_entity_decode($d->meta_value($m->id))];
-					$list = array_merge($list,$meta_details);
-				//}
+				}
+				$list = array_merge($list,$meta_details);
 			}
 			//print_r($list);
 			//echo "<hr />";
 			//exit;
 		$new_list[] = array_merge($list,$meta_details);
 		}
+		//exit;
 		return (new FastExcel($new_list))
     			->download($filename.'.xlsx');
 	}
