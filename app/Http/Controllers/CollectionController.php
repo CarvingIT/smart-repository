@@ -687,7 +687,8 @@ class CollectionController extends Controller
     public function replaceMetaFilter(Request $request){
         // set filters in session and return to the collection view 
         $meta_filters = Session::get('meta_filters');
-		$new_meta_filters = array();
+	$new_meta_filters = array();
+	$multi_meta_field = $multi_meta_value = array();
         if(!empty($request->meta_value)){
 			if($meta_filters && is_array($meta_filters[$request->collection_id])){
 			foreach($meta_filters[$request->collection_id] as $m){
@@ -698,29 +699,52 @@ class CollectionController extends Controller
 			}
 			if($request->operator == 'between'){
 				$range_parts = explode(' to ',ltrim(rtrim($request->meta_value)));
-            	$new_meta_filters[$request->collection_id][] = array(
-                	'filter_id'=>\Uuid::generate()->string,
-                	'field_id'=>$request->meta_field,
-                	'operator'=>'>=',
-                	'value'=> $range_parts[0]
-            	);
-            	$new_meta_filters[$request->collection_id][] = array(
-                	'filter_id'=>\Uuid::generate()->string,
-                	'field_id'=>$request->meta_field,
-                	'operator'=>'<=',
-                	'value'=> $range_parts[1]
-            	);
+            			$new_meta_filters[$request->collection_id][] = array(
+                			'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field,
+		                	'operator'=>'>=',
+		                	'value'=> $range_parts[0]
+            			);
+		            	$new_meta_filters[$request->collection_id][] = array(
+               		 	'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field,
+		                	'operator'=>'<=',
+		                	'value'=> $range_parts[1]
+            			);
+        Session::put('meta_filters', $new_meta_filters);
 			}
 			else{
-            	$new_meta_filters[$request->collection_id][] = array(
-                	'filter_id'=>\Uuid::generate()->string,
-                	'field_id'=>$request->meta_field,
-                	'operator'=>$request->operator,
-                	'value'=>$request->meta_value
-            	);
-			}
-        }
+            				/*
+					$new_meta_filters[$request->collection_id][] = array(
+			                	'filter_id'=>\Uuid::generate()->string,
+			                	'field_id'=>$request->meta_field,
+			                	'operator'=>$request->operator,
+			                	'value'=>$request->meta_value
+			            	);
+					*/
+					if($request->meta_type == 'MultiSelect'){
+					$new_meta_filters = Session::get('meta_filters');
+            				$new_meta_filters[$request->collection_id][] = array(
+			                	'filter_id'=>\Uuid::generate()->string,
+			                	'field_id'=>$request->meta_field,
+			                	'operator'=>$request->operator,
+			                	'value'=>$request->meta_value
+			            	);
         Session::put('meta_filters', $new_meta_filters);
+					}
+					else{
+            				$new_meta_filters[$request->collection_id][] = array(
+			                	'filter_id'=>\Uuid::generate()->string,
+			                	'field_id'=>$request->meta_field,
+			                	'operator'=>$request->operator,
+			                	'value'=>$request->meta_value
+			            	);
+        Session::put('meta_filters', $new_meta_filters);
+					}
+			}##else for 'contains or matches' ends
+        }
+	#print_r($new_meta_filters); exit;
+        #Session::put('meta_filters', $new_meta_filters);
         return redirect('/collection/'.$request->collection_id);
     }
 
