@@ -200,7 +200,6 @@ function randomString(length) {
                @endforeach
             </div>
 		<div class="card search-filters-card">
-
 		<div class="row text-center">
 		   <div class="col-12">
 			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
@@ -221,6 +220,7 @@ function randomString(length) {
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
 		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Add keywords and press enter"/>
 		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
+		   	<input type="hidden" name="meta_type" value="{{ $m->type }}" />
 		   	<input type="hidden" name="operator" value="contains" />
 			</form>
 			</div>
@@ -232,12 +232,13 @@ function randomString(length) {
 		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Selete date range and press enter"/>
 		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator" value="between" />
+		   	<input type="hidden" name="meta_type" value="{{ $m->type }}" />
 			</form>
 			<script>
 				$('#meta_{{ $m->id }}_search').dateRangePicker();
 			</script>
 			</div>
-			@elseif($m->type == 'MultiSelect' || $m->type == 'Select')
+			@elseif($m->type == 'Select')
 			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
@@ -253,6 +254,26 @@ function randomString(length) {
 			</select>
 		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator" value="contains" />
+		   	<input type="hidden" name="meta_type" value="{{ $m->type }}" />
+			</form>
+			</div>
+			@elseif($m->type == 'MultiSelect')
+			<div class="float-container">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
+		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();">
+		            @php
+                		$options = explode(",", $m->options);
+            		    @endphp
+				<option>{{ $m->label }}</option>
+				@foreach($options as $o)
+				<option>{{ $o }}</option>
+				@endforeach
+			</select>
+		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator" value="contains" />
+		   	<input type="hidden" name="meta_type" value="{{ $m->type }}" />
 			</form>
 			</div>
 			@endif
