@@ -98,7 +98,7 @@ $(document).ready(function()
 
 
                   <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-12" style="margin-bottom:5%;">
                         <span id="doc-title" class="col-md-12"><!--h4-->
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
@@ -129,6 +129,7 @@ $(document).ready(function()
 			</a>
 			</span>{{-- don't need this span --}}
                         </div>
+				<br />
 
 			@if($c->content_type == 'Uploaded documents')
 			<div class="col-md-12">
@@ -143,17 +144,19 @@ $(document).ready(function()
 							@if ($meta_field_type == 'Textarea')
                             <div class="col-md-12">
 							@else
-                            <div class="col-md-3">
+                            <!--div class="col-md-3"-->
+                            <div class="col-md-12">
 							@endif
                             <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
 							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
 							@else
                             <!--span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span-->
-                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $m->value !!}</div>
-				<br />
+                            <!--div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $m->value !!}</div-->
+                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! strip_tags($m->value) !!}</div>
 							@endif
                             </div>
+				<br />
                         @endif
                         @endforeach
 
