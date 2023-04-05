@@ -685,10 +685,39 @@ class CollectionController extends Controller
     }
 
     public function replaceMetaFilter(Request $request){
+/*
+print_r($request->meta_value); echo "<hr />";
+print_r($request->meta_field); echo "<hr />";
+print_r($request->meta_type); echo "<hr />";
+print_r($request->operator); echo "<hr />";
+	$j=0;
+foreach($request->meta_value as $key=>$value){
+	echo "Key= ".$key."<br />";
+	//print_r($value); echo "<br />";
+	if(is_array($value)){
+	for($i=0;$i<count($value);$i++){
+	echo $value[$i]."<br />";
+	echo $request->meta_field[$j]."<br />";
+	echo $request->meta_type[$j]."<br />";
+	echo $request->operator[$j]."<br />";
+	}
+	}
+	else{
+	echo $value."<br />";
+	echo $request->meta_field[$j]."<br />";
+	echo $request->meta_type[$j]."<br />";
+	echo $request->operator[$j]."<br />";
+	}
+	$j++;
+	echo "<hr />";
+}
+exit;
+*/
         // set filters in session and return to the collection view 
         $meta_filters = Session::get('meta_filters');
 	$new_meta_filters = array();
 	$multi_meta_field = $multi_meta_value = array();
+
         if(!empty($request->meta_value)){
 			if($meta_filters && is_array($meta_filters[$request->collection_id])){
 			foreach($meta_filters[$request->collection_id] as $m){
@@ -711,40 +740,35 @@ class CollectionController extends Controller
 		                	'operator'=>'<=',
 		                	'value'=> $range_parts[1]
             			);
-        Session::put('meta_filters', $new_meta_filters);
 			}
 			else{
-            				/*
-					$new_meta_filters[$request->collection_id][] = array(
-			                	'filter_id'=>\Uuid::generate()->string,
-			                	'field_id'=>$request->meta_field,
-			                	'operator'=>$request->operator,
-			                	'value'=>$request->meta_value
-			            	);
-					*/
-					if($request->meta_type == 'MultiSelect'){
-					$new_meta_filters = Session::get('meta_filters');
-            				$new_meta_filters[$request->collection_id][] = array(
-			                	'filter_id'=>\Uuid::generate()->string,
-			                	'field_id'=>$request->meta_field,
-			                	'operator'=>$request->operator,
-			                	'value'=>$request->meta_value
-			            	);
-        Session::put('meta_filters', $new_meta_filters);
-					}
-					else{
-            				$new_meta_filters[$request->collection_id][] = array(
-			                	'filter_id'=>\Uuid::generate()->string,
-			                	'field_id'=>$request->meta_field,
-			                	'operator'=>$request->operator,
-			                	'value'=>$request->meta_value
-			            	);
-        Session::put('meta_filters', $new_meta_filters);
-					}
+$j=0;
+foreach($request->meta_value as $key=>$value){
+	if(is_array($value)){
+	for($i=0;$i<count($value);$i++){
+		$new_meta_filters[$request->collection_id][] = array(
+                     'filter_id'=>\Uuid::generate()->string,
+                     'field_id'=>$request->meta_field[$j],
+                     'operator'=>$request->operator[$j],
+                     'value'=>$value[$i]
+                 );
+	}
+	}
+	else{
+		$new_meta_filters[$request->collection_id][] = array(
+                     'filter_id'=>\Uuid::generate()->string,
+                     'field_id'=>$request->meta_field[$j],
+                     'operator'=>$request->operator[$j],
+                     'value'=>$value
+                 );
+	}
+	$j++;
+}
+//exit;
 			}##else for 'contains or matches' ends
         }
-	#print_r($new_meta_filters); exit;
-        #Session::put('meta_filters', $new_meta_filters);
+	//print_r($new_meta_filters); exit;
+        Session::put('meta_filters', $new_meta_filters);
         return redirect('/collection/'.$request->collection_id);
     }
 

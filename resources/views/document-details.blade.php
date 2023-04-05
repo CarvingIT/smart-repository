@@ -153,7 +153,7 @@ $(document).ready(function()
 							@else
                             <!--span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span-->
                             <!--div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $m->value !!}</div-->
-                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! strip_tags($m->value) !!}</div>
+                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $m->value !!}</div>
 							@endif
                             </div>
 				<br />

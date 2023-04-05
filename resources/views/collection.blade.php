@@ -211,39 +211,37 @@ function randomString(length) {
 			</div>
 			</form>
 			@endif
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
 			@foreach($meta_fields as $m)
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
 			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
 			<div class="float-container">
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
-			@csrf
+			<!--form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters"-->
+			{{-- @csrf --}}
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Add keywords and press enter"/>
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="meta_type" value="{{ $m->type }}" />
-		   	<input type="hidden" name="operator" value="contains" />
-			</form>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[]" placeholder="Add keywords and press enter"/>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
+			<!--/form-->
 			</div>
 			@elseif($m->type == 'Date')
 			<div class="float-container">
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
-			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
 		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Selete date range and press enter"/>
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="between" />
-		   	<input type="hidden" name="meta_type" value="{{ $m->type }}" />
-			</form>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="between" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			<script>
 				$('#meta_{{ $m->id }}_search').dateRangePicker();
 			</script>
 			</div>
 			@elseif($m->type == 'Select')
 			<div class="float-container">
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
-			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();">
+		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value">
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
@@ -252,17 +250,15 @@ function randomString(length) {
 				<option>{{ $o }}</option>
 				@endforeach
 			</select>
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="contains" />
-		   	<input type="hidden" name="meta_type" value="{{ $m->type }}" />
-			</form>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			</div>
 			@elseif($m->type == 'MultiSelect')
 			<div class="float-container">
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
-			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();">
+		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" multiple>
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
@@ -271,14 +267,16 @@ function randomString(length) {
 				<option>{{ $o }}</option>
 				@endforeach
 			</select>
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="contains" />
-		   	<input type="hidden" name="meta_type" value="{{ $m->type }}" />
-			</form>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			</div>
 			@endif
 			@endif
 			@endforeach
+		   	<!--input type="submit" name="submit" value="Add" /-->
+			<button type="submit" class="btn btn-primary">Add</button>
+			</form>
 			</div>
 		</div>
 		<div class="row text-center">

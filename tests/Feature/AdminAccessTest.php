@@ -17,7 +17,7 @@ class AdminAccessTest extends TestCase
     public function testUserManagementAccess()
     {
 		$user = \App\User::find(1);
-		// test accessing private collection as the maintainer
+		// test accessing user management as admin
         $response = $this->actingAs($user)->get('/admin/usermanagement');
         $response->assertStatus(200);
 		// non-admin should not get access
