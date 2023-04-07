@@ -686,10 +686,10 @@ class CollectionController extends Controller
 
     public function replaceMetaFilter(Request $request){
 /*
-print_r($request->meta_value); echo "<hr />";
-print_r($request->meta_field); echo "<hr />";
-print_r($request->meta_type); echo "<hr />";
-print_r($request->operator); echo "<hr />";
+echo "Meta Value: ";print_r($request->meta_value); echo "<hr />";
+echo "Meta Fileds: "; print_r($request->meta_field); echo "<hr />";
+echo "Meta Type: ";print_r($request->meta_type); echo "<hr />";
+echo "Meta Operator: ";print_r($request->operator); echo "<hr />";
 	$j=0;
 foreach($request->meta_value as $key=>$value){
 	echo "Key= ".$key."<br />";

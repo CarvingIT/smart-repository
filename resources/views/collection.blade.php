@@ -229,7 +229,7 @@ function randomString(length) {
 			@elseif($m->type == 'Date')
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Selete date range and press enter"/>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[]" placeholder="Selete date range and press enter"/>
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator[]" value="between" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
@@ -241,7 +241,7 @@ function randomString(length) {
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
 		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value">
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value[]">
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
