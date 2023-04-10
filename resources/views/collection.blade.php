@@ -241,11 +241,11 @@ function randomString(length) {
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
 		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]">
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]">
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
-				<option value="">{{ $m->label }}</option>
+				<!--option value="">{{ $m->label }}</option-->
 				@foreach($options as $o)
 				<option>{{ $o }}</option>
 				@endforeach
@@ -258,11 +258,11 @@ function randomString(length) {
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
 		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" multiple>
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" multiple>
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
-				<option>{{ $m->label }}</option>
+				<!--option>{{ $m->label }}</option-->
 				@foreach($options as $o)
 				<option>{{ $o }}</option>
 				@endforeach
@@ -275,7 +275,7 @@ function randomString(length) {
 			@endif
 			@endforeach
 		   	<!--input type="submit" name="submit" value="Add" /-->
-			<button type="submit" class="btn btn-primary">Add</button>
+			<button type="submit" class="btn btn-primary">Add Filter</button>
 			</form>
 			</div>
 		</div>
