@@ -687,27 +687,27 @@ class CollectionController extends Controller
     public function replaceMetaFilter(Request $request){
 /*
 echo "Meta Value: ";print_r($request->meta_value); echo "<hr />";
-echo "Meta Fileds: "; print_r($request->meta_field); echo "<hr />";
+echo "Meta Fields: "; print_r($request->meta_field); echo "<hr />";
 echo "Meta Type: ";print_r($request->meta_type); echo "<hr />";
 echo "Meta Operator: ";print_r($request->operator); echo "<hr />";
-	$j=0;
+$j=0;
+foreach($request->meta_field as $field){
 foreach($request->meta_value as $key=>$value){
 	echo "Key= ".$key."<br />";
-	//print_r($value); echo "<br />";
-	if(is_array($value)){
-	for($i=0;$i<count($value);$i++){
-	echo $value[$i]."<br />";
-	echo $request->meta_field[$j]."<br />";
-	echo $request->meta_type[$j]."<br />";
-	echo $request->operator[$j]."<br />";
-	}
-	}
-	else{
-	echo $value."<br />";
-	echo $request->meta_field[$j]."<br />";
-	echo $request->meta_type[$j]."<br />";
-	echo $request->operator[$j]."<br />";
-	}
+		echo $j."<br />";
+		if(count($value) > 0 && !empty($value[0])){
+		print_r($request->meta_value[$key]);
+		}
+		echo "<br />";
+		if($request->meta_field[$j] == $key && !empty($value[0])){
+		echo "Meta Field: ".$request->meta_field[$j]."<br />";
+		echo "Meta Type: ".$request->meta_type[$j]."<br />";
+		echo "Operator: ".$request->operator[$j]."<br />";
+		for($i=0;$i<count($value);$i++){
+			echo $value[$i]."<br />";
+		}
+		}
+}
 	$j++;
 	echo "<hr />";
 }
@@ -726,6 +726,7 @@ exit;
 				}
 			}
 			}
+			/*
 			if($request->operator == 'between'){
 				$range_parts = explode(' to ',ltrim(rtrim($request->meta_value)));
             			$new_meta_filters[$request->collection_id][] = array(
@@ -742,30 +743,55 @@ exit;
             			);
 			}
 			else{
+			*/
 $j=0;
+foreach($request->meta_field as $field){
 foreach($request->meta_value as $key=>$value){
-	if(is_array($value)){
-	for($i=0;$i<count($value);$i++){
-		$new_meta_filters[$request->collection_id][] = array(
-                     'filter_id'=>\Uuid::generate()->string,
-                     'field_id'=>$request->meta_field[$j],
-                     'operator'=>$request->operator[$j],
-                     'value'=>$value[$i]
-                 );
+	if($request->meta_field[$j] == $key && !empty($value[0])){
+	    	for($i=0;$i<count($value);$i++){
+		if($request->operator[$j] == 'between'){
+				$range_parts = explode(' to ',ltrim(rtrim($value[$i])));
+				/*
+				if($range_parts[0] == $range_parts[1]){
+            			$new_meta_filters[$request->collection_id][] = array(
+                			'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field[$j],
+		                	'operator'=>'==',
+		                	'value'=> $range_parts[0]
+            			);
+				}	
+				else{
+				*/
+            			$new_meta_filters[$request->collection_id][] = array(
+                			'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field[$j],
+		                	'operator'=>'>=',
+		                	'value'=> $range_parts[0]
+            			);
+		            	$new_meta_filters[$request->collection_id][] = array(
+               		 	'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field[$j],
+		                	'operator'=>'<=',
+		                	'value'=> $range_parts[1]
+            			);
+				//}	
+			}
+		else{
+	    		//for($i=0;$i<count($value);$i++){
+				$new_meta_filters[$request->collection_id][] = array(
+                     		'filter_id'=>\Uuid::generate()->string,
+                     		'field_id'=>$request->meta_field[$j],
+                     		'operator'=>$request->operator[$j],
+                     		'value'=>$value[$i]
+                 		);
+	    		//}
+		}##else for 'contains or matches' ends
+	    	}
 	}
-	}
-	else{
-		$new_meta_filters[$request->collection_id][] = array(
-                     'filter_id'=>\Uuid::generate()->string,
-                     'field_id'=>$request->meta_field[$j],
-                     'operator'=>$request->operator[$j],
-                     'value'=>$value
-                 );
-	}
-	$j++;
-}
+} // foreach $request->meta_value ends
+$j++;
+} // foreach $request->meta_fields ends
 //exit;
-			}##else for 'contains or matches' ends
         }
 	//print_r($new_meta_filters); exit;
         Session::put('meta_filters', $new_meta_filters);
