@@ -648,7 +648,8 @@ class CollectionController extends Controller
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
-                'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                //'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                'updated_at' => array('display'=>date('Y-M-d', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'actions' => $action_icons
 			);
 		if(!empty($collection)){
