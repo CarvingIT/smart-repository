@@ -659,11 +659,16 @@ class CollectionController extends Controller
 					$result['meta_'.$m->id] = implode(",",json_decode($d->meta_value($m->id)));
 				}
 				else{
-					$result['meta_'.$m->id] = $d->meta_value($m->id);
+					if($m->type == 'Date' && !empty($d->meta_value($m->id))){
+						$date = strtotime($d->meta_value($m->id));
+						$result['meta_'.$m->id] = date("Y-M-d",$date);
+					}
+					else{
+						$result['meta_'.$m->id] = $d->meta_value($m->id);
+					}
 				}
 			}
 		}
-
 		$results_data[] = $result;
 		} // foreach ends
         return $results_data;
