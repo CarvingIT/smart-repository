@@ -534,6 +534,7 @@ public function downloadFile($doc,$storage_drive){
 				$path_parts = explode('/',$file_path);
 				$file_name = array_pop($path_parts);
 				$file_name = preg_replace('/\d*_\d*_/','',$file_name);
+				$file_name = preg_replace('/,/','',$file_name);
 
                 $mime = Storage::disk($storage_drive)->getDriver()->getMimetype($file_url);
                 $size = Storage::disk($storage_drive)->getDriver()->getSize($file_url);
