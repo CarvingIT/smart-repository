@@ -820,7 +820,8 @@ $j++;
             $edit_field = \App\MetaField::find($meta_field_id);
         }
         $meta_fields = $collection->meta_fields;
-        return view('metainformation', ['collection'=>$collection, 
+	$permissions = \App\Permission::all();
+        return view('metainformation', ['collection'=>$collection, 'permissions'=>$permissions,
                 'edit_field'=>$edit_field, 
                 'meta_fields'=>$meta_fields,
 		'activePage' =>'Collections Meta Data',
@@ -838,6 +839,7 @@ $j++;
         $meta_field->collection_id = $request->input('collection_id');
         $meta_field->label = $request->input('label');
         $meta_field->placeholder = $request->input('placeholder');
+	$meta_field->available_to = implode(",",$request->input('available_to'));
         $meta_field->type = $request->input('type');
         $meta_field->options = $request->input('options');
         $meta_field->display_order = $request->input('display_order');
