@@ -839,7 +839,9 @@ $j++;
         $meta_field->collection_id = $request->input('collection_id');
         $meta_field->label = $request->input('label');
         $meta_field->placeholder = $request->input('placeholder');
+	if(!empty($request->input('available_to'))){
 	$meta_field->available_to = implode(",",$request->input('available_to'));
+	}
         $meta_field->type = $request->input('type');
         $meta_field->options = $request->input('options');
         $meta_field->display_order = $request->input('display_order');
