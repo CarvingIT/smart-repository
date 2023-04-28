@@ -1165,8 +1165,9 @@ use App\UrlSuppression;
 		$collection = \App\Collection::find($collection_id);
 		$filename = $collection->name;
 		$meta_fields = $collection->meta_fields;
-		$documents = $documents->get();
 		$new_list  = $new_meta_details = [];
+		
+		$documents->chunk(10, function($documents) use (&$new_list){ // chunking starts
                 foreach($documents as $d){
   			$list = ['ID'=>$d->id,'Title'=>$d->title];
 			$meta_fields = $d->collection->meta_fields;
@@ -1186,8 +1187,9 @@ use App\UrlSuppression;
 			//print_r($list);
 			//echo "<hr />";
 			//exit;
-		$new_list[] = array_merge($list,$meta_details);
+			$new_list[] = array_merge($list,$meta_details);
 		}
+		});// chunking ends
 		//exit;
 		return (new FastExcel($new_list))
     			->download($filename.'.xlsx');
