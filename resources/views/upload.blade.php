@@ -127,8 +127,9 @@ tinymce.init({
 	}
 	@endphp		
     @foreach($collection->meta_fields as $f)
+	@php 
 		$permission_intersection = [];
-		@php if(!empty($f->available_to)){ 
+		if(!empty($f->available_to)){ 
 			$available_to = explode(",",$f->available_to);
 			$permission_intersection = array_intersect($user_per,$available_to);
 		} 
