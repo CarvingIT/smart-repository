@@ -131,7 +131,10 @@ tinymce.init({
 		$permission_intersection = [];
 		if(!empty($f->available_to)){ 
 			$available_to = explode(",",$f->available_to);
+//print_r($available_to);echo "<br />";
+//print_r($user_per);echo "<br />";
 			$permission_intersection = array_intersect($user_per,$available_to);
+//print_r($permission_intersection);
 		} 
 		@endphp
     <div class="form-group row">
