@@ -195,5 +195,6 @@ if(env('ENABLE_REGISTRATION') != 1){
 Route::middleware('admin')->group(function () {
     Route::resource('synonyms', 'SynonymController');
 });
-Route::get('/synonyms', 'SynonymController@index')->name('synonyms')->middleware('admin');
+//Route::get('/admin/synonyms', 'SynonymController@index')->name('synonyms')->middleware('admin');
+Route::get('/admin/synonymsmanagement', 'SynonymController@index')->middleware('admin');
 

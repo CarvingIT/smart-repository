@@ -2,7 +2,14 @@
 
 namespace App\Http\Controllers;
 
+//use Illuminate\Http\Request;
+
+use App\User;
+use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Session;
 
 class SynonymController extends Controller
 {
@@ -11,8 +18,9 @@ class SynonymController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(User $model)
     {
+        return view('synonymsmanagement', ['users'=>$model->all(), 'activePage'=>'synonym-management', 'titlePage' => 'Synonyms']);
         return view('management_of_Snonyms',['title'=>'Synonym','activePage'=>' Dashboard','titlePage'=>' Dashboard']);
     }
 

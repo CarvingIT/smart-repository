@@ -63,14 +63,6 @@ $app_name = env('APP_NAME');
         </li>
 	@endif
 
-@if (env('ENABLE_SYNONYMS_PAGE', 1) == 1)
-        <li class="nav-item{{ $activePage == 'synonyms' ? ' active' : '' }}">
-          <a href="/synonyms" class="nav-link">
-            <i class="material-icons">search</i> {{ __('synonyms management') }}
-          </a>
-        </li>
-        @endif
-
         <li class="nav-item dropdown">
           <a class="nav-link" title="" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			@if (@Gravatar::exists(Auth::user()->email))
@@ -91,8 +83,9 @@ $app_name = env('APP_NAME');
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>
             <a class="dropdown-item" href="/admin/storagemanagement">{{ __('Manage Storages') }}</a>
-            <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
-            <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
+	    <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
+	    <a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Synonyms Management') }}</a>
+	    <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
             @endif
 	    <!--
             <div class="dropdown-divider"></div>
