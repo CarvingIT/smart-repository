@@ -190,3 +190,10 @@ Route::get('oauth/{driver}/callback', '\App\Http\Controllers\Auth\LoginControlle
 if(env('ENABLE_REGISTRATION') != 1){
 	Route::redirect('register', 'login', 301);
 }
+
+//synonyms route 
+Route::middleware('admin')->group(function () {
+    Route::resource('synonyms', 'SynonymController');
+});
+Route::get('/synonyms', 'SynonymController@index')->name('synonyms')->middleware('admin');
+
