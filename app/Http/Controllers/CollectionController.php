@@ -335,7 +335,7 @@ class CollectionController extends Controller
 	    	if(!empty($request->collection_id)){
             	$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
 			}
-				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>10];
+				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4];
 				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2];
 				$q_title_phrase = ['query'=>$search_term, 'boost'=>6];
 				$q_text_phrase = ['query'=>$search_term, 'boost'=>3];
