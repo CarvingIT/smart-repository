@@ -212,14 +212,13 @@ function randomString(length) {
 			</div>
 			</form>
 			@endif
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
-			@csrf
 			@foreach($meta_fields as $m)
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
+
 			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
 			<div class="float-container">
-			<!--form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters"-->
-			{{-- @csrf --}}
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
 		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" placeholder="Add keywords and press enter"/>
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
@@ -242,7 +241,7 @@ function randomString(length) {
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
 		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]">
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
@@ -259,7 +258,7 @@ function randomString(length) {
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
 		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" multiple>
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" multiple onchange="this.form.submit();">
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
@@ -274,10 +273,13 @@ function randomString(length) {
 			</div>
 			@endif
 			@endif
+			</form>
 			@endforeach
 		   	<!--input type="submit" name="submit" value="Add" /-->
+			<!-- is the following button needed ? -->
+			<!--
 			<button type="submit" class="btn btn-primary">Add Filter</button>
-			</form>
+			-->
 			</div>
 		</div>
 		<div class="row text-center">
