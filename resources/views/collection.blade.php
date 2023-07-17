@@ -281,7 +281,10 @@ function randomString(length) {
 			@endforeach
 		   	<!--input type="submit" name="submit" value="Add" /-->
 			@if ($search_fields_count > 0)
+			<!-- is the following button needed ? -->
+			<!--
 			<button type="submit" class="btn btn-primary">Add Filter</button>
+			-->
 			@endif
 			</form>
 			</div>
