@@ -121,7 +121,7 @@ class DocumentController extends Controller
 		    }
 		}
 		if(empty($file_type)){
-			$file_type = env('FILE_EXTENSIONS_TO_UPLOAD','ppt,pptx,doc,docx,jpg,png'); 
+			$file_type = env('FILE_EXTENSIONS_TO_UPLOAD','ppt,pptx,doc,docx,jpg,png,pdf,txt'); 
 		}
         	$validator = Validator::make($request->all(), [
 	    		'document' => 'file|mimes:'.$file_type
