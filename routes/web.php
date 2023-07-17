@@ -70,6 +70,7 @@ Route::get('/collection/{collection_id}/remove-excluded-link/{link_id}', 'Collec
 Route::post('/collection/{collection_id}/savecollectionurls', 'CollectionController@saveCollectionUrls')->middleware('maintainer');
 
 Route::get('autocomplete', 'UserController@autoComplete')->name('autocomplete');
+Route::get('autosuggest', 'CollectionController@autoSuggest')->name('autosuggest');
 
 Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@showCollectionUserForm');
 Route::post('/collection/{collection_id}/savecollectionuser', 'CollectionController@saveUser');

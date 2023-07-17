@@ -388,8 +388,32 @@ function randomString(length) {
 				@endforeach
 			@endif
 
+			@if(env('SEARCH_MODE') == 'elastic')
+$(document).ready(function() {
+        //alert("js is working");
+        src = "{{ route('autosuggest') }}";
+        $( "#collection_search" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+                    method: 'GET',
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+                        //console.log(data);
+                        response(data);
+                    }
+                });
+            },
+            minLength: 1,
+        });
+    });
+			@else
 			$('#collection_search').keyup(function(){
       			oTable.search($(this).val()).draw() ;
 			})
+			@endif
 		</script>
 @endsection

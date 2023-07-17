@@ -1232,5 +1232,22 @@ use App\UrlSuppression;
     			->download($filename.'.xlsx');
 	}
 
+	public function autoSuggest(Request $request){
+		$documents = \App\Document::where("title","LIKE","%{$request->input('term')}%")->get();
+        	$results = array();
+        	foreach($documents as $d){
+                	$results[] = ['value' => $d->title];
+        	}
+
+		//$results = ["Test1","Test2","Test3"];
+
+        	if(count($results)){
+        		return response()->json($results);
+        	}
+        	else{
+        		return ['value'=>'No Result Found'];
+        	}
+	}
+
 //Class Ends
 }
