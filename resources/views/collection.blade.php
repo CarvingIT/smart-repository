@@ -214,8 +214,12 @@ function randomString(length) {
 			@endif
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
+			@php $search_fields_count = 0; @endphp
+
 			@foreach($meta_fields as $m)
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
+			@php $search_fields_count++; @endphp
+
 			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
 			<div class="float-container">
 			<!--form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters"-->
@@ -276,7 +280,9 @@ function randomString(length) {
 			@endif
 			@endforeach
 		   	<!--input type="submit" name="submit" value="Add" /-->
+			@if ($search_fields_count > 0)
 			<button type="submit" class="btn btn-primary">Add Filter</button>
+			@endif
 			</form>
 			</div>
 		</div>
