@@ -1239,23 +1239,36 @@ use App\UrlSuppression;
 		$client = $this->getElasticClient();
 		$params['index'] = 'sr_documents';
        	$params['body']['query']['match']['title'] = $term;
-       	$params['body']['suggest']['sr-suggestion']['text'] = $term;
-       	$params['body']['suggest']['sr-suggestion']['term']['field'] = 'title';
+       	$params['body']['suggest']['title-suggestion']['text'] = $term;
+       	$params['body']['suggest']['title-suggestion']['term']['field'] = 'title';
+       	$params['body']['suggest']['content-suggestion']['text'] = $term;
+       	$params['body']['suggest']['content-suggestion']['term']['field'] = 'text_content';
 
         $response = $client->search($params);
 
 		//print_r($response['suggest']); exit;
-		$suggestions = $response['suggest']['sr-suggestion'];
+		$suggestions = $response['suggest'];
 		$results[] = $term;
-			foreach($suggestions as $s){
-			foreach($suggestions as $s){
+			foreach($suggestions['title-suggestion'] as $s){
+			foreach($suggestions['title-suggestion'] as $s){
 				foreach($s['options'] as $o){
 					$suggested_term = str_replace($s['text'], $o['text'], $term);
+					$results[] = $suggested_term;
+					$term = $suggested_term;
 				}
-				$results[] = $suggested_term;
-				$term = $suggested_term;
 			}
 			}
+
+			foreach($suggestions['content-suggestion'] as $s){
+			foreach($suggestions['content-suggestion'] as $s){
+				foreach($s['options'] as $o){
+					$suggested_term = str_replace($s['text'], $o['text'], $term);
+					$results[] = $suggested_term;
+					$term = $suggested_term;
+				}
+			}
+			}
+
         	if(count($results)){
         		return response()->json(array_unique($results));
         	}
