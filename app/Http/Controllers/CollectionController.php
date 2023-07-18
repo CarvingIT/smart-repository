@@ -267,11 +267,19 @@ class CollectionController extends Controller
         }
     }
 
+	public function getElasticClient(){
+        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+        $hosts = explode(",",$elastic_hosts);
+        return ClientBuilder::create()->setHosts($hosts)->build();
+	}
     // elastic search
     public function searchElastic($request){
+		/*
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
         $client = ClientBuilder::create()->setHosts($hosts)->build();
+		*/
+		$client = $this->getElasticClient();
     
         $params = array();
         /*
@@ -399,7 +407,7 @@ class CollectionController extends Controller
 	$sort_column = empty($columns[@$request->order[0]['column']])?'':$columns[@$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 	$length = empty($request->length)?10:$request->length;
-	if(!empty($params) && empty($sort_column)){
+	if(!empty($params) && !empty($ordered_document_ids) && empty($sort_column)){
 	// initial sorting is by relevance
 	$documents = $documents
 		->orderByRaw("FIELD(id, $ordered_document_ids)")
@@ -1233,19 +1241,24 @@ use App\UrlSuppression;
 	}
 
 	public function autoSuggest(Request $request){
+		/*
 		$documents = \App\Document::where("title","LIKE","%{$request->input('term')}%")->get();
         	$results = array();
         	foreach($documents as $d){
                 	$results[] = ['value' => $d->title];
         	}
+		*/
+		$term = $request->input('term');
 
 		//$results = ["Test1","Test2","Test3"];
+		$results = [];
 
         	if(count($results)){
         		return response()->json($results);
         	}
         	else{
-        		return ['value'=>'No Result Found'];
+        		//return ['value'=>'No Result Found'];
+        		return [];
         	}
 	}
 

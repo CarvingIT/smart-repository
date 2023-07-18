@@ -404,8 +404,10 @@ $(document).ready(function() {
                         term : request.term
                     },
                     success: function(data) {
-                        //console.log(data);
+						if(data.length > 0)
                         response(data);
+						else
+      					oTable.search(request.term).draw();
                     }
                 });
             },
