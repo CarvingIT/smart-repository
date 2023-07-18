@@ -274,13 +274,7 @@ class CollectionController extends Controller
 	}
     // elastic search
     public function searchElastic($request){
-		/*
-        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
-        $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)->build();
-		*/
 		$client = $this->getElasticClient();
-    
         $params = array();
         /*
         $params = [
@@ -296,7 +290,6 @@ class CollectionController extends Controller
             ]
         ];
         */
-
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
@@ -1241,23 +1234,32 @@ use App\UrlSuppression;
 	}
 
 	public function autoSuggest(Request $request){
-		/*
-		$documents = \App\Document::where("title","LIKE","%{$request->input('term')}%")->get();
-        	$results = array();
-        	foreach($documents as $d){
-                	$results[] = ['value' => $d->title];
-        	}
-		*/
+		// Suggestion are available only when search mode is elastic
 		$term = $request->input('term');
+		$client = $this->getElasticClient();
+		$params['index'] = 'sr_documents';
+       	$params['body']['query']['match']['title'] = $term;
+       	$params['body']['suggest']['sr-suggestion']['text'] = $term;
+       	$params['body']['suggest']['sr-suggestion']['term']['field'] = 'title';
 
-		//$results = ["Test1","Test2","Test3"];
-		$results = [];
+        $response = $client->search($params);
 
+		//print_r($response['suggest']); exit;
+		$suggestions = $response['suggest']['sr-suggestion'];
+		$results[] = $term;
+			foreach($suggestions as $s){
+			foreach($suggestions as $s){
+				foreach($s['options'] as $o){
+					$suggested_term = str_replace($s['text'], $o['text'], $term);
+				}
+				$results[] = $suggested_term;
+				$term = $suggested_term;
+			}
+			}
         	if(count($results)){
-        		return response()->json($results);
+        		return response()->json(array_unique($results));
         	}
         	else{
-        		//return ['value'=>'No Result Found'];
         		return [];
         	}
 	}

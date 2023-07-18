@@ -408,9 +408,14 @@ $(document).ready(function() {
                         response(data);
 						else
       					oTable.search(request.term).draw();
-                    }
+                    },
                 });
             },
+			select: function (event, ui){
+   				oTable.search(ui.item.value).draw();
+				$("#collection_search").val(ui.item.value);
+				return false;
+			},
             minLength: 1,
         });
     });
