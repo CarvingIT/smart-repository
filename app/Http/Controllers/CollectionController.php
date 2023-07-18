@@ -274,7 +274,6 @@ class CollectionController extends Controller
 	}
     // elastic search
     public function searchElastic($request){
-		$client = $this->getElasticClient();
         $params = array();
         /*
         $params = [
@@ -372,7 +371,14 @@ class CollectionController extends Controller
         if(!empty($params)){
 	    $params['index'] = $elastic_index;
 	    $params['size'] = 1000;// set a max size returned by ES
+		try{
+			$client = $this->getElasticClient();
             $response = $client->search($params);
+		}
+		catch(\Exception $e){
+			// some error; switch to db search
+			return $this->searchDB($request);
+		}
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
                 $document_ids[] = $h['_id'];
@@ -1236,7 +1242,6 @@ use App\UrlSuppression;
 	public function autoSuggest(Request $request){
 		// Suggestion are available only when search mode is elastic
 		$term = $request->input('term');
-		$client = $this->getElasticClient();
 		$params['index'] = 'sr_documents';
        	$params['body']['query']['match']['title'] = $term;
        	$params['body']['suggest']['title-suggestion']['text'] = $term;
@@ -1244,11 +1249,18 @@ use App\UrlSuppression;
        	$params['body']['suggest']['content-suggestion']['text'] = $term;
        	$params['body']['suggest']['content-suggestion']['term']['field'] = 'text_content';
 
+		try{
+		$client = $this->getElasticClient();
         $response = $client->search($params);
+		}
+		catch(\Exception $e){
+			// log errors
+		}
 
 		//print_r($response['suggest']); exit;
-		$suggestions = $response['suggest'];
+		$suggestions = empty($response['suggest'])?[]:$response['suggest'];
 		$results[] = $term;
+		if(!empty($suggestions['title-suggestion'])){
 			foreach($suggestions['title-suggestion'] as $s){
 			foreach($suggestions['title-suggestion'] as $s){
 				foreach($s['options'] as $o){
@@ -1258,7 +1270,9 @@ use App\UrlSuppression;
 				}
 			}
 			}
+		}
 
+		if(!empty($suggestions['content-suggestion'])){
 			foreach($suggestions['content-suggestion'] as $s){
 			foreach($suggestions['content-suggestion'] as $s){
 				foreach($s['options'] as $o){
@@ -1268,6 +1282,7 @@ use App\UrlSuppression;
 				}
 			}
 			}
+		}
 
         	if(count($results)){
         		return response()->json(array_unique($results));
