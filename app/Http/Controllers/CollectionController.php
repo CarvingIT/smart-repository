@@ -267,12 +267,13 @@ class CollectionController extends Controller
         }
     }
 
-    // elastic search
-    public function searchElastic($request){
+	public function getElasticClient(){
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)->build();
-    
+        return ClientBuilder::create()->setHosts($hosts)->build();
+	}
+    // elastic search
+    public function searchElastic($request){
         $params = array();
         /*
         $params = [
@@ -288,7 +289,6 @@ class CollectionController extends Controller
             ]
         ];
         */
-
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
@@ -329,27 +329,62 @@ class CollectionController extends Controller
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $search_term = $request->search['value'];
             $words = explode(' ',$search_term);
-            /*
-            $params['body']['query']['simple_query_string']['fields'] = ['text_content','title'];
-            $params['body']['query']['simple_query_string']['query'] = $search_term;
-            */
+			$search_mode = empty($request->search_mode)?'default':$request->search_mode;
+
+			$params['index'] = 'sr_documents';
+	    	if(!empty($request->collection_id)){
+            	$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
+			}
+				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4];
+				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2];
+				$q_title_phrase = ['query'=>$search_term, 'boost'=>6];
+				$q_text_phrase = ['query'=>$search_term, 'boost'=>3];
+				$q_without_and = ['query'=>$search_term];
+
+                $params['body']['query']['bool']['should'][]['match']['title'] = $q_without_and;
+                $params['body']['query']['bool']['should'][]['match']['text_content'] = $q_without_and;
+
+                $params['body']['query']['bool']['should'][]['match']['title'] = $title_q_with_and;
+                $params['body']['query']['bool']['should'][]['match']['text_content'] = $text_q_with_and;
+
+                $params['body']['query']['bool']['should'][]['match_phrase']['title'] = $q_title_phrase;
+                $params['body']['query']['bool']['should'][]['match_phrase']['text_content'] = $q_text_phrase;
+
+            	$params['body']['query']['bool']['minimum_should_match']= 3;
+			/*
             foreach($words as $w){
-                $params['body']['query']['bool']['must'][]['wildcard']['text_content']=$w.'*';
+                $params['body']['query']['bool']['should'][]['wildcard']['title']=$w.'*';
+                $params['body']['query']['bool']['should'][]['wildcard']['text_content']=$w.'*';
             }
-	    if(!empty($request->collection_id)){
-            	$params['body']['query']['bool']['filter']['term']['collection_id']=$request->collection_id;
-	    }
+            	$params['body']['query']['bool']['minimum_should_match']= count($words);
+            	$params['body']['query']['bool']['boost']= 1.0;
+			*/
+            	//$params['body']['sort']= ['_score'];
+				
+			/*
+                $params['body']['query']['combined_fields']['query']= $search_term;
+                $params['body']['query']['combined_fields']['operator']= 'and';
+                $params['body']['query']['combined_fields']['fields']= ['title','text_content'];
+			*/
         }
         $columns = array('type', 'title', 'size', 'updated_at');
         if(!empty($params)){
 	    $params['index'] = $elastic_index;
-	    $params['size'] = 100;// set a max size returned by ES
+	    $params['size'] = 1000;// set a max size returned by ES
+		try{
+			$client = $this->getElasticClient();
             $response = $client->search($params);
+		}
+		catch(\Exception $e){
+			// some error; switch to db search
+			return $this->searchDB($request);
+		}
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
                 $document_ids[] = $h['_id'];
             }
             $documents = $documents->whereIn('id', $document_ids);
+			$ordered_document_ids = implode(",", $document_ids);
         }
         // get title filtered documents
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
@@ -364,16 +399,25 @@ class CollectionController extends Controller
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
 	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
-	$documents = $this->approvalFilter($request, $documents);
+	//$documents = $this->approvalFilter($request, $documents);
 	//$documents = $documents->get();
 	$filtered_count = $documents->count(); 
 
-	$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
+	$sort_column = empty($columns[@$request->order[0]['column']])?'':$columns[@$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 	$length = empty($request->length)?10:$request->length;
+	if(!empty($params) && !empty($ordered_document_ids) && empty($sort_column)){
+	// initial sorting is by relevance
+	$documents = $documents
+		->orderByRaw("FIELD(id, $ordered_document_ids)")
+             ->limit($length)->offset($request->start)->get();
+	}
+	else{
+	$sort_column = empty($sort_column)?'updated_at':$sort_column;
 	$documents = $documents
 		->orderby($sort_column,$sort_direction)
-             ->limit($length)->offset($request->start)->get();
+        ->limit($length)->offset($request->start)->get();
+	}
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
 		->where('require_approval','=','1')->get();
@@ -1193,6 +1237,59 @@ use App\UrlSuppression;
 		//exit;
 		return (new FastExcel($new_list))
     			->download($filename.'.xlsx');
+	}
+
+	public function autoSuggest(Request $request){
+		// Suggestion are available only when search mode is elastic
+		$term = $request->input('term');
+		$params['index'] = 'sr_documents';
+       	$params['body']['query']['match']['title'] = $term;
+       	$params['body']['suggest']['title-suggestion']['text'] = $term;
+       	$params['body']['suggest']['title-suggestion']['term']['field'] = 'title';
+       	$params['body']['suggest']['content-suggestion']['text'] = $term;
+       	$params['body']['suggest']['content-suggestion']['term']['field'] = 'text_content';
+
+		try{
+		$client = $this->getElasticClient();
+        $response = $client->search($params);
+		}
+		catch(\Exception $e){
+			// log errors
+		}
+
+		//print_r($response['suggest']); exit;
+		$suggestions = empty($response['suggest'])?[]:$response['suggest'];
+		$results[] = $term;
+		if(!empty($suggestions['title-suggestion'])){
+			foreach($suggestions['title-suggestion'] as $s){
+			foreach($suggestions['title-suggestion'] as $s){
+				foreach($s['options'] as $o){
+					$suggested_term = str_replace($s['text'], $o['text'], $term);
+					$results[] = $suggested_term;
+					$term = $suggested_term;
+				}
+			}
+			}
+		}
+
+		if(!empty($suggestions['content-suggestion'])){
+			foreach($suggestions['content-suggestion'] as $s){
+			foreach($suggestions['content-suggestion'] as $s){
+				foreach($s['options'] as $o){
+					$suggested_term = str_replace($s['text'], $o['text'], $term);
+					$results[] = $suggested_term;
+					$term = $suggested_term;
+				}
+			}
+			}
+		}
+
+        	if(count($results)){
+        		return response()->json(array_unique($results));
+        	}
+        	else{
+        		return [];
+        	}
 	}
 
 //Class Ends

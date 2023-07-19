@@ -61,6 +61,8 @@ class RebuildElasticIndex extends Command
         foreach($docs as $d){
             $body = $d->toArray();
             $body['collection_id'] = $c->id;
+            $body['title'] = $d->title;
+            $body['text_content'] = $d->text_content;
             $params = [
                 'index' => $index,
                 'id'    => $d->id,
