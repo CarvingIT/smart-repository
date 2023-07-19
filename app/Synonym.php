@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Synonym extends Model
 {
-    protected $fillable = ['synonym'];
+    protected $fillable = ['synonyms'];
 
     /**
      * The attributes that should be hidden for arrays.

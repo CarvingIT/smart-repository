@@ -9,14 +9,13 @@
                 <h4 class="card-title">{{ __('Add Synonym') }}</h4>
                 <p class="card-category"></p>
               </div>
-
               <div class="card-body">
                  <div class="row">
                   <div class="col-md-12 text-right">
                       <a href="/admin/synonymsmanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
                   </div>
                 </div>
-                <form method="post" action="{{ route('synonyms.update', $synonym) }}" autocomplete="off">
+                <form method="post" action="{{ route('synonyms.update', $synonym ) }}" autocomplete="off">
                 @csrf
                 @method('put')
                 <div class="form-group row bmd-form-group">

@@ -87,18 +87,14 @@ function randomString(length) {
                     <table id="synonyms" class="table">
                         <thead class="text-primary">
                             <tr>
-                            <th>Sr No</th>
-                            <th>Synonym Name</th>
-                            <th>Created Date</th>
+                            <th>Synonyms</th>
                             <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                         @foreach ($synonyms as $u)
                         <tr>
-                            <td>{{ $u->id}}</td>
-                            <td>{{ $u->synonym}}</td>
-                            <td>{{ $u->created_at }}</td>
+                            <td>{{ $u->synonyms}}</td>
                             <td class="td-actions text-right">
                             <!--a href="/admin/synonym/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link"-->
                             <a href="/synonym/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">

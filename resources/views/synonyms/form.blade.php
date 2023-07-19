@@ -6,11 +6,10 @@
         <div class="col-md-9">
             <div class="card ">
               <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Add Synonym') }}</h4>
+                <h4 class="card-title">{{ __('Add Synonyms') }}</h4>
                 <p class="card-category"></p>
               </div>
-  
-              <div class="card-body ">
+              <div class="card-body">
                  <div class="row">
                   <div class="col-md-12 text-right">
                       <a href="/admin/synonymsmanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
@@ -25,18 +24,18 @@
                 @method('post')
                 <div class="form-group row bmd-form-group">
                   <div class="col-md-4">
-                  <label class="col-md-12 col-form-label text-md-right">{{ __('Synonym Name') }}</label>
+                  <label class="col-md-12 col-form-label text-md-right">{{ __('Synonyms') }}</label>
                   </div>
                   <div class="col-md-8">
-                      <input class="form-control{{ $errors->has('synonym') ? ' is-invalid' : '' }}" name="synonym" id="input-name" type="text" placeholder="{{ __('Synonym Name') }}" value="{{ old('synonym') }}" required="true" aria-required="true"/>
-                      @if ($errors->has('synonym'))
-                        <span id="name-error" class="error text-danger" for="input-synonym">{{ $errors->first('synonym') }}</span>
+                      <input class="form-control{{ $errors->has('synonyms') ? ' is-invalid' : '' }}" name="synonyms" id="input-name" type="text" placeholder="{{ __('Synonyms') }}" value="{{ old('synonyms') }}" required="true" aria-required="true"/>
+                      @if ($errors->has('synonyms'))
+                        <span id="name-error" class="error text-danger" for="input-synonym">{{ $errors->first('synonyms') }}</span>
                       @endif
                   </div>
                 </div>
               </div>
 <div class="card-footer ml-auto mr-auto">
-                <button type="submit" class="btn btn-primary">{{ __('Add Synonym') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Add Synonyms') }}</button>
               </div>
              </form>
             </div>

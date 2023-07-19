@@ -48,7 +48,7 @@ class SynonymController extends Controller
      */
     public function store(SynonymRequest $request,Synonym $model)
     {
-        $model->create($request->merge(['password' => Hash::make($request->get('password'))])->all());
+        $model->create($request->merge(['synonyms' => Hash::make($request->get('synonyms'))])->all());
         return redirect()->route('synonyms.index')->withStatus(__('Synonym successfully created.'));
     }
 

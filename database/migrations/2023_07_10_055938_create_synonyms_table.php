@@ -15,7 +15,7 @@ class CreateSynonymsTable extends Migration
     {
         Schema::create('synonyms', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->text('synonym');
+            $table->text('synonyms');
             $table->timestamps();
         });
     }

@@ -42,10 +42,7 @@ $(document).ready(function() {
                   <table id="users-list" class="table">
                     <thead class=" text-primary">
                       <th>
-                          {{ __('Name') }}
-                      </th>
-                      <th>
-                        {{ __('Creation date') }}
+                          {{ __('Synonyms') }}
                       </th>
                       <th class="text-right">
                         {{ __('Actions') }}
@@ -55,10 +52,7 @@ $(document).ready(function() {
                       @foreach($synonyms as $synonym)
                         <tr>
                           <td>
-                            {{ $synonym->synonym }}
-                          </td>
-                          <td>
-                            {{ $synonym->created_at }}
+                            {{ $synonym->synonyms }}
                           </td>
                           <td class="td-actions text-right">
                             @if ($synonym->id != auth()->id())
