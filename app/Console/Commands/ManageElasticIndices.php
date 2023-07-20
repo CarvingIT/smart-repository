@@ -57,7 +57,7 @@ class ManageElasticIndices extends Command
 						'number_of_replicas'=>0,
 						'analysis'=>[
 							'analyzer'=>[
-								'search_analyzer'=>[
+								'synonyms_analyzer'=>[
 									'filter'=>[
 										//"asciifolding",
        									//"trim",
@@ -93,8 +93,8 @@ class ManageElasticIndices extends Command
 										'ignore_above'=>256
 									]
 								],
-								//'analyzer'=>'search_analyzer',
-								//'search_analyzer'=>'search_analyzer'
+								//'analyzer'=>'search_analyzer', // not allowed since updateable=true
+								//'search_analyzer'=>'search_analyzer' // not allowed since updateable=true
 							],
 							'text_content'=>[
 								'type'=>'text',
@@ -104,8 +104,8 @@ class ManageElasticIndices extends Command
 										'ignore_above'=>256
 									]
 								],
-								//'analyzer'=>'search_analyzer',
-								//'search_analyzer'=>'search_analyzer'
+								//'analyzer'=>'search_analyzer', // not allowed since updateable=true
+								//'search_analyzer'=>'search_analyzer' // not allowed since updateable=true
 							],
 						]
 					]
