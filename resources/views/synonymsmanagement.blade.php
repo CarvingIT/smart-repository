@@ -79,7 +79,7 @@ function randomString(length) {
                     </div>
                 <div class="row">
                   <div class="col-12 text-right">
-                    <a href="{{ route('synonyms.create') }}" class="btn btn-sm btn-primary" title="Add Synonym"><i class="material-icons">add</i></a>
+                    <a href="{{ route('synonyms.create') }}" class="btn btn-sm btn-primary" title="Add Synonyms"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 

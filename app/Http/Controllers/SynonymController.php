@@ -23,7 +23,7 @@ class SynonymController extends Controller
     {
         #return view('synonyms.index', ['synonyms' => $model->paginate(15),'activePage'=>'Synonyms']);		## This page is as it is.
 
-        return view('synonymsmanagement', ['synonyms'=>$model->all(), 'activePage'=>'synonym-management', 'titlePage' => 'Synonyms']);
+        return view('synonymsmanagement', ['synonyms'=>$model->all(), 'activePage'=>'synonyms-management', 'titlePage' => 'Synonyms']);
     }
 
     /**
@@ -33,9 +33,7 @@ class SynonymController extends Controller
      */
     public function create()
     {
-		//if(!auth()->synonym()->hasRole('admin')){
-		//	return abort(403);
-		//}
+	   
         return view('synonyms.form');
     }
 
@@ -46,24 +44,24 @@ class SynonymController extends Controller
      * @param  \App\Synonym  $model
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(SynonymRequest $request,Synonym $model)
+    public function store(SynonymRequest $request, Synonym $model)
     {
-        $model->create($request->merge(['synonyms' => Hash::make($request->get('synonyms'))])->all());
+        $model->create($request->merge(['password' => Hash::make($request->get('passwords'))])->all());
         return redirect()->route('synonyms.index')->withStatus(__('Synonym successfully created.'));
     }
 
     /**
-     * Show the form for editing the specified Synonym
+     * Show the form for editing the specified Synonyms
      *
-     * @param  \App\Synonym  $synonym
+     * @param  \App\Synonym  $synonyms
      * @return \Illuminate\View\View
      */
-    public function edit(Synonym $synonym)
+    public function edit(Synonym  $synonyms)
     {
 		//if(!auth()->synonym()->hasRole('admin')){
 		//return abort(403);
 		//}
-        return view('synonyms.edit', compact('synonym'));
+        return view('synonyms.edit', compact('synonyms'));
     }
 
     /**

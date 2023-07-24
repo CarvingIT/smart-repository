@@ -26,7 +26,7 @@ class SynonymRequest extends FormRequest
     public function rules()
     {
         return [
-            'synonym' => [
+            'synonyms' => [
                 'required', 'min:3'
             ]
             

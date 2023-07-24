@@ -199,7 +199,8 @@ Route::middleware('admin')->group(function () {
 
 Route::get('/admin/synonymsmanagement', 'SynonymController@index')->middleware('admin');
 Route::post('/admin/synonym/delete','SynonymController@destroy')->middleware('admin');
-
 Route::get('autocomplete', 'SynonymController@autoComplete')->name('autocomplete');
 Route::get('/synonym/{id}/edit','SynonymController@edit')->middleware('admin');
-Route::get('/synonym/{synonym_id}/update','SynonymController@update')->middleware('admin');
+Route::post('synonyms/{synonym}', 'SynonymController@update')->name('synonyms.update');
+
+

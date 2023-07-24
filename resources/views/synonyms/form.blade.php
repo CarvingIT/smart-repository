@@ -1,4 +1,4 @@
-@extends('layouts.app', ['class'=> 'off-canvas-sidebar', 'activePage' => 'synonym-management', 'titlePage' => __('Synonym Management')])
+@extends('layouts.app', ['class'=> 'off-canvas-sidebar', 'activePage' => 'synonyms-management', 'titlePage' => __('Synonyms Management')])
 
 @section('content')
     <div class="container">
@@ -9,6 +9,7 @@
                 <h4 class="card-title">{{ __('Add Synonyms') }}</h4>
                 <p class="card-category"></p>
               </div>
+              
               <div class="card-body">
                  <div class="row">
                   <div class="col-md-12 text-right">
@@ -29,12 +30,12 @@
                   <div class="col-md-8">
                       <input class="form-control{{ $errors->has('synonyms') ? ' is-invalid' : '' }}" name="synonyms" id="input-name" type="text" placeholder="{{ __('Synonyms') }}" value="{{ old('synonyms') }}" required="true" aria-required="true"/>
                       @if ($errors->has('synonyms'))
-                        <span id="name-error" class="error text-danger" for="input-synonym">{{ $errors->first('synonyms') }}</span>
+                        <span id="name-error" class="error text-danger" for="input-synonyms">{{ $errors->first('synonyms') }}</span>
                       @endif
                   </div>
                 </div>
               </div>
-<div class="card-footer ml-auto mr-auto">
+              <div class="card-footer ml-auto mr-auto">
                 <button type="submit" class="btn btn-primary">{{ __('Add Synonyms') }}</button>
               </div>
              </form>
