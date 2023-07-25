@@ -56,11 +56,9 @@ class SynonymController extends Controller
      * @param  \App\Synonym  $synonyms
      * @return \Illuminate\View\View
      */
-    public function edit(Synonym  $synonyms)
+    public function edit($id)
     {
-		//if(!auth()->synonym()->hasRole('admin')){
-		//return abort(403);
-		//}
+		$synonyms = Synonym::find($id);
         return view('synonyms.edit', compact('synonyms'));
     }
 
