@@ -351,6 +351,8 @@ class CollectionController extends Controller
                 $params['body']['query']['bool']['should'][]['match_phrase']['text_content'] = $q_text_phrase;
 
             	$params['body']['query']['bool']['minimum_should_match']= 3;
+				// enble the following only if you want synonym search to work
+            	$params['body']['query']['analyzer'] = 'synonyms_analyzer';
 			/*
             foreach($words as $w){
                 $params['body']['query']['bool']['should'][]['wildcard']['title']=$w.'*';
