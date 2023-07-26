@@ -40,7 +40,3 @@ Route::middleware('auth:api')->get('/document/{document_id}/revisions', function
     ->orderBy('id','DESC')->get();
 });
 
-//Synonyms 
-Route::middleware('auth:api')->get('/synonym', function (Request $request) {
-    return $request->synonym();
-});

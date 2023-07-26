@@ -1,4 +1,4 @@
-@extends('layouts.app', ['class'=> 'off-canvas-sidebar', 'activePage' => 'synonym-management', 'titlePage' => __('Synonym Management')])
+@extends('layouts.app', ['class'=> 'off-canvas-sidebar', 'activePage' => 'synonyms-management', 'titlePage' => __('Synonyms Management')])
 
 @section('content')
     <div class="container">
@@ -10,23 +10,22 @@
                 <p class="card-category"></p>
               </div>
 
-              <div class="card-body">
+              <div class="card-body ">
                  <div class="row">
                   <div class="col-md-12 text-right">
                       <a href="/admin/synonymsmanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
                   </div>
                 </div>
-                <form method="post" action="{{ route('synonyms.update', $synonyms ) }}" autocomplete="off">
+                <form method="post" action="{{ route('synonyms.update', $synonyms) }}" autocomplete="off">
                 @csrf
                 @method('put')
                 <div class="form-group row bmd-form-group">
                   <div class="col-md-4">
                   <label class="col-md-8 col-form-label text-md-right">{{ __('Synonyms') }}</label>
                   </div>
-                 </div>
                   <div class="col-md-6">
                       <input class="form-control{{ $errors->has('synonyms') ? ' is-invalid' : '' }}" name="synonyms" id="input-synonyms" type="text" placeholder="{{ __('Synonyms') }}" value="{{ old('synonyms', $synonyms->synonyms) }}" required="true" aria-required="true"/>
-                      @if ($errors->has('synonym'))
+                      @if ($errors->has('synonyms'))
                         <span id="name-error" class="error text-danger" for="input-synonyms">{{ $errors->first('synonyms') }}</span>
                       @endif
                   </div>

@@ -194,11 +194,9 @@ if(env('ENABLE_REGISTRATION') != 1){
 
 //synonyms route
 Route::middleware('admin')->group(function () {
-    Route::resource('synonyms', 'SynonymController');
+    Route::resource('synonyms', 'SynonymsController');
 });
 
-Route::get('/admin/synonymsmanagement', 'SynonymController@index')->middleware('admin');
-Route::post('/admin/synonym/delete','SynonymController@destroy')->middleware('admin');
+Route::get('/admin/synonymsmanagement', 'SynonymsController@index')->middleware('admin');
+Route::post('/admin/synonyms/delete','SynonymsController@destroy')->middleware('admin');
 Route::get('autocomplete', 'SynonymController@autoComplete')->name('autocomplete');
-
-

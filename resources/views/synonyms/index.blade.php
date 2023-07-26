@@ -52,14 +52,14 @@ $(document).ready(function() {
                           </td>
                           <td class="td-actions text-right">
                             @if ($synonym->id != auth()->id())
-                              <form action="{{ route('synonym.destroy', $synonym) }}" method="post">
+                              <form action="{{ route('synonym.destroy', $synonyms) }}" method="post">
                                   @csrf
                                   @method('delete')
-                    <a rel="tooltip" class="btn btn-success btn-link" href="{{ route('synonyms.edit', $synonym) }}" data-original-title="" title="">
+                    <a rel="tooltip" class="btn btn-success btn-link" href="{{ route('synonyms.edit', $synonyms) }}" data-original-title="" title="">
                                     <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
                                   </a>
-                                  <button type="button" class="btn btn-danger btn-link" data-original-title="" title="" onclick="confirm('{{ __("Are you sure you want to delete this synonym?") }}') ? this.parentElement.submit() : ''">
+                                  <button type="button" class="btn btn-danger btn-link" data-original-title="" title="" onclick="confirm('{{ __("Are you sure you want to delete this synonyms?") }}') ? this.parentElement.submit() : ''">
                                       <i class="material-icons">close</i>
                                       <div class="ripple-container"></div>
                                   </button>
