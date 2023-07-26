@@ -9,17 +9,18 @@
                 <h4 class="card-title">{{ __('Add Synonyms') }}</h4>
                 <p class="card-category"></p>
               </div>
-              
+
               <div class="card-body">
                  <div class="row">
                   <div class="col-md-12 text-right">
                       <a href="/admin/synonymsmanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
                   </div>
                 </div>
-                @if(empty($synonym))
+
+                @if(empty($synonyms))
                 <form method="post" action="{{ route('synonyms.store') }}" autocomplete="off">
                 @else
-                <form method="post" action="{{ route('synonyms.update', $synonym) }}" autocomplete="off">
+                <form method="post" action="{{ route('synonyms.update', $synonyms) }}" autocomplete="off">
                 @endif
                 @csrf
                 @method('post')
@@ -43,4 +44,5 @@
         </div>
       </div>
     </div>
+
 @endsection

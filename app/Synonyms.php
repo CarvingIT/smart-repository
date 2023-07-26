@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Synonym extends Model
+class Synonyms extends Model
 {
 
     /**
@@ -17,8 +17,3 @@ class Synonym extends Model
     protected $fillable = ['synonyms'];
 
 }
-
-
-
-
-

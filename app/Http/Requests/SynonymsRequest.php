@@ -2,14 +2,14 @@
 
 namespace App\Http\Requests;
 
-use App\Synonym;
+use App\Synonyms;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SynonymRequest extends FormRequest
+class SynonymsRequest extends FormRequest
 {
     /**
-     * Determine if the synonym is authorized to make this request.
+     * Determine if the synonyms is authorized to make this request.
      *
      * @return bool
      */
@@ -29,7 +29,6 @@ class SynonymRequest extends FormRequest
             'synonyms' => [
                 'required', 'min:3'
             ]
-            
         ];
     }
 }

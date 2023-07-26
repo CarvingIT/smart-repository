@@ -10,11 +10,11 @@ $(document).ready(function() {
     $("#synonyms").DataTable();
 } );
 
-function showDeleteDialog(synonym_id){
+function showDeleteDialog(synonyms_id){
         str = randomString(6);
         $('#text_captcha').text(str);
         $('#hidden_captcha').text(str);
-        $('#delete_synonym_id').val(synonym_id);
+        $('#delete_synonyms_id').val(synonyms_id);
         deldialog = $( "#deletedialog" ).dialog({
                 title: 'Are you sure ?',
                 resizable: true
@@ -42,7 +42,7 @@ function randomString(length) {
         <div class="col-md-12">
 	<!--
             <div class="card">
-                <div class="card-header card-header-primary">Add synonym</div>
+                <div class="card-header card-header-primary">Add synonyms</div>
                 <div class="card-body">
                     <div class="flash-message">
                     @foreach (['danger', 'warning', 'success', 'info'] as $msg)
@@ -96,8 +96,8 @@ function randomString(length) {
                         <tr>
                             <td>{{ $u->synonyms}}</td>
                             <td class="td-actions text-right">
-                            <!--a href="/admin/synonym/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link"-->
-                            <a href="/synonym/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
+                            <!--a href="/admin/synonyms/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link"-->
+                            <a href="/synonyms/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
 				    <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
 				</a>
@@ -105,12 +105,12 @@ function randomString(length) {
                             </td>
                         </tr>
 	    <div id="deletedialog" style="display:none;">
-                <form name="deletedoc" method="post" action="/admin/synonym/delete">
+                <form name="deletedoc" method="post" action="/admin/synonyms/delete">
                 @csrf
                 <p>Enter <span id="text_captcha"></span> to delete</p>
                 <input type="text" name="delete_captcha" value="" />
                 <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
-                <input type="hidden" id="delete_synonym_id" name="synonym_id" value="{{ $u->id }}" />
+                <input type="hidden" id="delete_synonyms_id" name="synonyms_id" value="{{ $u->id }}" />
                 <button class="btn btn-danger" type="submit" value="delete">Delete</button>
                 </form>
             </div>
