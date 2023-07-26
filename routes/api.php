@@ -39,4 +39,3 @@ Route::middleware('auth:api')->get('/document/{document_id}/revisions', function
 	return \App\DocumentRevision::where('document_id','=', $document_id)
     ->orderBy('id','DESC')->get();
 });
-

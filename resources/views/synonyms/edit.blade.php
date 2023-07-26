@@ -6,7 +6,7 @@
         <div class="col-md-9">
             <div class="card ">
               <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Add Synonyms') }}</h4>
+                <h4 class="card-title">{{ __('Update Synonyms') }}</h4>
                 <p class="card-category"></p>
               </div>
 
@@ -24,7 +24,7 @@
                   <label class="col-md-8 col-form-label text-md-right">{{ __('Synonyms') }}</label>
                   </div>
                   <div class="col-md-6">
-                      <input class="form-control{{ $errors->has('synonyms') ? ' is-invalid' : '' }}" name="synonyms" id="input-synonyms" type="text" placeholder="{{ __('Synonyms') }}" value="{{ old('synonyms', $synonyms->synonyms) }}" required="true" aria-required="true"/>
+                      <input class="form-control{{ $errors->has('synonyms') ? ' is-invalid' : '' }}" name="synonyms" id="input-synonyms" type="text" placeholder="{{ __('Comma separated list of synonyms') }}" value="{{ old('synonyms', $synonyms->synonyms) }}" required="true" aria-required="true"/>
                       @if ($errors->has('synonyms'))
                         <span id="name-error" class="error text-danger" for="input-synonyms">{{ $errors->first('synonyms') }}</span>
                       @endif
@@ -32,7 +32,7 @@
                 </div>
               </div>
               <div class="card-footer ml-auto mr-auto">
-                <button type="submit" class="btn btn-primary">{{ __('Add Synonyms') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Update Synonyms') }}</button>
               </div>
              </form>
             </div>
