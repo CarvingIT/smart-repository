@@ -200,10 +200,3 @@ Route::middleware('admin')->group(function () {
 Route::get('/admin/synonymsmanagement', 'SynonymsController@index')->middleware('admin');
 Route::post('/admin/synonyms/delete','SynonymsController@destroy')->middleware('admin');
 Route::get('autocomplete', 'SynonymController@autoComplete')->name('autocomplete');
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 0828ac7 (Fix synonyms update issue)
-
-
