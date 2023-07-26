@@ -29,7 +29,7 @@
                   <label class="col-md-12 col-form-label text-md-right">{{ __('Synonyms') }}</label>
                   </div>
                   <div class="col-md-8">
-                      <input class="form-control{{ $errors->has('synonyms') ? ' is-invalid' : '' }}" name="synonyms" id="input-name" type="text" placeholder="{{ __('Synonyms') }}" value="{{ old('synonyms') }}" required="true" aria-required="true"/>
+                      <input class="form-control{{ $errors->has('synonyms') ? ' is-invalid' : '' }}" name="synonyms" id="input-name" type="text" placeholder="{{ __('Comma separated list of synonyms') }}" value="{{ old('synonyms') }}" required="true" aria-required="true"/>
                       @if ($errors->has('synonyms'))
                         <span id="name-error" class="error text-danger" for="input-synonyms">{{ $errors->first('synonyms') }}</span>
                       @endif
