@@ -301,7 +301,11 @@ function randomString(length) {
 		</div><!-- search-filters-card -->
 		<!-- show filters -->
 		<div>
-        <p>
+        <p> <div id="synonyms_filter" class="search">Synonyms search:
+                        <label class="switch">
+                        <input type="checkbox" checked><span class="slider round"></span></label>
+                </div>
+
 		@php
             $meta_labels = array();
             foreach($meta_fields as $m){

@@ -4,6 +4,7 @@
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
+<link href="{{ url('css/costom.css') }} " rel="stylesheet">
 
 <script type="text/javascript">
 $(document).ready(function() {
@@ -82,7 +83,6 @@ function randomString(length) {
                     <a href="{{ route('synonyms.create') }}" class="btn btn-sm btn-primary" title="Add Synonyms"><i class="material-icons">add</i></a>
                   </div>
                 </div>
-
 		<div class="table-responsive">
                     <table id="synonyms" class="table">
                         <thead class="text-primary">
