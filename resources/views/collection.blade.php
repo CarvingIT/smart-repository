@@ -272,14 +272,9 @@ function randomString(length) {
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			</div>
 			@endif
-			@endif
 			</form>
+			@endif
 			@endforeach
-		   	<!--input type="submit" name="submit" value="Add" /-->
-			<!-- is the following button needed ? -->
-			<!--
-			<button type="submit" class="btn btn-primary">Add Filter</button>
-			-->
 			</div>
 		</div>
 		<div class="row text-center">
