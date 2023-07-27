@@ -37,7 +37,7 @@ $(document).ready(function() {
 			echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
 			$i++;
 		}
-		@endphp	
+		@endphp
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
     "processing":true,
@@ -45,8 +45,8 @@ $(document).ready(function() {
     "order": [], // initial ordering disabled. Good for sorting by relevance in ES.
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
-    "language": 
-	{          
+    "language":
+	{
 	"processing": "<img src='/i/processing.gif'>",
 	},
     "columns":[
@@ -133,11 +133,11 @@ function randomString(length) {
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
-		    @if($collection->content_type == 'Uploaded documents')	
+		    @if($collection->content_type == 'Uploaded documents')
                     <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                     <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
                     <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">create_new_folder</i></a>
-		    @elseif($collection->content_type == 'Web resources')	
+		    @elseif($collection->content_type == 'Web resources')
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
 		    @endif
 		  @endif
@@ -159,7 +159,7 @@ function randomString(length) {
             <p>{{ $collection->description }}</p>
 			</div>
 			<div class="col-2 text-right">
-		<!-- children collections -->		
+		<!-- children collections -->
 			@if ($collection->children->count() > 0)
 			<div class="navbar-collapse justify-content-end">
 				<ul class="navbar-nav">
@@ -177,7 +177,7 @@ function randomString(length) {
 				</ul><!-- navbar-nav -->
 			</div>
 			@endif
-			@if ($collection->parent_id) 
+			@if ($collection->parent_id)
 				<a class="btn btn-primary" title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
 						. . <i class="material-icons">arrow_upward</i>
 				</a>
@@ -300,8 +300,10 @@ function randomString(length) {
 		</div>
 		</div><!-- search-filters-card -->
 		<!-- show filters -->
-		<div>
-        <p> <div id="synonyms_filter" class="search">Synonyms search:
+
+		<!-- Search UI -->
+
+        	<div id="synonyms_search" class="search">Synonyms search :
                         <label class="switch">
                         <input type="checkbox" checked><span class="slider round"></span></label>
                 </div>
