@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Elasticsearch\ClientBuilder;
+use App\Synonyms;
 
 class SetElasticSynonyms extends Command
 {
@@ -38,15 +39,29 @@ class SetElasticSynonyms extends Command
      */
     public function handle()
     {
+		try{
 		// create/update synonym file at /etc/elasticsearch/sr_synonyms.txt
+		$synonyms_file_path = '/etc/elasticsearch/sr_synonyms.txt';
+
+		$synonyms = Synonyms::all();
+		$file_contents ='';
+		foreach ($synonyms as $s){
+			$file_contents .= $s->synonyms."\n";
+		}
+
+		file_put_contents($synonyms_file_path, $file_contents);
 
 		// then reload the search analyzers
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)->build();
-		$params = ['index'=>'sr_documents'];
-		//reload index
-		$response = $client->indices()->reloadSearchAnalyzers($params);
-		print_r($response);
+        	$client = ClientBuilder::create()->setHosts($hosts)->build();
+			$params = ['index'=>'sr_documents'];
+			//reload index
+			$response = $client->indices()->reloadSearchAnalyzers($params);
+			print_r($response);
+		}
+		catch(\Exception $e){
+			print $e->getMessage()."\n";
+		}
     }
 }

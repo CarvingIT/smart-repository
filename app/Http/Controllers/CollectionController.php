@@ -1245,7 +1245,6 @@ use App\UrlSuppression;
 		// Suggestion are available only when search mode is elastic
 		$term = $request->input('term');
 		$params['index'] = 'sr_documents';
-       	$params['body']['query']['match']['title'] = $term;
        	$params['body']['suggest']['title-suggestion']['text'] = $term;
        	$params['body']['suggest']['title-suggestion']['term']['field'] = 'title';
        	$params['body']['suggest']['content-suggestion']['text'] = $term;
