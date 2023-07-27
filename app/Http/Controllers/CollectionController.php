@@ -331,28 +331,65 @@ class CollectionController extends Controller
             $words = explode(' ',$search_term);
 			$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
-			$params['index'] = 'sr_documents';
-	    	if(!empty($request->collection_id)){
-            	$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
-			}
+				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>'synonyms_analyzer'];
+				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'synonyms_analyzer'];
+				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>'synonyms_analyzer'];
+				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>'synonyms_analyzer'];
+				$q_without_and = ['query'=>$search_term, 'analyzer'=>'synonyms_analyzer'];
+
+				/*
 				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4];
 				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2];
 				$q_title_phrase = ['query'=>$search_term, 'boost'=>6];
 				$q_text_phrase = ['query'=>$search_term, 'boost'=>3];
 				$q_without_and = ['query'=>$search_term];
+				*/
 
-                $params['body']['query']['bool']['should'][]['match']['title'] = $q_without_and;
-                $params['body']['query']['bool']['should'][]['match']['text_content'] = $q_without_and;
-
-                $params['body']['query']['bool']['should'][]['match']['title'] = $title_q_with_and;
-                $params['body']['query']['bool']['should'][]['match']['text_content'] = $text_q_with_and;
-
-                $params['body']['query']['bool']['should'][]['match_phrase']['title'] = $q_title_phrase;
-                $params['body']['query']['bool']['should'][]['match_phrase']['text_content'] = $q_text_phrase;
-
-            	$params['body']['query']['bool']['minimum_should_match']= 3;
-				// enble the following only if you want synonym search to work
-            	$params['body']['query']['analyzer'] = 'synonyms_analyzer';
+				$params = [
+					'index' => 'sr_documents',
+					'body' => [
+						'query' => [
+							'bool' => [
+								'should' => [
+									[
+										'match' => [
+											'title' => $q_without_and,
+										]
+									],
+									[
+										'match' => [
+											'text_content' => $q_without_and
+										]
+									],
+									[
+										'match' => [
+											'title' => $title_q_with_and,
+										]
+									],
+									[
+										'match' => [
+											'text_content' => $text_q_with_and
+										]
+									],
+									[
+										'match_phrase' => [
+											'title' => $q_title_phrase,
+										]
+									],
+									[
+										'match_phrase' => [
+											'text_content' => $q_text_phrase
+										]
+									],
+								],
+								'minimum_should_match' => 3
+							],
+						]
+					]
+				];
+	    	if(!empty($request->collection_id)){
+            	$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
+			}
 			/*
             foreach($words as $w){
                 $params['body']['query']['bool']['should'][]['wildcard']['title']=$w.'*';

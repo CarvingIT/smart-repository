@@ -51,32 +51,6 @@ class ManageElasticIndices extends Command
 		else if($operation == 'create'){
 			$params = ['index' => $index,
 				'body'=>[
-					'settings'=>[
-						'refresh_interval'=>'1s',
-						'number_of_shards'=>1,
-						'number_of_replicas'=>0,
-						'analysis'=>[
-							'analyzer'=>[
-								'synonyms_analyzer'=>[
-									'filter'=>[
-										//"asciifolding",
-       									//"trim",
-							            //"stemmer",
-										"lowercase",
-              							"sr_synonyms"
-									],
-									'tokenizer'=>'standard'
-								]
-							],
-							'filter'=>[
-								'sr_synonyms'=>[
-									'type'=>'synonym',
-									'synonyms_path'=>'sr_synonyms.txt',
-									'updateable'=>true
-								]
-							]
-						]
-					],
 					'mappings'=>[
 						'properties'=>[
 							'sr_vector'=>[
@@ -93,8 +67,6 @@ class ManageElasticIndices extends Command
 										'ignore_above'=>256
 									]
 								],
-								//'analyzer'=>'search_analyzer', // not allowed since updateable=true
-								//'search_analyzer'=>'search_analyzer' // not allowed since updateable=true
 							],
 							'text_content'=>[
 								'type'=>'text',
@@ -104,14 +76,45 @@ class ManageElasticIndices extends Command
 										'ignore_above'=>256
 									]
 								],
-								//'analyzer'=>'search_analyzer', // not allowed since updateable=true
-								//'search_analyzer'=>'search_analyzer' // not allowed since updateable=true
 							],
 						]
 					]
 				]			
 			];
 			$client->indices()->create($params);
+
+			// add settings related to synonym analyzer
+			$synonym_params = [
+				'index' => 'sr_documents',
+    			'body' => [
+        			'settings' => [
+           				'number_of_replicas' => 0,
+           				'refresh_interval' => -1,
+						'analysis' => [
+							'analyzer' => [
+								'synonyms_analyzer' => [
+									'tokenizer' => 'standard',
+									'filter' => [
+										'lowercase',
+										'sr_synonyms'
+									]
+								]
+							],
+							'filter' => [
+								'sr_synonyms' => [
+									'type' => 'synonym',
+									'synonyms_path' => '/etc/elasticsearch/sr_synonyms.txt',
+									'updateable' => true
+								]
+							]
+						]
+        			]
+    			]
+			];
+			$client->indices()->close(['index'=>'sr_documents']);
+			$response = $client->indices()->putSettings($synonym_params);
+			print_r($response);
+			$client->indices()->open(['index'=>'sr_documents']);
 		}
     }
 }
