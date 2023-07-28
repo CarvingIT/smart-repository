@@ -303,9 +303,10 @@ function randomString(length) {
 
 		<!-- Search UI -->
 
-        	<div id="synonyms_search" class="search">Synonyms search :
+        	<div id="synonyms_search" class="search"> Synonyms search :
                         <label class="switch">
-                        <input type="checkbox" checked><span class="slider round"></span></label>
+                        <input type="checkbox" checked><span class="slider round"></span>
+			</label>
                 </div>
 
 		@php
