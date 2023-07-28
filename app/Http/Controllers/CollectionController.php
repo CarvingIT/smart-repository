@@ -331,19 +331,14 @@ class CollectionController extends Controller
             $words = explode(' ',$search_term);
 			$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
-				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>'synonyms_analyzer'];
-				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'synonyms_analyzer'];
-				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>'synonyms_analyzer'];
-				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>'synonyms_analyzer'];
-				$q_without_and = ['query'=>$search_term, 'analyzer'=>'synonyms_analyzer'];
-
-				/*
-				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4];
-				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2];
-				$q_title_phrase = ['query'=>$search_term, 'boost'=>6];
-				$q_text_phrase = ['query'=>$search_term, 'boost'=>3];
-				$q_without_and = ['query'=>$search_term];
-				*/
+			$synonym_search = 1; // put synonym search on if the value in session is ON
+			$analyzer = ($synonym_search)?'synonyms_analyzer':null;
+			
+				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
+				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
+				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];
+				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];
+				$q_without_and = ['query'=>$search_term, 'analyzer'=>$analyzer];
 
 				$params = [
 					'index' => 'sr_documents',
