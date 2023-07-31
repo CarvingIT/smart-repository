@@ -11,6 +11,9 @@
 |
 */
 Auth::routes(['verify'=>true]);
+Route::get('/email/verify', function () {
+    return view('auth.verify');
+})->middleware('auth')->name('verification.notice');
 
 Route::view('/','welcome');
 
@@ -29,7 +32,6 @@ Route::get('/faq', function () {
     return view('faq');
 });
 
-
 Route::get('/dashboard', 'HomeController@index')->name('dashboard');
 Route::get('/collections', 'CollectionController@list');
 Route::get('/documents', 'DocumentController@list');
@@ -40,6 +42,11 @@ Route::get('/collection/{collection_id}/export', 'CollectionController@export')-
 // Document upload/edit
 Route::get('/collection/{collection_id}/upload', 'DocumentController@showUploadForm')->middleware('document_add');
 Route::post('/collection/{collection_id}/upload','DocumentController@upload')->middleware('document_add');
+Route::post('/collection/move_document', 'DocumentController@move');
+Route::post('/approve-document', 'DocumentController@approveDocument');
+
+//Document Comment
+Route::post('/save-comment', 'CommentController@save');
 
 // Document import queue via url
 Route::get('/collection/{collection_id}/url-import', 'URLImportController@index')->middleware('document_add');
@@ -49,6 +56,10 @@ Route::get('/collection/{collection_id}/import-link/{link_id}/delete', 'URLImpor
 // Collection-user management
 Route::get('/collection/{collection_id}/users', 'CollectionController@collectionUsers')->middleware('maintainer');
 Route::get('/collection/{collection_id}/user', 'CollectionController@showCollectionUserForm')->middleware('maintainer');
+
+// child-collection
+Route::get('/collection/{collection_id}/child-collection/{child_collection_id}', 'CollectionController@showChildCollectionForm')->middleware('maintainer');
+Route::post('/collection/{collection_id}/save-child-collection', 'CollectionController@saveChildCollection')->middleware('maintainer');
 
 // Collection-user management
 Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('maintainer');
@@ -86,12 +97,18 @@ Route::get('/collection/{collection_id}/removefilter/{field_id}', 'CollectionCon
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllMetaFilters');
 Route::get('/collection/{collection_id}/removetitlefilter', 'CollectionController@removeTitleFilter');
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllFilters');
+// media route; just like the document download route
+Route::get('/media/i/{filename}', 'MediaController@loadImage');
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('document_view');
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
+// Upload documents with same meta-data
+Route::get('/collection/{collection_id}/document/{document_id}/same-meta-upload', 'DocumentController@sameMetaUpload')->middleware('document_add');
 // Document details (meta)
 Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
@@ -114,6 +131,12 @@ Route::post('/admin/user/delete','UserController@destroy')->middleware('admin');
 // system config
 Route::get('/admin/sysconfig','SysConfigController@index')->middleware('admin');
 Route::post('/admin/sysconfig','SysConfigController@save')->middleware('admin');
+
+// storage/disk management
+Route::get('/admin/storagemanagement', 'DisksController@index')->middleware('admin');
+Route::get('/admin/disk-form/{disk_id}', 'DisksController@add_edit_disk')->middleware('admin');
+Route::post('/admin/savedisk', 'DisksController@save')->middleware('admin');
+Route::post('/admin/disk/delete','DisksController@delete')->middleware('admin');
 
 Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
 //Route::get('/home', 'HomeController@index')->name('home');
@@ -148,7 +171,7 @@ Route::group(['middleware' => 'auth'], function () {
 	})->name('upgrade');
 });
 
-Route::group(['middleware' => ['auth', 'admin']], function () {
+Route::group(['middleware' => ['auth']], function () {
 	Route::resource('user', 'UserController', ['except' => ['show']]);
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);
@@ -156,6 +179,11 @@ Route::group(['middleware' => ['auth', 'admin']], function () {
 });
 
 Route::post('/user/regenerate-api-token', 'ApiTokenController@update')->middleware(['auth']);
+
+// Oauth
+Route::get('auth/social', '\App\Http\Controllers\Auth\LoginController@show')->name('social.login');
+Route::get('oauth/{driver}', '\App\Http\Controllers\Auth\LoginController@redirectToProvider')->name('social.oauth');
+Route::get('oauth/{driver}/callback', '\App\Http\Controllers\Auth\LoginController@handleProviderCallback')->name('social.callback');
 
 // redirect registration to login if registration is disabled
 if(env('ENABLE_REGISTRATION') != 1){

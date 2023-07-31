@@ -71,13 +71,6 @@ class UserSeeder extends Seeder
         );
 
 
-        // create default roles
-        DB::table('roles')->insert(
-            [
-                'name'=>'admin'
-            ]
-        );
-
         // make first user admin
         DB::table('user_roles')->insert(
             [

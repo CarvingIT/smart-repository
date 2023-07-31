@@ -17,11 +17,21 @@ class CollectionView
     {
 		$user = \Auth::user();
         $collection = \App\Collection::find($request->collection_id);
-
-        if(!$collection || ($collection->type != 'Public' && 
-			(!$user || !$request->user()->hasPermission($request->collection_id, 'VIEW')))){
+		
+		if(!$collection){
 			abort(403, 'Forbidden');
-        }
+		}
+		else if($collection->type != 'Public'){
+			if(!$user){
+				abort(403, 'Forbidden');
+			}
+			else if(!$user->hasPermission($request->collection_id, 'VIEW')
+				&& !$user->hasPermission($request->collection_id, 'VIEW_OWN')
+				&& !$user->hasPermission($request->collection_id, 'MAINTAINER')
+				){
+				abort(403, 'Forbidden');
+			}
+		}
         return $next($request);
     }
 }

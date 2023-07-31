@@ -15,59 +15,59 @@ class MaintainerAccessTest extends TestCase
      */
     public function testMaintainerAccess()
     {
-		$user = \App\User::find(1);
+		$user = \App\User::find(2);
 		
 		// test accessing private collection as the maintainer
-        $response = $this->actingAs($user)->get('/collection/3');
+        $response = $this->actingAs($user)->get('/collection/1');
         $response->assertStatus(200);
 		// test accessing public collection as the maintainer
-        $response = $this->actingAs($user)->get('/collection/1');
+        $response = $this->actingAs($user)->get('/collection/2');
         $response->assertStatus(200);
     }
 	
 	public function testAccessToCollectionUsers(){
-		$user = \App\User::find(1);
-        $response = $this->actingAs($user)->get('/collection/3/users');
+		$user = \App\User::find(2);
+        $response = $this->actingAs($user)->get('/collection/1/users');
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
-		$user = \App\User::find(2);
-        $response = $this->actingAs($user)->get('/collection/3/users');
+		$user = \App\User::find(1);
+        $response = $this->actingAs($user)->get('/collection/1/users');
         $response->assertStatus(403);
 	}
 
 	public function testAccessToMetaFieldManagement(){
-		$user = \App\User::find(1);
-        $response = $this->actingAs($user)->get('/collection/3/meta');
+		$user = \App\User::find(2);
+        $response = $this->actingAs($user)->get('/collection/1/meta');
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
-		$user = \App\User::find(2);
-        $response = $this->actingAs($user)->get('/collection/3/meta');
+		$user = \App\User::find(1);
+        $response = $this->actingAs($user)->get('/collection/1/meta');
         $response->assertStatus(403);
 	}
 
 	public function testAccessToSettings(){
-		$user = \App\User::find(1);
-        $response = $this->actingAs($user)->get('/collection/3/settings');
+		$user = \App\User::find(2);
+        $response = $this->actingAs($user)->get('/collection/1/settings');
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
-		$user = \App\User::find(2);
-        $response = $this->actingAs($user)->get('/collection/3/settings');
+		$user = \App\User::find(1);
+        $response = $this->actingAs($user)->get('/collection/1/settings');
         $response->assertStatus(403);
 	}
 
 	public function testAccessToUpload(){
-		$user = \App\User::find(1);
-        $response = $this->actingAs($user)->get('/collection/3/upload');
+		$user = \App\User::find(2);
+        $response = $this->actingAs($user)->get('/collection/1/upload');
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
-		$user = \App\User::find(2);
-        $response = $this->actingAs($user)->get('/collection/3/upload');
+		$user = \App\User::find(1);
+        $response = $this->actingAs($user)->get('/collection/1/upload');
         $response->assertStatus(403);
 	}
 
 	public function testAccessToMetaFilters(){
-		$user = \App\User::find(1);
-        $response = $this->actingAs($user)->get('/collection/3/metafilters');
+		$user = \App\User::find(2);
+        $response = $this->actingAs($user)->get('/collection/1/metafilters');
         $response->assertStatus(200);
 	}
 
@@ -84,56 +84,56 @@ class MaintainerAccessTest extends TestCase
 	}
 
 	public function testAccessToCollectionUser(){
-		$user = \App\User::find(1);
-        $response = $this->actingAs($user)->get('/collection/3/user');
+		$user = \App\User::find(2);
+        $response = $this->actingAs($user)->get('/collection/1/user');
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
-		$user = \App\User::find(2);
-        $response = $this->actingAs($user)->get('/collection/3/user');
+		$user = \App\User::find(1);
+        $response = $this->actingAs($user)->get('/collection/1/user');
         $response->assertStatus(403);
 	}
 
 	public function testAccessToCollectionMetaManagement(){
-		$user = \App\User::find(1);
-        $response = $this->actingAs($user)->get('/collection/3/meta');
+		$user = \App\User::find(2);
+        $response = $this->actingAs($user)->get('/collection/1/meta');
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
-		$user = \App\User::find(2);
-        $response = $this->actingAs($user)->get('/collection/3/meta');
+		$user = \App\User::find(1);
+        $response = $this->actingAs($user)->get('/collection/1/meta');
         $response->assertStatus(403);
 	}
 
 	public function testMetaFieldCreation(){
-		$user = \App\User::find(1);
+		$user = \App\User::find(2);
 		$response = $this->actingAs($user)
-				->json('POST','/collection/3/meta', 
-				['collection_id'=>3,'label' => 'Test Label', 
+				->json('POST','/collection/1/meta', 
+				['collection_id'=>1,'label' => 'Test Label', 
 				'placeholder'=>'TEST LABEL', 
 				'type'=>'Text', 'display_order'=>1]);
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
-		$user = \App\User::find(2);
+		$user = \App\User::find(1);
 		$response = $this->actingAs($user)
-				->json('POST','/collection/3/meta', 
-				['collection_id'=>3,'label' => 'Test Label', 
+				->json('POST','/collection/1/meta', 
+				['collection_id'=>1,'label' => 'Test Label', 
 				'placeholder'=>'TEST LABEL', 
 				'type'=>'Text', 'display_order'=>1]);
         $response->assertStatus(403);
 	}
 
 	public function testMetaFieldUpdate(){
-		$user = \App\User::find(1);
+		$user = \App\User::find(2);
 		$response = $this->actingAs($user)
-				->json('POST','/collection/3/meta', 
-				['collection_id'=>3, 'meta_field_id'=>1, 
+				->json('POST','/collection/1/meta', 
+				['collection_id'=>1, 'meta_field_id'=>1, 
 				'label' => 'Test Label new', 'placeholder'=>'TEST LABEL NEW', 
 				'type'=>'Date', 'display_order'=>1]);
         $response->assertStatus(200);
 		// non-maintainer should not get access to this area
-		$user = \App\User::find(2);
+		$user = \App\User::find(1);
 		$response = $this->actingAs($user)
-				->json('POST','/collection/3/meta', 
-				['collection_id'=>3, 'meta_field_id'=>1, 
+				->json('POST','/collection/1/meta', 
+				['collection_id'=>1, 'meta_field_id'=>1, 
 				'label' => 'Test Label New', 'placeholder'=>'TEST LABEL NEW', 
 				'type'=>'Date', 'display_order'=>1]);
         $response->assertStatus(403);

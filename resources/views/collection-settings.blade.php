@@ -15,7 +15,6 @@
 @endpush
 
 @section('content')
-@section('content')
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -46,6 +45,7 @@
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
 		@php
 			$column_config = json_decode($collection->column_config);
+			$permissions = \App\Permission::all();
 		@endphp
 	   	<div class="col-md-12" id="accordion">
 		<h4>{{__('Display Columns')}}</h4>
@@ -60,8 +60,11 @@
 			@if(!empty($column_config->creation_time) && $column_config->creation_time == 1) checked="checked" @endif /> {{ __('Creation time') }}</div>
 
 			@foreach($collection->meta_fields as $m)
+			@if($m->type == 'Textarea')
+				@continue
+			@endif
            <div class="col-md-3"><input name="meta_fields[]" type="checkbox" value="{{ $m->id }}" 
-			@if(!empty($column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ __($m->label) }}</div>
+			@if(is_array(@$column_config->meta_fields) && in_array($m->id, $column_config->meta_fields)) checked="checked" @endif /> {{ __($m->label) }}</div>
 			@endforeach
 		</div>
 
@@ -74,6 +77,65 @@
            <div class="col-md-3"><input name="meta_fields_search[]" type="checkbox" value="{{ $m->id }}" 
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search)) checked="checked" @endif /> {{ $m->label }}</div>
 			@endforeach
+		</div>
+
+		<h4>{{__('Default permissions to Authenticated Users')}}</h4>
+		<div class="form-group row">
+			@foreach($permissions as $p)
+			@if ($p->name == 'MAINTAINER')
+				@continue
+			@endif
+           <div class="col-md-3"><input name="auth_user_permissions[]" type="checkbox" value="{{ $p->name }}" 
+			@if(!empty($column_config->auth_user_permissions) && in_array($p->name, $column_config->auth_user_permissions)) checked="checked" @endif /> {{ $p->description }}</div>
+			@endforeach
+		</div>
+
+		<h4>{{__('Info page')}}</h4>
+		<div class="form-group row">
+           <div class="col-md-3"><input name="show_word_cloud" type="checkbox" value="1" 
+			@if(!empty($column_config->show_word_cloud) && $column_config->show_word_cloud == 1) checked="checked" @endif /> Show word cloud</div>
+           <div class="col-md-3"><input name="show_audit_trail" type="checkbox" value="1" 
+			@if(!empty($column_config->show_audit_trail) && $column_config->show_audit_trail == 1) checked="checked" @endif /> Show audit trail</div>
+			<hr />
+           <div class="col-md-12 row">
+			<div class="col-md-5"><h5>Current label</h5></div>
+			<div class="col-md-2"><h5>Hide Label?</h5></div>
+			<div class="col-md-2"><h5>Hide Field?</h5></div>
+			<div class="col-md-3"><h5>Label override</h5></div>
+			</div>
+			
+			@foreach($collection->meta_fields as $m)
+           <div class="col-md-12 row">
+			<div class="col-md-5">{{ $m->label }}</div>
+			@php 
+				$display_label = 'meta_display_label_'.$m->id;
+			@endphp
+			<div class="col-md-2">
+			<input name="meta_hide_label[]" type="checkbox" value="{{$m->id}}" 
+			@if(is_array(@$column_config->meta_hide_label) && in_array($m->id, @$column_config->meta_hide_label)) checked="checked" @endif />
+			</div>
+
+			<div class="col-md-2">
+			<input name="meta_hide_field[]" type="checkbox" value="{{$m->id}}" 
+			@if(is_array(@$column_config->meta_hide_field) && in_array($m->id, @$column_config->meta_hide_field)) checked="checked" @endif />
+			</div>
+
+			<div class="col-md-3">
+			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="Label for display" />
+			</div>
+
+			</div>
+			@endforeach
+		</div>
+
+		<h4>{{__('Notifications')}}</h4>
+		<div class="form-group row">
+			<div class="col-md-2 text-right">
+				<label for="slack_webhook"><img src="/i/Slack_Mark_Web.png" class="icon"/>Slack Webhook</label>
+			</div>
+			<div class="col-md-10">
+				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="Slack webhook url" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
+			</div>
 		</div>
 
 		<h4>{{ __('IMAP Settings (Map an email address to this collection)')}}</h4>

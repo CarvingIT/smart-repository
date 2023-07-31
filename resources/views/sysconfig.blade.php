@@ -23,29 +23,54 @@
                         @endif
                     @endforeach
 
-                   <form method="post" action="/admin/sysconfig">
+                   <form method="post" action="/admin/sysconfig" enctype="multipart/form-data">
                     @csrf()
                    <div class="form-group row">
                     <div class="col-md-12">
                         <h4>Site Configuration</h4>
 		            </div>
                    </div>
+		  
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="logo_url" class="col-md-12 col-form-label text-md-right">Logo URL</label> 
 		           </div>
                     <div class="col-md-9">
-                    <input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" />
+                    <!--input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" /-->
+                   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
+                   <input id="logo_url" type="file" class="form-control-file" name="logo_url">
                     </div>
                    </div>
+
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="favicon_url" class="col-md-12 col-form-label text-md-right">Favicon URL</label> 
 		           </div>
                     <div class="col-md-9">
-                    <input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" />
+                    <!--input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" /-->
+                   <label for='filesize'><font color="red">File size must be less than 50KB.</font></label>
+                   <input id="favicon_url" type="file" class="form-control-file" name="favicon_url">
                     </div>
                    </div>
+
+		   <div class="form-group row">
+                    <div class="col-md-3">
+                   <label for="driver" class="col-md-12 col-form-label text-md-right">Media Disk Storage</label>
+                    </div>
+                    <div class="col-md-9">
+					<select name="media_storage_drive" class="selectpicker">
+							<option value="">Select</option>
+                       		@foreach($storage_disks as $disk => $type)
+                       			@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local')
+                             		@continue
+                           		@endif
+                           		<option value="{{ $disk }}" @if(@$sysconfig['media_storage_drive'] == $disk) selected @endif>{{ $disk }}</option>
+                       		@endforeach
+               		</select>
+                    </div>
+                   </div>
+
+
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="home_page" class="col-md-12 col-form-label text-md-right">Home page info</label> 
@@ -109,7 +134,7 @@
                                     "insertdatetime media table nonbreaking save contextmenu directionality paste"
                                 ],
                                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-                                relative_urls: false,
+                                relative_urls: true,
                                 remove_script_host: false,
                                 convert_urls: true,
                                 force_br_newlines: true,

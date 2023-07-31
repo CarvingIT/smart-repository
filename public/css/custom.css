@@ -139,3 +139,26 @@ textarea#overridingcss{
 	height:130px !important;
 	resize:both !important;
 }
+.audit-changes{
+	font-weight:bold;
+	color:blue;
+}
+
+input::placeholder{
+	font-size:9px;
+}
+
+.align-top{
+	vertical-align:top;
+}
+
+.filter-option-inner-inner{
+	color:#666;
+}
+
+.howdy{
+	position:fixed;
+	top:10px;
+	right:10px;
+	font-size:0.8em;
+}

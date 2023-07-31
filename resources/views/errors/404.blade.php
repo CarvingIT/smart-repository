@@ -10,7 +10,7 @@
 		<div class="card-header card-header-primary">
 		<h4 class="card-title">Not found</h4></div>
                 <div class="card-body">
-		<h3>Oops</h3>
+		<h3>{{ $exception->getMessage() }}</h3>
 		<p>The page that you are looking for is not found here.</p>
                 </div>
             </div>

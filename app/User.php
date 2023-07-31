@@ -64,21 +64,22 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function accessPermissions(){
-        return \App\UserPermission::where('user_id','=',$this->id)->get();
+		return $this->hasMany(UserPermission::class, 'user_id');
     }
 
     public function hasPermission($collection_id, $permission_name){
-        $user_permissions = $this->accessPermissions();
+        $user_permissions = $this->accessPermissions;
+        $c = \App\Collection::find($collection_id);
         /*
         check VIEW access first
         If the collection is Public or if the user has any permission on the collection
         */ 
         if($permission_name == 'VIEW'){
-            $c = \App\Collection::find($collection_id);
             if($c->type == 'Public') return true;
             
             foreach($user_permissions as $u_p){
-                if($u_p->collection_id == $collection_id) return true;
+				if($u_p->permission->name == 'VIEW'
+                 && $u_p->collection_id == $collection_id) return true;
             }
         }
         foreach($user_permissions as $u_p){
@@ -87,6 +88,12 @@ class User extends Authenticatable implements MustVerifyEmail
                 return true;
             }
         }
+		// code to check if the collection allows authenticated users with some default permissions
+		$collection_config = json_decode($c->column_config);
+		$auth_user_permissions = !empty($collection_config->auth_user_permissions)?$collection_config->auth_user_permissions:[];
+		if(in_array($permission_name, $auth_user_permissions)){
+			return true;
+		}
         return false;
     }
 

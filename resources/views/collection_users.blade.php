@@ -9,6 +9,7 @@ $(document).ready(function() {
     $('#collection_users').DataTable({
     "aoColumnDefs": [
             { "bSortable": false, "aTargets": [2]},
+			{ "className": 'align-top', "aTargets": [0]},
      ]
     });
 } );
@@ -20,7 +21,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Collection users</h4>
+            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections')}}</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Collection users</h4>
             </div>
                  <div class="card-body">
 		<div class="row">
@@ -42,12 +43,12 @@ $(document).ready(function() {
                         <tbody>
                     @foreach($collection_users as $user_id=>$perms)
                     <tr>
-                        <td valign="top">
+                        <td>
                         {{ ($perms[0]->user)->email }}
                         </td>
                         <td>
                         @foreach($perms as $p)
-                            {{ ($p->permission)->name }}<br/>
+                            {{ ($p->permission)->description }}<br/>
                         @endforeach
                         </td>
                         <td class="td-actions text-right">

@@ -6,12 +6,21 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Events\DocumentSaved;
 use App\Events\DocumentDeleted;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Document extends Model
+class Document extends Model implements Auditable
 {
     use SoftDeletes;
     use FullTextSearch;
+	use \OwenIt\Auditing\Auditable;
 
+	protected $auditExclude = [
+        'text_content',
+		'id',
+		'created_by',
+		'path',
+		'collection_id'
+    ];
     /**
      * The columns of the full text index
      */
@@ -47,6 +56,7 @@ class Document extends Model
             'exe'=>'exe',
             'mp3'=>'mp3',
             'mp4'=>'mp4',
+	    'm4a'=>'m4a',
         );
         $path = empty($path) ? $this->path : $path;
         //get extension

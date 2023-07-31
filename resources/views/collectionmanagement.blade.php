@@ -42,7 +42,7 @@ function randomString(length) {
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">Collections</h4>
+                <h4 class="card-title">{{ __('Collections') }}</h4>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 

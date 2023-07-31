@@ -43,5 +43,18 @@ return [
             'tolerance' => env('STRIPE_WEBHOOK_TOLERANCE', 300),
         ],
     ],
+	// oauth 
+    'google' => [
+    'client_id'     => env('GL_ID'),
+    'client_secret' => env('GL_SECRET'),
+    'redirect'      => env('APP_URL') . '/oauth/google/callback',
+    ],
+    'facebook' => [
+    'client_id'     => env('FB_ID'),
+    'client_secret' => env('FB_SECRET'),
+    'redirect'      => env('APP_URL') . '/oauth/facebook/callback',
+    ],
+	// more are supported
+	// facebook, twitter, linkedin, google, github, gitlab, bitbucket
 
 ];
