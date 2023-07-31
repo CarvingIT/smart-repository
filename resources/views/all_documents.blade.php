@@ -72,6 +72,17 @@ function randomString(length) {
 
 </script>
 @endpush
+<div id="deletedialog" style="display:none;">
+                <form name="deletedoc" method="post" action="/document/delete">
+                @csrf
+                <p>Enter <span id="text_captcha"></span> to delete</p>
+                <input type="text" name="delete_captcha" value="" />
+                <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
+                <input type="hidden" id="delete_doc_id" name="document_id" value="" />
+                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+                </form>
+            </div>
+
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
