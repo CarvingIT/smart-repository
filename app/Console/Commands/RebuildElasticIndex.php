@@ -61,6 +61,8 @@ class RebuildElasticIndex extends Command
         foreach($docs as $d){
             $body = $d->toArray();
             $body['collection_id'] = $c->id;
+            $body['title'] = $d->title;
+            $body['text_content'] = $d->text_content;
             $params = [
                 'index' => $index,
                 'id'    => $d->id,
@@ -70,5 +72,37 @@ class RebuildElasticIndex extends Command
             $response = $client->index($params);
             print_r($response);
         }
+		// add settings related to synonym analyzer
+		$synonym_params = [
+			'index' => 'sr_documents',
+   			'body' => [
+       			'settings' => [
+       				'number_of_replicas' => 0,
+       				'refresh_interval' => -1,
+					'analysis' => [
+						'analyzer' => [
+							'synonyms_analyzer' => [
+								'tokenizer' => 'standard',
+									'filter' => [
+										'lowercase',
+										'sr_synonyms'
+									]
+							]
+						],
+						'filter' => [
+							'sr_synonyms' => [
+								'type' => 'synonym',
+								'synonyms_path' => '/etc/elasticsearch/sr_synonyms.txt',
+								'updateable' => true
+							]
+						]
+					]
+       			]
+   			]
+		];
+		$client->indices()->close(['index'=>'sr_documents']);
+		$response = $client->indices()->putSettings($synonym_params);
+		print_r($response);
+		$client->indices()->open(['index'=>'sr_documents']);
     }
 }

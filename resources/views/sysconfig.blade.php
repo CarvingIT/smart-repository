@@ -53,6 +53,15 @@
                     </div>
                    </div>
 
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="upload_file_types" class="col-md-12 col-form-label text-md-right">Upload File Types</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <input type="text" name="upload_file_types" id="upload_file_types" class="form-control" placeholder="pdf,ppt,pptx,doc,docx,jpg,png" value="@if(!empty($sysconfig['upload_file_types'])) {{$sysconfig['upload_file_types'] }} @endif" />
+                    </div>
+                   </div>
+
 		   <div class="form-group row">
                     <div class="col-md-3">
                    <label for="driver" class="col-md-12 col-form-label text-md-right">Media Disk Storage</label>

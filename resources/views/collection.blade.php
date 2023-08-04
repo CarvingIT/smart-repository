@@ -41,7 +41,8 @@ $(document).ready(function() {
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
     "processing":true,
-    "order": [[ 3, "desc" ]],
+    //"order": [[ 3, "desc" ]],
+    "order": [], // initial ordering disabled. Good for sorting by relevance in ES.
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
     "language": 
@@ -200,7 +201,6 @@ function randomString(length) {
                @endforeach
             </div>
 		<div class="card search-filters-card">
-
 		<div class="row text-center">
 		   <div class="col-12">
 			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
@@ -214,48 +214,65 @@ function randomString(length) {
 			@endif
 			@foreach($meta_fields as $m)
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
-			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
-			<div class="float-container">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
+
+			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
+			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Add keywords and press enter"/>
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="contains" />
-			</form>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" placeholder="Add keywords and press enter"/>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
+			<!--/form-->
 			</div>
 			@elseif($m->type == 'Date')
 			<div class="float-container">
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
-			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" placeholder="Selete date range and press enter"/>
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="between" />
-			</form>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" placeholder="Selete date range and press enter"/>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="between" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			<script>
 				$('#meta_{{ $m->id }}_search').dateRangePicker();
 			</script>
 			</div>
-			@elseif($m->type == 'MultiSelect' || $m->type == 'Select')
+			@elseif($m->type == 'Select')
 			<div class="float-container">
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
-			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();">
+		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
-				<option>{{ $m->label }}</option>
+				<!--option value="">{{ $m->label }}</option-->
 				@foreach($options as $o)
 				<option>{{ $o }}</option>
 				@endforeach
 			</select>
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="contains" />
-			</form>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+			</div>
+			@elseif($m->type == 'MultiSelect')
+			<div class="float-container">
+		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
+		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" multiple onchange="this.form.submit();">
+		            @php
+                		$options = explode(",", $m->options);
+            		    @endphp
+				<!--option>{{ $m->label }}</option-->
+				@foreach($options as $o)
+				<option>{{ $o }}</option>
+				@endforeach
+			</select>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			</div>
 			@endif
+			</form>
 			@endif
 			@endforeach
 			</div>
@@ -368,8 +385,39 @@ function randomString(length) {
 				@endforeach
 			@endif
 
+			@if(env('SEARCH_MODE') == 'elastic')
+$(document).ready(function() {
+        //alert("js is working");
+        src = "{{ route('autosuggest') }}";
+        $( "#collection_search" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+                    method: 'GET',
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+						if(data.length > 0)
+                        response(data);
+						else
+      					oTable.search(request.term).draw();
+                    },
+                });
+            },
+			select: function (event, ui){
+   				oTable.search(ui.item.value).draw();
+				$("#collection_search").val(ui.item.value);
+				return false;
+			},
+            minLength: 1,
+        });
+    });
+			@else
 			$('#collection_search').keyup(function(){
       			oTable.search($(this).val()).draw() ;
 			})
+			@endif
 		</script>
 @endsection

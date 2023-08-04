@@ -43,6 +43,7 @@ tinymce.init({
       },
    });
 
+
 </script>
 
 @endpush
@@ -101,7 +102,7 @@ tinymce.init({
 		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">Uploaded Document</label>
 		   </div>
     		   <div class="col-md-9">
-			@if(!empty($document->id))<a href="/document/{{ $document->id }}" target="_blank">{{ html_entity_decode($document->title) }} </a> @endif
+			@if(!empty($document->id))<a href="/collection/{{ $collection->id }}/document/{{ $document->id }}" target="_blank">{{ html_entity_decode($document->title) }} </a> @endif
     		   </div>
 		</div>
 		@endif
@@ -118,23 +119,51 @@ tinymce.init({
 		</div>
 @endif
 @endif
+	<div class="select-data-container" style="position:fixed; top:25%; z-index:1000;"></div>
+	@php
+	$user_permissions = \App\UserPermission::select('permission_id')->where('user_id', Auth::user()->id)->get();
+	foreach($user_permissions as $permission){
+		$user_per[] = $permission->permission_id;
+	}
+	@endphp		
     @foreach($collection->meta_fields as $f)
+	@php 
+		$permission_intersection = [];
+		if(!empty($f->available_to)){ 
+			$available_to = explode(",",$f->available_to);
+//print_r($available_to);echo "<br />";
+//print_r($user_per);echo "<br />";
+			$permission_intersection = array_intersect($user_per,$available_to);
+//print_r($permission_intersection);
+		} 
+		@endphp
     <div class="form-group row">
 		   <div class="col-md-3">
+		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
     			<label for="meta_field_{{$f->id}}" class="col-md-12 col-form-label text-md-right">{{$f->label}}</label>
+		@endif
     		   </div>
         <div class="col-md-9">
         @if($f->type == 'Text')
+		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+		@endif
         @elseif ($f->type == 'Textarea')
-        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{{ $document->meta_value($f->id) }}</textarea>
+		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
+        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! $document->meta_value($f->id) !!}</textarea>
+		@endif
         @elseif ($f->type == 'Numeric')
+		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
         <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+		@endif
         @elseif ($f->type == 'Date')
-        <input id="meta_field_{{$f->id}}" type="date" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
+        <input id="meta_field_{{$f->id}}" max="2999-12-31"  type="date" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+		@endif
 
         @elseif (in_array($f->type, array('Select', 'MultiSelect')))
-        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple="multiple" @endif 
+		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
+        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple @endif 
 		@if($f->is_required == 1) {{ ' required' }} @endif >
             @php
                 $options = explode(",", $f->options);
@@ -152,7 +181,9 @@ tinymce.init({
 				@endif
             @endforeach
         </select>
+		@endif
 		@elseif ($f->type == 'SelectCombo')
+		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
 		<input type="text" class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" autocomplete="off" list="optionvalues" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 		<label>You can select an option or type custom text above.</label>
 		<datalist id="optionvalues">
@@ -167,6 +198,7 @@ tinymce.init({
             <option>{{$o}}</option>
             @endforeach
 		</datalist>
+		@endif {{-- end of permissions if --}}
         @endif
         </div>
     </div>

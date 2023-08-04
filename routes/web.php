@@ -70,6 +70,7 @@ Route::get('/collection/{collection_id}/remove-excluded-link/{link_id}', 'Collec
 Route::post('/collection/{collection_id}/savecollectionurls', 'CollectionController@saveCollectionUrls')->middleware('maintainer');
 
 Route::get('autocomplete', 'UserController@autoComplete')->name('autocomplete');
+Route::get('autosuggest', 'CollectionController@autoSuggest')->name('autosuggest');
 
 Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@showCollectionUserForm');
 Route::post('/collection/{collection_id}/savecollectionuser', 'CollectionController@saveUser');
@@ -190,3 +191,12 @@ Route::get('oauth/{driver}/callback', '\App\Http\Controllers\Auth\LoginControlle
 if(env('ENABLE_REGISTRATION') != 1){
 	Route::redirect('register', 'login', 301);
 }
+
+//synonyms route
+Route::middleware('admin')->group(function () {
+    Route::resource('synonyms', 'SynonymsController');
+});
+
+Route::get('/admin/synonymsmanagement', 'SynonymsController@index')->middleware('admin');
+Route::post('/admin/synonyms/delete','SynonymsController@destroy')->middleware('admin');
+Route::get('autocomplete', 'SynonymController@autoComplete')->name('autocomplete');

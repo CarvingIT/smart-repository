@@ -267,12 +267,13 @@ class CollectionController extends Controller
         }
     }
 
-    // elastic search
-    public function searchElastic($request){
+	public function getElasticClient(){
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)->build();
-    
+        return ClientBuilder::create()->setHosts($hosts)->build();
+	}
+    // elastic search
+    public function searchElastic($request){
         $params = array();
         /*
         $params = [
@@ -288,7 +289,6 @@ class CollectionController extends Controller
             ]
         ];
         */
-
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
@@ -329,27 +329,96 @@ class CollectionController extends Controller
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $search_term = $request->search['value'];
             $words = explode(' ',$search_term);
-            /*
-            $params['body']['query']['simple_query_string']['fields'] = ['text_content','title'];
-            $params['body']['query']['simple_query_string']['query'] = $search_term;
-            */
+			$search_mode = empty($request->search_mode)?'default':$request->search_mode;
+
+			$synonym_search = 1; // put synonym search on if the value in session is ON
+			$analyzer = ($synonym_search)?'synonyms_analyzer':null;
+			
+				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
+				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
+				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];
+				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];
+				$q_without_and = ['query'=>$search_term, 'analyzer'=>$analyzer];
+
+				$params = [
+					'index' => 'sr_documents',
+					'body' => [
+						'query' => [
+							'bool' => [
+								'should' => [
+									[
+										'match' => [
+											'title' => $q_without_and,
+										]
+									],
+									[
+										'match' => [
+											'text_content' => $q_without_and
+										]
+									],
+									[
+										'match' => [
+											'title' => $title_q_with_and,
+										]
+									],
+									[
+										'match' => [
+											'text_content' => $text_q_with_and
+										]
+									],
+									[
+										'match_phrase' => [
+											'title' => $q_title_phrase,
+										]
+									],
+									[
+										'match_phrase' => [
+											'text_content' => $q_text_phrase
+										]
+									],
+								],
+								'minimum_should_match' => 3
+							],
+						]
+					]
+				];
+	    	if(!empty($request->collection_id)){
+            	$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
+			}
+			/*
             foreach($words as $w){
-                $params['body']['query']['bool']['must'][]['wildcard']['text_content']=$w.'*';
+                $params['body']['query']['bool']['should'][]['wildcard']['title']=$w.'*';
+                $params['body']['query']['bool']['should'][]['wildcard']['text_content']=$w.'*';
             }
-	    if(!empty($request->collection_id)){
-            	$params['body']['query']['bool']['filter']['term']['collection_id']=$request->collection_id;
-	    }
+            	$params['body']['query']['bool']['minimum_should_match']= count($words);
+            	$params['body']['query']['bool']['boost']= 1.0;
+			*/
+            	//$params['body']['sort']= ['_score'];
+				
+			/*
+                $params['body']['query']['combined_fields']['query']= $search_term;
+                $params['body']['query']['combined_fields']['operator']= 'and';
+                $params['body']['query']['combined_fields']['fields']= ['title','text_content'];
+			*/
         }
         $columns = array('type', 'title', 'size', 'updated_at');
         if(!empty($params)){
 	    $params['index'] = $elastic_index;
-	    $params['size'] = 100;// set a max size returned by ES
+	    $params['size'] = 1000;// set a max size returned by ES
+		try{
+			$client = $this->getElasticClient();
             $response = $client->search($params);
+		}
+		catch(\Exception $e){
+			// some error; switch to db search
+			return $this->searchDB($request);
+		}
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
                 $document_ids[] = $h['_id'];
             }
             $documents = $documents->whereIn('id', $document_ids);
+			$ordered_document_ids = implode(",", $document_ids);
         }
         // get title filtered documents
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
@@ -364,16 +433,25 @@ class CollectionController extends Controller
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
 	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
-	$documents = $this->approvalFilter($request, $documents);
+	//$documents = $this->approvalFilter($request, $documents);
 	//$documents = $documents->get();
 	$filtered_count = $documents->count(); 
 
-	$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
+	$sort_column = empty($columns[@$request->order[0]['column']])?'':$columns[@$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 	$length = empty($request->length)?10:$request->length;
+	if(!empty($params) && !empty($ordered_document_ids) && empty($sort_column)){
+	// initial sorting is by relevance
+	$documents = $documents
+		->orderByRaw("FIELD(id, $ordered_document_ids)")
+             ->limit($length)->offset($request->start)->get();
+	}
+	else{
+	$sort_column = empty($sort_column)?'updated_at':$sort_column;
 	$documents = $documents
 		->orderby($sort_column,$sort_direction)
-             ->limit($length)->offset($request->start)->get();
+        ->limit($length)->offset($request->start)->get();
+	}
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
 		->where('require_approval','=','1')->get();
@@ -648,7 +726,8 @@ class CollectionController extends Controller
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
-                'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                //'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                'updated_at' => array('display'=>date('Y-M-d', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'actions' => $action_icons
 			);
 		if(!empty($collection)){
@@ -659,11 +738,16 @@ class CollectionController extends Controller
 					$result['meta_'.$m->id] = implode(",",json_decode($d->meta_value($m->id)));
 				}
 				else{
-					$result['meta_'.$m->id] = $d->meta_value($m->id);
+					if($m->type == 'Date' && !empty($d->meta_value($m->id))){
+						$date = strtotime($d->meta_value($m->id));
+						$result['meta_'.$m->id] = date("Y-M-d",$date);
+					}
+					else{
+						$result['meta_'.$m->id] = $d->meta_value($m->id);
+					}
 				}
 			}
 		}
-
 		$results_data[] = $result;
 		} // foreach ends
         return $results_data;
@@ -685,9 +769,39 @@ class CollectionController extends Controller
     }
 
     public function replaceMetaFilter(Request $request){
+/*
+echo "Meta Value: ";print_r($request->meta_value); echo "<hr />";
+echo "Meta Fields: "; print_r($request->meta_field); echo "<hr />";
+echo "Meta Type: ";print_r($request->meta_type); echo "<hr />";
+echo "Meta Operator: ";print_r($request->operator); echo "<hr />";
+$j=0;
+foreach($request->meta_field as $field){
+foreach($request->meta_value as $key=>$value){
+	echo "Key= ".$key."<br />";
+		echo $j."<br />";
+		if(count($value) > 0 && !empty($value[0])){
+		print_r($request->meta_value[$key]);
+		}
+		echo "<br />";
+		if($request->meta_field[$j] == $key && !empty($value[0])){
+		echo "Meta Field: ".$request->meta_field[$j]."<br />";
+		echo "Meta Type: ".$request->meta_type[$j]."<br />";
+		echo "Operator: ".$request->operator[$j]."<br />";
+		for($i=0;$i<count($value);$i++){
+			echo $value[$i]."<br />";
+		}
+		}
+}
+	$j++;
+	echo "<hr />";
+}
+exit;
+*/
         // set filters in session and return to the collection view 
         $meta_filters = Session::get('meta_filters');
-		$new_meta_filters = array();
+	$new_meta_filters = array();
+	$multi_meta_field = $multi_meta_value = array();
+
         if(!empty($request->meta_value)){
 			if($meta_filters && is_array($meta_filters[$request->collection_id])){
 			foreach($meta_filters[$request->collection_id] as $m){
@@ -696,30 +810,74 @@ class CollectionController extends Controller
 				}
 			}
 			}
+			/*
 			if($request->operator == 'between'){
 				$range_parts = explode(' to ',ltrim(rtrim($request->meta_value)));
-            	$new_meta_filters[$request->collection_id][] = array(
-                	'filter_id'=>\Uuid::generate()->string,
-                	'field_id'=>$request->meta_field,
-                	'operator'=>'>=',
-                	'value'=> $range_parts[0]
-            	);
-            	$new_meta_filters[$request->collection_id][] = array(
-                	'filter_id'=>\Uuid::generate()->string,
-                	'field_id'=>$request->meta_field,
-                	'operator'=>'<=',
-                	'value'=> $range_parts[1]
-            	);
+            			$new_meta_filters[$request->collection_id][] = array(
+                			'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field,
+		                	'operator'=>'>=',
+		                	'value'=> $range_parts[0]
+            			);
+		            	$new_meta_filters[$request->collection_id][] = array(
+               		 	'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field,
+		                	'operator'=>'<=',
+		                	'value'=> $range_parts[1]
+            			);
 			}
 			else{
-            	$new_meta_filters[$request->collection_id][] = array(
-                	'filter_id'=>\Uuid::generate()->string,
-                	'field_id'=>$request->meta_field,
-                	'operator'=>$request->operator,
-                	'value'=>$request->meta_value
-            	);
+			*/
+$j=0;
+foreach($request->meta_field as $field){
+foreach($request->meta_value as $key=>$value){
+	if($request->meta_field[$j] == $key && !empty($value[0])){
+	    	for($i=0;$i<count($value);$i++){
+		if($request->operator[$j] == 'between'){
+				$range_parts = explode(' to ',ltrim(rtrim($value[$i])));
+				/*
+				if($range_parts[0] == $range_parts[1]){
+            			$new_meta_filters[$request->collection_id][] = array(
+                			'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field[$j],
+		                	'operator'=>'==',
+		                	'value'=> $range_parts[0]
+            			);
+				}	
+				else{
+				*/
+            			$new_meta_filters[$request->collection_id][] = array(
+                			'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field[$j],
+		                	'operator'=>'>=',
+		                	'value'=> $range_parts[0]
+            			);
+		            	$new_meta_filters[$request->collection_id][] = array(
+               		 	'filter_id'=>\Uuid::generate()->string,
+                			'field_id'=>$request->meta_field[$j],
+		                	'operator'=>'<=',
+		                	'value'=> $range_parts[1]
+            			);
+				//}	
 			}
+		else{
+	    		//for($i=0;$i<count($value);$i++){
+				$new_meta_filters[$request->collection_id][] = array(
+                     		'filter_id'=>\Uuid::generate()->string,
+                     		'field_id'=>$request->meta_field[$j],
+                     		'operator'=>$request->operator[$j],
+                     		'value'=>$value[$i]
+                 		);
+	    		//}
+		}##else for 'contains or matches' ends
+	    	}
+	}
+} // foreach $request->meta_value ends
+$j++;
+} // foreach $request->meta_fields ends
+//exit;
         }
+	//print_r($new_meta_filters); exit;
         Session::put('meta_filters', $new_meta_filters);
         return redirect('/collection/'.$request->collection_id);
     }
@@ -740,7 +898,8 @@ class CollectionController extends Controller
             $edit_field = \App\MetaField::find($meta_field_id);
         }
         $meta_fields = $collection->meta_fields;
-        return view('metainformation', ['collection'=>$collection, 
+	$permissions = \App\Permission::all();
+        return view('metainformation', ['collection'=>$collection, 'permissions'=>$permissions,
                 'edit_field'=>$edit_field, 
                 'meta_fields'=>$meta_fields,
 		'activePage' =>'Collections Meta Data',
@@ -758,6 +917,9 @@ class CollectionController extends Controller
         $meta_field->collection_id = $request->input('collection_id');
         $meta_field->label = $request->input('label');
         $meta_field->placeholder = $request->input('placeholder');
+	if(!empty($request->input('available_to'))){
+	$meta_field->available_to = implode(",",$request->input('available_to'));
+	}
         $meta_field->type = $request->input('type');
         $meta_field->options = $request->input('options');
         $meta_field->display_order = $request->input('display_order');
@@ -1071,6 +1233,7 @@ use App\UrlSuppression;
 	}
 
 	public function exportXlsx(Request $request, $collection_id){
+		//echo $collection_id; exit;
 		$list = $meta_details = [];
 		$filename = '';
 		$documents = \App\Document::where('collection_id', $collection_id);
@@ -1080,45 +1243,86 @@ use App\UrlSuppression;
 		$collection = \App\Collection::find($collection_id);
 		$filename = $collection->name;
 		$meta_fields = $collection->meta_fields;
-		$documents = $documents->get();
 		$new_list  = $new_meta_details = [];
+		
+		$documents->chunk(10, function($documents) use (&$new_list){ // chunking starts
                 foreach($documents as $d){
   			$list = ['ID'=>$d->id,'Title'=>$d->title];
 			$meta_fields = $d->collection->meta_fields;
 			foreach($meta_fields as $m){
-				if(!empty($d->meta_value($m->id))){
+				if($m->type=='MultiSelect' || $m->type == 'Select'){
+					$details_select = trim($d->meta_value($m->id),'[]');
+					$details_select = preg_replace('/"/',"",$details_select);
 					//$meta_details = [$m->label => $d->meta_value($m->id)];
-					$meta_details = [$m->label => $d->meta_value($m->id)];
-					$list = array_merge($list,$meta_details);
+					$meta_details = [$m->label => $details_select];
 				}
+				else{
+					//$meta_details = [$m->label => $d->meta_value($m->id)];
+					$meta_details = [$m->label => html_entity_decode($d->meta_value($m->id))];
+				}
+				$list = array_merge($list,$meta_details);
 			}
 			//print_r($list);
+			//echo "<hr />";
 			//exit;
 			$new_list[] = array_merge($list,$meta_details);
-			//$new_list1 = collect([$new_list]);
 		}
+		});// chunking ends
+		//exit;
 		return (new FastExcel($new_list))
     			->download($filename.'.xlsx');
+	}
 
-		//new FastExcel::data($new_list)->export('file.xlsx');
-		/*
-			(new FastExcel($new_list))->export('collection.xlsx', function ($new_list) {
-    				return [
-        			'ID' => $new_list['id'],
-        			'Title' => $new_list['title'],
-    				];
-			});
-		*/
-		//exit;
-		/*
-			(new FastExcel(User::all()))->export('users.csv', function ($user) {
-    				return [
-        			'Email' => $user->email,
-        			'First Name' => $user->firstname,
-        			'Last Name' => strtoupper($user->lastname),
-    			];
-			});
-		*/
+	public function autoSuggest(Request $request){
+		// Suggestion are available only when search mode is elastic
+		$term = $request->input('term');
+		$params['index'] = 'sr_documents';
+       	$params['body']['suggest']['title-suggestion']['text'] = $term;
+       	$params['body']['suggest']['title-suggestion']['term']['field'] = 'title';
+       	$params['body']['suggest']['content-suggestion']['text'] = $term;
+       	$params['body']['suggest']['content-suggestion']['term']['field'] = 'text_content';
+
+		try{
+		$client = $this->getElasticClient();
+        $response = $client->search($params);
+		}
+		catch(\Exception $e){
+			// log errors
+		}
+
+		//print_r($response['suggest']); exit;
+		$suggestions = empty($response['suggest'])?[]:$response['suggest'];
+		$results[] = $term;
+		if(!empty($suggestions['title-suggestion'])){
+			foreach($suggestions['title-suggestion'] as $s){
+			foreach($suggestions['title-suggestion'] as $s){
+				foreach($s['options'] as $o){
+					$suggested_term = str_replace($s['text'], $o['text'], $term);
+					$results[] = $suggested_term;
+					$term = $suggested_term;
+				}
+			}
+			}
+		}
+
+		if(!empty($suggestions['content-suggestion'])){
+			foreach($suggestions['content-suggestion'] as $s){
+			foreach($suggestions['content-suggestion'] as $s){
+				foreach($s['options'] as $o){
+					$suggested_term = str_replace($s['text'], $o['text'], $term);
+					$results[] = $suggested_term;
+					$term = $suggested_term;
+				}
+			}
+			}
+		}
+
+        	if(count($results)){
+        		return response()->json(array_unique($results));
+        	}
+        	else{
+        		return [];
+        	}
 	}
 
 //Class Ends

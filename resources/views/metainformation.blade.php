@@ -85,6 +85,30 @@ function showMetaFieldForm(){
                     <input type="text" name="placeholder" id="placeholder" class="form-control" placeholder="A short description of what you want to store" value="{{ $edit_field->placeholder }}" required />
                     </div>
                    </div>
+			<!-- Field available to -->
+		@php $columns = Schema::getColumnListing('meta_fields'); 
+				//print_r($columns);
+		@endphp
+		@if(in_array('available_to',$columns)) 
+                   <div class="form-group row">
+                   <div class="col-md-4">
+                   <label for="placeholder" class="col-md-12 col-form-label text-md-right">Field available to</label> 
+		   </div>
+                   <div class="col-md-8">
+				@php 
+				if(!empty($edit_field->available_to)){
+					$permissions_array = explode(",",$edit_field->available_to);
+				} 
+				@endphp
+                        <select class="selectpicker" id="available_to" name="available_to[]" title="Permissions " multiple>
+                                <option value="100">All</option> 
+				@foreach($permissions as $permission)
+                            	<option value="{{ $permission->id }}" @if(!empty($edit_field->available_to) && in_array($permission->id,$permissions_array)) selected @endif>{{ $permission->name }}</option> 
+				@endforeach
+                        </select>
+                   </div>
+                   </div>
+		@endif {{-- if of checking available_to field exists ends--}}		
                    <div class="form-group row">
                    <div class="col-md-4">
                    <label for="type" class="col-md-12 col-form-label text-md-right">Field type</label> 
@@ -101,6 +125,7 @@ function showMetaFieldForm(){
                         </select>
                     </div>
                    </div>
+
                    <div class="form-group row" id="options-field">
 		   			<div class="col-md-4">
                    <label for="options" class="col-md-12 col-form-label text-md-right">Options</label> 
