@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Collection;
+use App\Role;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
@@ -701,12 +702,15 @@ class CollectionController extends Controller
 		}
 	    if($content_type == 'Uploaded documents'){
             if(Auth::user()){
-                if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
-			if(!empty($d->approved_on)){
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i></a>';
+                if(Auth::user()->canApproveDocument($d->id,Auth::user()->userrole(Auth::user()->id)) && !$has_approval->isEmpty()){
+			//if(!empty($d->approved_on)){
+			if(!empty($d->approval()->approval_status)){
+                //$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i></a>';
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/approval" title="UnApprove document"><i class="material-icons">done</i></a>';
 			}
 			else{
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="Approve document"><i class="material-icons">close</i></a>';
+                //$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="Approve document"><i class="material-icons">close</i></a>';
+                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/approval" title="Approve document"><i class="material-icons">close</i></a>';
 			}
 		}
                 if(Auth::user()->canEditDocument($d->id)){
@@ -1136,7 +1140,8 @@ use App\UrlSuppression;
 	// column-config
 	public function showSettingsForm(Request $request){
 		$collection = Collection::find($request->collection_id);
-        return view('collection-settings', ['collection'=>$collection, 
+		$roles = Role::all();
+        return view('collection-settings', ['collection'=>$collection, 'roles'=>$roles,
 			'mailbox'=>CollectionMailbox::where('collection_id', $collection->id)->first()]);
 	}
 	

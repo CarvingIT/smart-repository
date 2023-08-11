@@ -89,6 +89,7 @@ function randomString(length) {
                             <tr>
                             <th>Name</th>
                             <th>Email</th>
+                            <th>Role (if any)</th>
                             <th>Created Date</th>
                             <th class="text-right">Actions</th>
                             </tr>
@@ -98,6 +99,7 @@ function randomString(length) {
                         <tr>
                             <td>{{ $u->name }}</td>
                             <td>{{ $u->email }}</td>
+                            <td>{{ @$u->userrolename($u->id) }}</td>
                             <td>{{ $u->created_at }}</td>
                             <td class="td-actions text-right">
                             <!--a href="/admin/user/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link"-->

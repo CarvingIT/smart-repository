@@ -106,19 +106,6 @@ tinymce.init({
     		   </div>
 		</div>
 		@endif
-@if(!empty($document->id) && Auth::user()->canApproveDocument($document->id))
-@if(count($collection_has_approval)==0)
-@else
-		<div class="form-group row">
-		   <div class="col-md-3">
-		   <label for="approved" class="col-md-12 col-form-label text-md-right">Document Status</label>
-		   </div>
-    		   <div class="col-md-9">
-    		   <input id="approved_on" type="checkbox" name="approved_on" value="1" @if(!empty($document->approved_on)) checked @endif /> Approved
-    		   </div>
-		</div>
-@endif
-@endif
 	<div class="select-data-container" style="position:fixed; top:25%; z-index:1000;"></div>
 	@php
 	$user_permissions = \App\UserPermission::select('permission_id')->where('user_id', Auth::user()->id)->get();

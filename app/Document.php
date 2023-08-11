@@ -98,4 +98,8 @@ class Document extends Model implements Auditable
     public function collection(){
 	 return $this->belongsTo('App\Collection','collection_id');
     }
+
+    public function approval(){
+	return $this->hasMany('App\DocumentApproval');
+    }
 }

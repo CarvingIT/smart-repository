@@ -7,6 +7,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use App\UserRole;
+use App\Role;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -48,6 +50,23 @@ class User extends Authenticatable implements MustVerifyEmail
     public function roles(){
         return $this->hasMany('App\UserRole');
     }
+    public function docApprovals(){
+        return $this->hasMany('App\DocumentApproval','approved_by');
+    }
+
+    public function userrole($user_id){
+	$role = UserRole::where('user_id',$user_id)->first();
+	if(!empty($role))
+	return $role->role_id;
+    }
+    public function userrolename($user_id){
+	$role = UserRole::where('user_id',$user_id)->first();
+	if(!empty($role)){
+	$role_details = Role::find($role->role_id);
+	return $role_details->name;
+	}
+    }
+
 
     public function hasRole($role_name){
         $roles = $this->roles()->get();
@@ -119,11 +138,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return false;
     }
 
-    public function canApproveDocument($document_id){
+    public function canApproveDocument($document_id, $user_role=null){
         $document = \App\Document::find($document_id);
         $collection_id = $document->collection_id;
+	$collection_details = \App\Collection::find($collection_id);
+	$approval_roles = json_decode($collection_details->column_config);
+	
         if($this->hasPermission($collection_id, 'MAINTAINER') || 
-            ($this->hasPermission($collection_id, 'APPROVE') && $document->created_by == $this->id)){
+            ($this->hasPermission($collection_id, 'APPROVE') && $document->created_by == $this->id) || in_array($user_role,$approval_roles->approved_by)){
             return true;
         }
         return false;

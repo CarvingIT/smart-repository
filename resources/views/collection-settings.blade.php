@@ -12,6 +12,14 @@
   	});
   } );
   </script>
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('.selectsequence').select2();
+});
+  </script>
+
 @endpush
 
 @section('content')
@@ -88,6 +96,15 @@
            <div class="col-md-3"><input name="auth_user_permissions[]" type="checkbox" value="{{ $p->name }}" 
 			@if(!empty($column_config->auth_user_permissions) && in_array($p->name, $column_config->auth_user_permissions)) checked="checked" @endif /> {{ $p->description }}</div>
 			@endforeach
+		</div>
+
+		<h4>{{__('Document Approval Flow')}}</h4>
+		<div class="form-group row">
+			<select class="selectsequence" name="approved_by[]" multiple style="width:100%;">	
+			@foreach($roles as $role)
+			<option value="{{ $role->id }}" @if(!empty($column_config->approved_by) && in_array($role->id,$column_config->approved_by)) selected @endif>{{ $role->name }}</option>
+			@endforeach
+			</select>
 		</div>
 
 		<h4>{{__('Info page')}}</h4>

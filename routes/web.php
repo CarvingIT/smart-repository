@@ -109,6 +109,7 @@ Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->m
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
+Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 // Upload documents with same meta-data
 Route::get('/collection/{collection_id}/document/{document_id}/same-meta-upload', 'DocumentController@sameMetaUpload')->middleware('document_add');
 // Document details (meta)
@@ -116,6 +117,9 @@ Route::get('/collection/{collection_id}/document/{document_id}/details', 'Docume
 Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
 // See Diff in revisions
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
+// Document Approvals
+Route::get('/document/{document_id}/approval', 'DocumentApprovalController@docApprovalForm');
+Route::post('/document/save_status', 'DocumentApprovalController@saveApprovalStatus');
 
 // reports
 Route::get('/reports', 'ReportsController@index')->middleware('admin');
