@@ -94,20 +94,38 @@ for (i = 0; i < toggler.length; i++) {
                   </div>
                 </div>
 
+
+  
 		<div class="table-responsive">
 		    <h3>Taxonomies List</h3>
 
+            @foreach ($taxonomies as $u)
             <ul id="myUL">
-                 
-                 <li><span class="caret">ABC</span>
+           
+                 <li><span class="caret">{{$u->label}}</span>
+                 <a href="/taxonomies/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
+    <i class="material-icons">edit</i>
+                    <div class="ripple-container"></div>
+</a>
+                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomies"><i class="material-icons">delete</i></span>
+ 
                      <ul class="nested">
-                     <li>DEF </li>
+                     <li>{{$u->parent_id}}</li>
                      </ul>
                  </li>
 
                  </ul>
-  
-                    
+                 <div id="deletedialog" style="display:none;">
+<form name="deletedoc" method="post" action="/admin/taxonomies/delete">
+@csrf
+<p>Enter <span id="text_captcha"></span> to delete</p>
+<input type="text" name="delete_captcha" value="" />
+<input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
+<input type="hidden" id="delete_taxonomy_id" name="taxonomy_id" value="{{ $u->id }}" />
+<button class="btn btn-danger" type="submit" value="delete">Delete</button>
+</form>
+</div>
+                 @endforeach
                 </div>
 
                 </div>
@@ -117,43 +135,7 @@ for (i = 0; i < toggler.length; i++) {
     </div>
 </div>
 
-<div class="table-responsive">
-                    <table id="taxonomy" class="table">
-                        <thead class="text-primary">
-                            <tr>
-                            <th>Taxonomy</th>
-                            <th class="text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($taxonomy as $u) 
-                        <tr>
-                            <td>{{ $u->label}}</td>
-                            <td class="td-actions text-right">
-                            <a href="/taxonomies/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
-				    <i class="material-icons">edit</i>
-                                    <div class="ripple-container"></div>
-				</a>
-				<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Synonym"><i class="material-icons">delete</i></span>
-                            </td>
-                        </tr>
-	    <div id="deletedialog" style="display:none;">
-                <form name="deletedoc" method="post" action="/admin/taxonomy/delete">
-                @csrf
-                <p>Enter <span id="text_captcha"></span> to delete</p>
-                <input type="text" name="delete_captcha" value="" />
-                <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
-                <input type="hidden" id="delete_taxonomy_id" name="taxonomy_id" value="{{ $u->id }}" />
-                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
-                </form>
-            </div>
-                        @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                </div>
-            </div>
-        </div>
+
 <script>
 var toggler = document.getElementsByClassName("caret");
 var i;

@@ -6,7 +6,7 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#synonyms-list").DataTables();
+    $("#taxonomies-list").DataTables();
 </script>
   <div class="content">
     <div class="container-fluid">
@@ -35,7 +35,7 @@ $(document).ready(function() {
                   </div>
                 </div>
                 <div class="table-responsive">
-                  <table id="synonyms-list" class="table">
+                  <table id="taxonomies-list" class="table">
                     <thead class=" text-primary">
                       <th>
                           {{ __('Taxonomies') }}

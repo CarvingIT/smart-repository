@@ -31,10 +31,11 @@
 
                   <div class="col-md-8">
                     <select class="form-control{{ $errors->has('parent_id') ? ' is-invalid' : '' }}" name="parent_id" id="pId">
-                      <option value="1">Volvo</option>
-                      <option value="2">Saab</option>
-                      <option value="3">Opel</option>
-                      <option value="4">Audi</option>
+                      <option value="">Select Parent Taxonomies </option>
+                      <option value="1">Taxonomy </option>
+                      <option value="2">Taxonomies</option>
+                      <option value="3">Taxonomies Management</option>
+                      <option value="4">Taxomic</option>
                     </select>
                   </div>
                 </div>

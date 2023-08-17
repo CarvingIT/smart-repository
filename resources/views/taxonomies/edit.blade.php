@@ -16,7 +16,7 @@
                       <a href="/admin/taxonomiesmanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
                   </div>
                 </div>
-                <form method="post" action="{{ route('taxonomies.update', $taxonomy) }}" autocomplete="off">
+                <form method="post" action="{{ route('taxonomies.update', $taxonomies) }}" autocomplete="off">
                 @csrf
                 @method('put')
                 <div class="form-group row bmd-form-group">
@@ -24,7 +24,7 @@
                   <label class="col-md-8 col-form-label text-md-right">{{ __('Taxonomies') }}</label>
                   </div>
                   <div class="col-md-6">
-                      <input class="form-control{{ $errors->has('label') ? ' is-invalid' : '' }}" name="label" id="input-label" type="text" placeholder="{{ __('Comma separated list of Taxonomies') }}" value="{{ old('label', $taxonomy->label) }}" required="true" aria-required="true"/>
+                      <input class="form-control{{ $errors->has('label') ? ' is-invalid' : '' }}" name="label" id="input-label" type="text" placeholder="{{ __('Comma separated list of Taxonomies') }}" value="{{ old('label', $taxonomies->label) }}" required="true" aria-required="true"/>
                       @if ($errors->has('label'))
                         <span id="name-error" class="error text-danger" for="input-label">{{ $errors->first('label') }}</span>
                       @endif
