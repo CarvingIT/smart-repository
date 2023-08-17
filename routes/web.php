@@ -192,7 +192,7 @@ if(env('ENABLE_REGISTRATION') != 1){
 	Route::redirect('register', 'login', 301);
 }
 
-//synonyms route
+//Synonyms routes
 Route::middleware('admin')->group(function () {
     Route::resource('synonyms', 'SynonymsController');
 });
@@ -200,3 +200,13 @@ Route::middleware('admin')->group(function () {
 Route::get('/admin/synonymsmanagement', 'SynonymsController@index')->middleware('admin');
 Route::post('/admin/synonyms/delete','SynonymsController@destroy')->middleware('admin');
 Route::get('autocomplete', 'SynonymController@autoComplete')->name('autocomplete');
+
+//Taxonomies routes
+
+Route::resource('taxonomies', TaxonomyController::class);
+Route::middleware('admin')->group(function () {
+    Route::resource('taxonomies', 'TaxonomyController');
+});
+
+Route::get('/admin/taxonomiesmanagement', 'TaxonomyController@index')->middleware('admin');
+Route::get('autocomplete', 'TaxonomyController@autoComplete')->name('autocomplete');
