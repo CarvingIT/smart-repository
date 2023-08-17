@@ -130,12 +130,13 @@ tinymce.init({
 
 	<div class="select-data-container" style="position:fixed; top:25%; z-index:1000;"></div>
 @php
-	$approvals = [];
+	$approvals = $document_ids = [];
 	foreach($doc_approvals as $da){
 		$approvals[] = $da->approved_by;
 	}
 	$doc_approval_details = auth()->user()->docApprovals;
 	foreach($doc_approval_details as $details){
+		$document_ids[] = $details->document_id;
 		if($document->id == $details->document_id){
 		$document_status = $details->approval_status;
 		}
@@ -145,7 +146,7 @@ tinymce.init({
 @endphp
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
-@if((in_array(auth()->user()->userrole(auth()->user()->id),json_decode($collection->column_config)->approved_by)) && !in_array(auth()->user()->id, $approvals))
+@if((in_array(auth()->user()->userrole(auth()->user()->id),json_decode($collection->column_config)->approved_by)) && (!in_array($document->id,$document_ids)))
         <button type="submit" class="btn btn-primary"> Save </button>
 @else
         <button type="button" class="btn btn-primary">You have @if(!empty($document_status) && $document_status==1){{ __('Approved') }} @else {{ __('UnApproved') }}@endif this document.</button>

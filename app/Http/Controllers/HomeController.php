@@ -29,6 +29,17 @@ class HomeController extends Controller
      */
     public function index()
     {
-	return redirect('/collections');
+	//return redirect('/collections');
+	$role_id = auth()->user()->userrole(auth()->user()->id);
+	$collections=\App\Collection::where('column_config','LIKE','%'.$role_id.'%')->get();
+	$documents = [];
+	foreach($collections as $collection){
+	$documents[] = \App\Document::where('collection_id',$collection->id)->get();
+	//print_r($documents);
+	//echo "<hr />";
+	}
+	//print_r($documents);
+	//exit;
+	return view('dashboard',['collections'=>$collections, 'documents'=>$documents]);
     }
 }

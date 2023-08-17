@@ -5,7 +5,7 @@
     <div class="container-fluid">
 
       <div class="row">
-        <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
             <div class="card-header card-header-warning card-header-icon">
               <div class="card-icon">
@@ -22,7 +22,7 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
             <div class="card-header card-header-success card-header-icon">
               <div class="card-icon">
@@ -38,34 +38,25 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
             <div class="card-header card-header-danger card-header-icon">
               <div class="card-icon">
                 <i class="material-icons">info_outline</i>
               </div>
-              <p class="card-category">Documents</p>
-              <h3 class="card-title">75</h3>
+              <h4 class="card-title"><a href="/user/{{ auth()->user()->id }}/docs" style="color:#000;">Documents Awaiting Approvals</a></h4>
+              <h3 class="card-category">75</h3>
+		<ul>
+		@foreach($documents as $document)
+			@foreach($document as $doc)
+			<li><a href="/document/{{ $doc->id }}/approval">{{ $doc->title }}</a></li>
+			@endforeach
+		@endforeach
+		</ul>
             </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">list</i> <a href="/collections">Total No. Of Documents</a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6 col-sm-6">
-          <div class="card card-stats">
-            <div class="card-header card-header-info card-header-icon">
-              <div class="card-icon">
-                <i class="fa fa-twitter"></i>
-              </div>
-              <p class="card-category">Followers</p>
-              <h3 class="card-title">+245</h3>
-            </div>
-            <div class="card-footer">
-              <div class="stats">
-                <i class="material-icons">update</i> Just Updated
+                <i class="material-icons">list</i> <a href="/documents">Total No. Of Documents</a>
               </div>
             </div>
           </div>
@@ -75,16 +66,16 @@
         <div class="col-md-4">
           <div class="card card-chart">
             <div class="card-header card-header-success">
-              <div class="ct-chart" id="dailySalesChart"></div>
-            </div>
-            <div class="card-body">
               <h4 class="card-title">
 		@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<a href="/reports/uploads">Uploads Reports</a>
+		<a href="/reports/uploads">Approved Documents</a>
 		@else
-		Uploads Reports
+		<a href="/user/{{ auth()->user()->id }}/docs/approved">Approved Documents</a>
 		@endif
               </h4>
+              <!--div class="ct-chart" id="dailySalesChart"></div-->
+            </div>
+            <div class="card-body">
               <p class="card-category">
                 <span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
             </div>
@@ -92,9 +83,9 @@
               <div class="stats">
                 <i class="material-icons">show_chart</i> 
 		@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<a href="/reports/uploads">View Reports</a>
+		<a href="/reports/uploads">View More</a>
 		@else
-		View Reports
+		<a href="/user/{{ auth()->user()->id }}/docs/approved">View More</a>
 		@endif
               </div>
             </div>
@@ -103,25 +94,25 @@
         <div class="col-md-4">
           <div class="card card-chart">
             <div class="card-header card-header-danger">
-              <div class="ct-chart" id="completedTasksChart"></div>
-            </div>
-            <div class="card-body">
               <h4 class="card-title">
 		@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<a href="/reports/downloads">Downloads Reports</a>
+		<a href="/reports/downloads">UnApproved Documents</a>
 		@else
-		Downloads Reports
+		<a href="/user/{{ auth()->user()->id }}/docs/unapproved">UnApproved Documents</a>
 		@endif
 	      </h4>
+              <!--div class="ct-chart" id="completedTasksChart"></div-->
+            </div>
+            <div class="card-body">
               <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
             </div>
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">show_chart</i>
 		@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<a href="/reports/downloads">View Reports</a>
+		<a href="/reports/downloads">View More</a>
 		@else
-		View Reports
+		<a href="/user/{{ auth()->user()->id }}/docs/unapproved">View More</a>
 		@endif
               </div>
             </div>
@@ -130,10 +121,10 @@
       <div class="col-md-4">
           <div class="card card-chart">
             <div class="card-header card-header-warning">
+              <h4 class="card-title">Email Subscriptions</h4>
               <div class="ct-chart" id="websiteViewsChart"></div>
             </div>
             <div class="card-body">
-              <h4 class="card-title">Email Subscriptions</h4>
               <p class="card-category">Last Campaign Performance</p>
             </div>
             <div class="card-footer">
@@ -143,9 +134,7 @@
             </div>
           </div>
         </div>
-
       </div>
-<!--
       <div class="row">
         <div class="col-lg-6 col-md-12">
           <div class="card">
@@ -395,16 +384,16 @@
         <div class="col-lg-6 col-md-12">
           <div class="card">
             <div class="card-header card-header-warning">
-              <h4 class="card-title">Employees Stats</h4>
-              <p class="card-category">New employees on 15th September, 2016</p>
+              <h4 class="card-title">Latest Searches</h4>
+              <p class="card-category">New search on @php echo date("j F, Y"); @endphp</p>
             </div>
             <div class="card-body table-responsive">
               <table class="table table-hover">
                 <thead class="text-warning">
                   <th>ID</th>
-                  <th>Name</th>
-                  <th>Salary</th>
-                  <th>Country</th>
+                  <th>Search Query</th>
+                  <th>Document</th>
+                  <th>Date</th>
                 </thead>
                 <tbody>
                   <tr>
@@ -437,7 +426,6 @@
           </div>
         </div>
       </div>
--->
     </div>
   </div>
 @endsection
