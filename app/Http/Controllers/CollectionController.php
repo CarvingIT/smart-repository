@@ -705,12 +705,10 @@ class CollectionController extends Controller
                 if(Auth::user()->canApproveDocument($d->id,Auth::user()->userrole(Auth::user()->id)) && !$has_approval->isEmpty()){
 			//if(!empty($d->approved_on)){
 			if(!empty($d->approval()->approval_status)){
-                //$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i></a>';
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/approval" title="UnApprove document"><i class="material-icons">done</i></a>';
+                //$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/approval" title="UnApprove document"><i class="material-icons">done</i></a>';
 			}
 			else{
-                //$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="Approve document"><i class="material-icons">close</i></a>';
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/approval" title="Approve document"><i class="material-icons">close</i></a>';
+                //$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/approval" title="Approve document"><i class="material-icons">close</i></a>';
 			}
 		}
                 if(Auth::user()->canEditDocument($d->id)){
