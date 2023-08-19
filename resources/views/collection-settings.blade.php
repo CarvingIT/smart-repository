@@ -16,7 +16,10 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function() {
-    $('.selectsequence').select2();
+    $("#selectsequence").select2();
+	$('#select2').on('change', function (e) {
+                var data = $('#select2').select2("data");
+	});
 });
   </script>
 
@@ -100,7 +103,7 @@ $(document).ready(function() {
 
 		<h4>{{__('Document Approval Flow')}}</h4>
 		<div class="form-group row">
-			<select class="selectsequence" name="approved_by[]" multiple style="width:100%;">	
+			<select class="selectsequence" id="selectsequence" name="approved_by[]" multiple style="width:100%;">	
 			@foreach($roles as $role)
 			<option value="{{ $role->id }}" @if(!empty($column_config->approved_by) && in_array($role->id,$column_config->approved_by)) selected @endif>{{ $role->name }}</option>
 			@endforeach

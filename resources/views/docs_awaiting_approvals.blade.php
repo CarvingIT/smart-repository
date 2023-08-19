@@ -42,9 +42,7 @@ $(document).ready(function() {
                             </tr>
                         </thead>
                         <tbody>
-			@foreach($awaiting_approvals_docs as $document)
-				@foreach($document as $doc)
-				@if(!in_array($doc->id,$document_ids))
+			@foreach($awaiting_approvals_docs as $doc)
                         <tr>
                                 <td>{{ $doc->title }}</td>
                                 <td>{{ $doc->collection->name }}</td>
@@ -62,9 +60,7 @@ $(document).ready(function() {
 			    		</a>
                         	</td>
                     	</tr>
-				@endif
-				@endforeach
-                    @endforeach
+                        @endforeach
                         </tbody>
                     </table>
 		</div> <!-- table-responsive ends -->

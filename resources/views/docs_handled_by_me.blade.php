@@ -21,7 +21,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections')}}</a></h4>
+            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections')}}</a>:: @if($status==1){{ __('Approved') }} @else {{ __('UnApproved') }} @endif Documents</h4>
             </div>
                  <div class="card-body">
 		<div class="row">
