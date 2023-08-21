@@ -110,7 +110,15 @@ for (i = 0; i < toggler.length; i++) {
                  <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomies"><i class="material-icons">delete</i></span>
  
                      <ul class="nested">
-                     <li>{{$u->parent_id}}</li>
+
+                     <li>{{$u->label}}
+                     <a href="/taxonomies/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
+    <i class="material-icons">edit</i>
+                    <div class="ripple-container"></div>
+</a>
+                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomies"><i class="material-icons">delete</i></span>
+                     </li>
+      
                      </ul>
                  </li>
 

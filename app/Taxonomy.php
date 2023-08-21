@@ -9,10 +9,7 @@ class Taxonomy extends Model
     protected $table = "taxonomies";
     protected $fillable = ['parent_id', 'label'];
 
-
-    public function children()
-    {
-        return $this->hasMany(Taxonomy::class, 'parent_id');
+    public function childs() {
+        return $this->hasMany('App\Taxonomy','parent_id','id') ;
     }
-
 }

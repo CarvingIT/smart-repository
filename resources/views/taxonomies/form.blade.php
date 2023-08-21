@@ -30,6 +30,7 @@
                   </div>
 
                   <div class="col-md-8">
+                  
                     <select class="form-control{{ $errors->has('parent_id') ? ' is-invalid' : '' }}" name="parent_id" id="pId">
                       <option value="">Select Parent Taxonomies </option>
 			@foreach($parent_taxonomies as $p)

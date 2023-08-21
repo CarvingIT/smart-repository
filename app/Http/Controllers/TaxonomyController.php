@@ -32,8 +32,9 @@ class TaxonomyController extends Controller
 
     public function edit($id)
     {
-        $taxonomies  = Taxonomy::find($id);
-        return view('taxonomies.edit', compact('taxonomies'));
+        $taxonomy  = Taxonomy::find($id);
+	$parent_taxonomies = Taxonomy::all();
+        return view('taxonomies.edit', ['taxonomy'=>$taxonomy,'parent_taxonomies'=>$parent_taxonomies]);
     }
 
     public function update(TaxonomyRequest $request, $id)
