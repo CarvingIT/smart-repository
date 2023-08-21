@@ -631,9 +631,14 @@ class CollectionController extends Controller
 				if(Auth::user() && Auth::user()->hasPermission($collection->id, 'APPROVE')){ // return all
 					return $documents;
 				}
-				else{ // return only approved
-					$documents = $documents->whereNotNull('approved_on');	
-					return $documents;
+				else{ // return only approvedSKK
+	    				foreach($documents as $d){
+						$approved_docs = \App\Models\DocumentApproval::where('document_id',$d->id)
+								->where('approved_by_role',$role_index)
+								->get();
+	    				}
+					//$documents = $documents->whereNotNull('approved_on');	
+					//return $documents;
 				}
 			}
 			else{ 
