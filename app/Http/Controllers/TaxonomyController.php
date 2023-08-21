@@ -19,7 +19,8 @@ class TaxonomyController extends Controller
 
     public function create()
     {
-        return view('taxonomies.form');
+	$parent_taxonomies = Taxonomy::all();
+        return view('taxonomies.form',['parent_taxonomies'=>$parent_taxonomies]);
     }
 
     public function store(TaxonomyRequest $request, Taxonomy  $taxonomy)
