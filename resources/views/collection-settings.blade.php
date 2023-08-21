@@ -110,7 +110,9 @@ $(document).ready(function() {
 			<select class="selectsequence" id="selectsequence" name="approved_by[]" multiple style="width:100%;">	
 				@foreach($column_config->approved_by as $approver)
 					@foreach($roles as $role)
+						@if(!empty($column_config->approved_by) && $role->id == $approver)
 			<option value="{{ $role->id }}" @if(!empty($column_config->approved_by) && $role->id == $approver) selected @endif>{{ $role->name }}</option>
+						@endif
 					@endforeach
 			        @endforeach
 			</select>
