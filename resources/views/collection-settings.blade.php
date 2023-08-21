@@ -108,9 +108,11 @@ $(document).ready(function() {
 		<h4>{{__('Document Approval Flow')}}</h4>
 		<div class="form-group row">
 			<select class="selectsequence" id="selectsequence" name="approved_by[]" multiple style="width:100%;">	
-			@foreach($roles as $role)
-			<option value="{{ $role->id }}" @if(!empty($column_config->approved_by) && in_array($role->id,$column_config->approved_by)) selected @endif>{{ $role->name }}</option>
-			@endforeach
+				@foreach($column_config->approved_by as $approver)
+					@foreach($roles as $role)
+			<option value="{{ $role->id }}" @if(!empty($column_config->approved_by) && $role->id == $approver) selected @endif>{{ $role->name }}</option>
+					@endforeach
+			        @endforeach
 			</select>
 		</div>
 
