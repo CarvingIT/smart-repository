@@ -17,6 +17,7 @@ use App\UrlSuppression;
 use App\CollectionMailbox;
 use App\UserPermission;
 use Rap2hpoutre\FastExcel\FastExcel;
+use App\DocumentApproval;
 
 class CollectionController extends Controller
 {
@@ -545,10 +546,10 @@ class CollectionController extends Controller
 	$documents = $this->approvalFilter($request, $documents);
 	$filtered_count = $documents->count(); //- count($approval_exceptions);
 
-    if(!empty($request->embedded)){ 		
+        if(!empty($request->embedded)){ 		
 		$documents = $documents
 			 ->limit($request->length)->offset($request->start)->get();
-   	    $results_data = $this->datatableFormatResultsEmbedded(
+   	    	$results_data = $this->datatableFormatResultsEmbedded(
 			array('request'=>$request, 
 			'documents'=>$documents, 
 			'has_approval'=>$has_approval));
@@ -558,17 +559,17 @@ class CollectionController extends Controller
 		$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 		$length = empty($request->length)?10:$request->length;
 		$documents = $documents
-			->orderby($sort_column,$sort_direction)
-            ->limit($length)->offset($request->start)->get();
+			->orderBy($sort_column,$sort_direction)
+        	        ->limit($length)->offset($request->start)->get();
 		if($request->is('api/*')){
 			return 
-        	 array(
-            'data'=>$documents,
-            'draw'=>(int) $request->draw,
-            'recordsTotal'=> \App\Document::where('collection_id',$request->collection_id)->count(),
-            'recordsFiltered' => $filtered_count,
-            'error'=> '',
-        	);
+        		array(
+            	    	'data'=>$documents,
+            	    	'draw'=>(int) $request->draw,
+            	    	'recordsTotal'=> \App\Document::where('collection_id',$request->collection_id)->count(),
+            	    	'recordsFiltered' => $filtered_count,
+            	    	'error'=> '',
+        		);
 		}
 		else{
         	$results_data = $this->datatableFormatResults(
@@ -628,18 +629,24 @@ class CollectionController extends Controller
 		}
 		else if($collection->content_type == 'Uploaded documents'){
 			if($collection->require_approval == 1){ 
+				/*
 				if(Auth::user() && Auth::user()->hasPermission($collection->id, 'APPROVE')){ // return all
 					return $documents;
 				}
 				else{ // return only approvedSKK
-	    				foreach($documents as $d){
-						$approved_docs = \App\Models\DocumentApproval::where('document_id',$d->id)
-								->where('approved_by_role',$role_index)
-								->get();
-	    				}
+				*/
+					$approved_docs = DB::table('document_approvals')
+							->leftJoin('documents','documents.id','=','document_approvals.document_id')
+							->select('title','type','size','documents.created_at')
+							->where('approval_status','=','1')
+							->where('approved_by_role','=','1')
+							->get();
+					//print_r($approved_docs);exit;
+					return $approved_docs;
+
 					//$documents = $documents->whereNotNull('approved_on');	
 					//return $documents;
-				}
+				//}
 			}
 			else{ 
 				return $documents;
