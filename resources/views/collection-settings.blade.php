@@ -17,8 +17,12 @@
 <script>
 $(document).ready(function() {
     $("#selectsequence").select2();
-	$('#select2').on('change', function (e) {
-                var data = $('#select2').select2("data");
+	$('#selectsequence').on("select2:select", function (evt) {
+		var element = evt.params.data.element;
+  		var $element = $(element);
+  		$element.detach();
+  		$(this).append($element);
+  		$(this).trigger("change");
 	});
 });
   </script>
