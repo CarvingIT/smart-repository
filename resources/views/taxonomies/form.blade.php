@@ -33,9 +33,15 @@
                   
                     <select class="form-control{{ $errors->has('parent_id') ? ' is-invalid' : '' }}" name="parent_id" id="pId">
                       <option value="">Select Parent Taxonomies </option>
+<<<<<<< HEAD
 			@foreach($parent_taxonomies as $p)
                       <option value="{{ $p->id }}">{{ $p->label }} </option>
 			@endforeach
+=======
+                      @foreach ($taxonomy as $u)
+                      <option value="{{ $u->id }}" {{$taxonomy->parent_id == $u->id  ? 'selected' : ''}}>{{ $u->label}}</option>
+                      @endforeach
+>>>>>>> 685088e (Taxonomy Tree list Update)
                     </select>
                   </div>
                 </div>
