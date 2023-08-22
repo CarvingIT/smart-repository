@@ -211,3 +211,12 @@ Route::middleware('admin')->group(function () {
 Route::get('/admin/taxonomiesmanagement', 'TaxonomyController@index')->middleware('admin');
 Route::post('/admin/taxonomies/delete','TaxonomyController@destroy')->middleware('admin');
 Route::get('autocomplete', 'TaxonomyController@autoComplete')->name('autocomplete');
+
+//Role routes
+Route::middleware('admin')->group(function () {
+    Route::resource('roles', 'RoleController');
+});
+
+Route::get('/admin/rolesmanagement', 'RoleController@index')->middleware('admin');
+Route::post('/admin/roles/delete','RoleController@destroy')->middleware('admin');
+Route::get('autocomplete', 'RoleController@autoComplete')->name('autocomplete');

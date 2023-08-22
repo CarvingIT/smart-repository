@@ -85,6 +85,7 @@ $app_name = env('APP_NAME');
             <a class="dropdown-item" href="/admin/storagemanagement">{{ __('Manage Storages') }}</a>
 	    <a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a>
  	    <a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomies') }}</a>
+ 	    <a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a>
  	    <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
 	    <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
             @endif
