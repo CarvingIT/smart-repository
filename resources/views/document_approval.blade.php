@@ -146,10 +146,10 @@ tinymce.init({
 @endphp
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
-@if((in_array(auth()->user()->userrole(auth()->user()->id),json_decode($collection->column_config)->approved_by)) && (!in_array($document->id,$document_ids)))
+@if((in_array(auth()->user()->userrole(auth()->user()->id),json_decode($collection->column_config)->approved_by)) && (!in_array($document->id,$document_ids) || in_array($document->id,$document_ids) && $document_status == 0))
         <button type="submit" class="btn btn-primary"> Save </button>
 @else
-        <button type="button" class="btn btn-primary">You have @if(!empty($document_status) && $document_status==1){{ __('Approved') }} @else {{ __('UnApproved') }}@endif this document.</button>
+        <button type="button" class="btn btn-primary">{{ __('You have Approved this document') }}</button>
 @endif
     </div>
 </div>

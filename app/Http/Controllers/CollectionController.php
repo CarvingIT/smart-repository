@@ -635,17 +635,8 @@ class CollectionController extends Controller
 				}
 				else{ // return only approvedSKK
 				*/
-					$approved_docs = DB::table('document_approvals')
-							->leftJoin('documents','documents.id','=','document_approvals.document_id')
-							->select('title','type','size','documents.created_at')
-							->where('approval_status','=','1')
-							->where('approved_by_role','=','1')
-							->get();
-					//print_r($approved_docs);exit;
-					return $approved_docs;
-
-					//$documents = $documents->whereNotNull('approved_on');	
-					//return $documents;
+					$documents = $documents->whereNotNull('approved_on');	
+					return $documents;
 				//}
 			}
 			else{ 

@@ -53,11 +53,6 @@ $(document).ready(function() {
                                     	<i class="material-icons">edit</i>
                                     	<div class="ripple-container"></div>
                                         </a>
-
-                            		<a href="/collection/remove-user/" class="btn btn-danger btn-link">
-                               		     <i class="material-icons">close</i>
-                               		     <div class="ripple-container"></div>
-			    		</a>
                         	</td>
                     	</tr>
                         @endforeach
