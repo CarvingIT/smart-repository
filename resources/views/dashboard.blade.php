@@ -45,14 +45,17 @@
                 <i class="material-icons">info_outline</i>
               </div>
               <h4 class="card-title"><a href="/user/{{ auth()->user()->id }}/docs" style="color:#000;">Documents Awaiting Approvals</a></h4>
-              <h3 class="card-category">75</h3>
-		<ul>
-		@foreach($documents as $document)
-			@foreach($document as $doc)
-			<li><a href="/document/{{ $doc->id }}/approval">{{ $doc->title }}</a></li>
-			@endforeach
-		@endforeach
-		</ul>
+              <h3 class="card-category">
+		@foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                   @if(Session::has('alert-' . $msg))
+                        <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
+                                <div class="mt-6 text-gray-900 leading-7 font-semibold ">
+                                        <span @if($msg == 'danger') style="color:red" @endif>{{ Session::get('alert-' . $msg) }}</span>
+                                </div>
+                        </div>
+                   @endif
+               @endforeach
+		@if(!empty($awaiting_count)){{ $awaiting_count }}@endif</h3>
             </div>
             <div class="card-footer">
               <div class="stats">
@@ -67,11 +70,7 @@
           <div class="card card-chart">
             <div class="card-header card-header-success">
               <h4 class="card-title">
-		@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<a href="/reports/uploads">Approved Documents</a>
-		@else
 		<a href="/user/{{ auth()->user()->id }}/docs/approved">Approved Documents</a>
-		@endif
               </h4>
               <!--div class="ct-chart" id="dailySalesChart"></div-->
             </div>
@@ -82,11 +81,7 @@
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">show_chart</i> 
-		@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<a href="/reports/uploads">View More</a>
-		@else
 		<a href="/user/{{ auth()->user()->id }}/docs/approved">View More</a>
-		@endif
               </div>
             </div>
           </div>
@@ -95,11 +90,7 @@
           <div class="card card-chart">
             <div class="card-header card-header-danger">
               <h4 class="card-title">
-		@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<a href="/reports/downloads">UnApproved Documents</a>
-		@else
 		<a href="/user/{{ auth()->user()->id }}/docs/unapproved">UnApproved Documents</a>
-		@endif
 	      </h4>
               <!--div class="ct-chart" id="completedTasksChart"></div-->
             </div>
@@ -109,11 +100,7 @@
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">show_chart</i>
-		@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<a href="/reports/downloads">View More</a>
-		@else
 		<a href="/user/{{ auth()->user()->id }}/docs/unapproved">View More</a>
-		@endif
               </div>
             </div>
           </div>

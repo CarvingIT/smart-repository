@@ -30,6 +30,16 @@ $(document).ready(function() {
                   </div>
 
                 </div>
+			@foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                   @if(Session::has('alert-' . $msg))
+                        <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
+                                <div class="mt-6 text-gray-900 leading-7 font-semibold ">
+                                        <span @if($msg == 'danger') style="color:red" @endif>{{ Session::get('alert-' . $msg) }}</span>
+                                </div>
+                        </div>
+                   @endif
+               @endforeach
+
 			<div class="table-responsive">
                     <table id="documents" class="display table responsive">
                         <thead class="text-primary">

@@ -83,8 +83,10 @@ class DocumentApprovalController extends Controller
         }
 
 	public function documentsAwaitingApprovals(Request $request){
-	// documents which are not present in document_approvals table
+		// display documents which are not present in document_approvals table
         	$all_docs = $approved_docs = $awaiting_approvals_docs = $awaiting_approvals_docs_role = [];
+		$collections = $role_id = '';
+	   if(!empty(auth()->user()->userrole(auth()->user()->id))){
 		$role_id = auth()->user()->userrole(auth()->user()->id);
         	$collections=\App\Collection::where('column_config','LIKE','%'.$role_id.'%')->get();
 
@@ -95,15 +97,11 @@ class DocumentApprovalController extends Controller
 		foreach($all_docs as $collection_id => $doc){
 		$collection_role_sequence = \App\Collection::find($collection_id);
 		$role_sequence[$collection->id] = json_decode($collection_role_sequence->column_config)->approved_by;
-		//print_r($role_sequence);
-				foreach($role_sequence as $s => $v){
+			foreach($role_sequence as $s => $v){
 				$role_index = array_search($role_id,$v);
 				foreach($doc as $d){
-//echo "<hr />Document ID ".$d->id."<br />";
-//echo "Collection ID ".$collection_id."<br />";
-//echo "Role Index for loggedin user: ".$role_index."<br />";
-				if($role_index == 0){// Display documents when the first role assigned in collection settings, user is loggedin. (principal)
-				//echo "Role Index: 0<br />";
+				if($role_index == 0){
+				//Display documents when the first role assigned in collection settings, user is loggedin. (principal)
         				$approved_docs = DocumentApproval::where('approved_by_role',$v[$role_index])
 					->where('document_id',$d->id)
 					->first();
@@ -118,23 +116,12 @@ class DocumentApprovalController extends Controller
 					else{ continue;}
 				}
 				else{ //Display documents handled by previous role.
-				//echo "ELSE"."ROleIndex".$role_index." Rolle ID: ".$role_id;
 					$previous_role_index = $role_index-1;
         				$approved_docs = DocumentApproval::where('document_id',$d->id)
 							->orderByDesc('id')
 							->first();
-//echo "Collection ID:".$collection_id." Document ID: ".$d->id;
 					if(!empty($approved_docs) && $approved_docs->approved_by_role == $v[$previous_role_index] && $approved_docs->approval_status == 1)
 					{
-/*
-echo $d->id;
-if($d->id==4){
-echo $d->id;
-echo $role_index;
-print_r($approved_docs); 
-exit;
-}
-*/
 					$awaiting_approvals_docs[] = $d;
 					}
 					elseif(!empty($approved_docs) && $approved_docs->approved_by_role == $v[$role_index] && $approved_docs->approval_status == 0){
@@ -142,12 +129,11 @@ exit;
 					}
 					else{continue;}
 				}
+				}
 			}
 		}
-}
-$awaiting_approvals_docs = array_unique($awaiting_approvals_docs);
-//exit;
-
+		$awaiting_approvals_docs = array_unique($awaiting_approvals_docs);
+	    }# if ends for role_id empty
         	return view('docs_awaiting_approvals',['collections'=>$collections, 'awaiting_approvals_docs'=>$awaiting_approvals_docs,
 				'activePage'=>'Awaiting Approval Documents','titlePage'=>'Awaiting Approval Documents']);
 	}
