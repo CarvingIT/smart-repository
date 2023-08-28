@@ -105,6 +105,7 @@ for (i = 0; i < toggler.length; i++) {
 		$children['parent_'.$t->parent_id][] = $t;
 	}
 	function getTree($children, $parent_id = null){
+		if(empty($children['parent_'.$parent_id])) return;
 		foreach($children['parent_'.$parent_id] as $t){
 				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
 					echo '<li>';
