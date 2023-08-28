@@ -45,52 +45,6 @@ for (i = 0; i < toggler.length; i++) {
   });
 }
 </script>
-@php
-	$positions = App\Taxonomy::all();
-	function getTree($positions, $childrens_to = null){
-		foreach($positions as $p){
-			$u = 'None';$hie_u = 'None';  
-			if($p->label == $childrens_to){
-				if(hasChildrens($positions,$p->id)){ 
-					echo '<li role="treeitem" aria-expanded="true">';
-					if($p->is_sdo != 1){
-					echo '<span>'.$p->position.'&nbsp;&nbsp; <a title="Add a reporting position" class="create-position" childrens_to="'.$p->id.'"><i class="fa fa-users" aria-hidden="true"></i></a>';
-					}
-					echo '&nbsp;&nbsp;<a title="'.$u.'" class="add-person" fill_position_id="'.$p->id.'"><i class="fa fa-user-plus" aria-hidden="true"></i></a></span>';
-					if($hie_u != 'None'){
-					echo '<p style="border:1px solid #eee; padding:1%;">'.$hie_u.'</p>';
-					}
-					echo '<ul role="group">';
-					getTree($positions, $p->id);
-					echo '</ul>';
-					echo '</li>';
-				}
-				else{
-					echo '<li role="treeitem" aria-expanded="true">';
-					echo $p->position."&nbsp; &nbsp;";
-					if($p->is_sdo != 1){
-					echo '&nbsp; &nbsp;<a title="Add a reporting position" class="create-position" childrens_to="'.$p->id.'"><i class="fa fa-users" aria-hidden="true"></i></a>';
-					}
-					echo '&nbsp;&nbsp;<a title="'.$u.'" class="add-person" fill_position_id="'.$p->id.'"><i class="fa fa-user-plus" aria-hidden="true"></i></a>';
-					if($hie_u != 'None'){
-					echo '<p style="border:1px solid #eee; padding:1%;">'.$hie_u.'</p>';
-					}
-					if($hie_u == 'None'){
-					echo '&nbsp; &nbsp;<a title="Remove this position" class="remove-position" position_id="'.$p->id.'"><i class="fa fa-trash" aria-hidden="true"></i></a>';
-					}
-					echo '</li>';
-				}
-			}
-		}
-	}
-
-	function hasChildrens($positions, $p_id){
-		foreach($positions as $p){
-			if($p->childrens_to == $p_id) return true;
-		}
-		return false;
-	}
-@endphp
 
 <div class="container">
 <div class="container-fluid">
@@ -143,25 +97,38 @@ for (i = 0; i < toggler.length; i++) {
   
 		<div class="table-responsive">
 		    <h3>Taxonomies List</h3>
-            @foreach ($taxonomies as $u)
-            <ul id="myUL">
-                 <li><span class="caret">{{$u->label}}</span>
-                 <a href="/taxonomies/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
-                <i class="material-icons">edit</i>
-                    <div class="ripple-container"></div>
-                    </a>
-                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomy"><i class="material-icons">delete</i></span>
-                     <ul class="nested">
-                     <li><span class="caret">{{$u->label}}
-                     <a href="/taxonomies/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
+<ul>
+@php
+	$tags = App\Taxonomy::all();
+	$children = [];
+	foreach($tags as $t){
+		$children['parent_'.$t->parent_id][] = $t;
+	}
+	function getTree($children, $parent_id = null){
+		foreach($children['parent_'.$parent_id] as $t){
+				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
+					echo '<li>';
+					echo '<span class="caret">'.$t->label.'</span>';
+					echo '<ul class="nested">';
+					getTree($children, $t->id);
+					echo '</ul>';
+					echo '</li>';
+				}
+				else{
+					echo '<li>';
+					echo $t->label;
+                     echo '<a href="/taxonomies/'.$t->id.'/edit" rel="tooltip" class="btn btn-success btn-link">
                     <i class="material-icons">edit</i>
                     <div class="ripple-container"></div>
                     </a>
-                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomy"><i class="material-icons">delete</i></span>
-                     </li>
-                     </ul>
-                 </li>
-                 </ul>
+                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog('.$t->id.' );" title="Delete Taxonomy"><i class="material-icons">delete</i></span>';
+					echo '</li>';
+				}
+		}
+	}
+@endphp
+</ul>
+            @foreach ($taxonomies as $u)
                  <div id="deletedialog" style="display:none;">
                 <form name="deletedoc" method="post" action="/admin/taxonomies/delete">
                 @csrf
@@ -176,9 +143,9 @@ for (i = 0; i < toggler.length; i++) {
                  @endforeach
                 </div>
 
-            <ul role="tree" aria-labelledby="tree_label">
+            <ul id="myUL">
                 @php
-                    getTree($positions);
+                    getTree($children);
                 @endphp
             </ul>
                 </div>
