@@ -45,7 +45,52 @@ for (i = 0; i < toggler.length; i++) {
   });
 }
 </script>
+@php
+	$positions = App\Taxonomy::all();
+	function getTree($positions, $childrens_to = null){
+		foreach($positions as $p){
+			$u = 'None';$hie_u = 'None';  
+			if($p->label == $childrens_to){
+				if(hasChildrens($positions,$p->id)){ 
+					echo '<li role="treeitem" aria-expanded="true">';
+					if($p->is_sdo != 1){
+					echo '<span>'.$p->position.'&nbsp;&nbsp; <a title="Add a reporting position" class="create-position" childrens_to="'.$p->id.'"><i class="fa fa-users" aria-hidden="true"></i></a>';
+					}
+					echo '&nbsp;&nbsp;<a title="'.$u.'" class="add-person" fill_position_id="'.$p->id.'"><i class="fa fa-user-plus" aria-hidden="true"></i></a></span>';
+					if($hie_u != 'None'){
+					echo '<p style="border:1px solid #eee; padding:1%;">'.$hie_u.'</p>';
+					}
+					echo '<ul role="group">';
+					getTree($positions, $p->id);
+					echo '</ul>';
+					echo '</li>';
+				}
+				else{
+					echo '<li role="treeitem" aria-expanded="true">';
+					echo $p->position."&nbsp; &nbsp;";
+					if($p->is_sdo != 1){
+					echo '&nbsp; &nbsp;<a title="Add a reporting position" class="create-position" childrens_to="'.$p->id.'"><i class="fa fa-users" aria-hidden="true"></i></a>';
+					}
+					echo '&nbsp;&nbsp;<a title="'.$u.'" class="add-person" fill_position_id="'.$p->id.'"><i class="fa fa-user-plus" aria-hidden="true"></i></a>';
+					if($hie_u != 'None'){
+					echo '<p style="border:1px solid #eee; padding:1%;">'.$hie_u.'</p>';
+					}
+					if($hie_u == 'None'){
+					echo '&nbsp; &nbsp;<a title="Remove this position" class="remove-position" position_id="'.$p->id.'"><i class="fa fa-trash" aria-hidden="true"></i></a>';
+					}
+					echo '</li>';
+				}
+			}
+		}
+	}
 
+	function hasChildrens($positions, $p_id){
+		foreach($positions as $p){
+			if($p->childrens_to == $p_id) return true;
+		}
+		return false;
+	}
+@endphp
 
 <div class="container">
 <div class="container-fluid">
@@ -90,7 +135,7 @@ for (i = 0; i < toggler.length; i++) {
                     </div>
                 <div class="row">
                   <div class="col-12 text-right">
-                    <a href="{{ route('taxonomies.create') }}" class="btn btn-sm btn-primary" title="Add Taxonomies"><i class="material-icons">add</i></a>
+                    <a href="{{ route('taxonomies.create') }}" class="btn btn-sm btn-primary" title="Add Taxonomy"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 
@@ -105,14 +150,14 @@ for (i = 0; i < toggler.length; i++) {
                 <i class="material-icons">edit</i>
                     <div class="ripple-container"></div>
                     </a>
-                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomies"><i class="material-icons">delete</i></span>
+                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomy"><i class="material-icons">delete</i></span>
                      <ul class="nested">
                      <li><span class="caret">{{$u->label}}
                      <a href="/taxonomies/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
                     <i class="material-icons">edit</i>
                     <div class="ripple-container"></div>
                     </a>
-                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomies"><i class="material-icons">delete</i></span>
+                 <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomy"><i class="material-icons">delete</i></span>
                      </li>
                      </ul>
                  </li>
@@ -127,11 +172,18 @@ for (i = 0; i < toggler.length; i++) {
                 <button class="btn btn-danger" type="submit" value="delete">Delete</button>
                 </form>
                 </div>
+                
                  @endforeach
                 </div>
 
+            <ul role="tree" aria-labelledby="tree_label">
+                @php
+                    getTree($positions);
+                @endphp
+            </ul>
                 </div>
             </div>
+
         </div>
     </div>
     </div>

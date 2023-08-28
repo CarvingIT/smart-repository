@@ -27,7 +27,7 @@ class TaxonomyRequest extends FormRequest
     {
         return [
             'label' => [
-                'required', 'min:3'
+                'required', 'min:1'
             ]
         ];
     }
