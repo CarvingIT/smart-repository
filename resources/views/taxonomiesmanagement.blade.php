@@ -98,41 +98,35 @@ for (i = 0; i < toggler.length; i++) {
   
 		<div class="table-responsive">
 		    <h3>Taxonomies List</h3>
-
             @foreach ($taxonomies as $u)
             <ul id="myUL">
-           
                  <li><span class="caret">{{$u->label}}</span>
                  <a href="/taxonomies/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
-    <i class="material-icons">edit</i>
+                <i class="material-icons">edit</i>
                     <div class="ripple-container"></div>
-</a>
+                    </a>
                  <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomies"><i class="material-icons">delete</i></span>
- 
                      <ul class="nested">
-
-                     <li>{{$u->label}}
+                     <li><span class="caret">{{$u->label}}
                      <a href="/taxonomies/{{ $u->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
-    <i class="material-icons">edit</i>
+                    <i class="material-icons">edit</i>
                     <div class="ripple-container"></div>
-</a>
+                    </a>
                  <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Taxonomies"><i class="material-icons">delete</i></span>
                      </li>
-      
                      </ul>
                  </li>
-
                  </ul>
                  <div id="deletedialog" style="display:none;">
-<form name="deletedoc" method="post" action="/admin/taxonomies/delete">
-@csrf
-<p>Enter <span id="text_captcha"></span> to delete</p>
-<input type="text" name="delete_captcha" value="" />
-<input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
-<input type="hidden" id="delete_taxonomy_id" name="taxonomy_id" value="{{ $u->id }}" />
-<button class="btn btn-danger" type="submit" value="delete">Delete</button>
-</form>
-</div>
+                <form name="deletedoc" method="post" action="/admin/taxonomies/delete">
+                @csrf
+                <p>Enter <span id="text_captcha"></span> to delete</p>
+                <input type="text" name="delete_captcha" value="" />
+                <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
+                <input type="hidden" id="delete_taxonomy_id" name="taxonomy_id" value="{{ $u->id }}" />
+                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+                </form>
+                </div>
                  @endforeach
                 </div>
 
