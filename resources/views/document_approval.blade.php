@@ -164,18 +164,22 @@ tinymce.init({
                             <th>Approval Status</th>
                             <th>Comments</th>
                             <th>Updated at</th>
-                            <!--th class="text-right">Actions</th-->
                             </tr>
                         </thead>
                         <tbody>
                         @foreach ($doc_approvals as $d_a)
+			@php
+			$document = \App\Document::find($d_a->document_id);
+			if(!empty($document)){
+			@endphp
 			<tr>
-			<td>{{ $d_a->document->title }}</td>
+			<td>{{ @$d_a->document->title }}</td>
 			<td>{{ $d_a->user->name }}</td>
 			<td>@if($d_a->approval_status == 1) {{ __('Approved') }} @else {{ __('UnApproved') }} @endif</td>
 			<td>{{ $d_a->comments }}</td>
 			<td>{{ $d_a->updated_at }}</td>
 			</tr>
+			@php } @endphp
 			@endforeach
 			</tbody>
 		</table>

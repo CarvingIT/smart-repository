@@ -1,5 +1,4 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar'])
-
 @section('content')
 @push('js')
 <script src="/js/jquery-3.3.1.js"></script>
@@ -44,7 +43,7 @@ $(document).ready(function() {
                         <tbody>
 			@foreach($documents as $document)
                         <tr>
-                                <td>{{ $document->document->title }}</td>
+                                <td>{{ @$document->document->title }}</td>
                                 <td>@if($status==1){{ __('Approved') }} @else {{ __('UnApproved') }} @endif</td>
                                 <td>{{ $document->comments }}</td>
                                 <td>{{ $document->created_at }}</td>
