@@ -110,6 +110,8 @@ for (i = 0; i < toggler.length; i++) {
 				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
 					echo '<li>';
 					echo '<span class="caret">'.$t->label.'</span>';
+                    echo '<a href="/taxonomies/create" rel="tooltip" class="btn btn-success btn-link">
+                    <i class="material-icons">add</i>';
 					echo '<ul class="nested">';
 					getTree($children, $t->id);
 					echo '</ul>';
