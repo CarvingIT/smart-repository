@@ -99,7 +99,7 @@ $collections = \App\Collection::all();
 		  @endif
         </li>
       </ul>
-    </div>
+    </div>  
   </div>
 </nav>
 <!-- End Navbar -->
