@@ -33,6 +33,11 @@ $app_name = env('APP_NAME');
     </button>
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
+	<li class="nav-item{{ $activePage == 'dashboard' ? ' active' : '' }}">
+          <a href="/dashboard" class="nav-link">
+            <i class="material-icons">home</i> {{ __('Dashboard') }}
+          </a>
+        </li>
 	<li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
             <i class="material-icons">list</i> {{ __('Collections') }}
@@ -76,7 +81,7 @@ $app_name = env('APP_NAME');
             </p>
 			-->
           </a>
-	  <span class="howdy"><a href="/dashboard" style="color:inherit !important;">Welcome @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
+	  <span class="howdy" style="width:200px;"><a href="/dashboard" style="color:inherit !important;">Welcome @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             @if(Auth::user()->hasRole('admin'))
