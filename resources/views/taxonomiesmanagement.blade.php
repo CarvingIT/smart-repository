@@ -111,7 +111,7 @@ for (i = 0; i < toggler.length; i++) {
 					echo '<li>';
 					echo '<span class="caret">'.$t->label.'</span>';
                     echo '<a href="/taxonomies/create" rel="tooltip" class="btn btn-success btn-link">
-                    <i class="material-icons">add</i>';
+                    <i class="material-icons">add</i></a>';
 					echo '<ul class="nested">';
 					getTree($children, $t->id);
 					echo '</ul>';
