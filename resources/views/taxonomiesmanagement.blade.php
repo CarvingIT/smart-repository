@@ -110,8 +110,12 @@ for (i = 0; i < toggler.length; i++) {
 				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
 					echo '<li>';
 					echo '<span class="caret">'.$t->label.'</span>';
-                    echo '<a href="/taxonomies/create" rel="tooltip" class="btn btn-success btn-link">
+                    echo '<a href="/taxonomies/'.$t->id.'/add" rel="tooltip" class="btn btn-success btn-link">
                     <i class="material-icons">add</i></a>';
+                    echo '<a href="/taxonomies/'.$t->id.'/edit" rel="tooltip" class="btn btn-success btn-link">
+                    <i class="material-icons">edit</i></a>
+                    <span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog('.$t->id.' );" title="Delete Taxonomy"><i class="material-icons">delete</i></span>';
+                    
 					echo '<ul class="nested">';
 					getTree($children, $t->id);
 					echo '</ul>';
@@ -120,7 +124,9 @@ for (i = 0; i < toggler.length; i++) {
 				else{
 					echo '<li>';
 					echo $t->label;
-                     echo '<a href="/taxonomies/'.$t->id.'/edit" rel="tooltip" class="btn btn-success btn-link">
+                     echo '<a href="/taxonomies/create" rel="tooltip" class="btn btn-success btn-link">
+                    <i class="material-icons">add</i></a>
+                     <a href="/taxonomies/'.$t->id.'/edit" rel="tooltip" class="btn btn-success btn-link">
                     <i class="material-icons">edit</i>
                     <div class="ripple-container"></div>
                     </a>

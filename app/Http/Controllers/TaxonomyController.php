@@ -30,11 +30,18 @@ class TaxonomyController extends Controller
 	return redirect()->route('taxonomies.index')->withStatus(__('Taxonomies successfully created.'));
     }
 
+    public function add($id)
+    {
+    $taxonomy  = Taxonomy::find($id);
+	$parent_taxonomies = Taxonomy::all();
+    return view('taxonomies.add',['parent_taxonomies'=>$parent_taxonomies]);
+    }
+
     public function edit($id)
     {
-        $taxonomy  = Taxonomy::find($id);
+    $taxonomy  = Taxonomy::find($id);
 	$parent_taxonomies = Taxonomy::all();
-        return view('taxonomies.edit', ['taxonomy'=>$taxonomy,'parent_taxonomies'=>$parent_taxonomies]);
+    return view('taxonomies.edit', ['taxonomy'=>$taxonomy,'parent_taxonomies'=>$parent_taxonomies]);
     }
 
     public function update(TaxonomyRequest $request, $id)

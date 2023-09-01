@@ -211,6 +211,7 @@ Route::middleware('admin')->group(function () {
 Route::get('/admin/taxonomiesmanagement', 'TaxonomyController@index')->middleware('admin');
 Route::post('/admin/taxonomies/delete','TaxonomyController@destroy')->middleware('admin');
 Route::get('autocomplete', 'TaxonomyController@autoComplete')->name('autocomplete');
+Route::post('/taxonomies/{id}/add','TaxonomyController@add')->middleware('admin');
 
 //Role routes
 Route::middleware('admin')->group(function () {
