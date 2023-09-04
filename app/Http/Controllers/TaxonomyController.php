@@ -34,7 +34,7 @@ class TaxonomyController extends Controller
     {
     $taxonomy  = Taxonomy::find($id);
 	$parent_taxonomies = Taxonomy::all();
-    return view('taxonomies.add',['parent_taxonomies'=>$parent_taxonomies]);
+    return view('taxonomies.add',['taxonomy'=>$taxonomy,'parent_taxonomies'=>$parent_taxonomies]);
     }
 
     public function edit($id)
