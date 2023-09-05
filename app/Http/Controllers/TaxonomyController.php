@@ -29,7 +29,7 @@ class TaxonomyController extends Controller
 	Session::flash('alert-success', 'Taxonomies successfully created.');
 	return redirect()->route('taxonomies.index')->withStatus(__('Taxonomies successfully created.'));
     }
-
+    
     public function add($id)
     {
     $taxonomy  = Taxonomy::find($id);
