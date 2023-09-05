@@ -37,6 +37,13 @@ class TaxonomyController extends Controller
     return view('taxonomies.add',['taxonomy'=>$taxonomy,'parent_taxonomies'=>$parent_taxonomies]);
     }
 
+    public function addstore(TaxonomyRequest $request, Taxonomy  $taxonomy)
+    {
+	$taxonomy->create($request->post());
+	Session::flash('alert-success', 'Taxonomies successfully created.');
+	return redirect()->route('taxonomies.index')->withStatus(__('Taxonomies successfully created.'));
+    }
+
     public function edit($id)
     {
     $taxonomy  = Taxonomy::find($id);

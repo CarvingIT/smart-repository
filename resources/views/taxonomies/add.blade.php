@@ -20,7 +20,7 @@
                 @if(empty($taxonomy))
                 <form method="post" action="{{ route('taxonomies.store') }}" autocomplete="off">
                 @else
-                <form method="post" action="{{ route('taxonomies.store', $taxonomy) }}" autocomplete="off">
+                <form method="post" action="{{ route('taxonomies.addstore', $taxonomy) }}" autocomplete="off">
                 @endif
                 @csrf
                 @method('post')
