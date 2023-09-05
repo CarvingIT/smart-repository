@@ -47,11 +47,16 @@ class HomeController extends Controller
                 $role_id= '';
            if(!empty(auth()->user()->userrole(auth()->user()->id))){
                 $role_id = auth()->user()->userrole(auth()->user()->id);
-                $collections=\App\Collection::where('column_config','LIKE','%'.$role_id.'%')->get();
+	
+                $collections=\App\Collection::where('column_config','LIKE','%'.$role_id.'%')
+				->where('require_approval','1')
+				->get();
 
+		if(!$collections->isEmpty()){
                 foreach($collections as $collection){
                 $all_docs[$collection->id] = \App\Document::where('collection_id',$collection->id)->get();
                 }
+		}
 		foreach($all_docs as $collection_id => $doc){
                 $collection_role_sequence = \App\Collection::find($collection_id);
                 $role_sequence[$collection->id] = json_decode($collection_role_sequence->column_config)->approved_by;
