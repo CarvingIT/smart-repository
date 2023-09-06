@@ -56,8 +56,13 @@ class Collection extends Model
 		return $user_models;
 	}
 
-    public function routeNotificationForSlack($notification){
+    	public function routeNotificationForSlack($notification){
 		$config = json_decode($this->column_config);
-        return $config->slack_webhook;
-    }
+        	return $config->slack_webhook;
+    	}
+
+    	public function getCollectionConfig(){
+		$config = json_decode($this->column_config);
+        	return $config;
+	}
 }
