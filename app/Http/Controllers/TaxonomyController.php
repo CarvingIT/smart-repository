@@ -26,15 +26,33 @@ class TaxonomyController extends Controller
     public function store(TaxonomyRequest $request, Taxonomy  $taxonomy)
     {
 	$taxonomy->create($request->post());
-	Session::flash('alert-success', 'Taxonomies successfully created.');
-	return redirect()->route('taxonomies.index')->withStatus(__('Taxonomies successfully created.'));
+	Session::flash('alert-success', 'Taxonomy successfully created.');
+	return redirect()->route('taxonomies.index')->withStatus(__('Taxonomy successfully created.'));
+    }
+    
+    public function add($id)
+    {
+    $taxonomy  = Taxonomy::find($id);
+	$parent_taxonomies = Taxonomy::all();
+    return view('taxonomies.add',['taxonomy'=>$taxonomy,'parent_taxonomies'=>$parent_taxonomies]);
+    }
+
+    public function addstore(TaxonomyRequest $request, $id)
+    {
+	$taxonomy_new = new Taxonomy();
+    $taxonomy_new ->label = $request->label;
+    $taxonomy_new->parent_id = $id;
+	$taxonomy_new ->save();
+
+	Session::flash('alert-success', 'Taxonomy successfully added.');
+	return redirect()->route('taxonomies.index');
     }
 
     public function edit($id)
     {
-        $taxonomy  = Taxonomy::find($id);
+    $taxonomy  = Taxonomy::find($id);
 	$parent_taxonomies = Taxonomy::all();
-        return view('taxonomies.edit', ['taxonomy'=>$taxonomy,'parent_taxonomies'=>$parent_taxonomies]);
+    return view('taxonomies.edit', ['taxonomy'=>$taxonomy,'parent_taxonomies'=>$parent_taxonomies]);
     }
 
     public function update(TaxonomyRequest $request, $id)
@@ -43,8 +61,8 @@ class TaxonomyController extends Controller
 	$taxonomies ->label = $request->label;
 	$taxonomies ->save();
 
-	Session::flash('alert-success', 'Taxonomies successfully updated.');
-        return redirect()->route('taxonomies.index')->withStatus(__('Taxonomies successfully updated.'));
+	Session::flash('alert-success', 'Taxonomy successfully updated.');
+        return redirect()->route('taxonomies.index')->withStatus(__('Taxonomy successfully updated.'));
     }
 
     public function destroy(Request $request)
@@ -53,7 +71,7 @@ class TaxonomyController extends Controller
 	if(!empty($request->delete_captcha) &&
                 $request->delete_captcha == $request->delete_captcha){
         	$taxonomy->delete();
-		Session::flash('alert-success', 'Taxonomies successfully deleted.');
+		Session::flash('alert-success', 'Taxonomy successfully deleted.');
         	return redirect()->route('taxonomies.index');
         }
 	else{
