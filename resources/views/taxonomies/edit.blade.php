@@ -20,11 +20,11 @@
                 @csrf
                 @method('put')
 		          <div class="form-group row bmd-form-group">
-                <div class="col-md-4">
+                <div class="col-md-4" style="display:none">
                   <label class="col-md-12 col-form-label text-md-right">{{ __('Parent') }}</label>
                   </div>
 
-                  <div class="col-md-8">
+                  <div class="col-md-8" style="display:none">
 
                     <select class="form-control{{ $errors->has('parent_id') ? ' is-invalid' : '' }}" name="parent_id" id="pId">
                       <option value="">Select Parent</option>
