@@ -24,13 +24,12 @@
                 @endif
                 @csrf
                 @method('post')
-                <div class="form-group row bmd-form-group">
+                <div class="form-group row bmd-form-group" style="display:none">
 		              <div class="col-md-4">
                   <label class="col-md-12 col-form-label text-md-right">{{ __('Parent') }}</label>
                   </div>
 
                   <div class="col-md-8">
-                  
                     <select class="form-control{{ $errors->has('parent_id') ? ' is-invalid' : '' }}" name="parent_id" id="pId">
                       <option value="">Select Parent </option>
 			                @foreach($parent_taxonomies as $p)
