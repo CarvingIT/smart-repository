@@ -24,7 +24,7 @@
                 @endif
                 @csrf
                 @method('post')
-                <div class="form-group row bmd-form-group">
+               <!-- <div class="form-group row bmd-form-group">
 		              <div class="col-md-4">
                   <label class="col-md-12 col-form-label text-md-right">{{ __('Parent') }}</label>
                   </div>
@@ -38,14 +38,14 @@
 			                  @endforeach
                     </select>
                   </div>
-                </div>
+                </div> -->
                 <div class="form-group row bmd-form-group">
 		              <div class="col-md-4">
-                  <label class="col-md-12 col-form-label text-md-right">{{ __('Tag') }}</label>
+                  <label class="col-md-12 col-form-label text-md-right">{{ __('Label') }}</label>
                   </div>
 
                   <div class="col-md-8">
-                      <input class="form-control{{ $errors->has('label') ? ' is-invalid' : '' }}" name="label" id="input-name" type="text" placeholder="{{ __('Tag') }}" value="{{ old('label') }}" required="true" aria-required="true"/>
+                      <input class="form-control{{ $errors->has('label') ? ' is-invalid' : '' }}" name="label" id="input-name" type="text" placeholder="{{ __('Label') }}" value="{{ old('label') }}" required="true" aria-required="true"/>
                       @if ($errors->has('label'))
                         <span id="name-error" class="error text-danger" for="input-label">{{ $errors->first('label') }}</span>
                       @endif

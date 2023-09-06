@@ -219,6 +219,8 @@ Route::middleware('admin')->group(function () {
 Route::get('/admin/taxonomiesmanagement', 'TaxonomyController@index')->middleware('admin');
 Route::post('/admin/taxonomies/delete','TaxonomyController@destroy')->middleware('admin');
 Route::get('autocomplete', 'TaxonomyController@autoComplete')->name('autocomplete');
+Route::get('/taxonomies/{id}/add','TaxonomyController@add')->middleware('admin');
+Route::post('/taxonomies/{id}/addstore','TaxonomyController@addstore')->middleware('admin')->name('taxonomies.addstore');   
 
 //Role routes
 Route::middleware('admin')->group(function () {
