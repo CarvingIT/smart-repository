@@ -71,7 +71,7 @@ for (i = 0; i < toggler.length; i++) {
 	-->
             <div class="card">
                 <div class="card-header card-header-primary">
-		<h4 class="card-title ">{{ __('Taxonomies') }}</h4>
+		<h4 class="card-title ">{{ __('Taxonomy') }}</h4>
 		</div>
 
                 <div class="card-body">
@@ -89,14 +89,14 @@ for (i = 0; i < toggler.length; i++) {
                     </div>
                 <div class="row">
                   <div class="col-12 text-right">
-                    <a href="{{ route('taxonomies.create') }}" class="btn btn-sm btn-primary" title="Add Taxonomy"><i class="material-icons">add</i></a>
+                    <a href="{{ route('taxonomies.create') }}" class="btn btn-sm btn-primary" title="New Taxonomy Tree"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 
 
   
 		<div class="table-responsive">
-		    <h3>Taxonomies List</h3>
+		    <h3>Taxonomy</h3>
 <ul>
 @php
 	$tags = App\Taxonomy::all();
