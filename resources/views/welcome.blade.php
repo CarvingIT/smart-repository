@@ -8,6 +8,8 @@
 		$settings[$c->param] = $c->value;
 	}
 @endphp
+@yield('content')
+@stack('js') 
 <div class="container">
 <div class="container-fluid">
 <div class="row justify-content-center">
@@ -16,6 +18,7 @@
 			<div class="card-header card-header-primary"><h4 class="card-title">{{ env('APP_NAME') }}</h4></div>
 			<div class="card-body">
 				<div class="row justify-content-center">
+				@yield('content')
 				@if(!empty($settings['banner_image_1']))
 				@endif
 				</div>

@@ -41,7 +41,8 @@
   <link href="design/assets/css/fonts.css" rel="stylesheet">
   <link href="design/assets/css/fonts.css" rel="stylesheet">
 
-
+  @yield('content')
+  @stack('js')
 </head>
 
 <body>
@@ -103,13 +104,11 @@
               <div class="container">
                 <div class="row">
                   <div class="col-lg-12">
-
-
                     <ul class="mega-menu-ul">
-<li><a href="javascript:void(0)">Login | Register</a></li>
+                      <li><a href="{{ route('login') }}">Login | Register</a></li>
                       <li><a href="about.html">About Repository</a></li>
                       <li><a href="javascript:void(0)">FAQs</a></li>
- <li><a href="feedback.html">Feedback</a></li>
+                      <li><a href="feedback.html">Feedback</a></li>
                       <li><a href="contact.html">Contact Us</a></li>
                     </ul>
                   </div>
