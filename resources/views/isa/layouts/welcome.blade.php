@@ -16,12 +16,7 @@
 			<div class="card-header card-header-primary"><h4 class="card-title">{{ env('APP_NAME') }}</h4></div>
 			<div class="card-body">
 				<div class="row justify-content-center">
-				@if(!empty($settings['banner_image_1']))
-				@endif
-				</div>
-				@if(!empty($settings['home_page']))
-				{!! $settings['home_page'] !!}
-				@endif
+				@yield('content')
 			</div>
 		</div>
       </div>
@@ -29,3 +24,4 @@
 </div>
 </div>
 @endsection
+

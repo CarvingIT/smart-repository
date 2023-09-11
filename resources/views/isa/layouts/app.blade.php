@@ -41,8 +41,7 @@
   <link href="design/assets/css/fonts.css" rel="stylesheet">
   <link href="design/assets/css/fonts.css" rel="stylesheet">
 
-  @yield('content')
-  @stack('js')
+
 </head>
 
 <body>
