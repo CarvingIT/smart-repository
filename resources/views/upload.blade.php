@@ -177,7 +177,7 @@ tinymce.init({
 				foreach($tags as $t){
 					$children['parent_'.$t->parent_id][] = $t;
 				}
-				function getTree($children, $document, $parent_id = null, $parents = null){
+				function getTree($children, $document, $f, $parent_id = null, $parents = null){
 
 					if(empty($children['parent_'.$parent_id])) return;
 					foreach($children['parent_'.$parent_id] as $t){
@@ -186,12 +186,12 @@ tinymce.init({
 								$selected="selected";
 							}
 							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
-								echo '<option selected="'.$selected.'" value="'.$t->id.'">'.$parents.$t->label.'</option>';
+								echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
 								$parents_tmp = $parents. $t->label .' - ';
-								getTree($children, $document, $t->id, $parents_tmp);
+								getTree($children, $document, $f, $t->id, $parents_tmp);
 							}
 							else{
-								echo '<option selected="'.$selected.'" value="'.$t->label.'">'.$parents.$t->label.'</option>';
+								echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
 							}
 					}
 				}
@@ -199,7 +199,7 @@ tinymce.init({
         <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple 
 		@if($f->is_required == 1) {{ ' required' }} @endif >
 			@php
-			getTree($children, $document, $f->options);
+			getTree($children, $document, $f, $f->options);
 			@endphp
 		</select>
         @endif
