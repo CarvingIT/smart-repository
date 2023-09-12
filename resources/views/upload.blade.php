@@ -118,38 +118,25 @@ tinymce.init({
 		$permission_intersection = [];
 		if(!empty($f->available_to)){ 
 			$available_to = explode(",",$f->available_to);
-//print_r($available_to);echo "<br />";
-//print_r($user_per);echo "<br />";
 			$permission_intersection = array_intersect($user_per,$available_to);
-//print_r($permission_intersection);
 		} 
 		@endphp
+	@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
     <div class="form-group row">
 		   <div class="col-md-3">
-		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
     			<label for="meta_field_{{$f->id}}" class="col-md-12 col-form-label text-md-right">{{$f->label}}</label>
-		@endif
     		   </div>
         <div class="col-md-9">
         @if($f->type == 'Text')
-		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
-		@endif
         @elseif ($f->type == 'Textarea')
-		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
         <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! $document->meta_value($f->id) !!}</textarea>
-		@endif
         @elseif ($f->type == 'Numeric')
-		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
         <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
-		@endif
         @elseif ($f->type == 'Date')
-		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
         <input id="meta_field_{{$f->id}}" max="2999-12-31"  type="date" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
-		@endif
 
         @elseif (in_array($f->type, array('Select', 'MultiSelect')))
-		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
         <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple @endif 
 		@if($f->is_required == 1) {{ ' required' }} @endif >
             @php
@@ -168,9 +155,7 @@ tinymce.init({
 				@endif
             @endforeach
         </select>
-		@endif
 		@elseif ($f->type == 'SelectCombo')
-		@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
 		<input type="text" class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" autocomplete="off" list="optionvalues" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 		<label>You can select an option or type custom text above.</label>
 		<datalist id="optionvalues">
@@ -185,10 +170,42 @@ tinymce.init({
             <option>{{$o}}</option>
             @endforeach
 		</datalist>
-		@endif {{-- end of permissions if --}}
+		@elseif ($f->type == 'TaxonomyTree')
+			@php
+				$tags = App\Taxonomy::all();
+				$children = [];
+				foreach($tags as $t){
+					$children['parent_'.$t->parent_id][] = $t;
+				}
+				function getTree($children, $document, $parent_id = null, $parents = null){
+
+					if(empty($children['parent_'.$parent_id])) return;
+					foreach($children['parent_'.$parent_id] as $t){
+							$selected = '';
+							if(@in_array($t->id, json_decode($document->meta_value($f->id)))){
+								$selected="selected";
+							}
+							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
+								echo '<option selected="'.$selected.'" value="'.$t->id.'">'.$parents.$t->label.'</option>';
+								$parents_tmp = $parents. $t->label .' - ';
+								getTree($children, $document, $t->id, $parents_tmp);
+							}
+							else{
+								echo '<option selected="'.$selected.'" value="'.$t->label.'">'.$parents.$t->label.'</option>';
+							}
+					}
+				}
+			@endphp
+        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple 
+		@if($f->is_required == 1) {{ ' required' }} @endif >
+			@php
+			getTree($children, $document, $f->options);
+			@endphp
+		</select>
         @endif
         </div>
     </div>
+	@endif {{-- end of permissions if --}}
     @endforeach
 	<div class="form-group row">
 	   <div class="col-md-3 text-right">
