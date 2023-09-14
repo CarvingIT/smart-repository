@@ -1,5 +1,5 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
-
+@stack('js') 
 @section('content')
 
   <!-- ======= Header ======= -->
@@ -24,15 +24,13 @@
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="design/assets/img/logo.png" alt=""> -->
         <!-- <img src="{{url('design/design/assets/img/site-logo.png')}}"> -->
-        <img src="design/assets/img/site-logo.png" alt="Logo">
-        <img class="sticke-logo" src="design/assets/img/site-logo.png" alt="Logo">
+        <img src="img/isa/img/site-logo.png" alt="Logo">
+        <img class="sticke-logo" src="img/isa/img/site-logo.png" alt="Logo">
         <div class="introduce-text">
           <span class="vertical-line"></span>
           <p>Regulation <br> Repository</p>
         </div>
       </a>
-      
-
       <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
       <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
       <nav id="navbar" class="navbar">
@@ -197,7 +195,7 @@
           <div class="swiper-wrapper" >
             <div class="swiper-slide">
               <div class="news-updates-item">
-                <img src="design/assets/img/news-updates/news-updates1.jpg" class="news-updates-img" alt="">
+                <img src="img/isa/img/news-updates/news-updates1.jpg" class="news-updates-img" alt="">
                 <div class="news-updates-content">
                   <h3>heading</h3>
                   <p>
@@ -208,7 +206,7 @@
             </div><!-- End news-updates item -->
             <div class="swiper-slide">
               <div class="news-updates-item">
-                <img src="design/assets/img/news-updates/news-updates2.jpg" class="news-updates-img" alt="">
+                <img src="img/isa/img/news-updates/news-updates2.jpg" class="news-updates-img" alt="">
                 <div class="news-updates-content">
                   <h3>heading</h3>
                   <p>
@@ -219,7 +217,7 @@
             </div><!-- End news-updates item -->
             <div class="swiper-slide">
               <div class="news-updates-item">
-                <img src="design/assets/img/news-updates/news-updates3.jpg" class="news-updates-img" alt="">
+                <img src="img/isa/img/news-updates/news-updates3.jpg" class="news-updates-img" alt="">
                 <div class="news-updates-content">
                   <h3>heading</h3>
                   <p>
@@ -230,7 +228,7 @@
             </div><!-- End news-updates item -->
             <div class="swiper-slide">
               <div class="news-updates-item">
-                <img src="design/assets/img/news-updates/news-updates4.jpg" class="news-updates-img" alt="">
+                <img src="img/isa/img/news-updates/news-updates4.jpg" class="news-updates-img" alt="">
                 <div class="news-updates-content">
                   <h3>heading</h3>
                   <p>
@@ -241,7 +239,7 @@
             </div><!-- End news-updates item -->
             <div class="swiper-slide">
               <div class="news-updates-item">
-                <img src="design/assets/img/news-updates/news-updates5.jpeg" class="news-updates-img" alt="">
+                <img src="img/isa/img/news-updates/news-updates5.jpeg" class="news-updates-img" alt="">
                 <div class="news-updates-content">
                   <h3>heading</h3>
                   <p>
@@ -343,7 +341,7 @@
       <div class="row gy-2">
         <div class="col-lg-5 col-md-12 footer-info">
           <a href="index.html" class="logo d-flex align-items-center">
-            <img src="design/assets/img/site-logo-light.png" alt="Logo">
+            <img src="img/isa/img/site-logo-light.png" alt="Logo">
           </a>
           <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
           <div class="social-links d-flex mt-4">
@@ -414,7 +412,7 @@ National Institute of Solar Energy Campus Gwal Pahari,<br>
   <script src="design/assets/vendor/php-email-form/validate.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
   <!-- Template Main JS File -->
-  <script src="design/assets/js/main.js"></script>
+  <script src="js/isa/main.js"></script>
 
 
 @endsection
