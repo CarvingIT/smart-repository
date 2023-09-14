@@ -2489,3 +2489,7 @@ margin-left: 8px;
 .mega-menu-show .introduce-text p {
   color: #ed1c24;
 }
+
+.content .container-fluid, .container .container-fluid{
+	margin-top:200px;
+}
