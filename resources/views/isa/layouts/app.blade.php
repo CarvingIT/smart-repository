@@ -48,10 +48,10 @@
         Need a Guide? <a href="#">Start Here.</a>
       </div>
 <div class="social-media-header">
-        <a href="https://www.facebook.com/" class="social-icon"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="https://twitter.com/" class="social-icon"><i class="fa-brands fa-twitter"></i></a>
-        <a href="https://www.youtube.com/" class="social-icon"><i class="fa-brands fa-youtube"></i></a>
-        <a href="https://in.linkedin.com" class="social-icon"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="https://www.facebook.com/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="https://twitter.com/" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+        <a href="https://www.youtube.com/" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+        <a href="https://in.linkedin.com" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
       </div>
      
     </div>
@@ -59,7 +59,7 @@
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center">
+      <a href="/" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="design/assets/img/logo.png" alt=""> -->
         <!-- <img src="{{url('design/design/assets/img/site-logo.png')}}"> -->
@@ -74,7 +74,7 @@
       <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
       <nav id="navbar" class="navbar">
         <ul>
-          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="/" class="active">Home</a></li>
           <li><a href="javascript:void(0)">Database</a></li>
           <li class="dropdown">
             <a href="javascript:void(0)"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
@@ -97,7 +97,7 @@
                 <div class="row">
                   <div class="col-lg-12">
                     <ul class="mega-menu-ul">
-                      <li><a href="{{ route('login') }}">Login | Register</a></li>
+                      <li><a href="/login">Login | Register</a></li>
                       <li><a href="about.html">About Repository</a></li>
                       <li><a href="javascript:void(0)">FAQs</a></li>
                       <li><a href="feedback.html">Feedback</a></li>
@@ -125,22 +125,22 @@
     <div class="container">
       <div class="row gy-2">
         <div class="col-lg-5 col-md-12 footer-info">
-          <a href="index.html" class="logo d-flex align-items-center">
+          <a href="/" class="logo d-flex align-items-center">
             <img src="img/isa/img/site-logo-light.png" alt="Logo">
           </a>
           <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
           <div class="social-links d-flex mt-4">
-            <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.facebook.com/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.twitter.com/" class="twitter" target="_blank"><i class="bi bi-twitter"></i></a>
+            <a href="https://www.instagram.com/" class="instagram" target="_blank"><i class="bi bi-instagram"></i></a>
+            <a href="https://www.linkedin.com/" class="linkedin" target="_blank"><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
 
         <div class="col-lg-3 col-md-6 col-5 footer-links">
           <h4>Quick Links</h4>
           <ul>
-            <li><a href="#">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="#">About Repository</a></li>
             <li><a href="#">Database</a></li>
             <li><a href="#">Terms of Service</a></li>
