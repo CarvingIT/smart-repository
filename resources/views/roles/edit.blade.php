@@ -24,7 +24,7 @@
                   <label class="col-md-8 col-form-label text-md-right">{{ __('Role') }}</label>
                   </div>
                   <div class="col-md-6">
-                      <input class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" id="input-role" type="text" placeholder="{{ __('Comma separated list of role') }}" value="{{ old('name', $role->name) }}" required="true" aria-required="true"/>
+                      <input class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" id="input-role" type="text" placeholder="{{ __('Role') }}" value="{{ old('name', $role->name) }}" required="true" aria-required="true"/>
                       @if ($errors->has('name'))
                         <span id="name-error" class="error text-danger" for="input-role">{{ $errors->first('name') }}</span>
                       @endif
@@ -32,7 +32,7 @@
                 </div>
               </div>
               <div class="card-footer ml-auto mr-auto">
-                <button type="submit" class="btn btn-primary">{{ __('Update Role') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Update') }}</button>
               </div>
              </form>
             </div>

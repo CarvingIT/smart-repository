@@ -32,10 +32,13 @@ class HomeController extends Controller
     {
 	//return redirect('/collections');
 	$role_id = auth()->user()->userrole(auth()->user()->id);
-	$collections=\App\Collection::where('column_config','LIKE','%'.$role_id.'%')->get();
+	$collections=\App\Collection::where('require_approval','1')->get();
 	$documents = [];
 	foreach($collections as $collection){
-		$documents[] = \App\Document::where('collection_id',$collection->id)->get();
+		$config = $collection->getCollectionConfig();
+		if(in_array($role_id, $config->approved_by)){	
+			$documents[] = \App\Document::where('collection_id',$collection->id)->get();
+		}
 	}
 	$count = $this->documentsAwaitingApprovalsCount();
 	return view('dashboard',['collections'=>$collections, 'documents'=>$documents,'awaiting_count'=>$count]);
@@ -47,11 +50,18 @@ class HomeController extends Controller
                 $role_id= '';
            if(!empty(auth()->user()->userrole(auth()->user()->id))){
                 $role_id = auth()->user()->userrole(auth()->user()->id);
-                $collections=\App\Collection::where('column_config','LIKE','%'.$role_id.'%')->get();
+	
+                $collections=\App\Collection::where('require_approval','1')
+				->get();
 
-                foreach($collections as $collection){
-                $all_docs[$collection->id] = \App\Document::where('collection_id',$collection->id)->get();
-                }
+		if(!$collections->isEmpty()){
+                   foreach($collections as $collection){
+			$config = $collection->getCollectionConfig();
+			if(in_array($role_id, $config->approved_by)){	
+                		$all_docs[$collection->id] = \App\Document::where('collection_id',$collection->id)->get();
+			}
+                   }
+		}
 		foreach($all_docs as $collection_id => $doc){
                 $collection_role_sequence = \App\Collection::find($collection_id);
                 $role_sequence[$collection->id] = json_decode($collection_role_sequence->column_config)->approved_by;

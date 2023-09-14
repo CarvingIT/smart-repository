@@ -88,10 +88,13 @@ class DocumentApprovalController extends Controller
 		$collections = $role_id = '';
 	   if(!empty(auth()->user()->userrole(auth()->user()->id))){
 		$role_id = auth()->user()->userrole(auth()->user()->id);
-        	$collections=\App\Collection::where('column_config','LIKE','%'.$role_id.'%')->get();
+        	$collections=\App\Collection::where('require_approval','1')->get();
 
 		foreach($collections as $collection){
-        	$all_docs[$collection->id] = \App\Document::where('collection_id',$collection->id)->get();
+		$config = $collection->getCollectionConfig();
+		  if(in_array($role_id,$config->approved_by)){
+        		$all_docs[$collection->id] = \App\Document::where('collection_id',$collection->id)->get();
+		  }
 		}
 
 		foreach($all_docs as $collection_id => $doc){
