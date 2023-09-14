@@ -77,15 +77,15 @@
           <li><a href="/" class="active">Home</a></li>
           <li><a href="javascript:void(0)">Database</a></li>
           <li class="dropdown">
-            <a href="javascript:void(0)"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
+            <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
               <li><a href="javascript:void(0)">Opinions</a></li>
               <li><a href="javascript:void(0)">Link 2 (tbd)</a></li>
             </ul>
           </li>
-          <li class="mobile-only"><a href="about.html">About Repository</a></li>
+          <li class="mobile-only"><a href="/abouts">About Repository</a></li>
           <li class="mobile-only"><a href="javascript:void(0)">FAQs</a></li>
-          <li class="mobile-only"><a href="contact.html">Contact Us</a></li>
+          <li class="mobile-only"><a href="/contact">Contact Us</a></li>
           <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->
           <li class="mega-menu">
             <a href="javascript:void(0)">
