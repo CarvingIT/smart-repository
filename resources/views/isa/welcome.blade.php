@@ -1,9 +1,8 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
 @stack('js') 
-@section('content')
-
-  <!-- ======= Header ======= -->
-  <div class="top-bar">
+@section('header')
+<!-- ======= Header ======= -->
+<div class="top-bar">
     <div class="container-fluid container-xl d-flex justify-content-end align-items-center">
        <div class="top-bar-link">
         Need a Guide? <a href="#">Start Here.</a>
@@ -74,7 +73,76 @@
     </div>
   </header><!-- End Header -->
   <!-- End Header -->
+@endsection
 
+@section('footer')
+  <!-- ======= Footer ======= -->
+  <footer id="footer" class="footer">
+
+    <div class="container">
+      <div class="row gy-2">
+        <div class="col-lg-5 col-md-12 footer-info">
+          <a href="index.html" class="logo d-flex align-items-center">
+            <img src="img/isa/img/site-logo-light.png" alt="Logo">
+          </a>
+          <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
+          <div class="social-links d-flex mt-4">
+            <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
+            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-5 footer-links">
+          <h4>Quick Links</h4>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">About Repository</a></li>
+            <li><a href="#">Database</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Privacy policy</a></li>
+          </ul>
+        </div>
+
+        <!-- <div class="col-lg-2 col-6 footer-links">
+          <h4>News & Updates</h4>
+          <ul>
+            <li><a href="#">Heading</a></li>
+            <li><a href="#">Heading</a></li>
+            <li><a href="#">Heading</a></li>
+            <li><a href="#">Heading</a></li>
+            <li><a href="#">Heading</a></li>
+          </ul>
+        </div> -->
+
+        <div class="col-lg-4 col-md-6 col-7 footer-contact text-md-start">
+          <h4>Contact Us</h4>
+          <p>
+            International Solar Alliance Secretariat<br>
+            Surya Bhawan, <br>
+            National Institute of Solar Energy Campus Gwal Pahari,<br>
+            Faridabad-Gurugram Road,<br>
+            Gurugram, Haryana – 122003,
+            India<br>
+            <strong>Tel:</strong> +91 124 362 3090/69<br>
+            <strong>Email:</strong> <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a><br>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container mt-2">
+      <div class="copyright">
+        &copy; Copyright <strong><span>ISA</span></strong>. All Rights Reserved
+      </div>
+    </div>
+
+  </footer><!-- End Footer -->
+  <!-- End Footer -->
+@endsection
+
+@section('content')
   <!-- ======= Hero Section ======= -->
   <section id="hero" class="hero d-flex align-items-center">
     <div class="container"  style="background-color: #eee;">
@@ -334,70 +402,7 @@
 
   </main><!-- End #main -->
 
-  <!-- ======= Footer ======= -->
-  <footer id="footer" class="footer">
 
-    <div class="container">
-      <div class="row gy-2">
-        <div class="col-lg-5 col-md-12 footer-info">
-          <a href="index.html" class="logo d-flex align-items-center">
-            <img src="img/isa/img/site-logo-light.png" alt="Logo">
-          </a>
-          <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
-          <div class="social-links d-flex mt-4">
-            <a href="#" class="twitter"><i class="bi bi-twitter"></i></a>
-            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
-            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
-            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
-          </div>
-        </div>
-
-        <div class="col-lg-3 col-md-6 col-5 footer-links">
-          <h4>Quick Links</h4>
-          <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="#">About Repository</a></li>
-            <li><a href="#">Database</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Privacy policy</a></li>
-          </ul>
-        </div>
-
-        <!-- <div class="col-lg-2 col-6 footer-links">
-          <h4>News & Updates</h4>
-          <ul>
-            <li><a href="#">Heading</a></li>
-            <li><a href="#">Heading</a></li>
-            <li><a href="#">Heading</a></li>
-            <li><a href="#">Heading</a></li>
-            <li><a href="#">Heading</a></li>
-          </ul>
-        </div> -->
-
-        <div class="col-lg-4 col-md-6 col-7 footer-contact text-md-start">
-          <h4>Contact Us</h4>
-          <p>
-            International Solar Alliance Secretariat<br>
-Surya Bhawan, <br>
-National Institute of Solar Energy Campus Gwal Pahari,<br>
- Faridabad-Gurugram Road,<br>
- Gurugram, Haryana – 122003,
- India<br>
-            <strong>Tel:</strong> +91 124 362 3090/69<br>
-            <strong>Email:</strong> <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a><br>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="container mt-2">
-      <div class="copyright">
-        &copy; Copyright <strong><span>ISA</span></strong>. All Rights Reserved
-      </div>
-    </div>
-
-  </footer><!-- End Footer -->
-  <!-- End Footer -->
 
   <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
