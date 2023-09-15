@@ -10,10 +10,10 @@
   <meta content="" name="keywords">
 
   <!-- Favicons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="css/isa/img/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="css/isa/img/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="css/isa/img/favicon/favicon-16x16.png">
-  <link rel="manifest" href="css/isa/img/favicon/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/css/isa/img/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/css/isa/img/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/css/isa/img/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/css/isa/img/favicon/site.webmanifest">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
 
@@ -23,21 +23,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 
   <!-- Vendor CSS Files -->
-  <link href="css/isa/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="css/isa/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="css/isa/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-  <link href="css/isa/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="css/isa/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-  <link href="css/isa/vendor/aos/aos.css" rel="stylesheet">
+  <link href="/css/isa/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/isa/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/isa/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="/css/isa/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="/css/isa/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="/css/isa/vendor/aos/aos.css" rel="stylesheet">
 
   <!-- Template Main CSS File -->
-  <link rel="stylesheet" href="{{url('css/isa/main.css')}}" />
-  <link href="css/isa/main.css" rel="stylesheet">
-  <link href="css/isa/main.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{url('/css/isa/main.css')}}" />
+  <link href="/css/isa/main.css" rel="stylesheet">
 
   <!-- Fonts -->
-  <link href="css/isa/fonts.css" rel="stylesheet">
-  <link href="css/isa/fonts.css" rel="stylesheet">
+  <link href="/css/isa/fonts.css" rel="stylesheet">
+  <link href="/css/isa/fonts.css" rel="stylesheet">
   @stack('js') 
 </head>
 <body>
@@ -63,8 +62,8 @@
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="design/assets/img/logo.png" alt=""> -->
         <!-- <img src="{{url('design/design/assets/img/site-logo.png')}}"> -->
-        <img src="img/isa/img/site-logo.png" alt="Logo">
-        <img class="sticke-logo" src="img/isa/img/site-logo.png" alt="Logo">
+        <img src="/img/isa/img/site-logo.png" alt="Logo">
+        <img class="sticke-logo" src="/img/isa/img/site-logo.png" alt="Logo">
         <div class="introduce-text">
           <span class="vertical-line"></span>
           <p>Regulation <br> Repository</p>
@@ -75,7 +74,7 @@
       <nav id="navbar" class="navbar">
         <ul>
           <li><a href="/" class="active">Home</a></li>
-          <li><a href="javascript:void(0)">Database</a></li>
+          <li><a href="/collection/1">Database</a></li>
           <li class="dropdown">
             <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
@@ -98,10 +97,10 @@
                   <div class="col-lg-12">
                     <ul class="mega-menu-ul">
                       <li><a href="/login">Login | Register</a></li>
-                      <li><a href="about.html">About Repository</a></li>
+                      <li><a href="/about">About Repository</a></li>
                       <li><a href="javascript:void(0)">FAQs</a></li>
-                      <li><a href="feedback.html">Feedback</a></li>
-                      <li><a href="contact.html">Contact Us</a></li>
+                      <li><a href="/feedback">Feedback</a></li>
+                      <li><a href="/contacts">Contact Us</a></li>
                     </ul>
                   </div>
                 </div>
@@ -126,7 +125,7 @@
       <div class="row gy-2">
         <div class="col-lg-5 col-md-12 footer-info">
           <a href="/" class="logo d-flex align-items-center">
-            <img src="img/isa/img/site-logo-light.png" alt="Logo">
+            <img src="/img/isa/img/site-logo-light.png" alt="Logo">
           </a>
           <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
           <div class="social-links d-flex mt-4">
@@ -142,7 +141,7 @@
           <ul>
             <li><a href="/">Home</a></li>
             <li><a href="#">About Repository</a></li>
-            <li><a href="#">Database</a></li>
+            <li><a href="/collection/1">Database</a></li>
             <li><a href="#">Terms of Service</a></li>
             <li><a href="#">Privacy policy</a></li>
           </ul>
