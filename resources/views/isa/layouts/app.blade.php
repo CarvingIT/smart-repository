@@ -46,7 +46,7 @@
        <div class="top-bar-link">
         Need a Guide? <a href="#">Start Here.</a>
       </div>
-<div class="social-media-header">
+      <div class="social-media-header">
         <a href="https://www.facebook.com/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
         <a href="https://twitter.com/" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
         <a href="https://www.youtube.com/" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
@@ -57,7 +57,6 @@
   </div>
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
-
       <a href="/" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="design/assets/img/logo.png" alt=""> -->
@@ -114,8 +113,6 @@
   <!-- End Header -->
 @yield('content')
 </div>
-
-
 
 
   <!-- ======= Footer ======= -->
