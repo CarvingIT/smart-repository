@@ -59,8 +59,8 @@
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
       <a href="/" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="design/assets/img/logo.png" alt=""> -->
-        <!-- <img src="{{url('design/design/assets/img/site-logo.png')}}"> -->
+        <!-- <img src="/js/isa/img/logo.png" alt=""> -->
+        <!-- <img src="{{url('design//js/isa/img/site-logo.png')}}"> -->
         <img src="/img/isa/img/site-logo.png" alt="Logo">
         <img class="sticke-logo" src="/img/isa/img/site-logo.png" alt="Logo">
         <div class="introduce-text">
@@ -137,7 +137,7 @@
           <h4>Quick Links</h4>
           <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="#">About Repository</a></li>
+            <li><a href="/about">About Repository</a></li>
             <li><a href="/collection/1">Database</a></li>
             <li><a href="#">Terms of Service</a></li>
             <li><a href="#">Privacy policy</a></li>
@@ -179,5 +179,19 @@
 
   </footer><!-- End Footer -->
   <!-- End Footer -->
+  <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<div id="preloader"></div>
+
+<!-- Vendor JS Files -->
+<script src="/css/isa/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/css/isa/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="/css/isa/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="/css/isa/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="/css/isa/vendor/aos/aos.js"></script>
+<script src="/css/isa/vendor/php-email-form/validate.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
+<!-- Template Main JS File -->
+<script src="/js/isa/main.js"></script>
 </body>
 </html>
