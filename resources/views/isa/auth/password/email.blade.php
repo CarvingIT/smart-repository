@@ -1,7 +1,7 @@
 @extends('layouts.app', ['class' => 'off-canvas-sidebar', 'activePage' => 'email', 'title' => __('Smart Repository')])
 
 @section('content')
-<div class="container" style="height: auto; padding-top: 250px;">
+<div class="container" style="height: auto;  padding-top: 250px;">
   <div class="row align-items-center">
     <div class="col-lg-4 col-md-6 col-sm-8 ml-auto mr-auto">
       <form class="form" method="POST" action="{{ route('password.email') }}">
