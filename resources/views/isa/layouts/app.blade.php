@@ -36,8 +36,21 @@
 
   <!-- Fonts -->
   <link href="/css/isa/fonts.css" rel="stylesheet">
-  <link href="/css/isa/fonts.css" rel="stylesheet">
   @stack('js') 
+  <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('material') }}/img/apple-icon.png">
+	@if(!empty($settings['favicon_url']))
+    <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon_url']}}">
+	@else
+    <link rel="icon" type="image/png" href="{{ asset('material') }}/img/favicon.png">
+	@endif
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+  
+    <!-- CSS Files -->
+    <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
+    <link href="/css/custom.css" rel="stylesheet" />
+   
+    <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
+    
 </head>
 <body>
   <!-- ======= Header ======= -->
