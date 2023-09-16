@@ -1,10 +1,9 @@
 @extends('layouts.app', ['class' => 'off-canvas-sidebar', 'activePage' => 'login', 'title' => __('Smart Repository')])
 
 @section('content')
-<div class="container" style="height: auto;">
+<div class="container" style="height: auto; padding-top: 250px;">
   <div class="row align-items-center">
     <div class="col-md-9 ml-auto mr-auto mb-3 text-center">
-      Dnyaneshwar
       <!--h3>{{ __('Log in to see how you can speed up your Online Collection of Documents with out of the box CRUD for #Document Management and more.') }} </h3-->
     </div>
     <div class="col-lg-4 col-md-6 col-sm-8 ml-auto mr-auto">
@@ -36,7 +35,7 @@
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text">
-                    <i class="material-icons">lock_outline</i>
+                    <i class="material-icons">password</i>
                   </span>
                 </div>
                 <input type="password" name="password" id="password" class="form-control" placeholder="{{ __('Password...') }}" value="{{ !$errors->has('password') ? "" : "" }}" required>
@@ -59,23 +58,18 @@
           <div class="card-footer justify-content-center">
             <button type="submit" class="btn btn-primary btn-sm btn-lg">{{ __('Lets Go') }}</button>
           </div>
-		  @if(env('GL_ID') && env('GL_SECRET'))
-          <div class="card-footer justify-content-center">
-				<a href="/oauth/google"><img src="/i/btn_google_signin_light_normal_web.png" /></a>
-          </div>
-		  @endif
-        </div>
+		    </div>
       </form>
       <div class="row">
         <div class="col-6">
             @if (Route::has('password.request'))
-                <a href="{{ route('password.request') }}" class="text-light">
+                <a href="{{ route('password.request') }}" class="text-dark">
                     <strong>{{ __('Forgot password?') }}</strong>
                 </a>
             @endif
         </div>
         <div class="col-6 text-right">
-            <a href="{{ route('register') }}" class="text-light">
+            <a href="{{ route('register') }}" class="text-dark">
                 <strong>{{ __('Create new account') }}</strong>
             </a>
         </div>
