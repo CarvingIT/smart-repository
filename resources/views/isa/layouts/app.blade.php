@@ -60,10 +60,10 @@
         Need a Guide? <a href="#">Start Here.</a>
       </div>
       <div class="social-media-header">
-        <a href="https://www.facebook.com/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="https://twitter.com/" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
-        <a href="https://www.youtube.com/" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
-        <a href="https://in.linkedin.com" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+        <a href="https://www.facebook.com/InternationalSolarAlliance/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="https://twitter.com/isolaralliance" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+        <a href="https://www.youtube.com/@internationalsolaralliance" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+        <a href="https://www.linkedin.com/company/internationalsolaralliance/?originalSubdomain=in" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
       </div>
      
     </div>
@@ -139,10 +139,10 @@
           </a>
           <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
           <div class="social-links d-flex mt-4">
-            <a href="https://www.facebook.com/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.facebook.com/InternationalSolarAlliance/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
             <a href="https://www.twitter.com/" class="twitter" target="_blank"><i class="bi bi-twitter"></i></a>
             <a href="https://www.instagram.com/" class="instagram" target="_blank"><i class="bi bi-instagram"></i></a>
-            <a href="https://www.linkedin.com/" class="linkedin" target="_blank"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.linkedin.com/company/internationalsolaralliance/?originalSubdomain=in" class="linkedin" target="_blank"><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
 
