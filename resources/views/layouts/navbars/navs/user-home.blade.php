@@ -7,6 +7,9 @@ foreach($config_details as $details){
 }
 $is_demo = env('IS_DEMO');
 $app_name = env('APP_NAME');
+if(empty($activePage)){
+$activePage = 'ISA-RRR';
+}
 @endphp
 <!-- Navbar -->
 <!--nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top "-->
@@ -41,6 +44,11 @@ $app_name = env('APP_NAME');
 	<li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
             <i class="material-icons">list</i> {{ __('Collections') }}
+          </a>
+        </li>
+	<li class="nav-item{{ $activePage == 'Blog' ? ' active' : '' }}">
+          <a href="/en/blog" class="nav-link">
+            <i class="material-icons">rss_feed</i> {{ __('Blog') }}
           </a>
         </li>
         <li class="nav-item{{ $activePage == 'documents' ? ' active' : '' }}">
