@@ -97,19 +97,7 @@
           <li class="mobile-only"><a href="/abouts">About Repository</a></li>
           <li class="mobile-only"><a href="javascript:void(0)">FAQs</a></li>
           <li class="mobile-only"><a href="/contact">Contact Us</a></li>
-	    <a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a>
- 	    <a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomies') }}</a>
- 	    <a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a>
- 	
-	    <!--
-            <div class="dropdown-divider"></div>
-	   -->
-			@if(empty(env('SAML2_SLS')))
-            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a>
-			@else
-            <a class="dropdown-item" href="{{ env('SAML2_SLS') }}">{{ __('Log out') }}</a>
-			@endif
-          <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->
+	        <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->
           <li class="mega-menu">
             <a href="javascript:void(0)">
               <i class="js-mega-menu mega-menu-icon bi-list"></i>
