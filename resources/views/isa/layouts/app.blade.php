@@ -1,3 +1,4 @@
+session_start();
 <!DOCTYPE html>
 <html lang="en">
 
@@ -108,7 +109,7 @@
                 <div class="row">
                   <div class="col-lg-6">
                     <ul class="mega-menu-ul">
-                    @if(empty(env('isa')))
+                    @if (isset($_SESSION['user_id']))
                     <li><a href="/">{{ __('Log out') }}</a></li>
 			              @else
                     <li><a href="login">Login | Register</a></li>
