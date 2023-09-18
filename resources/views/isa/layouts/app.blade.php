@@ -36,8 +36,21 @@
 
   <!-- Fonts -->
   <link href="/css/isa/fonts.css" rel="stylesheet">
-  <link href="/css/isa/fonts.css" rel="stylesheet">
   @stack('js') 
+  <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('material') }}/img/apple-icon.png">
+	@if(!empty($settings['favicon_url']))
+    <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon_url']}}">
+	@else
+    <link rel="icon" type="image/png" href="{{ asset('material') }}/img/favicon.png">
+	@endif
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+  
+    <!-- CSS Files -->
+    <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
+    <link href="/css/custom.css" rel="stylesheet" />
+   
+    <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
+    
 </head>
 <body>
   <!-- ======= Header ======= -->
@@ -46,22 +59,21 @@
        <div class="top-bar-link">
         Need a Guide? <a href="#">Start Here.</a>
       </div>
-<div class="social-media-header">
-        <a href="https://www.facebook.com/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="https://twitter.com/" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
-        <a href="https://www.youtube.com/" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
-        <a href="https://in.linkedin.com" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+      <div class="social-media-header">
+        <a href="https://www.facebook.com/InternationalSolarAlliance/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+        <a href="https://twitter.com/isolaralliance" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+        <a href="https://www.youtube.com/@internationalsolaralliance" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+        <a href="https://www.linkedin.com/company/internationalsolaralliance/?originalSubdomain=in" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
       </div>
      
     </div>
   </div>
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
-
       <a href="/" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="design/assets/img/logo.png" alt=""> -->
-        <!-- <img src="{{url('design/design/assets/img/site-logo.png')}}"> -->
+        <!-- <img src="/js/isa/img/logo.png" alt=""> -->
+        <!-- <img src="{{url('design//js/isa/img/site-logo.png')}}"> -->
         <img src="/img/isa/img/site-logo.png" alt="Logo">
         <img class="sticke-logo" src="/img/isa/img/site-logo.png" alt="Logo">
         <div class="introduce-text">
@@ -85,7 +97,7 @@
           <li class="mobile-only"><a href="/abouts">About Repository</a></li>
           <li class="mobile-only"><a href="javascript:void(0)">FAQs</a></li>
           <li class="mobile-only"><a href="/contact">Contact Us</a></li>
-          <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->
+	        <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->
           <li class="mega-menu">
             <a href="javascript:void(0)">
               <i class="js-mega-menu mega-menu-icon bi-list"></i>
@@ -94,13 +106,24 @@
             <div class="mega-menu-holder">
               <div class="container">
                 <div class="row">
-                  <div class="col-lg-12">
+                  <div class="col-lg-6">
                     <ul class="mega-menu-ul">
-                      <li><a href="/login">Login | Register</a></li>
+                    @if(empty(env('isa')))
+                    <li><a href="/">{{ __('Log out') }}</a></li>
+			              @else
+                    <li><a href="login">Login | Register</a></li>
+			              @endif
                       <li><a href="/about">About Repository</a></li>
                       <li><a href="javascript:void(0)">FAQs</a></li>
                       <li><a href="/feedback">Feedback</a></li>
                       <li><a href="/contacts">Contact Us</a></li>
+                    </ul>
+                  </div>
+                  <div class="col-lg-6">
+                    <ul class="mega-menu-ul">
+                      <li><a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomies') }}</a></li>
                     </ul>
                   </div>
                 </div>
@@ -112,10 +135,13 @@
     </div>
   </header><!-- End Header -->
   <!-- End Header -->
+
+</div>
+<div class="container">
+<div class="container-fluid">
 @yield('content')
 </div>
-
-
+</div>
 
 
   <!-- ======= Footer ======= -->
@@ -129,10 +155,10 @@
           </a>
           <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
           <div class="social-links d-flex mt-4">
-            <a href="https://www.facebook.com/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.facebook.com/InternationalSolarAlliance/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
             <a href="https://www.twitter.com/" class="twitter" target="_blank"><i class="bi bi-twitter"></i></a>
             <a href="https://www.instagram.com/" class="instagram" target="_blank"><i class="bi bi-instagram"></i></a>
-            <a href="https://www.linkedin.com/" class="linkedin" target="_blank"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.linkedin.com/company/internationalsolaralliance/?originalSubdomain=in" class="linkedin" target="_blank"><i class="bi bi-linkedin"></i></a>
           </div>
         </div>
 
@@ -140,7 +166,7 @@
           <h4>Quick Links</h4>
           <ul>
             <li><a href="/">Home</a></li>
-            <li><a href="#">About Repository</a></li>
+            <li><a href="/about">About Repository</a></li>
             <li><a href="/collection/1">Database</a></li>
             <li><a href="#">Terms of Service</a></li>
             <li><a href="#">Privacy policy</a></li>
@@ -182,5 +208,19 @@
 
   </footer><!-- End Footer -->
   <!-- End Footer -->
+  <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+<div id="preloader"></div>
+
+<!-- Vendor JS Files -->
+<script src="/css/isa/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/css/isa/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="/css/isa/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="/css/isa/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="/css/isa/vendor/aos/aos.js"></script>
+<script src="/css/isa/vendor/php-email-form/validate.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
+<!-- Template Main JS File -->
+<script src="/js/isa/main.js"></script>
 </body>
 </html>
