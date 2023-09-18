@@ -135,7 +135,12 @@
     </div>
   </header><!-- End Header -->
   <!-- End Header -->
+
+</div>
+<div class="container">
+<div class="container-fluid">
 @yield('content')
+</div>
 </div>
 
 
