@@ -106,13 +106,24 @@
             <div class="mega-menu-holder">
               <div class="container">
                 <div class="row">
-                  <div class="col-lg-12">
+                  <div class="col-lg-6">
                     <ul class="mega-menu-ul">
-                      <li><a href="/login">Login | Register</a></li>
+                    @if(empty(env('isa')))
+                    <li><a href="/">{{ __('Log out') }}</a></li>
+			              @else
+                    <li><a href="login">Login | Register</a></li>
+			              @endif
                       <li><a href="/about">About Repository</a></li>
                       <li><a href="javascript:void(0)">FAQs</a></li>
                       <li><a href="/feedback">Feedback</a></li>
                       <li><a href="/contacts">Contact Us</a></li>
+                    </ul>
+                  </div>
+                  <div class="col-lg-6">
+                    <ul class="mega-menu-ul">
+                      <li><a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomies') }}</a></li>
                     </ul>
                   </div>
                 </div>
