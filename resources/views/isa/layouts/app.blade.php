@@ -1,4 +1,4 @@
-session_start();
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -109,11 +109,11 @@ session_start();
                 <div class="row">
                   <div class="col-lg-6">
                     <ul class="mega-menu-ul">
-                    @if (isset($_SESSION['user_id']))
-                    <li><a href="/">{{ __('Log out') }}</a></li>
-			              @else
-                    <li><a href="login">Login | Register</a></li>
-			              @endif
+                    @if(Auth::check())
+                    <li><a href="social.login">{{ __('Logout') }}</a></li>
+                    @else
+                      <li><a href="/login">Login | Register</a></li>
+                    @endif
                       <li><a href="/about">About Repository</a></li>
                       <li><a href="javascript:void(0)">FAQs</a></li>
                       <li><a href="/feedback">Feedback</a></li>
@@ -122,9 +122,12 @@ session_start();
                   </div>
                   <div class="col-lg-6">
                     <ul class="mega-menu-ul">
+                    @if(Auth::check() && Auth::user()->hasRole('admin'))
                       <li><a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
-                      <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomies') }}</a></li>
+                      <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomy') }}</a></li>
+                      @endif
                     </ul>
                   </div>
                 </div>
@@ -136,12 +139,12 @@ session_start();
     </div>
   </header><!-- End Header -->
   <!-- End Header -->
+</div>
 
-</div>
 <div class="container">
-<div class="container-fluid">
-@yield('content')
-</div>
+  <div class="container-fluid">
+    @yield('content')
+  </div>
 </div>
 
 
@@ -163,7 +166,7 @@ session_start();
           </div>
         </div>
 
-        <div class="col-lg-3 col-md-6 col-5 footer-links">
+        <div class="col-lg-3 col-md-6 col-5 footer-contact text-md-start">
           <h4>Quick Links</h4>
           <ul>
             <li><a href="/">Home</a></li>
@@ -173,18 +176,7 @@ session_start();
             <li><a href="#">Privacy policy</a></li>
           </ul>
         </div>
-
-        <!-- <div class="col-lg-2 col-6 footer-links">
-          <h4>News & Updates</h4>
-          <ul>
-            <li><a href="#">Heading</a></li>
-            <li><a href="#">Heading</a></li>
-            <li><a href="#">Heading</a></li>
-            <li><a href="#">Heading</a></li>
-            <li><a href="#">Heading</a></li>
-          </ul>
-        </div> -->
-
+        
         <div class="col-lg-4 col-md-6 col-7 footer-contact text-md-start">
           <h4>Contact Us</h4>
           <p>
