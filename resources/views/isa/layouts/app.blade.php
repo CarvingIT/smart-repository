@@ -90,7 +90,7 @@
           <li class="dropdown">
             <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
-              <li><a href="javascript:void(0)">Opinions</a></li>
+              <li><a href="/en/blog">Opinions</a></li>
               <li><a href="javascript:void(0)">Link 2 (tbd)</a></li>
             </ul>
           </li>
