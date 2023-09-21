@@ -128,7 +128,7 @@ Default checkbox
 <div class="row gy-4 pricing-item" data-aos-delay="100">
 	@if(!empty($results))
 	@foreach($results as $result)
-<p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
+<p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
 		{{-- $result->text_content --}}
 		{{ \Illuminate\Support\Str::limit($result->text_content, 250, $end='...') }}
 		</p>

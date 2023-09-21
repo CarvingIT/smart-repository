@@ -1333,16 +1333,24 @@ use App\UrlSuppression;
 	}
 
 	public function isaCollectionDocumentSearch(Request $request){
-		//echo "SKK";exit;
 		$search = $request->isa_search_parameter;
 		$collection_id = $request->collection_id;
-		//echo $search; exit;
-		$results = [];
-		$results = Document::where('collection_id',$collection_id)
-			->where('title','LIKE','%'.$search.'%')
-			->orWhere('text_content','LIKE','%'.$search.'%')
-			->get();
-        	$collection = Collection::find($collection_id);
+		
+		$collection = \App\Collection::find($request->collection_id);
+                if($collection->content_type == 'Uploaded documents'){
+                $documents = \App\Document::where('collection_id', $request->collection_id);
+                        if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
+                                // user can not view any document; just their own
+                                $documents = $documents->where('created_by', \Auth::user()->id);
+                        }
+                }
+                else{
+                $documents = \App\Url::where('collection_id', $request->collection_id);
+                }
+		
+	        $documents = $documents->search($search);
+
+		$results = $documents->get();
 		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents']);
 
 	}
