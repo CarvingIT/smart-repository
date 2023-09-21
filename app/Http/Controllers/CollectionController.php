@@ -18,6 +18,7 @@ use App\CollectionMailbox;
 use App\UserPermission;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\DocumentApproval;
+use App\Document;
 
 class CollectionController extends Controller
 {
@@ -1329,6 +1330,29 @@ use App\UrlSuppression;
         	else{
         		return [];
         	}
+	}
+
+	public function isaCollectionDocumentSearch(Request $request){
+		$search = $request->isa_search_parameter;
+		$collection_id = $request->collection_id;
+		
+		$collection = \App\Collection::find($request->collection_id);
+                if($collection->content_type == 'Uploaded documents'){
+                $documents = \App\Document::where('collection_id', $request->collection_id);
+                        if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
+                                // user can not view any document; just their own
+                                $documents = $documents->where('created_by', \Auth::user()->id);
+                        }
+                }
+                else{
+                $documents = \App\Url::where('collection_id', $request->collection_id);
+                }
+		
+	        $documents = $documents->search($search);
+
+		$results = $documents->get();
+		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents']);
+
 	}
 
 //Class Ends

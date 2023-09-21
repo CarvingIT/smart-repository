@@ -59,11 +59,14 @@
 			<div class="col-2 text-right">
 </div>
 
+		<form name="isa_search" action="/documents/isa_document_search" method="">
+		@csrf
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Start typing to initiate search within the document content') }}</label>
-		    <input type="text" class="search-field" id="collection_search" />
+		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" />
+		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}"/>
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -72,9 +75,11 @@
 		   </div>
 		   </div>
 		   <div class="col-12 text-center">
-           <!--<i class="material-icons">search</i>-->
+           		<!--<i class="material-icons">search</i>-->
+			<input type="submit" value="Search" name="isa_search" class="btn btn-sm btn-primary">
 		   </div>
 		</div>
+		</form>
 
 		</div>
 
@@ -121,6 +126,17 @@ Default checkbox
 
 	  <div class="col-lg-9">
 <div class="row gy-4 pricing-item" data-aos-delay="100">
+	@if(!empty($results))
+	@foreach($results as $result)
+<p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
+		{{-- $result->text_content --}}
+		{{ \Illuminate\Support\Str::limit($result->text_content, 250, $end='...') }}
+		</p>
+	@endforeach
+	@else
+		{{ __('No results found') }}
+	@endif
+<!--
 <p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
 		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
 		</p>
@@ -137,6 +153,7 @@ Default checkbox
 <p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
 		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
 		</p>
+-->
 	 
 	</div>
 	   
