@@ -1,7 +1,6 @@
 @extends('layouts.app', ['class' => 'off-canvas-sidebar', 'activePage' => 'dashboard', 'titlePage' => __('Dashboard')])
 
 @section('content')
-  <div class="content">
     <div class="container-fluid">
 
       <div class="row">
@@ -12,7 +11,7 @@
                 <i class="material-icons">content_copy</i>
               </div>
               <p class="card-category">Profile</p>
-              <h3 class="card-category">{{ auth()->user()->name }}
+              <h3 class="card-title">{{ auth()->user()->name }}
 		</h3>
             </div>
             <div class="card-footer">
@@ -42,10 +41,29 @@
           <div class="card card-stats">
             <div class="card-header card-header-danger card-header-icon">
               <div class="card-icon">
-                <i class="material-icons">info_outline</i>
+                <i class="material-icons">rss_feed</i>
               </div>
-              <h4 class="card-title"><a href="/user/{{ auth()->user()->id }}/docs" style="color:#000;">Documents Awaiting Approvals</a></h4>
-              <h3 class="card-category">
+              <p class="card-category">Blogs</p>
+              <h3 class="card-title">{{ count($blogs) }}</h3>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">access_time</i> campaign sent 2 days ago
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+      <div class="col-md-4">
+          <div class="card card-chart">
+            <div class="card-header card-header-warning">
+                <h4 class="card-title">
+			<a href="/user/{{ auth()->user()->id }}/docs" style="color:#000;">Documents Awaiting Approvals</a>
+		</h4>
+            </div>
+            <div class="card-body">
+              <p class="card-category">
 		@foreach (['danger', 'warning', 'success', 'info'] as $msg)
                    @if(Session::has('alert-' . $msg))
                         <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
@@ -55,17 +73,15 @@
                         </div>
                    @endif
                @endforeach
-		@if(!empty($awaiting_count)){{ $awaiting_count }}@endif</h3>
-            </div>
+		@if(!empty($awaiting_count)){{ $awaiting_count }}@else {{ __('No awaiting documents') }} @endif</p>
+	    </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">list</i> <a href="/documents">Total No. Of Documents</a>
+                <i class="material-icons">list</i>Total No. Of Documents
               </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="row">
         <div class="col-md-4">
           <div class="card card-chart">
             <div class="card-header card-header-success">
@@ -80,8 +96,7 @@
             </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">show_chart</i> 
-		<a href="/user/{{ auth()->user()->id }}/docs/approved">View More</a>
+                <i class="material-icons">show_chart</i> View More
               </div>
             </div>
           </div>
@@ -99,30 +114,14 @@
             </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">show_chart</i>
-		<a href="/user/{{ auth()->user()->id }}/docs/unapproved">View More</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      <div class="col-md-4">
-          <div class="card card-chart">
-            <div class="card-header card-header-warning">
-              <h4 class="card-title">Email Subscriptions</h4>
-              <div class="ct-chart" id="websiteViewsChart"></div>
-            </div>
-            <div class="card-body">
-              <p class="card-category">Last Campaign Performance</p>
-            </div>
-            <div class="card-footer">
-              <div class="stats">
-                <i class="material-icons">access_time</i> campaign sent 2 days ago
+                <i class="material-icons">show_chart</i>View More
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="row">
+	<!--
         <div class="col-lg-6 col-md-12">
           <div class="card">
             <div class="card-header card-header-tabs card-header-primary">
@@ -368,7 +367,8 @@
             </div>
           </div>
         </div>
-        <div class="col-lg-6 col-md-12">
+	-->
+        <div class="col-lg-12 col-md-12">
           <div class="card">
             <div class="card-header card-header-warning">
               <h4 class="card-title">Latest Searches</h4>
@@ -414,7 +414,6 @@
         </div>
       </div>
     </div>
-  </div>
 @endsection
 
 @push('js')

@@ -41,7 +41,8 @@ class HomeController extends Controller
 		}
 	}
 	$count = $this->documentsAwaitingApprovalsCount();
-	return view('dashboard',['collections'=>$collections, 'documents'=>$documents,'awaiting_count'=>$count]);
+	$blogs = \App\BinshopsPost::all();
+	return view('dashboard',['collections'=>$collections, 'documents'=>$documents,'awaiting_count'=>$count,'blogs'=>$blogs]);
     }
 
 	public function documentsAwaitingApprovalsCount(){
