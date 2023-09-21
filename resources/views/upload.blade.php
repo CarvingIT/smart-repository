@@ -5,7 +5,7 @@
 <script src="/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script>
+<script type="text/javascript">
 $(document).ready(function() {
     $('.selectsequence').select2();
 });
@@ -177,8 +177,8 @@ tinymce.init({
 				foreach($tags as $t){
 					$children['parent_'.$t->parent_id][] = $t;
 				}
+				 if(!function_exists('getTree')){
 				function getTree($children, $document, $f, $parent_id = null, $parents = null){
-
 					if(empty($children['parent_'.$parent_id])) return;
 					foreach($children['parent_'.$parent_id] as $t){
 							$selected = '';
@@ -194,6 +194,7 @@ tinymce.init({
 								echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
 							}
 					}
+				}
 				}
 			@endphp
         <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple 

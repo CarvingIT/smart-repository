@@ -37,6 +37,14 @@
 
   <!-- Fonts -->
   <link href="/css/isa/fonts.css" rel="stylesheet">
+  <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
+    <link href="/css/custom.css" rel="stylesheet" />
+    <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
+<script src="/js/isa/main.js"></script>
+<!--script src="/js/jquery-3.5.1.js"></script-->
+
   @stack('js') 
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('material') }}/img/apple-icon.png">
 	@if(!empty($settings['favicon_url']))
@@ -94,7 +102,7 @@
           <li class="dropdown">
             <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
-              <li><a href="javascript:void(0)">Opinions</a></li>
+              <li><a href="/en/blog">Opinions</a></li>
               <li><a href="javascript:void(0)">Link 2 (tbd)</a></li>
             </ul>
           </li>
@@ -114,7 +122,6 @@
                     <ul class="mega-menu-ul">
                     @if(Auth::check())
                     <li><a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a></li>
-                    
                     @else
                       <li><a href="/login">Login</a></li>
                     @endif
@@ -213,8 +220,23 @@
 <script src="/css/isa/vendor/swiper/swiper-bundle.min.js"></script>
 <script src="/css/isa/vendor/aos/aos.js"></script>
 <script src="/css/isa/vendor/php-email-form/validate.js"></script>
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
 <!-- Template Main JS File -->
-<script src="/js/isa/main.js"></script>
+<script src="{{ asset('material') }}/js/core/popper.min.js"></script>
+        <script src="{{ asset('material') }}/js/core/bootstrap-material-design.min.js"></script>
+        <script src="{{ asset('material') }}/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+        <!-- Plugin for the momentJs  -->
+        <script src="{{ asset('material') }}/js/plugins/moment.min.js"></script>
+        <!-- Forms Validations Plugin -->
+        <script src="{{ asset('material') }}/js/plugins/jquery.validate.min.js"></script>
+        <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+        <!--script src="{{ asset('material') }}/js/plugins/jquery.bootstrap-wizard.js"></script-->
+        <!--    Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+        <script src="{{ asset('material') }}/js/plugins/bootstrap-selectpicker.js"></script>
+        <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+        <script src="{{ asset('material') }}/js/plugins/bootstrap-datetimepicker.min.js"></script>
+        <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+        <script src="{{ asset('material') }}/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
+        <script src="{{ asset('material') }}/js/settings.js"></script>
+
 </body>
 </html>
