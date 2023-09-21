@@ -18,6 +18,7 @@ use App\CollectionMailbox;
 use App\UserPermission;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\DocumentApproval;
+use App\Document;
 
 class CollectionController extends Controller
 {
@@ -1329,6 +1330,21 @@ use App\UrlSuppression;
         	else{
         		return [];
         	}
+	}
+
+	public function isaCollectionDocumentSearch(Request $request){
+		//echo "SKK";exit;
+		$search = $request->isa_search_parameter;
+		$collection_id = $request->collection_id;
+		//echo $search; exit;
+		$results = [];
+		$results = Document::where('collection_id',$collection_id)
+			->where('title','LIKE','%'.$search.'%')
+			->orWhere('text_content','LIKE','%'.$search.'%')
+			->get();
+        	$collection = Collection::find($collection_id);
+		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents']);
+
 	}
 
 //Class Ends

@@ -80,6 +80,7 @@ Route::get('/collection/{collection_id}/remove-user/{user_id}', 'CollectionContr
 Route::get('/collection/{collection_id}/search', 'CollectionController@search')->middleware('collection_view');
 // search all accessible documents
 Route::get('/documents/search', 'CollectionController@search');
+Route::get('/documents/isa_document_search', 'CollectionController@isaCollectionDocumentSearch');
 
 // Meta information
 Route::get('/collection/{collection_id}/meta', 'CollectionController@metaInformation')->middleware('maintainer');

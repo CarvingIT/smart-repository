@@ -290,7 +290,7 @@ function randomString(length) {
 		   </div>
 		   </div>
 		   <div class="col-12 text-center">
-           <!--<i class="material-icons">search</i>-->
+           <i class="material-icons">search</i>
 		   </div>
 		</div>
 		</div><!-- search-filters-card -->
