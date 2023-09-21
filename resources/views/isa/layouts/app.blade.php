@@ -60,6 +60,18 @@
    
     <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
     
+    <style>
+.text-light {
+
+color: #010a14 !important;
+}
+.text-light strong:hover {
+
+color: #010a14 !important;
+}
+</style>
+
+
 </head>
 <body>
   <!-- ======= Header ======= -->
