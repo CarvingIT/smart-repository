@@ -47,7 +47,7 @@
     <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   
     <!-- CSS Files -->
-    <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
+    <link href="{{ asset('material') }}/css/material-dashboard.css" rel="stylesheet" />
     <link href="/css/custom.css" rel="stylesheet" />
    
     <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
@@ -71,6 +71,9 @@
   </div>
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                @csrf
+            </form>
       <a href="/" class="logo d-flex align-items-center">
         <!-- Uncomment the line below if you also wish to use an image logo -->
         <!-- <img src="/js/isa/img/logo.png" alt=""> -->
@@ -110,9 +113,10 @@
                   <div class="col-lg-6">
                     <ul class="mega-menu-ul">
                     @if(Auth::check())
-                    <li><a href="social.login">{{ __('Logout') }}</a></li>
+                    <li><a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a></li>
+                    
                     @else
-                      <li><a href="/login">Login | Register</a></li>
+                      <li><a href="/login">Login</a></li>
                     @endif
                       <li><a href="/about">About Repository</a></li>
                       <li><a href="javascript:void(0)">FAQs</a></li>
@@ -168,13 +172,12 @@
 
         <div class="col-lg-3 col-md-6 col-5 footer-contact text-md-start">
           <h4>Quick Links</h4>
-          <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/about">About Repository</a></li>
-            <li><a href="/collection/1">Database</a></li>
-            <li><a href="#">Terms of Service</a></li>
-            <li><a href="#">Privacy policy</a></li>
-          </ul>
+          <p><a href="/">Home</a><br>
+            <a href="/about">About Repository</a><br>
+            <a href="/collection/1">Database</a><br>
+            <a href="#">Terms of Service</a><br>
+            <a href="#">Privacy policy</a>
+</p>
         </div>
         
         <div class="col-lg-4 col-md-6 col-7 footer-contact text-md-start">
@@ -188,14 +191,12 @@
             India<br>
             <strong>Tel:</strong> +91 124 362 3090/69<br>
             <strong>Email:</strong> <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a><br>
+            
           </p>
         </div>
-      </div>
-    </div>
-
-    <div class="container mt-2">
-      <div class="copyright">
+       <div class="copyright col-lg-12 col-md-12 col-12 footer-contact ">
         &copy; Copyright <strong><span>ISA</span></strong>. All Rights Reserved
+      </div> 
       </div>
     </div>
 
