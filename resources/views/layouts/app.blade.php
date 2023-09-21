@@ -54,6 +54,7 @@ foreach($config as $c){
         <script src="{{ asset('material') }}/js/settings.js"></script>
 	<!-- overriding css -->
 	<style>
+	@stack('js')
 @php
     $conf = \App\Sysconfig::all();
     $settings = array();
