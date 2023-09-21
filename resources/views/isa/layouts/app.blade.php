@@ -41,9 +41,9 @@
     <link href="/css/custom.css" rel="stylesheet" />
     <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
 <script src="/js/isa/main.js"></script>
 <!--script src="/js/jquery-3.5.1.js"></script-->
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
 
   @stack('js') 
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('material') }}/img/apple-icon.png">
