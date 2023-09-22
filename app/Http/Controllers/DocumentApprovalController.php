@@ -25,7 +25,10 @@ class DocumentApprovalController extends Controller
 	public function saveApprovalStatus(Request $request){
 	   $collection = \App\Collection::find($request->collection_id);
 	   $collection_role_details = json_decode($collection->column_config);
-	   $top_user_role = $collection_role_details->approved_by[2];
+	   $top_user_role_array = $collection_role_details->approved_by;
+           $top_user_role = array_pop($top_user_role_array);	
+//echo $top_user_role;
+//print_r($collection_role_details); exit;
 	
 	   $user_role = auth()->user()->userrole(auth()->user()->id);
 	   $document_id = $request->document_id;
