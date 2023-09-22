@@ -29,11 +29,12 @@ class DocumentController extends Controller
 	$collection = \App\Collection::find($collection_id);
 	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
 
-
-	## New code
-	try{
         $this->recordHit($document_id);
 	$download_file = $this->downloadFile($doc,$storage_drive);
+	## New code
+	try{
+        //$this->recordHit($document_id);
+	//$download_file = $this->downloadFile($doc,$storage_drive);
 	}
 	catch(\Exception $e){
 	}
