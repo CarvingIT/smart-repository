@@ -1348,7 +1348,9 @@ use App\UrlSuppression;
                 $documents = \App\Url::where('collection_id', $request->collection_id);
                 }
 		
+		if(!empty($search)){
 	        $documents = $documents->search($search);
+		}
 
 		$results = $documents->get();
 		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents']);
