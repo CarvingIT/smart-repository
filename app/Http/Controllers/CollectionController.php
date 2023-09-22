@@ -124,7 +124,7 @@ class CollectionController extends Controller
     public function collection($collection_id){
         $collection = Collection::find($collection_id);
         $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-	$documents = $this->approvalFilter($request, $documents);
+	//$documents = $this->approvalFilter($request, $documents);
         return view('isa.collection', ['collection'=>$collection, 'results'=>$documents,'documents'=>$documents, 'activePage'=>'collection','titlePage'=>'Collections', 'title'=>'Smart Repository']);
     }
 
