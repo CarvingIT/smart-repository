@@ -124,7 +124,7 @@ class CollectionController extends Controller
     public function collection($collection_id){
         $collection = Collection::find($collection_id);
         $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-        return view('collection', ['collection'=>$collection, 'documents'=>$documents, 'activePage'=>'collection','titlePage'=>'Collections', 'title'=>'Smart Repository']);
+        return view('isa.collection', ['collection'=>$collection, 'results'=>$documents,'documents'=>$documents, 'activePage'=>'collection','titlePage'=>'Collections', 'title'=>'Smart Repository']);
     }
 
     public function collectionUsers($collection_id){
@@ -487,7 +487,7 @@ class CollectionController extends Controller
     }
 
     // db search (default)
-    public function searchDB($request){
+    public function searchDB(Request $request){
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
@@ -1347,13 +1347,17 @@ use App\UrlSuppression;
                 else{
                 $documents = \App\Url::where('collection_id', $request->collection_id);
                 }
+		$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
 		
+		//$documents = $this->getMetaFilteredDocuments($request, $documents);
+		$documents = $this->approvalFilter($request, $documents);
+
 		if(!empty($search)){
 	        $documents = $documents->search($search);
 		}
 
 		$results = $documents->get();
-		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents']);
+		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents','has_approval'=>$has_approval]);
 
 	}
 
