@@ -4,27 +4,6 @@
 <main id="main">
 
 <!-- ======= Breadcrumbs ======= -->
-<div class="breadcrumbs">
-  <div class="page-header d-flex align-items-center" style="background-image: url('/img/isa/img/page-header.jpg');">
-	<div class="container position-relative">
-	  <div class="row d-flex justify-content-center">
-		<div class="col-lg-6 text-center">
-		  <h2>Search Results</h2>
-		  <p>Quasi ratione sint. Sit quaerat ipsum dolorem.</p>
-		</div>
-	  </div>
-	</div>
-  </div>
-  <nav>
-	<div class="container">
-	  <ol>
-		<li><a href="/">Home</a></li>
-		<li>Search Results</li>
-	  </ol>
-	</div>
-  </nav>
-</div>
-
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
