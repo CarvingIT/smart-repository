@@ -30,7 +30,7 @@
             <div class="card">
 		<div class="card-header card-header-primary">
                 <h4 class="card-title ">
-            	@if(env('ENABLE_COLLECTION_LIST') == 1)<a href="/collections">{{ __('Collections') }}</a> ::@endif {{ $collection->name }}
+            	{{ __('Database') }}
 				</h4>
             </div>
 <div class="card-body">
