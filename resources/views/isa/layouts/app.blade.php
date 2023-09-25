@@ -1,15 +1,12 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
   <title>ISA - international solar alliance</title>
   <meta content="" name="description">
   <meta content="" name="keywords">
-
   <!-- Favicons -->
   <link rel="apple-touch-icon" sizes="180x180" href="/css/isa/img/favicon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/css/isa/img/favicon/favicon-32x32.png">
@@ -17,12 +14,10 @@
   <link rel="manifest" href="/css/isa/img/favicon/site.webmanifest">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
-
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-
   <!-- Vendor CSS Files -->
   <link href="/css/isa/material/css/material-dashboard.css" rel="stylesheet">
   <link href="/css/isa/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
@@ -39,40 +34,37 @@
   <!-- Fonts -->
   <link href="/css/isa/fonts.css" rel="stylesheet">
   <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
-    <link href="/css/custom.css" rel="stylesheet" />
-    <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
-    <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
-<script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
-<script src="/js/isa/main.js"></script>
-<!--script src="/js/jquery-3.5.1.js"></script-->
+  <link href="/css/custom.css" rel="stylesheet" />
+  <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
+  <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
+  <script src="/js/isa/main.js"></script>
+  <!--script src="/js/jquery-3.5.1.js"></script-->
 
   @stack('js') 
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('material') }}/img/apple-icon.png">
 	@if(!empty($settings['favicon_url']))
-    <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon_url']}}">
+  <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon_url']}}">
 	@else
-    <link rel="icon" type="image/png" href="{{ asset('material') }}/img/favicon.png">
+  <link rel="icon" type="image/png" href="{{ asset('material') }}/img/favicon.png">
 	@endif
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
+  <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   
-    <!-- CSS Files -->
-    <link href="{{ asset('material') }}/css/material-dashboard.css" rel="stylesheet" />
-    <link href="/css/custom.css" rel="stylesheet" />
-   
-    <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
+  <!-- CSS Files -->
+  <link href="{{ asset('material') }}/css/material-dashboard.css" rel="stylesheet" />
+  <link href="/css/custom.css" rel="stylesheet" />
+  <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
     
     <style>
-.text-light {
+        .text-light {
 
-color: #010a14 !important;
-}
-.text-light strong:hover {
+        color: #010a14 !important;
+        }
+        .text-light strong:hover {
 
-color: #010a14 !important;
-}
-</style>
-
-
+        color: #010a14 !important;
+        }
+    </style>
 </head>
 <body>
   <!-- ======= Header ======= -->
@@ -87,18 +79,14 @@ color: #010a14 !important;
         <a href="https://www.youtube.com/@internationalsolaralliance" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
         <a href="https://www.linkedin.com/company/internationalsolaralliance/?originalSubdomain=in" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
       </div>
-     
     </div>
   </div>
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl d-flex align-items-center justify-content-between">
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                @csrf
-            </form>
-      <a href="/" class="logo d-flex align-items-center">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="/js/isa/img/logo.png" alt=""> -->
-        <!-- <img src="{{url('design//js/isa/img/site-logo.png')}}"> -->
+    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+      @csrf
+    </form>
+    <a href="/" class="logo d-flex align-items-center">
         <img src="/img/isa/img/site-logo.png" alt="Logo">
         <img class="sticke-logo" src="/img/isa/img/site-logo.png" alt="Logo">
         <div class="introduce-text">
@@ -148,13 +136,13 @@ color: #010a14 !important;
                     <ul class="mega-menu-ul">
                     @if(Auth::check())
                       <li><a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a></li>
-		    @endif		
+		                @endif		
                     @if(Auth::check() && Auth::user()->hasRole('admin'))
                       <li><a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomy') }}</a></li>
-                      @endif
+                    @endif
                     </ul>
                   </div>
                 </div>
@@ -167,17 +155,13 @@ color: #010a14 !important;
   </header><!-- End Header -->
   <!-- End Header -->
 </div>
-
 <div class="container">
   <div class="container-fluid">
     @yield('content')
   </div>
 </div>
-
-
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
-
     <div class="container">
       <div class="row gy-2">
         <div class="col-lg-5 col-md-12 footer-info">
@@ -200,7 +184,7 @@ color: #010a14 !important;
             <a href="/collection/1">Database</a><br>
             <a href="#">Terms of Service</a><br>
             <a href="#">Privacy policy</a>
-</p>
+          </p>
         </div>
         
         <div class="col-lg-4 col-md-6 col-7 footer-contact text-md-start">
@@ -214,7 +198,6 @@ color: #010a14 !important;
             India<br>
             <strong>Tel:</strong> +91 124 362 3090/69<br>
             <strong>Email:</strong> <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a><br>
-            
           </p>
         </div>
        <div class="copyright col-lg-12 col-md-12 col-12 footer-contact ">
@@ -222,13 +205,11 @@ color: #010a14 !important;
       </div> 
       </div>
     </div>
-
   </footer><!-- End Footer -->
   <!-- End Footer -->
   <a href="#" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 
 <div id="preloader"></div>
-
 <!-- Vendor JS Files -->
 <script src="/css/isa/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/css/isa/vendor/purecounter/purecounter_vanilla.js"></script>
@@ -238,21 +219,20 @@ color: #010a14 !important;
 <script src="/css/isa/vendor/php-email-form/validate.js"></script>
 <!-- Template Main JS File -->
 <script src="{{ asset('material') }}/js/core/popper.min.js"></script>
-        <script src="{{ asset('material') }}/js/core/bootstrap-material-design.min.js"></script>
-        <script src="{{ asset('material') }}/js/plugins/perfect-scrollbar.jquery.min.js"></script>
-        <!-- Plugin for the momentJs  -->
-        <script src="{{ asset('material') }}/js/plugins/moment.min.js"></script>
-        <!-- Forms Validations Plugin -->
-        <script src="{{ asset('material') }}/js/plugins/jquery.validate.min.js"></script>
-        <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
-        <!--script src="{{ asset('material') }}/js/plugins/jquery.bootstrap-wizard.js"></script-->
-        <!--    Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
-        <script src="{{ asset('material') }}/js/plugins/bootstrap-selectpicker.js"></script>
-        <!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
-        <script src="{{ asset('material') }}/js/plugins/bootstrap-datetimepicker.min.js"></script>
-        <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
-        <script src="{{ asset('material') }}/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
-        <script src="{{ asset('material') }}/js/settings.js"></script>
-
+<script src="{{ asset('material') }}/js/core/bootstrap-material-design.min.js"></script>
+<script src="{{ asset('material') }}/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+<!-- Plugin for the momentJs  -->
+<script src="{{ asset('material') }}/js/plugins/moment.min.js"></script>
+<!-- Forms Validations Plugin -->
+<script src="{{ asset('material') }}/js/plugins/jquery.validate.min.js"></script>
+<!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+<!--script src="{{ asset('material') }}/js/plugins/jquery.bootstrap-wizard.js"></script-->
+<!--    Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
+<script src="{{ asset('material') }}/js/plugins/bootstrap-selectpicker.js"></script>
+<!--  Plugin for the DateTimePicker, full documentation here: https://eonasdan.github.io/bootstrap-datetimepicker/ -->
+<script src="{{ asset('material') }}/js/plugins/bootstrap-datetimepicker.min.js"></script>
+<!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="{{ asset('material') }}/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
+<script src="{{ asset('material') }}/js/settings.js"></script>
 </body>
 </html>
