@@ -124,7 +124,8 @@ class CollectionController extends Controller
     public function collection($collection_id){
         $collection = Collection::find($collection_id);
         $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-        return view('collection', ['collection'=>$collection, 'documents'=>$documents, 'activePage'=>'collection','titlePage'=>'Collections', 'title'=>'Smart Repository']);
+	$documents = $this->approvalFilter($collection_id, $documents);
+        return view('isa.collection', ['collection'=>$collection, 'results'=>$documents,'documents'=>$documents, 'activePage'=>'collection','titlePage'=>'Collections', 'title'=>'Smart Repository']);
     }
 
     public function collectionUsers($collection_id){
@@ -436,7 +437,7 @@ class CollectionController extends Controller
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
 	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
-	//$documents = $this->approvalFilter($request, $documents);
+	//$documents = $this->approvalFilter($request->collection_id, $documents);
 	//$documents = $documents->get();
 	$filtered_count = $documents->count(); 
 
@@ -487,7 +488,7 @@ class CollectionController extends Controller
     }
 
     // db search (default)
-    public function searchDB($request){
+    public function searchDB(Request $request){
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
@@ -544,7 +545,7 @@ class CollectionController extends Controller
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
 	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
-	$documents = $this->approvalFilter($request, $documents);
+	$documents = $this->approvalFilter($request->collection_id, $documents);
 	$filtered_count = $documents->count(); //- count($approval_exceptions);
 
         if(!empty($request->embedded)){ 		
@@ -603,8 +604,8 @@ class CollectionController extends Controller
         return json_encode($results, JSON_UNESCAPED_UNICODE);
     }
 
-    private function approvalFilter($request, $documents){
-		if(empty($request->collection_id)){ // this is a search within all documents
+    private function approvalFilter($collection_id, $documents){
+		if(empty($collection_id)){ // this is a search within all documents
 			// approved where approval is needed
 			$documents = $documents
 			->where(function($query){
@@ -623,7 +624,7 @@ class CollectionController extends Controller
 			});
 			return $documents;
 		}
-		$collection = Collection::find($request->collection_id);
+		$collection = Collection::find($collection_id);
 		if($collection->content_type == 'Web resources'){
 			// all
 			return $documents;
@@ -1337,6 +1338,7 @@ use App\UrlSuppression;
 		$collection_id = $request->collection_id;
 		
 		$collection = \App\Collection::find($request->collection_id);
+		//print_r($collection->content_type); exit;
                 if($collection->content_type == 'Uploaded documents'){
                 $documents = \App\Document::where('collection_id', $request->collection_id);
                         if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
@@ -1347,11 +1349,17 @@ use App\UrlSuppression;
                 else{
                 $documents = \App\Url::where('collection_id', $request->collection_id);
                 }
+		$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
 		
+		//$documents = $this->getMetaFilteredDocuments($request, $documents);
+		$documents = $this->approvalFilter($collection_id, $documents);
+
+		if(!empty($search)){
 	        $documents = $documents->search($search);
+		}
 
 		$results = $documents->get();
-		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents']);
+		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents','has_approval'=>$has_approval]);
 
 	}
 

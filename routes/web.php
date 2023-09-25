@@ -81,6 +81,7 @@ Route::get('/collection/{collection_id}/search', 'CollectionController@search')-
 // search all accessible documents
 Route::get('/documents/search', 'CollectionController@search');
 Route::get('/documents/isa_document_search', 'CollectionController@isaCollectionDocumentSearch');
+//Route::get('/documents/isa_document_search', 'CollectionController@searchDB');
 
 // Meta information
 Route::get('/collection/{collection_id}/meta', 'CollectionController@metaInformation')->middleware('maintainer');

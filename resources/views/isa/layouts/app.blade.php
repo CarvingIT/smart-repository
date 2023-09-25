@@ -145,6 +145,9 @@ color: #010a14 !important;
                   </div>
                   <div class="col-lg-6">
                     <ul class="mega-menu-ul">
+                    @if(Auth::check())
+                      <li><a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a></li>
+		    @endif		
                     @if(Auth::check() && Auth::user()->hasRole('admin'))
                       <li><a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a></li>

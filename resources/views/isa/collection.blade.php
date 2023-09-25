@@ -9,7 +9,7 @@
             <div class="card">
 		<div class="card-header card-header-primary">
                 <h4 class="card-title ">
-            	@if(env('ENABLE_COLLECTION_LIST') == 1)<a href="/collections">{{ __('Collections') }}</a> ::@endif {{ $collection->name }}
+            	{{ __('Database') }}
 				</h4>
             </div>
 <div class="card-body">
@@ -33,7 +33,7 @@
 </div>
 	
 			<div class="col-10">
-            <p>{{ $collection->description }}</p>
+            <p>{{-- $collection->description --}}</p>
 			</div>
 			<div class="col-2 text-right">
 </div>
@@ -43,7 +43,7 @@
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Start typing to initiate search within the document content') }}</label>
+			<label for="collection_search">{{ __('Enter search keyword') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" />
 		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}"/>
 			<style>
@@ -107,7 +107,7 @@ Default checkbox
 <div class="row gy-4 pricing-item" data-aos-delay="100">
 	@if(!empty($results))
 	@foreach($results as $result)
-<p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
+<p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
 		{{-- $result->text_content --}}
 		{{ \Illuminate\Support\Str::limit($result->text_content, 250, $end='...') }}
 		</p>
