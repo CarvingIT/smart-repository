@@ -10,11 +10,10 @@ class BotManController extends Controller
     /**
      * Place your BotMan logic here.
      */
-    public function handle()
+    public function handle(Request $req)
     {
         $botman = app('botman');
-        $botman->hears('{message}', function($botman, $message) {
-
+        $botman->hears('{message}', function($botman, $req, $message) {
             if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
                 $this->askName($botman);
             }
@@ -22,7 +21,7 @@ class BotManController extends Controller
 				$this->themeInfo($botman);
 			}
 			else if($message == 2){
-				$this->search($botman);
+				$this->search($botman, $req);
 			}
 			else{
                 $botman->reply("I understand these instructions <br/> 1. Information about themes and sub-themes <br /> 2. Search the repository with keywords. <br/> (Type in just the number and press enter.)");
@@ -44,11 +43,35 @@ class BotManController extends Controller
         });
     }
 
-    public function search($botman)
+    public function search($botman, $req)
     {
-        $botman->ask('Enter search keywords', function(Answer $answer) {
+        $botman->ask('Enter search keywords', function(Answer $answer, $req) {
             $keywords = $answer->getText();
-            $this->say('You entered '.$keywords.'.');
+			$client = new \GuzzleHttp\Client();
+			$http_host = request()->getHttpHost();
+			$protocol = request()->getScheme();
+			$endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.urlencode($keywords);
+			//$this->say($endpoint);
+			// /api/collection/1/search?search[value]=
+			$res = $client->get($endpoint);
+			//$res = $http_req->send();
+			$status_code = $res->getStatusCode();
+			if($status_code == 200){
+				$body = $res->getBody();
+				$documents_array = json_decode($body);
+				$botman_results = '';
+				$botman_results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
+				$botman_results .= '<br/>Listing 10 most relevant here.<br/>';
+				
+				foreach($documents_array->data as $d){
+					$botman_results .= '<a href="/collection/1/document/'.$d->id.'">'.$d->title.'</a><br />';
+				}
+				$this->say($botman_results.'');
+				//$this->say($body.'');
+			}else{
+				$this->say('There was some error. Please try again.');
+			}
+            //$this->say('You entered '.$keywords.'.');
         });
     }
 
