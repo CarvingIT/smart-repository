@@ -47,10 +47,29 @@ class DocumentSaved
 			}
 		}
 
-	    // Update elasticsearch index
-	    $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
-	    $hosts = explode(",",$elastic_hosts);
-	    $client = ClientBuilder::create()->setHosts($hosts)->build();
+	    // Update elasticsearch index 
+		// if collection requires approval and the document is not approved, don't update the elastic index
+		// also attempt to remove this particular record from elastic index
+       	$elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+       	$hosts = explode(",",$elastic_hosts);
+       	$client = ClientBuilder::create()->setHosts($hosts)->build();
+		if($event->document->collection->require_approval == 1 && 
+			empty($event->document->approved_on)){
+			// don't update the elastic index
+			// remove the record
+        	$params = [
+            	'index'=>'sr_documents',
+            	'id'=>$event->document->id
+        	];
+        	try{
+        	$response = $client->delete($params);
+        	Log::info('Removed document from Elastic index', $response);
+        	}
+        	catch(\Exception $e){
+            	Log::warning($e->getMessage());
+        	}
+		}
+		else{
             $body = $event->document->toArray();
             $body['collection_id'] = $event->document->collection->id;
             $params = [
@@ -58,12 +77,13 @@ class DocumentSaved
                 'id'    => $event->document->id,
                 'body'  => $body
             ];
-	    try{
-            $response = $client->index($params);
-	    	Log::info('Elastic index updated', $response);
-	    }
-	    catch(\Exception $e){
-	    	Log::warning($e->getMessage());
-	    }
+	    	try{
+            	$response = $client->index($params);
+	    		Log::info('Elastic index updated', $response);
+	    	}
+	    	catch(\Exception $e){
+	    		Log::warning($e->getMessage());
+	    	}
+		}
     }
 }
