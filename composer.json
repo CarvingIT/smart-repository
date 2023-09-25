@@ -12,6 +12,8 @@
         "aacotroneo/laravel-saml2": "^2.1",
         "alexusmai/laravel-file-manager": "^2.5",
         "binshops/laravel-blog": "^9.3",
+        "botman/botman": "^2.8",
+        "botman/driver-web": "^1.5",
         "creativeorange/gravatar": "~1.0",
         "doctrine/dbal": "^2.0",
         "dragomirt/pdf-to-text": "^1.5",
