@@ -45,7 +45,8 @@ class BotManController extends Controller
 
     public function search($botman, $req)
     {
-        $botman->ask('Enter search keywords', function(Answer $answer, $req) {
+        //$botman->ask('Enter search keywords', $botSearch = function(Answer $answer, $req) {
+        $botSearch = function(Answer $answer, $req) use (&$botSearch){
             $keywords = $answer->getText();
 			$client = new \GuzzleHttp\Client();
 			$http_host = request()->getHttpHost();
@@ -60,19 +61,27 @@ class BotManController extends Controller
 				$body = $res->getBody();
 				$documents_array = json_decode($body);
 				$botman_results = '';
-				$botman_results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
-				$botman_results .= '<br/>Listing 10 most relevant here.<br/>';
+				if(count($documents_array->data) == 0){
+					$botman_results .= "Did not find any documents matching your search. Press 2 to search again.";
+				}
+				else if(count($documents_array->data) > 10){
+					$botman_results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
+				}
+				else{
+					$botman_results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
+					$botman_results .= '<br/>Listing 10 most relevant here.<br/>';
+				}
 				
 				foreach($documents_array->data as $d){
 					$botman_results .= '<a href="/collection/1/document/'.$d->id.'">'.$d->title.'</a><br />';
 				}
 				$this->say($botman_results.'');
-				//$this->say($body.'');
 			}else{
 				$this->say('There was some error. Please try again.');
 			}
             //$this->say('You entered '.$keywords.'.');
-        });
+        };
+		$botman->ask('Enter search keywords', $botSearch);
     }
 
 	public function themeInfo($botman){
