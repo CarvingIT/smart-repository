@@ -105,8 +105,8 @@
           <div class="card card-chart">
             <div class="card-header card-header-danger">
               <h4 class="card-title">
-		<a href="/user/{{ auth()->user()->id }}/docs/unapproved">UnApproved Documents</a>
-	      </h4>
+		        <a href="/user/{{ auth()->user()->id }}/docs/unapproved">UnApproved Documents</a>
+	          </h4>
               <!--div class="ct-chart" id="completedTasksChart"></div-->
             </div>
             <div class="card-body">
@@ -119,6 +119,69 @@
             </div>
           </div>
         </div>
+        <div class="col-md-4">
+          <div class="card card-chart">
+            <div class="card-header card-header-warning">
+                <h4 class="card-title">
+			<a href="/user/{{ auth()->user()->id }}/docs" style="color:#000;">Add New Documents</a>
+		</h4>
+            </div>
+            <div class="card-body">
+              <p class="card-category">
+		@foreach (['danger', 'warning', 'success', 'info'] as $msg)
+                   @if(Session::has('alert-' . $msg))
+                        <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
+                                <div class="mt-6 text-gray-900 leading-7 font-semibold ">
+                                        <span @if($msg == 'danger') style="color:red" @endif>{{ Session::get('alert-' . $msg) }}</span>
+                                </div>
+                        </div>
+                   @endif
+               @endforeach
+		@if(!empty($awaiting_count)){{ $awaiting_count }}@else {{ __('No awaiting documents') }} @endif</p>
+	    </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">list</i>Total No. Of Documents
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-chart">
+            <div class="card-header card-header-success">
+              <h4 class="card-title">
+		<a href="/user/{{ auth()->user()->id }}/docs/post">My Posts</a>
+              </h4>
+              <!--div class="ct-chart" id="dailySalesChart"></div-->
+            </div>
+            <div class="card-body">
+              <p class="card-category">
+                <span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">show_chart</i> View More
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card card-chart">
+            <div class="card-header card-header-danger">
+              <h4 class="card-title">
+		<a href="/user/{{ auth()->user()->id }}/docs/download">Download Documents</a>
+	      </h4>
+              <!--div class="ct-chart" id="completedTasksChart"></div-->
+            </div>
+            <div class="card-body">
+              <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">show_chart</i>View More
+              </div>
+            </div>
+          </div>
       </div>
       <div class="row">
 	<!--
