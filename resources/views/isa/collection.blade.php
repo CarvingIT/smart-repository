@@ -1,7 +1,27 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
 
+
 @section('content')
 <main id="main">
+@php
+	$search_query = Request::get('isa_search_parameter');
+function getTree($children, $parent_id = null){
+         if(empty($children['parent_'.$parent_id])) return;
+         foreach($children['parent_'.$parent_id] as $t){
+         $checked = '';
+	 if(in_array($t->id,Request::get('taxonomy_id'))){
+		$checked = 'checked';
+	 }
+             if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
+                  echo '<input type="checkbox" value="'.$t->id.'" name="taxonomy_id[]" onChange="this.form.submit();"'.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+                  getTree($children, $t->id);
+             }
+             else{
+                  echo '<input type="checkbox" value="'.$t->id.'" name="taxonomy_id[]" onChange="this.form.submit();"'.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp; &nbsp;&nbsp;'.$t->label.'</label><br />';
+             }
+         }
+}
+@endphp
 
 <!-- ======= Breadcrumbs ======= -->
     <div class="row justify-content-center">
@@ -38,13 +58,13 @@
 			<div class="col-2 text-right">
 </div>
 
-		<form name="isa_search" action="/documents/isa_document_search" method="">
+		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
 		@csrf
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keyword') }}</label>
-		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" />
+		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
 		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}"/>
 			<style>
 			.dataTables_filter {
@@ -58,7 +78,7 @@
 			<input type="submit" value="Search" name="isa_search" class="btn btn-sm btn-primary">
 		   </div>
 		</div>
-		</form>
+		<!--/form-->
 
 		</div>
 
@@ -74,25 +94,26 @@
 		<div class="services-list">
 		  <a href="#" class="active">By Country</a>
 <div class="form-check">
+<!--
 <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
 <label class="form-check-label" for="flexCheckDefault">
 Default checkbox
 </label>
-<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-<label class="form-check-label" for="flexCheckDefault">
-Default checkbox
-</label>
-<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-<label class="form-check-label" for="flexCheckDefault">
-Default checkbox
-</label>
-<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-<label class="form-check-label" for="flexCheckDefault">
-Default checkbox
-</label>
+-->
+@php
+$tags = App\Taxonomy::all();
 
+$children = [];
+foreach($tags as $t){
+  $children['parent_'.$t->parent_id][] = $t;
+}
+getTree($children);
+@endphp
 </div>
 		  <a href="#">By Theme</a>
+<div class="form-check">
+		
+</div>
 		  <a href="#">Filter 1</a>
 		  <a href="#">Filter 2</a>
 		  <a href="#">Filter 3</a>
@@ -102,6 +123,7 @@ Default checkbox
 	  
 	  </div>
 
+		</form><!-- isa_search form ends -->
 
 	  <div class="col-lg-9">
 <div class="row gy-4 pricing-item" data-aos-delay="100">
@@ -115,41 +137,38 @@ Default checkbox
 	@else
 		{{ __('No results found') }}
 	@endif
-<!--
-<p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
-	  
-	  <p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
-<p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
-<p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
-<p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
--->
-	 
 	</div>
-	   
-	   
-		
 	  </div>
+
 <nav aria-label="Page navigation">
 <ul class="pagination justify-content-center">
+@php
+$total_results_count=0;
+$length=2;
+$start = empty(Request::get('start'))? 0 : Request::get('start');
+if(empty(Request::get('taxonomy_id'))){
+$taxonomies = '';
+}
+$collection_id = $collection->id;
+@endphp
+@if($start != 0)
 <li class="page-item disabled">
-  <a class="services-pagination" href="#" tabindex="-1" aria-disabled="true">&laquo;</a>
+  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
 </li>
+@endif
+@for($i=0;$i<=($total_results_count/2);$i++)
+<li class="page-item"><a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}">1</a></li>
+@endfor
+<!--
 <li class="page-item"><a class="services-pagination" href="#">1</a></li>
 <li class="page-item"><a class="services-pagination" href="#">2</a></li>
 <li class="page-item"><a class="services-pagination" href="#">3</a></li>
+-->
+@if($start < ($total_results_count - 2))
 <li class="page-item">
-  <a class="services-pagination" href="#">&raquo;</a>
+  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}">&raquo;</a>
 </li>
+@endif
 </ul>
 </nav>
 

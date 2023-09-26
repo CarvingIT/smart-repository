@@ -1334,11 +1334,15 @@ use App\UrlSuppression;
 	}
 
 	public function isaCollectionDocumentSearch(Request $request){
+//echo $request->isa_search_parameter;
+//print_r($request->taxonomy_id);
+//exit;
 		$search = $request->isa_search_parameter;
 		$collection_id = $request->collection_id;
 		
 		$collection = \App\Collection::find($request->collection_id);
 		//print_r($collection->content_type); exit;
+		
                 if($collection->content_type == 'Uploaded documents'){
                 $documents = \App\Document::where('collection_id', $request->collection_id);
                         if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
@@ -1357,9 +1361,21 @@ use App\UrlSuppression;
 		if(!empty($search)){
 	        $documents = $documents->search($search);
 		}
+		if(!empty($request->taxonomy_id)){
+		//->wherein('id',$display_document_ids)
+		$taxonomy_ids = implode(",",$request->taxonomy_id);
+		//print_r($request->taxonomy_id);
+		//echo $taxonomy_ids; 
+		//exit;
+	        $documents = $documents->search($taxonomy_ids);
+		}
+		else{
+		$taxonomy_ids = '';
+		}
 
 		$results = $documents->get();
-		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'activePage'=>'Documents','titlePage'=>'Documents','has_approval'=>$has_approval]);
+		$total_results_count = count($results);
+		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'total_results_count'=>$total_results_count,'taxonomies'=>$taxonomy_ids,'activePage'=>'Documents','titlePage'=>'Documents','has_approval'=>$has_approval]);
 
 	}
 
