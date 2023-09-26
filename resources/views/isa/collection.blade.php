@@ -115,24 +115,6 @@ Default checkbox
 	@else
 		{{ __('No results found') }}
 	@endif
-<!--
-<p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
-	  
-	  <p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
-<p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
-<p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
-<p><b><a href=""><i class="fa fa-file-text" aria-hidden="true"></i> Temporibus et in vero dicta aut eius lidero plastis trand lined voluptas dolorem ut voluptas</a></b><br>
-		  Blanditiis voluptate odit ex error ea sed officiis deserunt. Cupiditate non consequatur et doloremque consequuntur. Accusantium labore reprehenderit error temporibus saepe perferendis fuga doloribus vero. Qui omnis quo sit. Dolorem architecto eum et quos deleniti officia qui. <br><a href="">Read More &raquo;</a>
-		</p>
--->
 	 
 	</div>
 	   
@@ -168,7 +150,9 @@ Default checkbox
 			title: "ISA RRR Chatbot",
 			mainColor:"#f05a22",
 			bubbleBackground:"#f05a22",
+			bubbleAvatarUrl: "/i/chatbot.png",
 	    };
     </script>
     <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+
 @endsection
