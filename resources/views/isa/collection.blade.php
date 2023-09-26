@@ -73,25 +73,25 @@
 	  <div class="col-lg-3">
 		<div class="services-list">
 		  <a href="#" class="active">By Country</a>
-<div class="form-check">
-<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-<label class="form-check-label" for="flexCheckDefault">
-Default checkbox
-</label>
-<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-<label class="form-check-label" for="flexCheckDefault">
-Default checkbox
-</label>
-<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-<label class="form-check-label" for="flexCheckDefault">
-Default checkbox
-</label>
-<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-<label class="form-check-label" for="flexCheckDefault">
-Default checkbox
-</label>
+			<div class="form-check">
+			<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+			<label class="form-check-label" for="flexCheckDefault">
+			Default checkbox
+			</label>
+			<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+			<label class="form-check-label" for="flexCheckDefault">
+			Default checkbox
+			</label>
+			<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+			<label class="form-check-label" for="flexCheckDefault">
+			Default checkbox
+			</label>
+			<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+			<label class="form-check-label" for="flexCheckDefault">
+			Default checkbox
+			</label>
 
-</div>
+			</div>
 		  <a href="#">By Theme</a>
 		  <a href="#">Filter 1</a>
 		  <a href="#">Filter 2</a>
