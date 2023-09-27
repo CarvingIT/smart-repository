@@ -26,23 +26,39 @@
               <div class="card-icon">
                 <i class="material-icons">store</i>
               </div>
-              <p class="card-category">Collections</p>
+              <p class="card-category">Documents</p>
               <h3 class="card-title">{{ count($collections) }}</h3>
+            </div>
+         
+            <div class="card-footer">
+              <div class="stats">
+                <i class="material-icons">list</i><a href="/user/{{ auth()->user()->id }}/docs">Awaiting Approvals</a>
+              </div>
             </div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">list</i><a href="/collections">List of Collections</a> 
+              <i class="material-icons">list</i><a href="/user/{{ auth()->user()->id }}/docs/approved">Approved Documents</a>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+              <i class="material-icons">list</i><a href="/user/{{ auth()->user()->id }}/docs/unapproved">Rejeted Documents</a>
+              </div>
+            </div>
+            <div class="card-footer">
+              <div class="stats">
+              <i class="material-icons">list</i><a href="/user/{{ auth()->user()->id }}/docs/download">Dnownloads</a>
               </div>
             </div>
           </div>
         </div>
-        <div class="col-lg-4 col-md-6 col-sm-6">
+         <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
             <div class="card-header card-header-danger card-header-icon">
               <div class="card-icon">
                 <i class="material-icons">rss_feed</i>
               </div>
-              <p class="card-category">Blogs</p>
+              <p class="card-category">Blog Post</p>
               <h3 class="card-title">{{ count($blogs) }}</h3>
             </div>
             <div class="card-footer">
@@ -53,7 +69,8 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <!-- 
+     <div class="row">
       <div class="col-md-4">
           <div class="card card-chart">
             <div class="card-header card-header-warning">
@@ -87,7 +104,7 @@
               <h4 class="card-title">
 		          <a href="/user/{{ auth()->user()->id }}/docs/approved">Approved Documents</a>
               </h4>
-              <!--div class="ct-chart" id="dailySalesChart"></div-->
+             
             </div>
             <div class="card-body">
               <p class="card-category">
@@ -106,7 +123,7 @@
               <h4 class="card-title">
 		        <a href="/user/{{ auth()->user()->id }}/docs/unapproved">UnApproved Documents</a>
 	          </h4>
-              <!--div class="ct-chart" id="completedTasksChart"></div-->
+          
             </div>
             <div class="card-body">
               <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
@@ -151,7 +168,7 @@
               <h4 class="card-title">
 		          <a href="/user/{{ auth()->user()->id }}/docs/post">My Posts</a>
               </h4>
-              <!--div class="ct-chart" id="dailySalesChart"></div-->
+              
             </div>
             <div class="card-body">
               <p class="card-category">
@@ -170,7 +187,7 @@
               <h4 class="card-title">
 		          <a href="/user/{{ auth()->user()->id }}/docs/download">Download Documents</a>
 	            </h4>
-              <!--div class="ct-chart" id="completedTasksChart"></div-->
+           
             </div>
             <div class="card-body">
               <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
@@ -180,8 +197,8 @@
                 <i class="material-icons">show_chart</i>View More
               </div>
             </div>
-          </div>
-      </div>
+          </div> -->
+      </div> 
       <div class="row">
 	<!--
         <div class="col-lg-6 col-md-12">
@@ -430,10 +447,20 @@
           </div>
         </div>
 	-->
+
+
+  <div class="col-lg-12 col-md-12">
+          <div class="card">
+            <div class="card-header card-header-warning">
+              <h4 class="card-title">Latest Download</h4>
+              <p class="card-category">New search on @php echo date("j F, Y"); @endphp</p>
+            </div>
+          </div>
+          </div>
         <div class="col-lg-12 col-md-12">
           <div class="card">
             <div class="card-header card-header-warning">
-              <h4 class="card-title">Latest Searches</h4>
+              <h4 class="card-title">Save Searches</h4>
               <p class="card-category">New search on @php echo date("j F, Y"); @endphp</p>
             </div>
             <div class="card-body table-responsive">
