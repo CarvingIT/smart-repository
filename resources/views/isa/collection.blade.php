@@ -9,7 +9,7 @@ function getTree($children, $parent_id = null){
          if(empty($children['parent_'.$parent_id])) return;
          foreach($children['parent_'.$parent_id] as $t){
          $checked = '';
-	 if(in_array($t->id,Request::get('taxonomy_id'))){
+	 if(!empty(Request::get('taxonomy_id')) && in_array($t->id,Request::get('taxonomy_id'))){
 		$checked = 'checked';
 	 }
              if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
