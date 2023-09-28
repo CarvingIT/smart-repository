@@ -9,15 +9,24 @@ function getTree($children, $parent_id = null){
          if(empty($children['parent_'.$parent_id])) return;
          foreach($children['parent_'.$parent_id] as $t){
          $checked = '';
-	 if(!empty(Request::get('taxonomy_id')) && in_array($t->id,Request::get('taxonomy_id'))){
+	 if(!empty(Request::get('meta')) && in_array($t->id,Request::get('meta'))){
 		$checked = 'checked';
 	 }
              if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
-                  echo '<input type="checkbox" value="'.$t->id.'" name="taxonomy_id[]" onChange="this.form.submit();"'.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+		if(empty($t->parent_id)){
+			echo "<a href='#'>By ".$t->label."<br /><br />";
+		}
+		else{
+		echo '<div class="form-check">';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta['.$t->id.']" onChange="this.form.submit();"'.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+		echo '</div>';
+		}
                   getTree($children, $t->id);
              }
              else{
-                  echo '<input type="checkbox" value="'.$t->id.'" name="taxonomy_id[]" onChange="this.form.submit();"'.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp; &nbsp;&nbsp;'.$t->label.'</label><br />';
+		echo '<div class="form-check">';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta['.$t->id.']" onChange="this.form.submit();"'.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp; &nbsp;&nbsp;'.$t->label.'</label><br />';
+		echo '</div>';
              }
          }
 }
@@ -65,6 +74,7 @@ function getTree($children, $parent_id = null){
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keyword') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
+		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -84,19 +94,6 @@ function getTree($children, $parent_id = null){
 <!-- End Breadcrumbs -->
 
 <!-- ======= Service Details Section ======= -->
-<section id="service-details" class="service-details">
-  <div class="container">
-	<div class="row gy-4">
-	  <div class="col-lg-3">
-		<div class="services-list">
-		  <a href="#" class="active">By Country</a>
-<div class="form-check">
-<!--
-<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-<label class="form-check-label" for="flexCheckDefault">
-Default checkbox
-</label>
--->
 @php
 $tags = App\Taxonomy::all();
 
@@ -104,12 +101,28 @@ $children = [];
 foreach($tags as $t){
   $children['parent_'.$t->parent_id][] = $t;
 }
-getTree($children);
 @endphp
-</div>
-		  <a href="#">By Theme</a>
-<div class="form-check">
+
+<section id="service-details" class="service-details">
+  <div class="container">
+	<div class="row gy-4">
+	  <div class="col-lg-3">
+		<div class="services-list">
 		
+		  <!--a href="#" class="active">By Location</a-->
+			<!--div class="form-check"-->
+				<!--
+				<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+				<label class="form-check-label" for="flexCheckDefault">
+				Default checkbox
+				</label>
+				-->
+				@php
+				getTree($children);
+				@endphp
+			<!--/div-->
+		  <!--a href="#">By Theme</a-->
+<div class="form-check">
 </div>
 		  <a href="#">Filter 1</a>
 		  <a href="#">Filter 2</a>
@@ -126,9 +139,12 @@ getTree($children);
 <div class="row gy-4 pricing-item" data-aos-delay="100">
 	@if(!empty($results))
 	@foreach($results as $result)
+		@php 
+			$document = \App\Document::find($result->id);
+		@endphp
 <p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
 		{{-- $result->text_content --}}
-		{{ \Illuminate\Support\Str::limit($result->text_content, 250, $end='...') }}
+		{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
 		</p>
 	@endforeach
 	@else
@@ -143,22 +159,22 @@ getTree($children);
 $total_results_count=0;
 $length=10;
 $start = empty(Request::get('start'))? 0 : Request::get('start');
-if(empty(Request::get('taxonomy_id'))){
+if(empty(Request::get('meta'))){
 $taxonomies = '';
 }
 $collection_id = $collection->id;
 @endphp
 @if($start != 0)
 <li class="page-item disabled">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
+  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
 </li>
 @endif
 @for($i=0;$i<=($total_results_count/10);$i++)
-<li class="page-item"><a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}">1</a></li>
+<li class="page-item"><a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}">1</a></li>
 @endfor
 @if($start < ($total_results_count - 10))
 <li class="page-item">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}">&raquo;</a>
+  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}">&raquo;</a>
 </li>
 @endif
 </ul>

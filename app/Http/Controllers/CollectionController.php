@@ -1335,29 +1335,35 @@ use App\UrlSuppression;
 
 	public function isaCollectionDocumentSearch(Request $request){
 //echo $request->isa_search_parameter;
-//print_r($request->taxonomy_id);
+//print_r($request->meta);
 //exit;
+		$collection_id = $request->collection_id;
+		$collection = \App\Collection::find($collection_id);
 		$keywords = $request->isa_search_parameter;
-		if(!empty($request->taxonomy_id)){
-		$taxonomy_ids = implode(",",$request->taxonomy_id);
+		$taxonomy_ids = '';
+		if(!empty($request->meta)){
+			foreach($request->meta as $key => $value){
+				$taxonomy_ids .= '&meta_'.$value.'='.$value;
+			}
 		}
 		else{
 		$taxonomy_ids = '';
 		}
 
+//echo $taxonomy_ids; exit;
 		$client = new \GuzzleHttp\Client();
                 $http_host = request()->getHttpHost();
                 $protocol = request()->getScheme();
 		$length=10;
 		$start = empty($request->start)? 0 : $request->start;
-                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.$keywords.'&start='.$start.'&length='.$length;
-echo "SKK"." ".$endpoint;
+                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.$keywords.$taxonomy_ids.'&start='.$start.'&length='.$length;
+//echo $endpoint; exit;
                 $res = $client->get($endpoint);
                 $status_code = $res->getStatusCode();
                 if($status_code == 200){
 			$body = $res->getBody();
                         $documents_array = json_decode($body);
-print_r($documents_array); exit;
+//print_r($documents_array->data); exit;
                         $results = '';
                         if(count($documents_array->data) == 0){
                                 $results .= "Did not find any documents matching your search. Press 2 to search again.";
@@ -1375,8 +1381,8 @@ print_r($documents_array); exit;
                         }
 		}
 
-		$total_results_count = count($results);
-		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'total_results_count'=>$total_results_count,'taxonomies'=>$taxonomy_ids,'activePage'=>'Documents','titlePage'=>'Documents','has_approval'=>$has_approval]);
+		$total_results_count = $documents_array->recordsTotal;
+		return view('isa.collection',['collection'=>$collection, 'results'=>$documents_array->data,'total_results_count'=>$total_results_count,'taxonomies'=>$taxonomy_ids,'activePage'=>'Documents','titlePage'=>'Documents']);
 
 	}
 

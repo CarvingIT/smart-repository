@@ -146,10 +146,11 @@ color: #010a14 !important;
                   </div>
                   <div class="col-lg-6">
                     <ul class="mega-menu-ul">
-                    @if(Auth::check())
-                      <li><a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a></li>
-		    @endif		
                     @if(Auth::check() && Auth::user()->hasRole('admin'))
+			@if(preg_match("/collection/",Request::getRequestUri()))
+                      <li><a class="dropdown-item" href="/collection/{{ $collection->id }}/settings">{{ __('Database Configuration ') }}</a></li>
+			@endif
+                      <li><a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
