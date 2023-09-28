@@ -25,7 +25,7 @@ function getTree($children, $parent_id = null){
              }
              else{
 		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta['.$t->id.']" onChange="this.form.submit();"'.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp; &nbsp;&nbsp;'.$t->label.'</label><br />';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta['.$t->id.']" onChange="this.form.submit();"'.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp;&nbsp;'.$t->label.'</label><br />';
 		echo '</div>';
              }
          }

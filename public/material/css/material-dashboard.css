@@ -11009,7 +11009,8 @@ fieldset[disabled] .form-check .form-check-input,
 
 .form-check .form-check-label {
   cursor: pointer;
-  padding-left: 25px;
+  /*padding-left: 25px;*/
+  padding-left: 10px;
   position: relative;
 }
 
