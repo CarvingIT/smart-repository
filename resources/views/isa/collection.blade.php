@@ -108,7 +108,6 @@ foreach($tags as $t){
 	<div class="row gy-4">
 	  <div class="col-lg-3">
 		<div class="services-list">
-		
 		  <!--a href="#" class="active">By Location</a-->
 			<!--div class="form-check"-->
 				<!--
