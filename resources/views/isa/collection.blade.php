@@ -65,7 +65,6 @@ function getTree($children, $parent_id = null){
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keyword') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
-		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}"/>
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -87,9 +86,7 @@ function getTree($children, $parent_id = null){
 <!-- ======= Service Details Section ======= -->
 <section id="service-details" class="service-details">
   <div class="container">
-
 	<div class="row gy-4">
-
 	  <div class="col-lg-3">
 		<div class="services-list">
 		  <a href="#" class="active">By Country</a>
@@ -144,7 +141,7 @@ getTree($children);
 <ul class="pagination justify-content-center">
 @php
 $total_results_count=0;
-$length=2;
+$length=10;
 $start = empty(Request::get('start'))? 0 : Request::get('start');
 if(empty(Request::get('taxonomy_id'))){
 $taxonomies = '';
@@ -156,15 +153,10 @@ $collection_id = $collection->id;
   <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
 </li>
 @endif
-@for($i=0;$i<=($total_results_count/2);$i++)
+@for($i=0;$i<=($total_results_count/10);$i++)
 <li class="page-item"><a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}">1</a></li>
 @endfor
-<!--
-<li class="page-item"><a class="services-pagination" href="#">1</a></li>
-<li class="page-item"><a class="services-pagination" href="#">2</a></li>
-<li class="page-item"><a class="services-pagination" href="#">3</a></li>
--->
-@if($start < ($total_results_count - 2))
+@if($start < ($total_results_count - 10))
 <li class="page-item">
   <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}&taxonomy_id={{ $taxonomies }}&start={{ $start }}&length={{ $length }}">&raquo;</a>
 </li>

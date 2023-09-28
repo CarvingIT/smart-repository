@@ -1337,43 +1337,44 @@ use App\UrlSuppression;
 //echo $request->isa_search_parameter;
 //print_r($request->taxonomy_id);
 //exit;
-		$search = $request->isa_search_parameter;
-		$collection_id = $request->collection_id;
-		
-		$collection = \App\Collection::find($request->collection_id);
-		//print_r($collection->content_type); exit;
-		
-                if($collection->content_type == 'Uploaded documents'){
-                $documents = \App\Document::where('collection_id', $request->collection_id);
-                        if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
-                                // user can not view any document; just their own
-                                $documents = $documents->where('created_by', \Auth::user()->id);
-                        }
-                }
-                else{
-                $documents = \App\Url::where('collection_id', $request->collection_id);
-                }
-		$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
-		
-		//$documents = $this->getMetaFilteredDocuments($request, $documents);
-		$documents = $this->approvalFilter($collection_id, $documents);
-
-		if(!empty($search)){
-	        $documents = $documents->search($search);
-		}
+		$keywords = $request->isa_search_parameter;
 		if(!empty($request->taxonomy_id)){
-		//->wherein('id',$display_document_ids)
 		$taxonomy_ids = implode(",",$request->taxonomy_id);
-		//print_r($request->taxonomy_id);
-		//echo $taxonomy_ids; 
-		//exit;
-	        $documents = $documents->search($taxonomy_ids);
 		}
 		else{
 		$taxonomy_ids = '';
 		}
 
-		$results = $documents->get();
+		$client = new \GuzzleHttp\Client();
+                $http_host = request()->getHttpHost();
+                $protocol = request()->getScheme();
+		$length=10;
+		$start = empty($request->start)? 0 : $request->start;
+                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.$keywords.'&start='.$start.'&length='.$length;
+echo "SKK"." ".$endpoint;
+                $res = $client->get($endpoint);
+                $status_code = $res->getStatusCode();
+                if($status_code == 200){
+			$body = $res->getBody();
+                        $documents_array = json_decode($body);
+print_r($documents_array); exit;
+                        $results = '';
+                        if(count($documents_array->data) == 0){
+                                $results .= "Did not find any documents matching your search. Press 2 to search again.";
+                        }
+                        else if(count($documents_array->data) > 10){
+                                $results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
+                        }
+                        else{
+                                $results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
+                                $results .= '<br/>Listing 10 most relevant here.<br/>';
+                        }
+
+                        foreach($documents_array->data as $d){
+                                $results .= '<a href="/collection/1/document/'.$d->id.'">'.$d->title.'</a><br />';
+                        }
+		}
+
 		$total_results_count = count($results);
 		return view('isa.collection',['collection'=>$collection, 'results'=>$results,'total_results_count'=>$total_results_count,'taxonomies'=>$taxonomy_ids,'activePage'=>'Documents','titlePage'=>'Documents','has_approval'=>$has_approval]);
 
