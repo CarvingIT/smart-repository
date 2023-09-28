@@ -170,4 +170,18 @@ $collection_id = $collection->id;
 </section><!-- End Service Details Section -->
 
 </main><!-- End #main -->
+    <script>
+	    var botmanWidget = {
+			frameEndpoint: '/chatbot-frame.html',
+	        aboutText: 'ISA Repository',
+			aboutLink: "/",
+	        introMessage: "✋ Hello from ISA! <br />I understand these instructions <br/> 1. Information about themes and sub-themes <br /> 2. Search the repository with keywords. <br/> (Type in just the number and press enter.)",
+			title: "ISA RRR Chatbot",
+			mainColor:"#f05a22",
+			bubbleBackground:"#f05a22",
+			bubbleAvatarUrl: "/i/chatbot.png",
+	    };
+    </script>
+    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+
 @endsection
