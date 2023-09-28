@@ -139,7 +139,7 @@
 		                @endif		
                     @if(Auth::check() && Auth::user()->hasRole('admin'))
 			@if(preg_match("/collection/",Request::getRequestUri()))
-                      <li><a class="dropdown-item" href="/collection/{{ $collection->id }}/settings">{{ __('Database Configuration ') }}</a></li>
+                      <li><a class="dropdown-item" href="/collection/1/settings">{{ __('Database Configuration ') }}</a></li>
 			@endif
                       <!--li><a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a></li-->
                       <li><a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
