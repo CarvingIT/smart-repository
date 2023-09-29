@@ -73,7 +73,7 @@ class BotManController extends Controller
 				}
 				
 				foreach($documents_array->data as $d){
-					$botman_results .= '<a href="/collection/1/document/'.$d->id.'">'.$d->title.'</a><br />';
+					$botman_results .= '<p><a href="/collection/1/document/'.$d->id.'">'.$d->title.'</a></p>';
 				}
 				$this->say($botman_results.'');
 			}else{
