@@ -64,7 +64,7 @@ class BotManController extends Controller
 				if(count($documents_array->data) == 0){
 					$botman_results .= "Did not find any documents matching your search. Press 2 to search again.";
 				}
-				else if(count($documents_array->data) > 10){
+				else if(count($documents_array->data) < 10){
 					$botman_results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
 				}
 				else{
