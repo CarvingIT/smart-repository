@@ -262,11 +262,28 @@ class CollectionController extends Controller
     // wrapper function for search
     public function search(Request $request){
         if(!empty(env('SEARCH_MODE')) && env('SEARCH_MODE') == 'elastic'){
-            return $this->searchElastic($request);
+            $search_results = $this->searchElastic($request);
         }
         else{
-            return $this->searchDB($request); 
+            $search_results = $this->searchDB($request); 
         }
+        // log search query
+		$old_query = Session::get('search_query');
+		if($old_query != $request->search['value'] && 
+			!empty($request->search['value']) && strlen($request->search['value'])>3){
+			Session::put('search_query', $request->search['value']);
+        	$search_log_data = array('collection_id'=> $request->collection_id, 
+                'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
+                'search_query'=> $request->search['value'], 
+                'meta_query'=>'',
+				'ip_address' => $request->ip(),
+                'results'=>$search_results['recordsFiltered']);
+	    	if(!empty($request->collection_id)){
+            	$this->logSearchQuery($search_log_data);
+	    	}
+        }
+
+        return json_encode($search_results, JSON_UNESCAPED_UNICODE);
     }
 
 	public function getElasticClient(){
@@ -480,9 +497,8 @@ class CollectionController extends Controller
             'recordsFiltered' => $filtered_count,
             'error'=> '',
         );
-		// logging of search is not done here
-		// refer to the searchDB function below
-        return json_encode($results, JSON_UNESCAPED_UNICODE);
+        //return json_encode($results, JSON_UNESCAPED_UNICODE);
+		return $results;
     }
 
     // db search (default)
@@ -587,19 +603,8 @@ class CollectionController extends Controller
             'error'=> '',
         );
 
-        // log search query
-        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-        $search_log_data = array('collection_id'=> $request->collection_id, 
-                'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
-                'search_query'=> $request->search['value'], 
-                'meta_query'=>'',
-                'results'=>$filtered_count);
-        //if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-	    	if(!empty($request->collection_id)){
-            	$this->logSearchQuery($search_log_data);
-	    	}
-        }
-        return json_encode($results, JSON_UNESCAPED_UNICODE);
+        //return json_encode($results, JSON_UNESCAPED_UNICODE);
+		return $results;
     }
 
     private function approvalFilter($request, $documents){
@@ -987,13 +992,19 @@ $j++;
 	}
 
     public function logSearchQuery($data){
+		try{
         $search_log_entry = new \App\Searches;
         $search_log_entry->collection_id = $data['collection_id']; 
         $search_log_entry->meta_query = $data['meta_query']; 
         $search_log_entry->search_query = $data['search_query']; 
         $search_log_entry->user_id = $data['user_id']; 
+        $search_log_entry->ip_address = $data['ip_address']; 
         $search_log_entry->results = $data['results']; 
         $search_log_entry->save();
+		}
+		catch(\Exception $e){
+			// do nothing
+		}
     }
 
     public function deleteCollection(Request $request){
