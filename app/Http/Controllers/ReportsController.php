@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Collections;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class ReportsController extends Controller
 {
@@ -68,5 +69,14 @@ class ReportsController extends Controller
         return view('report-date-count',['hits'=>$hits, 'name'=>'Uploads', 'titlePage'=>'Uploads','activePage'=>'uploads','collection_list'=>$list,'collection_id'=>$request->collection_id]);
     }
 
+	public function searchQueries(Request $request){
+		$queries = \App\Searches::all();		
+		$list = [];
+		foreach($queries as $q){
+			$list[] = $q;
+		}
+		return (new FastExcel($list))
+    			->download('search_queries.xlsx');
+	}
 
 }
