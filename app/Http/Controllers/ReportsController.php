@@ -77,7 +77,7 @@ class ReportsController extends Controller
 			$q->link = env('APP_URL').'/collection/1?search[value]='.$q['search_query'];
 			$meta_array = empty($q->meta_query)?[]:json_decode($q->meta_query);
 			foreach($meta_array as $mq){
-				$q->link .= '&'.$mq->field_id.'='.$mq->value;
+				$q->link .= '&meta_'.$mq->field_id.'='.$mq->value;
 			}
 			$list[] = $q;
 		}
