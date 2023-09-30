@@ -72,7 +72,13 @@ class ReportsController extends Controller
 	public function searchQueries(Request $request){
 		$queries = \App\Searches::all();		
 		$list = [];
+		
 		foreach($queries as $q){
+			$q->link = env('APP_URL').'/collection/1?search[value]='.$q['search_query'];
+			$meta_array = empty($q->meta_query)?[]:json_decode($q->meta_query);
+			foreach($meta_array as $mq){
+				$q->link .= '&meta_'.$mq->field_id.'='.$mq->value;
+			}
 			$list[] = $q;
 		}
 		return (new FastExcel($list))
