@@ -11,6 +11,7 @@
                   <ul>
                     <li><a href="/reports/downloads">Downloads</a></li>
                     <li><a href="/reports/uploads">Uploads</a></li>
+                    <li><a href="/reports/search-queries">Search Queries</a></li>
                   </ul>
                 </div>
             </div>
