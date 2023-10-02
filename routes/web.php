@@ -117,12 +117,13 @@ Route::get('/collection/{collection_id}/document/{document_id}/details', 'Docume
 Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
 // See Diff in revisions
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
-// Document Approvals
+
+// Approvals
 Route::get('/document/{document_id}/approval', 'DocumentApprovalController@docApprovalForm');
 Route::post('/document/save_status', 'DocumentApprovalController@saveApprovalStatus');
 //Documents Approved by Me
-Route::get('/user/{user_id}/docs/{status}', 'DocumentApprovalController@documentsHandledByMe');
-Route::get('/user/{user_id}/docs', 'DocumentApprovalController@documentsAwaitingApprovals');
+Route::get('/user/{user_id}/{approvable}/{status}', 'ApprovalsController@listByStatus');
+//Route::get('/user/{user_id}/docs', 'DocumentApprovalController@documentsAwaitingApprovals');
 
 
 // reports

@@ -6,10 +6,11 @@ use Illuminate\Http\Request;
 use App\User;
 use App\Document;
 use App\DocumentApproval;
+use App\Approval;
 use App\Collection;
 use Session;
 
-class DocumentApprovalController extends Controller
+class ApprovalsController extends Controller
 {
     //
 	public function docApprovalForm($document_id)
@@ -63,23 +64,22 @@ class DocumentApprovalController extends Controller
 	   return redirect('/document/'.$request->document_id.'/approval');
 	}
 
-	public function documentsHandledByMe(Request $request){
-	$user_id = $request->user_id;
-	$role_id = auth()->user()->userrole($user_id);
-        $collections=\App\Collection::where('column_config','LIKE','%'.$role_id.'%')->get();
-	$status = '';
-	if($request->status == 'approved'){
-		$status = 1;
-	}
-	else{
-		$status = 0;
-	}
-        $documents = DocumentApproval::where('approved_by_role',$role_id)
-			->where('approval_status',$status)
+	public function listByStatus($user_id, $approvable, $status, Request $request){
+		$role_id = auth()->user()->userrole($user_id);
+		$status_int = 0;
+		if($status == 'approved'){
+			$status_int = 1;
+		}
+		else{
+			$status_int = 0;
+		}
+        $list_items = Approval::where('approved_by_role',$role_id)
+			->where('approval_status',$status_int)
 			->orderBy('updated_at','DESC')->get();
 
-        return view('docs_handled_by_me', ['documents'=>$documents, 'status'=>$status,'collections'=>$collections,
-		'activePage'=>'Users Documents','titlePage'=>'Users Documents', 'title'=>'ISA Smart Repository']);
+        return view('approvables_list', ['approvables'=>$list_items, 
+			'status'=>$status,
+			]);
         }
 
 	public function documentsAwaitingApprovals(Request $request){
