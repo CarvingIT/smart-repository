@@ -132,6 +132,7 @@ Route::get('/user/{user_id}/mydocs', 'DocumentController@listMyDocuments');
 Route::get('/reports', 'ReportsController@index')->middleware('admin');
 Route::get('/reports/downloads', 'ReportsController@downloads')->middleware('admin');
 Route::get('/reports/uploads', 'ReportsController@uploads')->middleware('admin');
+Route::get('/reports/search-queries', 'ReportsController@searchQueries')->middleware('admin');
 
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');
