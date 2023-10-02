@@ -23,60 +23,52 @@ class ApprovalsController extends Controller
                                 'activePage'=>'Document Approval Form','titlePage'=>'Document Approval']);
         }
 
-	public function saveApprovalStatus(Request $request){
-	   $collection = \App\Collection::find($request->collection_id);
-	   $collection_role_details = json_decode($collection->column_config);
-	   $top_user_role = $collection_role_details->approved_by[2];
-	
-	   $user_role = auth()->user()->userrole(auth()->user()->id);
-	   $document_id = $request->document_id;
-	   $approval = DocumentApproval::where('document_id',$request->document_id)
-				->where('approved_by_role',$user_role)
-				->first();
-	   if(empty($approval)){
-	   $d_a = new DocumentApproval();
+	public function saveApprovalStatus($approvable, $approvable_id, Request $request){
+	   if($approvable == 'document'){
+			$document = Document::find($approvable_id);
+			$approval = $document->approvals
+				->sortByDesc('id')->first();
 	   }
-	   else{
-	   $d_a = DocumentApproval::find($approval->id);
-	   }
-	   $d_a->document_id = $request->document_id;
-	   $d_a->approved_by = auth()->user()->id;		
-	   $d_a->approved_by_role = $user_role;		
-	   $d_a->approval_status = $request->approval_status;		
-	   $d_a->comments = $request->comments;		
 	   try{
-	   $d_a->save();
-	   	$document_approval = DocumentApproval::where('document_id',$document_id)
-				->where('approved_by_role','=',$top_user_role)
-				->where('approval_status','=',1)
-				->first();
-		if(!empty($document_approval)){
-			$document_details = Document::find($request->document_id);
-			$document_details->approved_by = auth()->user()->userrole(auth()->user()->id);
-			$document_details->approved_on = now();
-			$document_details->save();
-		}
-	   	Session::flash('alert-success','Document approval details have been saved successfully.');
+		$approval->approved_by = auth()->user()->id;
+		$approval->comments = $request->comments;
+		$approval->approval_status = $request->approval_status;
+		$approval->save();
+	   	Session::flash('alert-success','Approval details have been saved successfully.');
 	   }
 	   catch(\Exception $e){
 		Session::flash('alert-danger','Error has orrcured: Please try again. '.$e->getMessage());
 	   }
-	   return redirect('/document/'.$request->document_id.'/approval');
+	   return redirect('/'.$approvable.'/'.$approvable_id.'/approval');
 	}
 
-	public function listByStatus($user_id, $approvable, $status, Request $request){
-		$role_id = auth()->user()->userrole($user_id);
-		$status_int = 0;
+	public function listByStatus($approvable, $status, Request $request){
+		$user_roles = auth()->user()->roles;
+		$roles_ar = [];
+		foreach($user_roles as $r){
+			$roles_ar[] = $r->id;
+		}
+
+		$list_items = Approval::whereIn('approved_by_role',$roles_ar);
+
+		if($approvable == 'documents'){
+			$list_items = $list_items->where('approvable_type','App\Document'); 
+		}
+		else if($approvable == 'blogs'){
+			$list_items = $list_items->where('approvable_type','App\BinshopPost'); 
+		}
+
 		if($status == 'approved'){
-			$status_int = 1;
+			$list_items = $list_items->where('approval_status', 1);
+		}
+		else if($status == 'rejected'){
+			$list_items = $list_items->where('approval_status', 0);
 		}
 		else{
-			$status_int = 0;
+			$list_items = $list_items->whereNull('approval_status');
 		}
-        $list_items = Approval::where('approved_by_role',$role_id)
-			->where('approval_status',$status_int)
-			->orderBy('updated_at','DESC')->get();
 
+		$list_items = $list_items->orderBy('updated_at','DESC')->get();
         return view('approvables_list', ['approvables'=>$list_items, 
 			'status'=>$status,
 			]);

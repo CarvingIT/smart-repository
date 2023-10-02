@@ -17,9 +17,9 @@ class ApprovalsPolymorphic extends Migration
             $table->bigIncrements('id');
 			$table->bigInteger('approvable_id');
 			$table->string('approvable_type');
-			$table->bigInteger('approved_by');
-			$table->integer('approved_by_role');
-			$table->tinyInteger('approval_status');
+			$table->bigInteger('approved_by')->nullable();
+			$table->integer('approved_by_role')->nullable();
+			$table->tinyInteger('approval_status')->nullable();
 			$table->text('comments')->nullable();
 	    	$table->timestamps();
 		});	

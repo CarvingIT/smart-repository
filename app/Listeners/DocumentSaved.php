@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\DocumentSaved as DocumentSavedNotification;
+use App\Approval;
 
 class DocumentSaved
 {
@@ -84,6 +85,16 @@ class DocumentSaved
 	    	catch(\Exception $e){
 	    		Log::warning($e->getMessage());
 	    	}
+		}
+
+		// add a record in the approvals table
+		if($event->document->collection->require_approval == 1){
+			// get the first role id from approval workflow
+			$collection_config = $event->document->collection->column_config;	
+			$col_conf = json_decode($collection_config);
+			$approvers = $col_conf->approved_by;
+			$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
+			$event->document->approvals()->save($approval_record);
 		}
     }
 }

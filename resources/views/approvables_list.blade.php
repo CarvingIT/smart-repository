@@ -34,7 +34,6 @@ $(document).ready(function() {
                         <thead class="text-primary">
                             <tr>
                             <th>Title</th>
-                            <th>Status</th>
                             <th>Comments</th>
                             <th>Created at</th>
                             <th class="text-right">Actions</th>
@@ -43,12 +42,11 @@ $(document).ready(function() {
                         <tbody>
 			@foreach($approvables as $item)
                         <tr>
-                                <td>{{ @$item->title }}</td>
-                                <td>{{ $status }}</td>
+                                <td>{{ @$item->approvable->title }}</td>
                                 <td>{{ $item->comments }}</td>
                                 <td>{{ $item->created_at }}</td>
                         <td class="td-actions text-right">
-                            <a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $document->document_id }}/approval" data-original-title="" title="">
+                            <a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $item->approvable_id }}/approval" data-original-title="" title="">
                                     <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
                                   </a>
