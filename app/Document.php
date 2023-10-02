@@ -102,4 +102,8 @@ class Document extends Model implements Auditable
     public function approval(){
 	return $this->hasMany('App\DocumentApproval');
     }
+
+	public function approvals(){
+		return $this->morphMany('App\Approval', 'approvable');
+	}
 }
