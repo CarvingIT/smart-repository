@@ -120,9 +120,9 @@ Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'Documen
 
 // Approvals
 Route::get('/document/{document_id}/approval', 'ApprovalsController@docApprovalForm');
-Route::post('/{approvable}/{approvable_id}/save_status', 'ApprovalsController@saveApprovalStatus');
+Route::post('/approvals/{approvable}/{approvable_id}/save_status', 'ApprovalsController@saveApprovalStatus');
 //Documents Approved by Me
-Route::get('/{approvable}/{status}', 'ApprovalsController@listByStatus');
+Route::get('/approvals/{approvable}/{status}', 'ApprovalsController@listByStatus');
 
 // reports
 Route::get('/reports', 'ReportsController@index')->middleware('admin');

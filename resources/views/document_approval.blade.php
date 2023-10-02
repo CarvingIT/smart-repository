@@ -56,7 +56,7 @@ $(document).ready(function() {
                     @endforeach
                     </div>
 
-<form name="document_upload_form" action="/document/{{ $document->id }}/save_status" method="post">
+<form name="document_upload_form" action="/approvals/document/{{ $document->id }}/save_status" method="post">
 @csrf()
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
 @if(!empty($document->id))
@@ -64,11 +64,10 @@ $(document).ready(function() {
 @endif
 		<div class="form-group row">
 	   	   <div class="col-md-3">
-		   <label for="title" class="col-md-12 col-form-label text-md-right">Title</label>
+		   <label for="title" class="col-md-12 col-form-label text-md-right">Document</label>
 		   </div>
                     <div class="col-md-9">
-                    <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ html_entity_decode($document->title) }}@endif" 
-                    placeholder="If left blank, we shall guess!" />
+		    <a href="/document/{{ $document->id }}/edit" target="_new">{{ $document->title }}</a>
                     </div>
 		</div>
                 <div class="form-group row">
@@ -104,8 +103,8 @@ $(document).ready(function() {
 		<table id="approvals" class="display">
                         <thead class="text-primary">
                             <tr>
-                            <th>Updated at</th>
-                            <th>Approved By</th>
+                            <th>Timestamp</th>
+                            <th>User</th>
                             <th>Approval Status</th>
                             <th>Comments</th>
                             </tr>
@@ -116,9 +115,9 @@ $(document).ready(function() {
 			@endphp
             @foreach ($doc_approvals as $d_a)
 			<tr>
-			<td>{{ $d_a->updated_at }}</td>
-			<td>{{ $d_a->approvable->owner->name }}</td>
-			<td>@if($d_a->approval_status == 1) {{ __('Approved') }} @else {{ __('Rejected') }} @endif</td>
+			<td>{{ $d_a->created_at }}</td>
+			<td>{{ @$d_a->approver->name }}</td>
+			<td>@if($d_a->approval_status == 1) {{ __('Approved') }} @elseif ($d_a->approval_status === 0) {{ __('Rejected') }} @else {{ 'Awaiting approval' }} @endif</td>
 			<td>{!! $d_a->comments !!}</td>
 			</tr>
 			@endforeach

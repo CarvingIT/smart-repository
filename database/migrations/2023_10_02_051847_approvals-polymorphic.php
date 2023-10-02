@@ -17,11 +17,14 @@ class ApprovalsPolymorphic extends Migration
             $table->bigIncrements('id');
 			$table->bigInteger('approvable_id');
 			$table->string('approvable_type');
-			$table->bigInteger('approved_by')->nullable();
+			$table->bigInteger('approved_by')->unsigned()->nullable();
 			$table->integer('approved_by_role')->nullable();
 			$table->tinyInteger('approval_status')->nullable();
 			$table->text('comments')->nullable();
 	    	$table->timestamps();
+
+			// add foreign key
+			$table->foreign('approved_by')->references('id')->on('users');
 		});	
     }
 

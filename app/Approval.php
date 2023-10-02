@@ -10,4 +10,8 @@ class Approval extends Model
 	public function approvable(){
 		return $this->morphTo();
 	}
+
+	public function approver(){
+		return $this->belongsTo('App\User', 'approved_by', 'id');
+	}
 }

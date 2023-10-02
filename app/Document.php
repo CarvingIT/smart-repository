@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Events\DocumentSaved;
 use App\Events\DocumentDeleted;
 use OwenIt\Auditing\Contracts\Auditable;
+use Carbon\Carbon;
 
 class Document extends Model implements Auditable
 {
@@ -103,7 +104,13 @@ class Document extends Model implements Auditable
 	return $this->hasMany('App\DocumentApproval');
     }
 
-	public function approvals(){
-		return $this->morphMany('App\Approval', 'approvable');
-	}
+    public function approvals(){
+	return $this->morphMany('App\Approval', 'approvable');
+    }
+    
+    public function publish(){
+	    $this->approved_by = auth()->user()->id;
+	    $this->approved_on = Carbon::now()->toDateTimeString();
+	    $this->save();
+    }
 }

@@ -39,7 +39,7 @@
             </div>
 			<div class="card-body">
 				<ul>
-					<li><a href="/documents/awaiting">Awaiting approval</a></li>
+					<li><a href="/approvals/documents/awaiting">Awaiting approval</a></li>
 					<li>Rejected</li>
 				</ul>
 			</div>
