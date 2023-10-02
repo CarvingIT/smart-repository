@@ -13680,7 +13680,7 @@ margin-left:1.2%;
 
 .page-header:after,
 .page-header:before {
-  position: absolute;
+  /* position: absolute; */
   z-index: 0;
   width: 100%;
   height: 100%;
