@@ -52,7 +52,7 @@ $(document).ready(function() {
                             </tr>
                         </thead>
                         <tbody>
-			@foreach($awaiting_approvals_docs as $doc)
+			@foreach($documents as $doc)
                         <tr>
                                 <td>{{ $doc->title }}</td>
                                 <td>{{ $doc->collection->name }}</td>

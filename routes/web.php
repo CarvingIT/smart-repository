@@ -125,6 +125,7 @@ Route::post('/document/save_status', 'DocumentApprovalController@saveApprovalSta
 //Documents Approved by Me
 Route::get('/user/{user_id}/docs/{status}', 'DocumentApprovalController@documentsHandledByMe');
 Route::get('/user/{user_id}/docs', 'DocumentApprovalController@documentsAwaitingApprovals');
+Route::get('/user/{user_id}/mydocs', 'DocumentController@listMyDocuments');
 
 
 // reports
