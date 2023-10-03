@@ -45,7 +45,7 @@
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keyword') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" />
-		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}"/>
+			<input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}"/>
 			<input type="submit" value="Search" name="isa_search" class="btn btn-sm btn-primary">
 			<style>
 			.dataTables_filter {
@@ -53,6 +53,10 @@
 			}
 			</style>
 		   </div>
+		   </div>
+		   <div class="col-12 text-center">
+           		<!--<i class="material-icons">search</i>-->
+			
 		   </div>
 		</div>
 		</form>
