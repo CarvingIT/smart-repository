@@ -10,13 +10,10 @@
                 <i class="material-icons">content_copy</i>
               </div>
               <p class="card-category">Profile</p>
-<<<<<<< HEAD
               <h4 class="card-title">{{ auth()->user()->name }}
 		</h4>
-=======
               <h3 class="card-title">{{ auth()->user()->name }}
 		          </h3>
->>>>>>> ISA-DESIGN-DASHBOARD
             </div>
             <div class="card-footer">
               <div class="stats">
@@ -31,11 +28,8 @@
               <div class="card-icon">
                 <i class="material-icons">store</i>
               </div>
-<<<<<<< HEAD
               <p class="card-category"><a href="/collection/1">Database</a></p>
-=======
               <p class="card-category">Documents</p>
->>>>>>> ISA-DESIGN-DASHBOARD
               <h3 class="card-title">{{ count($collections) }}</h3>
             </div>
          
@@ -67,11 +61,8 @@
               <div class="card-icon">
                 <i class="material-icons">rss_feed</i>
               </div>
-<<<<<<< HEAD
               <p class="card-category"><a href="/user/{{ auth()->user()->id }}/mydocs">My Documents</a></p>
-=======
               <p class="card-category">Blog Post</p>
->>>>>>> ISA-DESIGN-DASHBOARD
               <h3 class="card-title">{{ count($blogs) }}</h3>
             </div>
             <div class="card-footer">

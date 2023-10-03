@@ -73,8 +73,9 @@ function getTree($children, $parent_id = null){
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keyword') }}</label>
-		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" />
-		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}"/>
+		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
+		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
+			<input type="submit" value="Search" name="isa_search" class="btn btn-sm btn-primary">
 			<style>
 			.dataTables_filter {
 			display: none;
