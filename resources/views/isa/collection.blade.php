@@ -5,16 +5,16 @@
 <main id="main">
 @php
 	$search_query = Request::get('isa_search_parameter');
-function getTree($children, $parent_id = null){
+	function getTree($children, $parent_id = null){
          if(empty($children['parent_'.$parent_id])) return;
          foreach($children['parent_'.$parent_id] as $t){
          $checked = '';
-	 if(!empty(Request::get('meta')) && in_array($t->id,Request::get('meta'))){
-		$checked = 'checked';
-	 }
-             if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
+	 	 if(!empty(Request::get('meta')) && in_array($t->id,Request::get('meta'))){
+			$checked = 'checked';
+	 		}
+        if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
 		if(empty($t->parent_id)){
-			echo "<a href='#'>By ".$t->label."<br /><br />";
+		echo "<a href='#'>By ".$t->label."<br /><br />";
 		}
 		else{
 		echo '<div class="form-check">';
@@ -36,17 +36,15 @@ function getTree($children, $parent_id = null){
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-		<div class="card-header card-header-primary">
-                <h4 class="card-title ">
-            	{{ __('Database') }}
-				</h4>
-            </div>
-<div class="card-body">
+				<div class="card-header card-header-primary">
+                	<h4 class="card-title ">{{ __('Database') }}</h4>
+            	</div>
+			<div class="card-body">
 			<div class="row">
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
-		    @if($collection->content_type == 'Uploaded documents')	
+		    	@if($collection->content_type == 'Uploaded documents')	
                     <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                      @elseif($collection->content_type == 'Web resources')	
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
@@ -65,7 +63,7 @@ function getTree($children, $parent_id = null){
             <p>{{-- $collection->description --}}</p>
 			</div>
 			<div class="col-2 text-right">
-</div>
+			</div>
 
 		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
 		@csrf
@@ -83,10 +81,7 @@ function getTree($children, $parent_id = null){
 			</style>
 		   </div>
 		   </div>
-		   <div class="col-12 text-center">
-           		<!--<i class="material-icons">search</i>-->
-			
-		   </div>
+		  
 		</div>
 		<!--/form-->
 
