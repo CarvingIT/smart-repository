@@ -18912,3 +18912,9 @@ padding-bottom:11%;
 input.btn.btn-sm.btn-primary.search {
   margin-left: -100px;
 }
+
+@media screen and (max-width: 991px) {
+  .footer{
+  text-align: start;
+  }
+  }
