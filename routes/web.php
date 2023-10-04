@@ -117,6 +117,7 @@ Route::get('/collection/{collection_id}/document/{document_id}/details', 'Docume
 Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
 // See Diff in revisions
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
+Route::get('/user/{user_id}/mydocs', 'DocumentController@listMyDocuments');
 
 // Approvals
 Route::get('/document/{document_id}/approval', 'ApprovalsController@docApprovalForm');

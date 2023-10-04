@@ -39,6 +39,7 @@
             </div>
 			<div class="card-body">
 				<ul>
+					<li><a href="/user/{{ auth()->user()->id }}/mydocs">My Uploaded Documents</a></li>
 					<li><a href="/approvals/documents/awaiting">Awaiting approval</a></li>
 					<li>Rejected</li>
 				</ul>

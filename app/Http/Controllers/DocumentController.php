@@ -23,6 +23,11 @@ class DocumentController extends Controller
         return view('all_documents');
 	}
 
+    public function listMyDocuments(Request $request){
+        $documents = Document::where('created_by',auth()->user()->id)->get();
+        return view('my_documents',['documents'=>$documents,'activePage'=>'My Uploaded Documents','titlePage'=>'My Uploaded Documents']);
+        }
+
     public function loadDocument($collection_id,$document_id){
         $doc = \App\Document::find($document_id);
 	$collection_id = $doc->collection_id;
