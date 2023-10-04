@@ -18909,3 +18909,6 @@ padding-bottom:11%;
 
 /* hash sourceMappingURL=dashboard-free.css.map */
 
+input.btn.btn-sm.btn-primary.search {
+  margin-left: -140px;
+}
