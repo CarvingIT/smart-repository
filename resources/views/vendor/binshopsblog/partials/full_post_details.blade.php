@@ -1,5 +1,21 @@
+<<<<<<< HEAD
 @if(\Auth::check() && \Auth::user()->canManageBinshopsBlogPosts())
     <a href="{{$post->edit_url()}}" class="btn btn-outline-secondary btn-sm pull-right float-right">Edit
+=======
+@if(\Auth::check() && 
+	(\Auth::user()->hasRole('Principal') || 
+	\Auth::user()->hasRole('Verifier') || 
+	\Auth::user()->hasRole('admin')
+	)
+)
+	<form method="post" action="/blog_admin/approve-post">
+	<input type="hidden" name="post_id" value="{{ @$post->id }}" />
+    <input type="submit" class="btn btn-outline-secondary btn-sm pull-right float-right" value="Approve" />
+	</form>
+@endif
+@if(\Auth::check() && \Auth::user()->canManageBinshopsBlogPosts())
+    <a href="{{$post->edit_url()}}" class="btn btn-outline-secondary btn-sm pull-right float-right">Edit 
+>>>>>>> approvals
         Post</a>
 @endif
 

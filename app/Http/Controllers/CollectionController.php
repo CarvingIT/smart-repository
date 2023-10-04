@@ -204,6 +204,29 @@ class CollectionController extends Controller
 		return $documents;
 	}
 
+	public function getMetaFilters($request){
+		// check if meta filters are present in the query
+		$query_params = $request->query();
+		$meta_filters_query = array();
+		foreach($query_params as $p=>$v){
+			if(preg_match('/^meta_(\d*)/', $p, $matches)){
+				// currently, no support for operator in the query string parameters
+				// default operator is '='
+				$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+			}
+		}
+		$meta_filters = array();
+		if(count($meta_filters_query)>0){
+			$meta_filters = $meta_filters_query;
+		}
+		else{
+			// else take from the session
+        	$all_meta_filters = Session::get('meta_filters');
+        	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
+		}
+		return $meta_filters;
+	}
+
     public function getMetaFilteredDocuments($request, $documents){
 		// check if meta filters are present in the query
 		$query_params = $request->query();
@@ -274,10 +297,11 @@ class CollectionController extends Controller
 		if($old_query != $request->search['value'] && 
 			!empty($request->search['value']) && strlen($request->search['value'])>3){
 			Session::put('search_query', $request->search['value']);
+			$meta_query = json_encode($this->getMetaFilters($request));
         	$search_log_data = array('collection_id'=> $request->collection_id, 
                 'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
                 'search_query'=> $request->search['value'], 
-                'meta_query'=>'',
+                'meta_query'=> $meta_query,
 				'ip_address' => $request->ip(),
                 'results'=>$search_results['recordsFiltered']);
 	    	if(!empty($request->collection_id)){
@@ -315,6 +339,9 @@ class CollectionController extends Controller
 		if($collection->content_type == 'Uploaded documents'){
         	$elastic_index = 'sr_documents';
         	$documents = \App\Document::where('collection_id', $request->collection_id);
+			if($collection->require_approval){
+				$documents = $documents->whereNotNull('approved_on');
+			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
 				$documents = $documents->where('created_by', \Auth::user()->id);
@@ -339,6 +366,7 @@ class CollectionController extends Controller
 		}
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
+				$documents = $documents->whereNotNull('approved_on');
 				if(\Auth::user()->id){
 					$documents = $documents->orWhere('created_by', \Auth::user()->id);
 				}
@@ -468,10 +496,10 @@ class CollectionController extends Controller
              ->limit($length)->offset($request->start)->get();
 	}
 	else{
-	$sort_column = empty($sort_column)?'updated_at':$sort_column;
-	$documents = $documents
-		->orderby($sort_column,$sort_direction)
-        ->limit($length)->offset($request->start)->get();
+		$sort_column = empty($sort_column)?'updated_at':$sort_column;
+		$documents = $documents
+			->orderby($sort_column,$sort_direction)
+        	->limit($length)->offset($request->start)->get();
 	}
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
@@ -509,6 +537,9 @@ class CollectionController extends Controller
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
         	$documents = \App\Document::where('collection_id', $request->collection_id);
+			if($collection->require_approval){
+        		$documents = $documents->whereNotNull('approved_on');
+			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
 				$documents = $documents->where('created_by', \Auth::user()->id);
@@ -994,10 +1025,15 @@ $j++;
 	}
 
     public function logSearchQuery($data){
+		$meta_query = [];
+		foreach(json_decode($data['meta_query']) as $m){
+			unset($m->filter_id);
+			$meta_query[] = $m;
+		}
 		try{
         $search_log_entry = new \App\Searches;
         $search_log_entry->collection_id = $data['collection_id']; 
-        $search_log_entry->meta_query = $data['meta_query']; 
+        $search_log_entry->meta_query = json_encode($meta_query); 
         $search_log_entry->search_query = $data['search_query']; 
         $search_log_entry->user_id = $data['user_id']; 
         $search_log_entry->ip_address = $data['ip_address']; 
@@ -1005,7 +1041,8 @@ $j++;
         $search_log_entry->save();
 		}
 		catch(\Exception $e){
-			// do nothing
+			print $e->getMessage();
+			exit;
 		}
     }
 
