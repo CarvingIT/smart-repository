@@ -59,7 +59,7 @@ $(document).ready(function() {
                                 <td>{{ $doc->owner->name }}</td>
                                 <td>{{ $doc->created_at }}</td>
                         	<td class="td-actions text-right">
-					<a href="/collection/{{ $doc->collection_id }}/document/{{ $doc->id }}/details" title="View Document"><span class="fas fa-eye" style="padding:5%;"></span></a>
+					<a href="/collection/{{ $doc->collection_id }}/document/{{ $doc->id }}/details" title="View Document"><i class="material-icons">visibility</i></a>
                             		<a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $doc->id }}/approval" data-original-title="" title="">
                                     	<i class="material-icons">edit</i>
                                     	<div class="ripple-container"></div>

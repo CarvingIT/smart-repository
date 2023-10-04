@@ -2,6 +2,7 @@
 
 @section('content')
     <div class="container-fluid">
+
       <div class="row">
         <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
@@ -10,10 +11,8 @@
                 <i class="material-icons">person</i>
               </div>
               <p class="card-category">Profile</p>
-              <h4 class="card-title">{{ auth()->user()->name }}
-		</h4>
               <h3 class="card-title">{{ auth()->user()->name }}
-		          </h3>
+		</h3>
             </div>
 			<div class="card-body">
 				<ul>
@@ -35,7 +34,6 @@
                 <!--<i class="material-icons">store</i>-->
                 <i class="material-icons">content_copy</i>
               </div>
-              <p class="card-category"><a href="/collection/1">Database</a></p>
               <p class="card-category">Documents</p>
               <h3 class="card-title">{{ count($collections) }}</h3>
             </div>
@@ -53,14 +51,13 @@
             </div>
           </div>
         </div>
-         <div class="col-lg-4 col-md-6 col-sm-6">
+        <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
             <div class="card-header card-header-danger card-header-icon">
               <div class="card-icon">
                 <i class="material-icons">rss_feed</i>
               </div>
-              <p class="card-category"><a href="/user/{{ auth()->user()->id }}/mydocs">My Documents</a></p>
-              <p class="card-category">Blog Post</p>
+              <p class="card-category">Blogs</p>
               <h3 class="card-title">{{ count($blogs) }}</h3>
             </div>
 			<div class="card-body">
@@ -77,8 +74,7 @@
           </div>
         </div>
       </div>
-      <!-- 
-     <div class="row">
+      <div class="row">
       <div class="col-md-4">
           <div class="card card-chart">
             <div class="card-header card-header-warning">
@@ -112,7 +108,7 @@
               <h4 class="card-title">
 				Downloads
               </h4>
-             
+              <!--div class="ct-chart" id="dailySalesChart"></div-->
             </div>
             <div class="card-body">
               <p class="card-category">
@@ -143,70 +139,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card card-chart">
-            <div class="card-header card-header-warning">
-                <h4 class="card-title">
-			          <a href="/user/{{ auth()->user()->id }}/docs" style="color:#000;">Add New Documents</a>
-		         </h4>
-            </div>
-            <div class="card-body">
-              <p class="card-category">
-		          @foreach (['danger', 'warning', 'success', 'info'] as $msg)
-                   @if(Session::has('alert-' . $msg))
-                        <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
-                                <div class="mt-6 text-gray-900 leading-7 font-semibold ">
-                                  <span @if($msg == 'danger') style="color:red" @endif>{{ Session::get('alert-' . $msg) }}</span>
-                                </div>
-                        </div>
-                   @endif
-               @endforeach
-		          @if(!empty($awaiting_count)){{ $awaiting_count }}@else {{ __('No awaiting documents') }} @endif</p>
-	          </div>
-            <div class="card-footer">
-              <div class="stats">
-                <i class="material-icons">list</i>Total No. Of Documents
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card card-chart">
-            <div class="card-header card-header-success">
-              <h4 class="card-title">
-		          <a href="/user/{{ auth()->user()->id }}/docs/post">My Posts</a>
-              </h4>
-              
-            </div>
-            <div class="card-body">
-              <p class="card-category">
-                <span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
-            </div>
-            <div class="card-footer">
-              <div class="stats">
-                <i class="material-icons">show_chart</i> View More
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card card-chart">
-            <div class="card-header card-header-danger">
-              <h4 class="card-title">
-		          <a href="/user/{{ auth()->user()->id }}/docs/download">Download Documents</a>
-	            </h4>
-           
-            </div>
-            <div class="card-body">
-              <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
-            </div>
-            <div class="card-footer">
-              <div class="stats">
-                <i class="material-icons">show_chart</i>View More
-              </div>
-            </div>
-          </div> -->
-      </div> 
+      </div>
       <div class="row">
 	<!--
         <div class="col-lg-6 col-md-12">
@@ -456,18 +389,10 @@
         </div>
 	-->
 	<!--
-  <div class="col-lg-12 col-md-12">
-          <div class="card">
-            <div class="card-header card-header-warning">
-              <h4 class="card-title">Latest Download</h4>
-              <p class="card-category">New search on @php echo date("j F, Y"); @endphp</p>
-            </div>
-          </div>
-          </div>
         <div class="col-lg-12 col-md-12">
           <div class="card">
             <div class="card-header card-header-warning">
-              <h4 class="card-title">Save Searches</h4>
+              <h4 class="card-title">Latest Searches</h4>
               <p class="card-category">New search on @php echo date("j F, Y"); @endphp</p>
             </div>
             <div class="card-body table-responsive">
