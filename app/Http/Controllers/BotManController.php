@@ -50,8 +50,10 @@ class BotManController extends Controller
     public function search($botman, $req)
     {
         $botSearch = function(Answer $answer, $req){
-            $keywords = RakePlus::create($answer->getText())->get();
-			//$this->say($keywords);
+			// get keywords
+			// $keywords = RakePlus::create($answer->getText())->get(); // this gives phrases
+            $keywords = RakePlus::create($answer->getText())->keywords();
+			$this->say(implode(",",$keywords));
 			$client = new \GuzzleHttp\Client();
 			$http_host = request()->getHttpHost();
 			$protocol = request()->getScheme();
@@ -78,16 +80,24 @@ class BotManController extends Controller
 				$info_from_docs = preg_replace('/Page \d\d*/',' ', $info_from_docs);
 				$chunks = Util::createTextChunks($info_from_docs, 4000, 1000);
 				$matches = Util::findMatches($chunks, $keywords);
+				$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
 				$matches_cnt = 0;
 				foreach($matches as $chunk_id => $score){
-					if($matches_cnt < 10){
+					if($score > 0 && $matches_cnt < 10){
 						// consider only 10 most relevant matches for answering questions
-						$matches_details .= $chunk_id . ' - '. $score ."\n";	
+						$matches_details .= $chunk_id . ' - '. $score ."<br />";	
+						$matches_cnt++;
 					}
-					$matches_cnt++;
 				}
-				$this->say($matches_details);
+				//$matches_details .= $chunks[0];
+				if($matches_cnt == 0){
+					$this->say('I did not get an answer to your query.');
+				}
+				else{
+					// show answer here
+					$this->say($matches_details);
+				}
 			}else{
 				$this->say('There was some error. Please try again.');
 			}
