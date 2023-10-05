@@ -20,12 +20,12 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections')}}</a>:: @if($status==1){{ __('Approved') }} @else {{ __('UnApproved') }} @endif Documents</h4>
+            <div class="card-header card-header-primary"><h4 class="card-title">{{ __(ucfirst($status)) }}</h4>
             </div>
                  <div class="card-body">
 		<div class="row">
                   <div class="col-12 text-right">
-                <a href="/collections" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
+                <a href="/dashboard" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
                   </div>
 
                 </div>
@@ -34,21 +34,29 @@ $(document).ready(function() {
                         <thead class="text-primary">
                             <tr>
                             <th>Title</th>
-                            <th>Status</th>
                             <th>Comments</th>
                             <th>Created at</th>
                             <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-			@foreach($documents as $document)
+			@foreach($approvables as $item)
+				@if($item->approvable_type == 'App\BinshopsPost')
+					@php 
+						$post = App\BinshopsPublish::where('post_id',$item->approvable_id)->first();
+				//print_r($post); echo $post->title; exit;
+					@endphp
+				@endif	
                         <tr>
-                                <td>{{ @$document->document->title }}</td>
-                                <td>@if($status==1){{ __('Approved') }} @else {{ __('UnApproved') }} @endif</td>
-                                <td>{{ $document->comments }}</td>
-                                <td>{{ $document->created_at }}</td>
+                                <td>@if($item->approvable_type == 'App\BinshopsPost'){{ $post->title }}@else {{ @$item->approvable->title }}@endif</td>
+                                <td>{{ $item->comments }}</td>
+                                <td>{{ $item->created_at }}</td>
                         <td class="td-actions text-right">
-                            <a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $document->document_id }}/approval" data-original-title="" title="">
+				@if($item->approvable_type == 'App\BinshopsPost')
+                            <a rel="tooltip" class="btn btn-success btn-link" href="/en/blog/{{ @$post->slug}}" data-original-title="" title="">
+				@else
+                            <a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $item->approvable_id }}/approval" data-original-title="" title="">
+				@endif
                                     <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
                                   </a>

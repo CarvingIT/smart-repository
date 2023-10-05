@@ -8,15 +8,21 @@
           <div class="card card-stats">
             <div class="card-header card-header-warning card-header-icon">
               <div class="card-icon">
-                <i class="material-icons">content_copy</i>
+                <i class="material-icons">person</i>
               </div>
               <p class="card-category">Profile</p>
               <h3 class="card-title">{{ auth()->user()->name }}
 		</h3>
             </div>
+			<div class="card-body">
+				<ul>
+					<li><a href="/profile">Edit your profile</a></li>
+					<li><a href="#">Want to contribute?</a></li>
+				</ul>
+			</div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">info</i><a href="{{ route('profile.edit') }}">Edit Profile</a> 
+                <i class="material-icons">info</i><a href="#">Some link</a>
               </div>
             </div>
           </div>
@@ -25,14 +31,22 @@
           <div class="card card-stats">
             <div class="card-header card-header-success card-header-icon">
               <div class="card-icon">
-                <i class="material-icons">store</i>
+                <!--<i class="material-icons">store</i>-->
+                <i class="material-icons">content_copy</i>
               </div>
-              <p class="card-category">Collections</p>
+              <p class="card-category">Documents</p>
               <h3 class="card-title">{{ count($collections) }}</h3>
             </div>
+			<div class="card-body">
+				<ul>
+					<li><a href="/user/{{ auth()->user()->id }}/mydocs">My Uploaded Documents</a></li>
+					<li><a href="/approvals/documents/awaiting">Awaiting approval</a></li>
+					<li>Rejected</li>
+				</ul>
+			</div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">list</i><a href="/collections">List of Collections</a> 
+                <i class="material-icons">list</i><a href="/collections">Database</a> 
               </div>
             </div>
           </div>
@@ -46,6 +60,12 @@
               <p class="card-category">Blogs</p>
               <h3 class="card-title">{{ count($blogs) }}</h3>
             </div>
+			<div class="card-body">
+				<ul>
+					<li><a href="/approvals/blogs/awaiting">Awaiting approval</a></li>
+					<li>Rejected</li>
+				</ul>
+			</div>
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">access_time</i> campaign sent 2 days ago
@@ -59,7 +79,7 @@
           <div class="card card-chart">
             <div class="card-header card-header-warning">
                 <h4 class="card-title">
-			<a href="/user/{{ auth()->user()->id }}/docs" style="color:#000;">Documents Awaiting Approvals</a>
+				Searches
 		</h4>
             </div>
             <div class="card-body">
@@ -86,7 +106,7 @@
           <div class="card card-chart">
             <div class="card-header card-header-success">
               <h4 class="card-title">
-		<a href="/user/{{ auth()->user()->id }}/docs/approved">Approved Documents</a>
+				Downloads
               </h4>
               <!--div class="ct-chart" id="dailySalesChart"></div-->
             </div>
@@ -105,7 +125,7 @@
           <div class="card card-chart">
             <div class="card-header card-header-danger">
               <h4 class="card-title">
-		<a href="/user/{{ auth()->user()->id }}/docs/unapproved">UnApproved Documents</a>
+				Help
 	      </h4>
               <!--div class="ct-chart" id="completedTasksChart"></div-->
             </div>
@@ -368,6 +388,7 @@
           </div>
         </div>
 	-->
+	<!--
         <div class="col-lg-12 col-md-12">
           <div class="card">
             <div class="card-header card-header-warning">
@@ -412,6 +433,7 @@
             </div>
           </div>
         </div>
+		-->
       </div>
     </div>
 @endsection

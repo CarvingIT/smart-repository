@@ -339,6 +339,9 @@ class CollectionController extends Controller
 		if($collection->content_type == 'Uploaded documents'){
         	$elastic_index = 'sr_documents';
         	$documents = \App\Document::where('collection_id', $request->collection_id);
+			if($collection->require_approval){
+				$documents = $documents->whereNotNull('approved_on');
+			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
 				$documents = $documents->where('created_by', \Auth::user()->id);
@@ -363,6 +366,7 @@ class CollectionController extends Controller
 		}
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
+				$documents = $documents->whereNotNull('approved_on');
 				if(\Auth::user()->id){
 					$documents = $documents->orWhere('created_by', \Auth::user()->id);
 				}
@@ -492,10 +496,10 @@ class CollectionController extends Controller
              ->limit($length)->offset($request->start)->get();
 	}
 	else{
-	$sort_column = empty($sort_column)?'updated_at':$sort_column;
-	$documents = $documents
-		->orderby($sort_column,$sort_direction)
-        ->limit($length)->offset($request->start)->get();
+		$sort_column = empty($sort_column)?'updated_at':$sort_column;
+		$documents = $documents
+			->orderby($sort_column,$sort_direction)
+        	->limit($length)->offset($request->start)->get();
 	}
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
@@ -533,6 +537,9 @@ class CollectionController extends Controller
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
         	$documents = \App\Document::where('collection_id', $request->collection_id);
+			if($collection->require_approval){
+        		$documents = $documents->whereNotNull('approved_on');
+			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
 				$documents = $documents->where('created_by', \Auth::user()->id);
