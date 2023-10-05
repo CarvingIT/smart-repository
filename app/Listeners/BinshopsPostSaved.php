@@ -35,7 +35,7 @@ class BinshopsPostSaved
 			$approval_record = new Approval();
 			$approval_record->approved_by_role=$approvers[0];
 			$approval_record->approvable_id=$event->binshopsBlogPost->id;
-			$approval_record->approvable_type='App\BinshopPost';
+			$approval_record->approvable_type='App\BinshopsPost';
 			$approval_record->save();
 		//}
     }

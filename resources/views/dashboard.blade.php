@@ -61,7 +61,7 @@
             </div>
 			<div class="card-body">
 				<ul>
-					<li>Awaiting approval</li>
+					<li><a href="/approvals/blogs/awaiting">Awaiting approval</a></li>
 					<li>Rejected</li>
 				</ul>
 			</div>
