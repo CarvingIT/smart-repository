@@ -12,7 +12,7 @@
 	<form method="post" action="/approvals/blog/{{ $post->id }}/save_status">
 	@csrf
 	<input type="hidden" name="approvable_id" value="{{ @$post->id }}" />
-	<input type="hidden" name="slug" value="{{ $post->slug }}" />
+	<input type="hidden" name="slug" value="{{ @$post->slug }}" />
 	<input type="hidden" name="approved_by" value="{{ auth()->user()->id }}" />
 	<div class="form-group row">
 		<div class="col-md-3">
@@ -35,8 +35,6 @@
                    <textarea class="form-control" id="approval_comment" name="comments"></textarea>
                    </div>
                 </div>
-
-	
     <input type="submit" class="btn btn-outline-secondary btn-sm pull-right float-right" value="Approve" />
 	</form>
 @endif
