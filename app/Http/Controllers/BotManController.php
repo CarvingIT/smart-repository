@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 use BotMan\BotMan\BotMan;
 use Illuminate\Http\Request;
 use BotMan\BotMan\Messages\Incoming\Answer;
+use DonatelloZa\RakePlus\RakePlus;
+use App\Document;
+use App\Util;
 
 class BotManController extends Controller
 {
@@ -17,20 +20,24 @@ class BotManController extends Controller
             if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
                 $this->askName($botman);
             }
-			else if(!empty($message)){
-				
-			}
-			else{
-                $botman->reply("Hello! \n Type in your question and let me see if I can answer that.");
+			else if($message == 'q'){
+				$this->search($botman, $req);
             }
+			else{
+				$this->unknownCommand($botman);
+			}
         });
         $botman->listen();
     }
+
     /**
 
      * Place your BotMan logic here.
 
      */
+	public function unknownCommand($botman){
+		$botman->reply('I don\'t understand that command. Type "h" to get a list of commands.');
+	}
 
     public function askName($botman)
     {
@@ -42,17 +49,16 @@ class BotManController extends Controller
 
     public function search($botman, $req)
     {
-        //$botman->ask('Enter search keywords', $botSearch = function(Answer $answer, $req) {
-        $botSearch = function(Answer $answer, $req) use (&$botSearch){
-            $keywords = $answer->getText();
+        $botSearch = function(Answer $answer, $req){
+            $keywords = RakePlus::create($answer->getText())->get();
+			//$this->say($keywords);
 			$client = new \GuzzleHttp\Client();
 			$http_host = request()->getHttpHost();
 			$protocol = request()->getScheme();
-			$endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.urlencode($keywords);
-			//$this->say($endpoint);
-			// /api/collection/1/search?search[value]=
+			$endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.urlencode(implode(" ",$keywords));
+
 			$res = $client->get($endpoint);
-			//$res = $http_req->send();
+
 			$status_code = $res->getStatusCode();
 			if($status_code == 200){
 				$body = $res->getBody();
@@ -61,23 +67,33 @@ class BotManController extends Controller
 				if(count($documents_array->data) == 0){
 					$botman_results .= "I don't know.";
 				}
-				else{
-					/*
-					$botman_results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
-					$botman_results .= '<br/>Listing 10 most relevant here.<br/>';
-					*/
-				}
 				
+				$info_from_docs = '';
 				foreach($documents_array->data as $d){
-					$botman_results .= '<li><a href="/collection/1/document/'.$d->id.'">'.$d->title.'</a></li>';
+					$doc = Document::find($d->id);
+					$info_from_docs .= $doc->text_content;
 				}
-				$this->say($botman_results.'');
+
+				// remove Page \d\d from the string
+				$info_from_docs = preg_replace('/Page \d\d*/',' ', $info_from_docs);
+				$chunks = Util::createTextChunks($info_from_docs, 4000, 1000);
+				$matches = Util::findMatches($chunks, $keywords);
+				$matches_details = '';
+				$matches_cnt = 0;
+				foreach($matches as $chunk_id => $score){
+					if($matches_cnt < 10){
+						// consider only 10 most relevant matches for answering questions
+						$matches_details .= $chunk_id . ' - '. $score ."\n";	
+					}
+					$matches_cnt++;
+				}
+				$this->say($matches_details);
 			}else{
 				$this->say('There was some error. Please try again.');
 			}
-            //$this->say('You entered '.$keywords.'.');
         };
-		$botman->ask('Enter search keywords', $botSearch);
+
+		$botman->ask('Type in your question', $botSearch);
     }
 
 }
