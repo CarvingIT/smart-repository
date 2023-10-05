@@ -17,14 +17,11 @@ class BotManController extends Controller
             if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
                 $this->askName($botman);
             }
-			else if($message == 1){
-				$this->themeInfo($botman);
-			}
-			else if($message == 2){
-				$this->search($botman, $req);
+			else if(!empty($message)){
+				
 			}
 			else{
-                $botman->reply("I understand these instructions <br/> 1. Information about themes and sub-themes <br /> 2. Search the repository with keywords. <br/> (Type in just the number and press enter.)");
+                $botman->reply("Hello! \n Type in your question and let me see if I can answer that.");
             }
         });
         $botman->listen();
@@ -62,14 +59,13 @@ class BotManController extends Controller
 				$documents_array = json_decode($body);
 				$botman_results = '';
 				if(count($documents_array->data) == 0){
-					$botman_results .= "Did not find any documents matching your search. Press 2 to search again.";
-				}
-				else if(count($documents_array->data) < 10){
-					$botman_results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
+					$botman_results .= "I don't know.";
 				}
 				else{
+					/*
 					$botman_results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
 					$botman_results .= '<br/>Listing 10 most relevant here.<br/>';
+					*/
 				}
 				
 				foreach($documents_array->data as $d){
@@ -83,9 +79,5 @@ class BotManController extends Controller
         };
 		$botman->ask('Enter search keywords', $botSearch);
     }
-
-	public function themeInfo($botman){
-		$botman->reply("You want information on themes.");
-	}	
 
 }

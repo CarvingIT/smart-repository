@@ -16,6 +16,7 @@
         "botman/driver-web": "^1.5",
         "creativeorange/gravatar": "~1.0",
         "doctrine/dbal": "^2.0",
+        "donatello-za/rake-php-plus": "^1.0",
         "dragomirt/pdf-to-text": "^1.5",
         "elasticsearch/elasticsearch": "^7.0",
         "fideloper/proxy": "^4.0",
