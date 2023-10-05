@@ -1,21 +1,41 @@
-<<<<<<< HEAD
-@if(\Auth::check() && \Auth::user()->canManageBinshopsBlogPosts())
-    <a href="{{$post->edit_url()}}" class="btn btn-outline-secondary btn-sm pull-right float-right">Edit
-=======
 @if(\Auth::check() && 
 	(\Auth::user()->hasRole('Principal') || 
 	\Auth::user()->hasRole('Verifier') || 
 	\Auth::user()->hasRole('admin')
 	)
 )
-	<form method="post" action="/blog_admin/approve-post">
-	<input type="hidden" name="post_id" value="{{ @$post->id }}" />
+	<!--form method="post" action="/blog_admin/approve-post"-->
+	<form method="post" action="/approvals/blog/{{ $post->id }}/save_status">
+	@csrf
+	<input type="hidden" name="approvable_id" value="{{ @$post->id }}" />
+	<input type="hidden" name="slug" value="{{ @$post->slug }}" />
+	<input type="hidden" name="approved_by" value="{{ auth()->user()->id }}" />
+	<div class="form-group row">
+		<div class="col-md-3">
+		<label for="approved" class="col-md-12 col-form-label text-md-right">Approval Status</label>
+                   </div>
+                   <div class="col-md-9">
+
+                   <select id="approval_status" name="approval_status" class="selectpicker" required>
+                        <option value="">Select Status</option>
+                        <option value="1">Approved</option>
+                        <option value="0">Rejected</option>
+                   </select>
+                </div>
+        </div>
+	<div class="form-group row">
+                <div class="col-md-3">
+                   <label for="approved" class="col-md-12 col-form-label text-md-right">Approver Comments</label>
+                   </div>
+                   <div class="col-md-9">
+                   <textarea class="form-control" id="approval_comment" name="comments"></textarea>
+                   </div>
+                </div>
     <input type="submit" class="btn btn-outline-secondary btn-sm pull-right float-right" value="Approve" />
 	</form>
 @endif
 @if(\Auth::check() && \Auth::user()->canManageBinshopsBlogPosts())
     <a href="{{$post->edit_url()}}" class="btn btn-outline-secondary btn-sm pull-right float-right">Edit 
->>>>>>> approvals
         Post</a>
 @endif
 
