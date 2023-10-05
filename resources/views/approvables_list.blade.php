@@ -41,12 +41,22 @@ $(document).ready(function() {
                         </thead>
                         <tbody>
 			@foreach($approvables as $item)
+				@if($item->approvable_type == 'App\BinshopsPost')
+					@php 
+						$post = App\BinshopsPublish::where('post_id',$item->approvable_id)->first();
+				//print_r($post); echo $post->title; exit;
+					@endphp
+				@endif	
                         <tr>
-                                <td>{{ @$item->approvable->title }}</td>
+                                <td>@if($item->approvable_type == 'App\BinshopsPost'){{ $post->title }}@else {{ @$item->approvable->title }}@endif</td>
                                 <td>{{ $item->comments }}</td>
                                 <td>{{ $item->created_at }}</td>
                         <td class="td-actions text-right">
+				@if($item->approvable_type == 'App\BinshopsPost')
+                            <a rel="tooltip" class="btn btn-success btn-link" href="/en/blog/{{ @$post->slug}}" data-original-title="" title="">
+				@else
                             <a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $item->approvable_id }}/approval" data-original-title="" title="">
+				@endif
                                     <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
                                   </a>

@@ -14,4 +14,8 @@ class DocumentApproval extends Model
         return $this->belongsTo('App\User', 'approved_by');
     }
 
+    public function post(){
+        return $this->belongsTo('App\BinshopsPost', 'post_id');
+    }
+
 }

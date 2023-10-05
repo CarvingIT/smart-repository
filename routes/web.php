@@ -127,6 +127,7 @@ Route::post('/approvals/{approvable}/{approvable_id}/save_status', 'ApprovalsCon
 //Documents Approved by Me
 Route::get('/approvals/{approvable}/{status}', 'ApprovalsController@listByStatus');
 
+
 // reports
 Route::get('/reports', 'ReportsController@index')->middleware('admin');
 Route::get('/reports/downloads', 'ReportsController@downloads')->middleware('admin');
