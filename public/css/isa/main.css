@@ -222,7 +222,7 @@ section {
   position: fixed;
   visibility: hidden;
   opacity: 0;
-  right: 15px;
+  right: 30px;
   bottom: 90px;
   z-index: 99999;
   background: #f05a22;
