@@ -14,7 +14,7 @@
 	 		}
         if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
 		if(empty($t->parent_id)){
-		echo "<a href='#'>By ".$t->label."<br /><br />";
+		echo "By ".$t->label."<br /><br />";
 		}
 		else{
 		echo '<div class="form-check">';
@@ -56,8 +56,8 @@
 		  @endif
                  
                   </div>
-        </div>
-</div>
+		        </div>
+			</div>
 	
 			<div class="col-10">
             <p>{{-- $collection->description --}}</p>
@@ -87,7 +87,6 @@
 		
 		<!--/form-->
 
-		</div>
 
 <!-- End Breadcrumbs -->
 
@@ -119,12 +118,8 @@ foreach($tags as $t){
 				@endphp
 			<!--/div-->
 		  <!--a href="#">By Theme</a-->
-<div class="form-check">
-</div>
-		  <a href="#">Filter 1</a>
-		  <a href="#">Filter 2</a>
-		  <a href="#">Filter 3</a>
-		  <a href="#">Filter 4</a>
+		<div class="form-check">
+		</div>
 		</div>
 
 	  
@@ -150,6 +145,7 @@ foreach($tags as $t){
 	</div>
 	  </div>
 
+		</div> <!-- card -->
 <nav aria-label="Page navigation">
 <ul class="pagination justify-content-center">
 @php
