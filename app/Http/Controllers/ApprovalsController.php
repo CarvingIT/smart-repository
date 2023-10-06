@@ -26,6 +26,7 @@ class ApprovalsController extends Controller
         }
 
 	public function saveApprovalStatus($approvable, $approvable_id, Request $request){
+//echo $approvable_id; exit;
 		$user_roles = [];
 		foreach(auth()->user()->roles as $r){
 			$user_roles[] = $r->role_id;

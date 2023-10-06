@@ -5,9 +5,9 @@
 	)
 )
 	<!--form method="post" action="/blog_admin/approve-post"-->
-	<form method="post" action="/approvals/blog/{{ $post->id }}/save_status">
+	<form method="post" action="/approvals/blog/{{ $post->post_id }}/save_status">
 	@csrf
-	<input type="hidden" name="approvable_id" value="{{ @$post->id }}" />
+	<input type="hidden" name="approvable_id" value="{{ @$post->post_id }}" />
 	<input type="hidden" name="slug" value="{{ @$post->slug }}" />
 	<input type="hidden" name="approved_by" value="{{ auth()->user()->id }}" />
 	<div class="form-group row">
