@@ -143,7 +143,8 @@
                       <li><a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomy') }}</a></li>
-                    @endif
+                      <li><a class="dropdown-item" href="/reports/search-queries">{{ __('Report of search queries') }}</a></li>
+                      @endif
                     </ul>
                   </div>
                 </div>
