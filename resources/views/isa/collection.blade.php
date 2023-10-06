@@ -65,7 +65,7 @@
 			<div class="col-2 text-right">
 			</div>
 			
-		<form name="isa_search" action="#" method="get" id="isa_search">
+		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
 		@csrf
 		<div class="row text-center">
 		   <div class="col-12">
