@@ -55,8 +55,8 @@ $(document).ready(function() {
 			@foreach($documents as $doc)
                         <tr>
                                 <td>{{ $doc->title }}</td>
-                                <td>{{ $doc->collection->name }}</td>
-                                <td>{{ $doc->owner->name }}</td>
+                                <td>{{ @$doc->collection->name }}</td>
+                                <td>{{ @$doc->owner->name }}</td>
                                 <td>{{ $doc->created_at }}</td>
                         	<td class="td-actions text-right">
 					<a href="/collection/{{ $doc->collection_id }}/document/{{ $doc->id }}/details" title="View Document"><i class="material-icons">visibility</i></a>
