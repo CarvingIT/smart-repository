@@ -41,7 +41,8 @@
 				<ul>
 					<li><a href="/user/{{ auth()->user()->id }}/mydocs">My Uploaded Documents</a></li>
 					<li><a href="/approvals/documents/awaiting">Awaiting approval</a></li>
-					<li>Rejected</li>
+					<li><a href="/approvals/documents/approved">Approved</a></li>
+					<li><a href="/approvals/documents/rejected">Rejected</a></li>
 				</ul>
 			</div>
             <div class="card-footer">
