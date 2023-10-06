@@ -34,6 +34,9 @@ class EventServiceProvider extends ServiceProvider
 	'Aacotroneo\Saml2\Events\Saml2LogoutEvent'=>[
 		'App\Listeners\SAMLLogout',
 	],
+	'BinshopsBlog\Events\BlogPostAdded' => [
+		'App\Listeners\BinshopsPostSaved',
+	],
 
     ];
 

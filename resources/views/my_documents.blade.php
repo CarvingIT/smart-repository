@@ -21,7 +21,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-            <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections')}}</a>:: {{ __('Awaiting Approval Documents') }}</h4>
+            <div class="card-header card-header-primary"><h4 class="card-title">{{ __('My Uploaded Documents') }}</h4>
             </div>
                  <div class="card-body">
 		<div class="row">
@@ -52,7 +52,7 @@ $(document).ready(function() {
                             </tr>
                         </thead>
                         <tbody>
-			@foreach($awaiting_approvals_docs as $doc)
+			@foreach($documents as $doc)
                         <tr>
                                 <td>{{ $doc->title }}</td>
                                 <td>{{ $doc->collection->name }}</td>
@@ -60,7 +60,7 @@ $(document).ready(function() {
                                 <td>{{ $doc->created_at }}</td>
                         	<td class="td-actions text-right">
 					<a href="/collection/{{ $doc->collection_id }}/document/{{ $doc->id }}/details" title="View Document"><i class="material-icons">visibility</i></a>
-                            		<a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $doc->id }}/approval" data-original-title="" title="">
+                            		<a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $doc->id }}/edit" data-original-title="" title="">
                                     	<i class="material-icons">edit</i>
                                     	<div class="ripple-container"></div>
                                         </a>

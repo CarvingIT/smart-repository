@@ -229,6 +229,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 	'Gravatar' => Creativeorange\Gravatar\Facades\Gravatar::class,
 	'FastExcel' => Rap2hpoutre\FastExcel\Facades\FastExcel::class,
+	'Image' => Intervention\Image\Facades\Image::class,
     ],
 
 ];

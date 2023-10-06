@@ -98,7 +98,7 @@
       <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
       <nav id="navbar" class="navbar">
         <ul>
-          <li><a href="/" class="active">Home</a></li>
+          <li><a href="/">Home</a></li>
           <li><a href="/collection/1">Database</a></li>
           <li class="dropdown">
             <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
