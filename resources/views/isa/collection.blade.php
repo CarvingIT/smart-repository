@@ -64,9 +64,7 @@
 			</div>
 			<div class="col-2 text-right">
 			</div>
-			@if(Auth::check() && Auth::user()->hasRole('admin'))
 		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
-		@endif	
 		@csrf
 		<div class="row text-center">
 		   <div class="col-12">
