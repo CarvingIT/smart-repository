@@ -124,6 +124,8 @@ Route::post('/document/save_status', 'DocumentApprovalController@saveApprovalSta
 Route::get('/user/{user_id}/docs/{status}', 'DocumentApprovalController@documentsHandledByMe');
 Route::get('/user/{user_id}/docs', 'DocumentApprovalController@documentsAwaitingApprovals');
 
+// user downloads
+Route::get('/user/downloads','ReportsController@userDownloads')->middleware('auth');
 
 // reports
 Route::get('/reports', 'ReportsController@index')->middleware('admin');
