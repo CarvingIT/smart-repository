@@ -19,7 +19,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
   <!-- Vendor CSS Files -->
-  <link href="../../css/isa/material/css/material-dashboard.css" rel="stylesheet">
+  <link href="/css/isa/material/css/material-dashboard.css" rel="stylesheet">
   <link href="/css/isa/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <link href="/css/isa/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
   <link href="/css/isa/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
@@ -29,16 +29,16 @@
 
   <!-- Template Main CSS File -->
   <link rel="stylesheet" href="{{url('/css/isa/main.css')}}" />
-  <link href="../../css/isa/main.css" rel="stylesheet">
+  <link href="/css/isa/main.css" rel="stylesheet">
 
   <!-- Fonts -->
-  <link href="../../css/isa/fonts.css" rel="stylesheet">
+  <link href="/css/isa/fonts.css" rel="stylesheet">
   <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   <link href="/css/custom.css" rel="stylesheet" />
   <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
   <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
-  <script src="../../js/isa/main.js"></script>
+  <script src="/js/isa/main.js"></script>
   <!--script src="/js/jquery-3.5.1.js"></script-->
 
   @stack('js') 
@@ -52,7 +52,7 @@
   
   <!-- CSS Files -->
   <link href="{{ asset('material') }}/css/material-dashboard.css" rel="stylesheet" />
-  <link href="../../css/custom.css" rel="stylesheet" />
+  <link href="/css/custom.css" rel="stylesheet" />
   <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
     
     <style>
@@ -212,10 +212,10 @@
 
 <div id="preloader"></div>
 <!-- Vendor JS Files -->
-<script src="../../css/isa/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="../../css/isa/vendor/purecounter/purecounter_vanilla.js"></script>
-<script src="../../css/isa/vendor/glightbox/js/glightbox.min.js"></script>
-<script src="../../css/isa/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="/css/isa/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/css/isa/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="/css/isa/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="/css/isa/vendor/swiper/swiper-bundle.min.js"></script>
 <script src="/css/isa/vendor/aos/aos.js"></script>
 <script src="/css/isa/vendor/php-email-form/validate.js"></script>
 <!-- Template Main JS File -->
