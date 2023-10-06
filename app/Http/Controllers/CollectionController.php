@@ -292,9 +292,11 @@ class CollectionController extends Controller
         else{
             $search_results = $this->searchDB($request); 
         }
+
         // log search query
 		$old_query = Session::get('search_query');
-		if($old_query != $request->search['value'] && 
+
+		if($old_query != $request->search['value'] && !$request->is('api/*') &&
 			!empty($request->search['value']) && strlen($request->search['value'])>3){
 			Session::put('search_query', $request->search['value']);
 			$meta_query = json_encode($this->getMetaFilters($request));
@@ -1382,9 +1384,6 @@ use App\UrlSuppression;
 	}
 
 	public function isaCollectionDocumentSearch(Request $request){
-//echo $request->isa_search_parameter;
-//print_r($request->meta);
-//exit;
 		$collection_id = $request->collection_id;
 		$collection = \App\Collection::find($collection_id);
 		$keywords = $request->isa_search_parameter;
@@ -1404,32 +1403,34 @@ use App\UrlSuppression;
                 $protocol = request()->getScheme();
 		$length=10;
 		$start = empty($request->start)? 0 : $request->start;
-                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.$keywords.$taxonomy_ids.'&start='.$start.'&length='.$length;
+                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?log_search=0&search[value]='.$keywords.$taxonomy_ids.'&start='.$start.'&length='.$length;
 //echo $endpoint; exit;
                 $res = $client->get($endpoint);
                 $status_code = $res->getStatusCode();
                 if($status_code == 200){
-			$body = $res->getBody();
-                        $documents_array = json_decode($body);
-//print_r($documents_array->data); exit;
-                        $results = '';
-                        if(count($documents_array->data) == 0){
-                                $results .= "Did not find any documents matching your search. Press 2 to search again.";
-                        }
-                        else if(count($documents_array->data) > 10){
-                                $results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
-                        }
-                        else{
-                                $results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
-                                $results .= '<br/>Listing 10 most relevant here.<br/>';
-                        }
-
-                        foreach($documents_array->data as $d){
-                                $results .= '<a href="/collection/1/document/'.$d->id.'">'.$d->title.'</a><br />';
-                        }
-		}
+					$body = $res->getBody();
+            		$documents_array = json_decode($body);
+				}
 
 		$total_results_count = $documents_array->recordsTotal;
+        // log search query
+        $old_query = Session::get('search_query');
+        if(!empty($request->isa_search_parameter) && $old_query != $request->isa_search_parameter &&
+            strlen($request->isa_search_parameter)>3){
+            Session::put('search_query', $request->isa_search_parameter);
+            $meta_query = json_encode($this->getMetaFilters($request));
+			$user_id = \Auth::user()->id;
+            $search_log_data = array('collection_id'=> $request->collection_id,
+                'user_id'=> $user_id,
+                'search_query'=> $request->isa_search_parameter,
+                'meta_query'=> $meta_query,
+                'ip_address' => $request->ip(),
+                'results'=>$total_results_count);
+            if(!empty($request->collection_id)){
+                $this->logSearchQuery($search_log_data);
+            }
+        }
+
 		return view('isa.collection',['collection'=>$collection, 'results'=>$documents_array->data,'total_results_count'=>$total_results_count,'taxonomies'=>$taxonomy_ids,'activePage'=>'Documents','titlePage'=>'Documents']);
 
 	}
