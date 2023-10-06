@@ -24,7 +24,9 @@ class DocumentController extends Controller
 	}
 
     public function listMyDocuments(Request $request){
-	$documents = Document::where('created_by',auth()->user()->id)->get();
+	$documents = Document::where('created_by',auth()->user()->id)
+		->orderby('id', 'DESC')
+		->get();
         return view('my_documents',['documents'=>$documents,'activePage'=>'My Uploaded Documents','titlePage'=>'My Uploaded Documents']);
 	}
 
