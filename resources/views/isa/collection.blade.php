@@ -4,8 +4,17 @@
 @section('content')
 <main id="main">
 @php
+	// get meta fields of this collection
+	$meta_fields = $collection->meta_fields;
+	$filters = [];
+	foreach($meta_fields as $m){
+		if($m->type == 'TaxonomyTree'){
+			$filters[] = $m;
+		}
+	}	
+
 	$search_query = Request::get('isa_search_parameter');
-	function getTree($children, $parent_id = null){
+	function getTree($children, $parent_id = null, $meta_id=null){
          if(empty($children['parent_'.$parent_id])) return;
          foreach($children['parent_'.$parent_id] as $t){
          $checked = '';
@@ -17,15 +26,20 @@
 		echo "By ".$t->label."<br /><br />";
 		}
 		else{
+		// get compare with query string parameter to mark as checked
 		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta['.$t->id.']" onChange="this.form.submit();"'.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
 		echo '</div>';
 		}
-                  getTree($children, $t->id);
+                  getTree($children, $t->id, $meta_id);
              }
              else{
+			$checked = '';
+			if(!empty(Request::get('meta_'.$meta_id)) && in_array($t->id, Request::get('meta_'.$meta_id))){
+				$checked = "checked";
+			}
 		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta['.$t->id.']" onChange="this.form.submit();"'.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp;&nbsp;'.$t->label.'</label><br />';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp;&nbsp;'.$t->label.'</label><br />';
 		echo '</div>';
              }
          }
@@ -34,6 +48,7 @@
 
 <!-- ======= Breadcrumbs ======= -->
     <div class="row justify-content-center">
+		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
         <div class="col-md-12">
             <div class="card">
 				<div class="card-header card-header-primary">
@@ -65,8 +80,6 @@
 			<div class="col-2 text-right">
 			</div>
 			
-		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
-		@csrf
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
@@ -83,11 +96,7 @@
 		   </div>
 		  
 		</div>
-		</form>
 		
-		<!--/form-->
-
-
 <!-- End Breadcrumbs -->
 
 <!-- ======= Service Details Section ======= -->
@@ -114,7 +123,10 @@ foreach($tags as $t){
 				</label>
 				-->
 				@php
-				getTree($children);
+				foreach($filters as $f){
+					echo 'By '.$f->label;
+					getTree($children, $f->options, $f->id);
+				}
 				@endphp
 			<!--/div-->
 		  <!--a href="#">By Theme</a-->
@@ -173,6 +185,7 @@ $collection_id = $collection->id;
 </ul>
 </nav>
 
+</form>
 	</div>
 
   </div>

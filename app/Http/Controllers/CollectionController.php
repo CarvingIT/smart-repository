@@ -257,10 +257,22 @@ class CollectionController extends Controller
 
             if($mf['operator'] == '='){
 				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
-                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
-                    }
-                );
+				if(is_array($mf['value'])){ 
+					// this is for array of values passed through the query string 
+					// e.g. &meta_10[]=somevalue&meta_10[]=someothervalue
+					//print_r($mf['value']);exit;
+					foreach($mf['value'] as $v){
+                		$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
+        					$query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$v.'"%');
+                    	});
+					}
+				}
+				else{
+                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                    	    $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
+                    	}
+                	);
+				}
             }
             else if($mf['operator'] == '>='){
                 $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
@@ -1387,23 +1399,30 @@ use App\UrlSuppression;
 		$collection_id = $request->collection_id;
 		$collection = \App\Collection::find($collection_id);
 		$keywords = $request->isa_search_parameter;
-		$taxonomy_ids = '';
-		if(!empty($request->meta)){
-			foreach($request->meta as $key => $value){
-				$taxonomy_ids .= '&meta_'.$value.'='.$value;
+		$meta_query = '';
+		$query_params = $request->query();
+		foreach($query_params as $p=>$v){
+			if(preg_match('/^meta_(\d*)/', $p, $matches)){
+				// currently, no support for operator in the query string parameters
+				// default operator is '='
+				//$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+				//print_r($matches); print_r($v); exit;
+				if(is_array($v)){
+					foreach($v as $x){
+						$meta_query .= '&meta_'.$matches[1].'[]='.$x;
+					}
+				}
+				else{
+					$meta_query .= '&meta_'.$matches[1].'='.$v;
+				}	
 			}
 		}
-		else{
-		$taxonomy_ids = '';
-		}
-
-//echo $taxonomy_ids; exit;
 		$client = new \GuzzleHttp\Client();
                 $http_host = request()->getHttpHost();
                 $protocol = request()->getScheme();
 		$length=10;
 		$start = empty($request->start)? 0 : $request->start;
-                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?log_search=0&search[value]='.$keywords.$taxonomy_ids.'&start='.$start.'&length='.$length;
+                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?log_search=0&search[value]='.$keywords.$meta_query.'&start='.$start.'&length='.$length;
 //echo $endpoint; exit;
                 $res = $client->get($endpoint);
                 $status_code = $res->getStatusCode();
@@ -1419,7 +1438,7 @@ use App\UrlSuppression;
             strlen($request->isa_search_parameter)>3){
             Session::put('search_query', $request->isa_search_parameter);
             $meta_query = json_encode($this->getMetaFilters($request));
-			$user_id = \Auth::user()->id;
+			$user_id = empty(\Auth::user()->id)?null:\Auth::user()->id;
             $search_log_data = array('collection_id'=> $request->collection_id,
                 'user_id'=> $user_id,
                 'search_query'=> $request->isa_search_parameter,
@@ -1431,8 +1450,11 @@ use App\UrlSuppression;
             }
         }
 
-		return view('isa.collection',['collection'=>$collection, 'results'=>$documents_array->data,'total_results_count'=>$total_results_count,'taxonomies'=>$taxonomy_ids,'activePage'=>'Documents','titlePage'=>'Documents']);
-
+		return view('isa.collection',['collection'=>$collection, 
+			'results'=>$documents_array->data,
+			'total_results_count'=>$total_results_count,
+			'activePage'=>'Documents',
+			'titlePage'=>'Documents']);
 	}
 
 //Class Ends
