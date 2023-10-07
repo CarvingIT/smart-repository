@@ -121,11 +121,20 @@ class CollectionController extends Controller
          return redirect('/admin/collectionmanagement');
     }
 
-    public function collection($collection_id){
+    public function collection($collection_id, Request $request){
         $collection = Collection::find($collection_id);
-        $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-	$documents = $this->approvalFilter($collection_id, $documents);
-        return view('isa.collection', ['collection'=>$collection, 'results'=>$documents,'documents'=>$documents, 'activePage'=>'collection','titlePage'=>'Collections', 'title'=>'Smart Repository']);
+		$limit = empty($request->limit)? 10 : $request->limit;
+		$start = empty($request->start)? 0 : $request->start;
+        $documents = \App\Document::where('collection_id','=',$collection_id)
+			 ->whereNotNull('approved_on')
+			 ->orderby('updated_at','DESC');
+		$total_count = $documents->count();
+		$documents = $documents->limit($length)->offset($start)->get();
+        return view('isa.collection', ['collection'=>$collection, 
+			'filtered_results_counts'=>$total_count,
+			'results'=>$documents,'documents'=>$documents, 
+			'activePage'=>'collection','titlePage'=>'Collections', 
+			'title'=>'Smart Repository']);
     }
 
     public function collectionUsers($collection_id){
@@ -308,8 +317,8 @@ class CollectionController extends Controller
         // log search query
 		$old_query = Session::get('search_query');
 
-		if($old_query != $request->search['value'] && !$request->is('api/*') &&
-			!empty($request->search['value']) && strlen($request->search['value'])>3){
+		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
+			&& !$request->is('api/*') && strlen($request->search['value'])>3){
 			Session::put('search_query', $request->search['value']);
 			$meta_query = json_encode($this->getMetaFilters($request));
         	$search_log_data = array('collection_id'=> $request->collection_id, 
@@ -624,6 +633,7 @@ class CollectionController extends Controller
 		$documents = $documents
 			->orderBy($sort_column,$sort_direction)
         	        ->limit($length)->offset($request->start)->get();
+
 		if($request->is('api/*')){
 			return 
         		array(
@@ -1430,7 +1440,6 @@ use App\UrlSuppression;
 					$body = $res->getBody();
             		$documents_array = json_decode($body);
 				}
-
 		$total_results_count = $documents_array->recordsTotal;
         // log search query
         $old_query = Session::get('search_query');
@@ -1452,7 +1461,7 @@ use App\UrlSuppression;
 
 		return view('isa.collection',['collection'=>$collection, 
 			'results'=>$documents_array->data,
-			'total_results_count'=>$total_results_count,
+			'filtered_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
 			'titlePage'=>'Documents']);
 	}

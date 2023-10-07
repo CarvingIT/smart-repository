@@ -172,7 +172,7 @@ foreach($tags as $t){
 <nav aria-label="Page navigation">
 <ul class="pagination justify-content-center">
 @php
-$total_results_count=0;
+//$total_results_count=0;
 $length=10;
 $start = empty(Request::get('start'))? 0 : Request::get('start');
 if(empty(Request::get('meta'))){
@@ -180,17 +180,14 @@ $taxonomies = '';
 }
 $collection_id = $collection->id;
 @endphp
-@if($start != 0)
+@if($start > 0)
 <li class="page-item disabled">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
+  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start-10 }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
 </li>
 @endif
-@for($i=0;$i<=($total_results_count/10);$i++)
-<li class="page-item"><a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}">1</a></li>
-@endfor
-@if($start < ($total_results_count - 10))
+@if($start < ($filtered_results_count - 10) && count($results) >= 10 )
 <li class="page-item">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}">&raquo;</a>
+  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start+10 }}&length={{ $length }}">&raquo;</a>
 </li>
 @endif
 </ul>
