@@ -23,6 +23,9 @@ class BotManController extends Controller
 			else if($message == 'q'){
 				$this->search($botman, $req);
             }
+			else if($message == 'h'){
+				$this->helpMenu($botman);
+			}
 			else{
 				$this->unknownCommand($botman);
 			}
@@ -35,8 +38,8 @@ class BotManController extends Controller
      * Place your BotMan logic here.
 
      */
-	public function unknownCommand($botman){
-		$botman->reply('I don\'t understand that command. Type "h" to get a list of commands.');
+	public function helpMenu($botman){
+		$botman->reply('Following commands are available -<br /><strong>h</strong> - Show this help menu <br /><strong>q</strong> - Ask a question.');
 	}
 
     public function askName($botman)
