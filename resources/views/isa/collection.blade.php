@@ -1,6 +1,8 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
-
-
+@push('js')
+<script src="/js/jquery-ui.js" defer></script>
+<link href="/css/jquery-ui.css" rel="stylesheet">
+@endpush
 @section('content')
 <main id="main">
 @php
@@ -83,7 +85,7 @@
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Enter search keyword') }}</label>
+			<label for="collection_search">{{ __('Enter search keywords') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
 		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
 			<input type="submit" value="Search" name="isa_search" class="btn btn-sm btn-primary search">
@@ -205,7 +207,7 @@ $collection_id = $collection->id;
 			frameEndpoint: '/chatbot-frame.html',
 	        aboutText: 'ISA Repository',
 			aboutLink: "/",
-	        introMessage: "✋ Hello from ISA! <br />I understand these instructions <br/> 1. Information about themes and sub-themes <br /> 2. Search the repository with keywords. <br/> (Type in just the number and press enter.)",
+	        introMessage: "✋ Hello from ISA! <br />I understand these instructions <br/><strong>h</strong> - for the menu listing commands <br /><strong>q</strong> - Ask a question.",
 			title: "ISA RRR Chatbot",
 			mainColor:"#f05a22",
 			bubbleBackground:"#f05a22",
@@ -214,4 +216,33 @@ $collection_id = $collection->id;
     </script>
     <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
 
+<script>
+	@if(env('SEARCH_MODE') == 'elastic')
+	$(document).ready(function() {
+        //alert("js is working");
+        src = "{{ route('autosuggest') }}";
+        $( "#collection_search" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+                    method: 'GET',
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+						if(data.length > 0)
+                        response(data);
+                    },
+                });
+            },
+			select: function (event, ui){
+				$("#collection_search").val(ui.item.value);
+				return false;
+			},
+            minLength: 1,
+        });
+    });
+	@endif
+</script>
 @endsection
