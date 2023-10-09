@@ -7,9 +7,11 @@ use BotMan\BotMan\Messages\Incoming\Answer;
 use DonatelloZa\RakePlus\RakePlus;
 use App\Document;
 use App\Util;
+use App\ChatGPT;
 
 class BotManController extends Controller
 {
+	public $chatgpt;
     /**
      * Place your BotMan logic here.
      */
@@ -52,11 +54,15 @@ class BotManController extends Controller
 
     public function search($botman, $req)
     {
-        $botSearch = function(Answer $answer, $req){
+		$this_controller = $this;
+		$this->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
+
+        $botSearch = function(Answer $answer, $req) use ($this_controller) {
 			// get keywords
-			// $keywords = RakePlus::create($answer->getText())->get(); // this gives phrases
-            $keywords = RakePlus::create($answer->getText())->keywords();
-			$this->say(implode(",",$keywords));
+			$question = $answer->getText();
+			// $keywords = RakePlus::create($question)->get(); // this gives phrases
+            $keywords = RakePlus::create($question)->keywords();
+			//$this->say(implode(",",$keywords));
 			$client = new \GuzzleHttp\Client();
 			$http_host = request()->getHttpHost();
 			$protocol = request()->getScheme();
@@ -83,23 +89,33 @@ class BotManController extends Controller
 				$info_from_docs = preg_replace('/Page \d\d*/',' ', $info_from_docs);
 				$chunks = Util::createTextChunks($info_from_docs, 4000, 1000);
 				$matches = Util::findMatches($chunks, $keywords);
-				$this->say('Found '.count($matches). ' matches.');
+				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
-				$matches_cnt = 0;
-				foreach($matches as $chunk_id => $score){
-					if($score > 0 && $matches_cnt < 10){
-						// consider only 10 most relevant matches for answering questions
-						$matches_details .= $chunk_id . ' - '. $score ."<br />";	
-						$matches_cnt++;
-					}
-				}
+				$matches = array_slice($matches, 0, 10);
 				//$matches_details .= $chunks[0];
-				if($matches_cnt == 0){
+				if(count($matches) == 0){
 					$this->say('I did not get an answer to your query.');
 				}
 				else{
 					// show answer here
-					$this->say($matches_details);
+					$answer_full = '';
+					foreach($matches as $chunk_id => $score){
+						//$answer_full .= $chunk_id .' - '.$score."\n";
+						try{
+							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
+							if( $answer !== false ) {
+								$answer_full .= $answer->content;
+        					}
+							else{
+								$answer_full = 'Did not get any answer';
+							}
+						}
+						catch(\Exception $e){
+							$answer_full = $e->getMessage();		
+						}
+						break; // this is added for using the first chunk to avoid rate limiting issue
+					}
+					$this->say($answer_full);
 				}
 			}else{
 				$this->say('There was some error. Please try again.');
@@ -109,4 +125,46 @@ class BotManController extends Controller
 		$botman->ask('Type in your question', $botSearch);
     }
 
+	function answer_not_found( bool $not_found = true ) {
+
+	}
+
+	function answerQuestion( string $chunk, string $question ) {
+		try{
+		$chatgpt = $this->chatgpt;
+    	//$chatgpt->add_function( [$this, "answer_not_found"] );
+		//return 'here';
+    	$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt. If the answer can not be determined from the excerpt, call the answer_not_found function." );
+    	$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
+    	$chatgpt->umessage( $question );
+	
+    	//$response = $chatgpt->response( raw_function_response: true );
+    	$response = $chatgpt->response( true );
+	
+    	if( isset( $response->function_call ) ) {
+        	return false;
+    	}
+	
+    	if( empty( $response->content ) ) {
+        	return false;
+    	}
+	
+    	if( $chatgpt->version() < 4 && ! $this->gpt3_check( $question, $response->content ) ) {
+        	return false;
+    	}
+
+    	return $response;
+		}
+		catch(\Exception $e){
+			return $e->getMessage();
+		}
+		}
+
+	function gpt3_check( $question, $answer ) {
+    	$chatgpt = new ChatGPT( getenv("OPENAI_API_KEY") );
+    	$chatgpt->umessage( "Question: \"$question\"\nAnswer: \"$answer\"\n\nAnswer YES if the answer is similar to 'the answer to the question was not found in the information provided' or 'the excerpt does not mention that'. Answer only YES or NO" );
+    	$response = $chatgpt->response();
+
+    	return stripos( $response->content, "yes" ) === false;
+	}
 }
