@@ -237,3 +237,12 @@ Route::post('/admin/roles/delete','RoleController@destroy')->middleware('admin')
 Route::get('autocomplete', 'RoleController@autoComplete')->name('autocomplete');
 
 Route::match(['get', 'post'], '/botman', 'BotManController@handle');
+
+//Countries and Themes
+
+Route::resource('taxonomies', TaxonomyController::class);
+Route::middleware('admin')->group(function () {
+    Route::resource('taxonomies', 'TaxonomyController');
+});
+
+Route::get('/countries', 'CountriesController@index')->middleware('admin');
