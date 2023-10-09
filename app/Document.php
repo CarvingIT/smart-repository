@@ -95,6 +95,9 @@ class Document extends Model implements Auditable
     public function owner(){
         return $this->belongsTo('App\User', 'created_by');
     }
+    public function approver(){
+        return $this->belongsTo('App\User', 'approved_by');
+    }
 
     public function collection(){
 	 return $this->belongsTo('App\Collection','collection_id');

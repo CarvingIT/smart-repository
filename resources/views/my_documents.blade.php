@@ -46,17 +46,27 @@ $(document).ready(function() {
                             <tr>
                             <th>Title</th>
                             <th>Collection</th>
-                            <th>Created By</th>
+                            <th>Approval By</th>
+                            <th>Status</th>
                             <th>Created at</th>
                             <th class="text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
 			@foreach($documents as $doc)
+				@php
+					$approval_details=\App\Approval::where('approvable_id',$doc->id)
+							//->where('approval_status',0)
+							->orderBy('id','desc')
+							->first();
+					//print_r($approval_details);
+					//echo $approval_details->approval_status;
+				@endphp
                         <tr>
                                 <td>{{ $doc->title }}</td>
-                                <td>{{ $doc->collection->name }}</td>
-                                <td>{{ $doc->owner->name }}</td>
+                                <td>{{ @$doc->collection->name }}</td>
+                                <td>{{ @$approval_details->approver->name }}</td>
+                                <td>@if (!empty($approval_details->approval_status) && $approval_details->approval_status == 1){{ __('Approved') }} @elseif(!empty($approval_details->approval_status) && $approval_details->approval_status == 0){{ __('Rejected') }}@else {{ __('Awaiting') }} @endif </td>
                                 <td>{{ $doc->created_at }}</td>
                         	<td class="td-actions text-right">
 					<a href="/collection/{{ $doc->collection_id }}/document/{{ $doc->id }}/details" title="View Document"><i class="material-icons">visibility</i></a>

@@ -8,6 +8,8 @@ use App\Document;
 use App\DocumentApproval;
 use App\Approval;
 use App\Collection;
+use App\BinshopsPost;
+//use App\BinshopsPublish;
 use Session;
 
 class ApprovalsController extends Controller
@@ -24,11 +26,12 @@ class ApprovalsController extends Controller
         }
 
 	public function saveApprovalStatus($approvable, $approvable_id, Request $request){
+//echo $approvable_id; exit;
 		$user_roles = [];
 		foreach(auth()->user()->roles as $r){
 			$user_roles[] = $r->role_id;
 		}
-		$approvable_type = ($approvable == 'blog')? 'App\BinshopPost' : 'App\Document';
+		$approvable_type = ($approvable == 'blog')? 'App\BinshopsPost' : 'App\Document';
 		$approval = Approval::where('approvable_id', $approvable_id)
 			->where('approvable_type', $approvable_type)
 			->whereIn('approved_by_role', $user_roles)
@@ -44,7 +47,12 @@ class ApprovalsController extends Controller
 	   catch(\Exception $e){
 		Session::flash('alert-danger','There was an error. The operation could not be completed.'. $e->getMessage());
 	   }
+		if($approvable=='blog'){
+	   return redirect('/en/'.$approvable.'/'.$request->slug);
+		}
+		else{
 	   return redirect('/'.$approvable.'/'.$approvable_id.'/approval');
+		}
 	}
 
 	public function nextApproval($approval_model){
@@ -96,7 +104,7 @@ class ApprovalsController extends Controller
 			$list_items = $list_items->where('approvable_type','App\Document'); 
 		}
 		else if($approvable == 'blogs'){
-			$list_items = $list_items->where('approvable_type','App\BinshopPost'); 
+			$list_items = $list_items->where('approvable_type','App\BinshopsPost'); 
 		}
 
 		if($status == 'approved'){

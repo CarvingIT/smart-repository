@@ -222,7 +222,7 @@ section {
   position: fixed;
   visibility: hidden;
   opacity: 0;
-  right: 15px;
+  right: 30px;
   bottom: 90px;
   z-index: 99999;
   background: #f05a22;
@@ -699,7 +699,7 @@ section {
     line-height: 0;
     transition: 0.5s;
     z-index: 9999;
-    margin-right: 10px;
+    margin-left: 100px;
   }
   .sticked .mobile-nav-show {
     color: #f05a22;

@@ -121,6 +121,8 @@ Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'Docu
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
 Route::get('/user/{user_id}/mydocs', 'DocumentController@listMyDocuments');
 
+// user downloads
+Route::get('/user/downloads','ReportsController@userDownloads')->middleware('auth');
 // Approvals
 Route::get('/document/{document_id}/approval', 'ApprovalsController@docApprovalForm');
 Route::post('/approvals/{approvable}/{approvable_id}/save_status', 'ApprovalsController@saveApprovalStatus');

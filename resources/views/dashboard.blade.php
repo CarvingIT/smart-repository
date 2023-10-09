@@ -41,7 +41,8 @@
 				<ul>
 					<li><a href="/user/{{ auth()->user()->id }}/mydocs">My Uploaded Documents</a></li>
 					<li><a href="/approvals/documents/awaiting">Awaiting approval</a></li>
-					<li>Rejected</li>
+					<li><a href="/approvals/documents/approved">Approved</a></li>
+					<li><a href="/approvals/documents/rejected">Rejected</a></li>
 				</ul>
 			</div>
             <div class="card-footer">
@@ -62,7 +63,7 @@
             </div>
 			<div class="card-body">
 				<ul>
-					<li>Awaiting approval</li>
+					<li><a href="/approvals/blogs/awaiting">Awaiting approval</a></li>
 					<li>Rejected</li>
 				</ul>
 			</div>
@@ -83,21 +84,15 @@
 		</h4>
             </div>
             <div class="card-body">
-              <p class="card-category">
-		@foreach (['danger', 'warning', 'success', 'info'] as $msg)
-                   @if(Session::has('alert-' . $msg))
-                        <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
-                                <div class="mt-6 text-gray-900 leading-7 font-semibold ">
-                                        <span @if($msg == 'danger') style="color:red" @endif>{{ Session::get('alert-' . $msg) }}</span>
-                                </div>
-                        </div>
-                   @endif
-               @endforeach
-		@if(!empty($awaiting_count)){{ $awaiting_count }}@else {{ __('No awaiting documents') }} @endif</p>
-	    </div>
+				<ul>
+					@foreach ($user_searches as $s)
+					<li><a href="#">{{ $s->search_query }}</a></li>
+					@endforeach	
+				</ul>
+	    	</div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">list</i>Total No. Of Documents
+				<i class="material-icons">show_chart</i> View More
               </div>
             </div>
           </div>
@@ -110,10 +105,13 @@
               </h4>
               <!--div class="ct-chart" id="dailySalesChart"></div-->
             </div>
-            <div class="card-body">
-              <p class="card-category">
-                <span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
-            </div>
+			<div class="card-body">
+				<ul>
+					@foreach ($user_downloads as $d)
+					<li><a href="/document/{{ $d->document->id }}">{{ $d->document->title }}</a></li>
+					@endforeach	
+				</ul>
+			</div>
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">show_chart</i> View More
