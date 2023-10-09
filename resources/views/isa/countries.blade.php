@@ -46,63 +46,7 @@
              }
          }
 }
-@endphp
 
-<!-- ======= Breadcrumbs ======= -->
-    <div class="row justify-content-center">
-		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
-        <div class="col-md-12">
-            <div class="card">
-				<div class="card-header card-header-primary">
-                	<h4 class="card-title ">{{ __('Database') }}</h4>
-            	</div>
-			<div class="card-body">
-			<div class="row">
-                  <div class="col-12 text-right">
-                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
-		    	@if($collection->content_type == 'Uploaded documents')	
-                    <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
-                     @elseif($collection->content_type == 'Web resources')	
-                    <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
-		    @endif
-		  @endif
-                  @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
-                    
-		  @endif
-                 
-                  </div>
-		        </div>
-			</div>
-	
-			<div class="col-10">
-            <p>{{-- $collection->description --}}</p>
-			</div>
-			<div class="col-2 text-right">
-			</div>
-			
-		<div class="row text-center">
-		   <div class="col-12">
-			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Enter search keywords') }}</label>
-		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
-		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
-			<input type="submit" value="Search" name="isa_search" class="btn btn-sm btn-primary search">
-			<style>
-			.dataTables_filter {
-			display: none;
-			}
-			</style>
-		   </div>
-		   </div>
-		  
-		</div>
-		
-<!-- End Breadcrumbs -->
-
-<!-- ======= Service Details Section ======= -->
-@php
 $tags = App\Taxonomy::all();
 
 $children = [];
@@ -110,36 +54,6 @@ foreach($tags as $t){
   $children['parent_'.$t->parent_id][] = $t;
 }
 @endphp
-
-<section id="service-details" class="service-details">
-  <div class="container">
-	<div class="row gy-4">
-	  <div class="col-lg-3">
-		<div class="services-list">
-		  <!--a href="#" class="active">By Location</a-->
-			<!--div class="form-check"-->
-				<!--
-				<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				<label class="form-check-label" for="flexCheckDefault">
-				Default checkbox
-				</label>
-				-->
-				@php
-				foreach($filters as $f){
-					echo 'By '.$f->label;
-					getTree($children, $f->options, $f->id);
-				}
-				@endphp
-			<!--/div-->
-		  <!--a href="#">By Theme</a-->
-		<div class="form-check">
-		</div>
-		</div>
-
-	  
-	  </div>
-
-		</form><!-- isa_search form ends -->
 
 	  <div class="col-lg-9">
 <div class="row gy-4 pricing-item" data-aos-delay="100">

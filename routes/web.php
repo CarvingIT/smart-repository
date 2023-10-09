@@ -240,9 +240,4 @@ Route::match(['get', 'post'], '/botman', 'BotManController@handle');
 
 //Countries and Themes
 
-Route::resource('taxonomies', TaxonomyController::class);
-Route::middleware('admin')->group(function () {
-    Route::resource('taxonomies', 'TaxonomyController');
-});
-
-Route::get('/countries', 'CountriesController@index')->middleware('admin');
+Route::get('/countries', 'CollectionController@index')->middleware('admin');

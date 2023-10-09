@@ -11,7 +11,7 @@
           <h4 class="text-center" data-aos="fade-up">Regulation Resource Repository for Solar Energy</h4>
           <p class="text-center" data-aos="fade-up" data-aos-delay="100">A comprehensive data repository for all regulations in ISA member countries relating to Solar Energy</p>
 
-          <form action="#" class="form-search d-flex align-items-stretch mb-4" data-aos="fade-up" data-aos-delay="200">
+          <form action="" class="d-flex align-items-stretch mb-4" data-aos="fade-up" data-aos-delay="200">
             <input type="text" class="form-control" placeholder="What are you looking for?">
             <button type="submit" class="btn btn-primary">Search</button>
           </form>
