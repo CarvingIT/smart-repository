@@ -25,8 +25,8 @@
           <div class="col-lg-12 col-12 search-by">
               <div class="stats-item text-center w-100 h-100 browse-by">
                 <p>Browse By:</p>
-                <a href="javascript:void(0)" class="by-country">Country</a> Or 
-              &nbsp;  <a href="javascript:void(0)" class="by-theme">Theme</a>
+                <a href="/countries" class="by-country">Country</a> Or 
+              &nbsp;  <a href="/themes" class="by-theme">Theme</a>
               </div>
             </div>
             <!-- End Stats Item -->
