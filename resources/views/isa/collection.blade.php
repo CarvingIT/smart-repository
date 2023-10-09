@@ -184,12 +184,12 @@ $collection_id = $collection->id;
 @endphp
 @if($start > 0)
 <li class="page-item disabled">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start-10 }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
+  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ @$meta_query }}&start={{ $start-10 }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
 </li>
 @endif
 @if($start < ($filtered_results_count - 10) && count($results) >= 10 )
 <li class="page-item">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start+10 }}&length={{ $length }}">&raquo;</a>
+  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ @$meta_query }}&start={{ $start+10 }}&length={{ $length }}">&raquo;</a>
 </li>
 @endif
 </ul>
