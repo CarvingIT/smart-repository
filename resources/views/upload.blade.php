@@ -177,6 +177,7 @@ tinymce.init({
 				foreach($tags as $t){
 					$children['parent_'.$t->parent_id][] = $t;
 				}
+				if(!function_exists('getTree')){
 				function getTree($children, $document, $f, $parent_id = null, $parents = null){
 
 					if(empty($children['parent_'.$parent_id])) return;
@@ -194,6 +195,7 @@ tinymce.init({
 								echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
 							}
 					}
+				}
 				}
 			@endphp
         <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple 
