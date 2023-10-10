@@ -67,13 +67,13 @@ function randomString(length) {
                             <th>Name</th>
                             <th>Type</th>
                             <th>Created</th>
-                          
                             </tr>
                         </thead>
                         <tbody>
-                        @foreach ($collections as $c)
+                        @foreach ( $taxonomies as $c)
+
                         <tr>
-                            <td>{{ $c->name }}</td>
+                            <td>{{ $c->label }}</td>
                             <td>{{ $c->type }}</td>
                             <td>{{ $c->created_at }}</td>
                         </tr>
