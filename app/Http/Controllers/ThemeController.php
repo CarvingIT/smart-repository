@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Collection;
+use App\Taxonomy;
 
 
 class ThemeController extends Controller
 {
-   
-
-    public function index(){
-        $collections = Collection::where('parent_id', null)->get();
-        return view('isa.themes', ['collections'=>$collections, 'activePage'=>'Collections','titlePage'=>'Collections']);
+     public function index(Taxonomy $taxonomy)
+    {
+  
+	return view('isa.themes', ['taxonomies'=>$taxonomy->all(), 'activePage'=>'taxonomies-management', 'titlePage' => 'Taxonomies']);
     }
 }
-
 ?>

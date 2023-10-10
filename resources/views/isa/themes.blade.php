@@ -60,9 +60,9 @@ for ( var i = 0; i < length; i++ ) { result +=characters.charAt(Math.floor(Math.
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($collections as $c)
+                                        @foreach ($taxonomies as $c)
                                         <tr>
-                                            <td>{{ $c->name }}</td>
+                                            <td>{{ $c->label }}</td>
                                             <td>{{ $c->created_at }}</td>
                                         </tr>
                                         @endforeach
