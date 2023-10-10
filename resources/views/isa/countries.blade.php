@@ -65,7 +65,6 @@ function randomString(length) {
                         <thead class="text-primary">
                             <tr>
                             <th>Name</th>
-                            <th>Type</th>
                             <th>Created</th>
                             </tr>
                         </thead>
@@ -74,7 +73,6 @@ function randomString(length) {
 
                         <tr>
                             <td>{{ $c->label }}</td>
-                            <td>{{ $c->type }}</td>
                             <td>{{ $c->created_at }}</td>
                         </tr>
     
