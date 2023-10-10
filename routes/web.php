@@ -240,5 +240,4 @@ Route::match(['get', 'post'], '/botman', 'BotManController@handle');
 
 //Countries and Themes
 
-Route::get('/countries', 'CollectionController@index')->middleware('admin');
-Route::get('/themes', 'CollectionController@index')->middleware('admin');
+Route::get('/countries', 'CountryController@index');
