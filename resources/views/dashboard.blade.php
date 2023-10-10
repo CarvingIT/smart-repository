@@ -8,15 +8,21 @@
           <div class="card card-stats">
             <div class="card-header card-header-warning card-header-icon">
               <div class="card-icon">
-                <i class="material-icons">content_copy</i>
+                <i class="material-icons">person</i>
               </div>
               <p class="card-category">Profile</p>
               <h3 class="card-title">{{ auth()->user()->name }}
 		</h3>
             </div>
+			<div class="card-body">
+				<ul>
+					<li><a href="/profile">Edit your profile</a></li>
+					<li><a href="#">Want to contribute?</a></li>
+				</ul>
+			</div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">info</i><a href="{{ route('profile.edit') }}">Edit Profile</a> 
+                <i class="material-icons">info</i><a href="#">Some link</a>
               </div>
             </div>
           </div>
@@ -25,14 +31,21 @@
           <div class="card card-stats">
             <div class="card-header card-header-success card-header-icon">
               <div class="card-icon">
-                <i class="material-icons">store</i>
+                <!--<i class="material-icons">store</i>-->
+                <i class="material-icons">content_copy</i>
               </div>
-              <p class="card-category">Collections</p>
+              <p class="card-category">Documents</p>
               <h3 class="card-title">{{ count($collections) }}</h3>
             </div>
+			<div class="card-body">
+				<ul>
+					<li><a href="/approvals/documents/awaiting">Awaiting approval</a></li>
+					<li>Rejected</li>
+				</ul>
+			</div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">list</i><a href="/collections">List of Collections</a> 
+                <i class="material-icons">list</i><a href="/collections">Database</a> 
               </div>
             </div>
           </div>
@@ -46,6 +59,12 @@
               <p class="card-category">Blogs</p>
               <h3 class="card-title">{{ count($blogs) }}</h3>
             </div>
+			<div class="card-body">
+				<ul>
+					<li>Awaiting approval</li>
+					<li>Rejected</li>
+				</ul>
+			</div>
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">access_time</i> campaign sent 2 days ago
@@ -59,25 +78,19 @@
           <div class="card card-chart">
             <div class="card-header card-header-warning">
                 <h4 class="card-title">
-			<a href="/user/{{ auth()->user()->id }}/docs" style="color:#000;">Documents Awaiting Approvals</a>
+				Searches
 		</h4>
             </div>
             <div class="card-body">
-              <p class="card-category">
-		@foreach (['danger', 'warning', 'success', 'info'] as $msg)
-                   @if(Session::has('alert-' . $msg))
-                        <div class="p-6 sm:px-20 bg-white border-b border-gray-200">
-                                <div class="mt-6 text-gray-900 leading-7 font-semibold ">
-                                        <span @if($msg == 'danger') style="color:red" @endif>{{ Session::get('alert-' . $msg) }}</span>
-                                </div>
-                        </div>
-                   @endif
-               @endforeach
-		@if(!empty($awaiting_count)){{ $awaiting_count }}@else {{ __('No awaiting documents') }} @endif</p>
-	    </div>
+				<ul>
+					@foreach ($user_searches as $s)
+					<li><a href="#">{{ $s->search_query }}</a></li>
+					@endforeach	
+				</ul>
+	    	</div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">list</i>Total No. Of Documents
+				<i class="material-icons">show_chart</i> View More
               </div>
             </div>
           </div>
@@ -86,14 +99,17 @@
           <div class="card card-chart">
             <div class="card-header card-header-success">
               <h4 class="card-title">
-		<a href="/user/{{ auth()->user()->id }}/docs/approved">Approved Documents</a>
+				Downloads
               </h4>
               <!--div class="ct-chart" id="dailySalesChart"></div-->
             </div>
-            <div class="card-body">
-              <p class="card-category">
-                <span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
-            </div>
+			<div class="card-body">
+				<ul>
+					@foreach ($user_downloads as $d)
+					<li><a href="/document/{{ $d->document->id }}">{{ $d->document->title }}</a></li>
+					@endforeach	
+				</ul>
+			</div>
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">show_chart</i> View More
@@ -105,7 +121,7 @@
           <div class="card card-chart">
             <div class="card-header card-header-danger">
               <h4 class="card-title">
-		<a href="/user/{{ auth()->user()->id }}/docs/unapproved">UnApproved Documents</a>
+				Help
 	      </h4>
               <!--div class="ct-chart" id="completedTasksChart"></div-->
             </div>
@@ -368,6 +384,7 @@
           </div>
         </div>
 	-->
+	<!--
         <div class="col-lg-12 col-md-12">
           <div class="card">
             <div class="card-header card-header-warning">
@@ -412,6 +429,7 @@
             </div>
           </div>
         </div>
+		-->
       </div>
     </div>
 @endsection

@@ -42,7 +42,17 @@ class HomeController extends Controller
 	}
 	$count = $this->documentsAwaitingApprovalsCount();
 	$blogs = \App\BinshopsPost::all();
-	return view('dashboard',['collections'=>$collections, 'documents'=>$documents,'awaiting_count'=>$count,'blogs'=>$blogs]);
+	$downloads = \App\DocumentDownload::where('user_id',auth()->user()->id)
+		->orderBy('id','DESC')->limit(10)->get();
+	$searches = \App\Searches::where('user_id',auth()->user()->id)
+		->orderBy('id','DESC')->limit(10)->get();
+	return view('dashboard',['collections'=>$collections, 	
+		'documents'=>$documents,
+		'awaiting_count'=>$count,
+		'blogs'=>$blogs,
+		'user_downloads'=>$downloads,
+		'user_searches'=>$searches
+		]);
     }
 
 	public function documentsAwaitingApprovalsCount(){
