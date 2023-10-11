@@ -41,7 +41,7 @@
 				$checked = "checked";
 			}
 		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp;&nbsp;'.$t->label.'</label><br />';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
 		echo '</div>';
              }
          }
