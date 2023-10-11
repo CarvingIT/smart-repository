@@ -988,7 +988,12 @@ $j++;
 	$meta_field->available_to = implode(",",$request->input('available_to'));
 	}
         $meta_field->type = $request->input('type');
-        $meta_field->options = $request->input('options');
+	if($request->type == 'TaxonomyTree'){
+        	$meta_field->options = $request->input('treeoptions');
+	}
+	else{
+        	$meta_field->options = $request->input('options');
+	}
         $meta_field->display_order = $request->input('display_order');
         $meta_field->is_required = $request->input('is_required');
         $meta_field->save();
