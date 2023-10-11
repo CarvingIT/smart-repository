@@ -65,15 +65,13 @@ function randomString(length) {
                         <thead class="text-primary">
                             <tr>
                             <th>Name</th>
-                            <th>Created</th>
                             </tr>
                         </thead>
                         <tbody>
                         @foreach ( $taxonomies as $c)
 
                         <tr>
-                            <td>{{ $c->label }}</td>
-                            <td>{{ $c->created_at }}</td>
+                            <td><a href="/countries">{{ $c->label }}</a></td>
                         </tr>
     
                         @endforeach
