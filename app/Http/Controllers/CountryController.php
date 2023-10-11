@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-
+use App\Taxonomy;
+use App\Http\Requests\TaxonomyRequest;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Collection;
-
+use Session;
 
 class CountryController extends Controller
 {
-     public function index()
+     public function index(Taxonomy $taxonomy)
     {
-    $collections = Collection::where('parent_id', null)->get();
-	return view('isa.countries',['collections'=>$collections, 'activePage'=>'Collections','titlePage'=>'Collections']);
+  
+	return view('isa.countries', ['taxonomies'=>$taxonomy->all(), 'activePage'=>'taxonomies-management', 'titlePage' => 'Taxonomies']);
     }
-
 }
+?>
