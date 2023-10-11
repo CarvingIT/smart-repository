@@ -237,3 +237,8 @@ Route::post('/admin/roles/delete','RoleController@destroy')->middleware('admin')
 Route::get('autocomplete', 'RoleController@autoComplete')->name('autocomplete');
 
 Route::match(['get', 'post'], '/botman', 'BotManController@handle');
+
+//Countries and Themes
+
+Route::get('/countries', 'CollectionController@index')->middleware('admin');
+Route::get('/themes', 'CollectionController@index')->middleware('admin');

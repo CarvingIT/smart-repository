@@ -81,8 +81,7 @@
 			</div>
 			<div class="col-2 text-right">
 			</div>
-		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
-		@csrf
+			
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
