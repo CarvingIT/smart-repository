@@ -117,6 +117,7 @@ foreach($tags as $t){
 	<div class="row gy-4">
 	  <div class="col-lg-3">
 		<div class="services-list">
+			<h5>Filter</h5>
 		  <!--a href="#" class="active">By Location</a-->
 			<!--div class="form-check"-->
 				<!--
@@ -127,8 +128,10 @@ foreach($tags as $t){
 				-->
 				@php
 				foreach($filters as $f){
-					echo 'By '.$f->label;
+					echo '<a href="#" onclick="$(\'#checkboxes_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+					echo '<div id="checkboxes_'.$f->id.'" style="display:none;">';
 					getTree($children, $f->options, $f->id);
+					echo '</div>';
 				}
 				@endphp
 			<!--/div-->
