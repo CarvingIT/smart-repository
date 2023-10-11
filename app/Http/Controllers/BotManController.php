@@ -100,22 +100,27 @@ class BotManController extends Controller
 					// show answer here
 					$answer_full = '';
 					foreach($matches as $chunk_id => $score){
-						//$answer_full .= $chunk_id .' - '.$score."\n";
 						try{
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false ) {
 								$answer_full .= $answer->content;
+								break;
         					}
 							else{
-								$answer_full = 'Did not get any answer';
+								//$answer_full = 'Did not get any answer';
 							}
 						}
 						catch(\Exception $e){
 							$answer_full = $e->getMessage();		
+							break;
 						}
-						break; // this is added for using the first chunk to avoid rate limiting issue
+						//break; // this is added for using the first chunk to avoid rate limiting issue
+					}
+					if(empty($answer_full)){
+						$answer_full = 'Did not get any answer';
 					}
 					$this->say($answer_full);
+					$this->say('Press <strong>q</strong> for another question.');
 				}
 			}else{
 				$this->say('There was some error. Please try again.');

@@ -208,7 +208,7 @@ $collection_id = $collection->id;
 			frameEndpoint: '/chatbot-frame.html',
 	        aboutText: 'ISA Repository',
 			aboutLink: "/",
-	        introMessage: "✋ Hello from ISA! <br />I understand these instructions <br/><strong>h</strong> - for the menu listing commands <br /><strong>q</strong> - Ask a question.",
+	        introMessage: "✋ Hello! <br />I understand the following instructions. <br/><strong>h</strong> - for the menu listing commands <br /><strong>q</strong> - Ask a question.",
 			title: "ISA RRR Chatbot",
 			mainColor:"#f05a22",
 			bubbleBackground:"#f05a22",
