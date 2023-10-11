@@ -60,24 +60,13 @@ function randomString(length) {
                     @endforeach
                     </div>
 		
-			<div class="table-responsive">
-                    <table id="collections" class="table">
-                        <thead class="text-primary">
-                            <tr>
-                            <th>Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ( $taxonomies as $c)
-
-                        <tr>
-                            <td><a href="/countries">{{ $c->label }}</a></td>
-                        </tr>
-    
-                        @endforeach
-                        </tbody>
-                    </table>
-			</div>
+                    <div class="nav-item">
+                            <ul>
+                            @foreach ($taxonomies as $c)
+                                <li><a href="/themes">{{ $c->label }}</a></li>
+                            @endforeach
+                            </ul>
+                    </div>
                 </div>
             </div>
         </div>
