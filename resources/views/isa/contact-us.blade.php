@@ -2,6 +2,9 @@
 
 @section('content')
 
+<style>
+	strong{font-weight:bold;}
+</style>
 <div class="container">
 <div class="container-fluid">
     <div class="row">
@@ -15,7 +18,7 @@
                 <div class="card-body">
                     <div>
 						<p>
-						International Solar Alliance Secretariat<br/>
+						<strong>International Solar Alliance Secretariat</strong><br/>
 						Surya Bhawan,<br/>
 						National Institute of Solar Energy Campus Gwal Pahari,<br/>
 						Faridabad-Gurugram Road,<br/>
