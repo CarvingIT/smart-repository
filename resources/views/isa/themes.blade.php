@@ -5,7 +5,11 @@
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
 <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 -->
-
+<style>
+.card-columns {
+   column-count: 2;
+}</style>
+<script>
 <script src="/js/jquery.dataTables.min.js"></script> <script src="/js/jquery-ui.js" defer></script> <link
     href="/css/jquery-ui.css" rel="stylesheet"> <script>
             $(document).ready(function() {
@@ -53,13 +57,13 @@ var result = '';
                             @endforeach
                         </div>
 
-                        <div class="nav-item">
-                            <ul>
-                            @foreach ($taxonomies as $c)
-                                <li><a href="/themes">{{ $c->label }}</a></li>
+                        <div  class="nav-item">
+                    <ul class="list-unstyled card-columns">
+                    @foreach ($taxonomies as $c)
+                                <li><a href="countries">{{ $c->label }}</a></li><br>
                             @endforeach
-                            </ul>
-                        </div>
+                    </ul>
+                    </div>
                     </div>
                 </div>
             </div>
