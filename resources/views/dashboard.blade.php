@@ -64,8 +64,10 @@
 			<div class="card-body">
 				<ul>
 					<li><a href="/approvals/blogs/awaiting">Awaiting approval</a></li>
+					<!--
 					<li><a href="/approvals/blogs/approved">Approved</a></li>
 					<li><a href="/approvals/blogs/rejected">Rejected</a></li>
+					-->
 				</ul>
 			</div>
             <div class="card-footer">
