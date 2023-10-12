@@ -63,7 +63,7 @@ function randomString(length) {
                     @endforeach
                     </div>
 	
-                    <div  class="nav-item">
+                    <div  class="container">
                     <ul class="list-unstyled card-columns">
                     @foreach ($taxonomies as $c)
                                 <li><a href="countries">{{ $c->label }}</a></li><br>
