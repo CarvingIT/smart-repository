@@ -8,7 +8,10 @@
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
-
+<style>
+.card-columns {
+   column-count: 2;
+}</style>
 <script>
 $(document).ready(function() {
     $('#collections').DataTable();
@@ -59,27 +62,14 @@ function randomString(length) {
                         @endif
                     @endforeach
                     </div>
-		
-			<div class="table-responsive">
-                    <table id="collections" class="table">
-                        <thead class="text-primary">
-                            <tr>
-                            <th>Name</th>
-                            <th>Created</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ( $taxonomies as $c)
-
-                        <tr>
-                            <td>{{ $c->label }}</td>
-                            <td>{{ $c->created_at }}</td>
-                        </tr>
-    
-                        @endforeach
-                        </tbody>
-                    </table>
-			</div>
+	
+                    <div  class="container">
+                    <ul class="list-unstyled card-columns">
+                    @foreach ($taxonomies as $c)
+                                <li><a href="/countries">{{ $c->label }}</a></li><br>
+                            @endforeach
+                    </ul>
+                    </div>
                 </div>
             </div>
         </div>
