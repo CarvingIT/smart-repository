@@ -314,13 +314,13 @@ section {
   z-index: 997;
 }
 .top-bar-link {
-  font-size: 11px;
+  font-size: 15px;
 }
 
 .top-bar-link a {
   display: flex;
   color: #fffddf;
-  font-size: 10px;
+  font-size: 15px;
 }
 .top-bar-link a:hover {
   color: #fff200;
@@ -412,7 +412,7 @@ section {
   height: 60px;
 }
 .introduce-text p {
-  font-size: 12px;
+  font-size: 15px;
   color: #000;
   display: flex;
   align-items: center;
@@ -693,7 +693,7 @@ section {
   }
 
   .mobile-nav-show {
-    color: #fff;
+    color: #000;
     font-size: 28px;
     cursor: pointer;
     line-height: 0;
@@ -1937,10 +1937,10 @@ section {
 }
 
 .hero p {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 400;
   margin-bottom: 20px;
-  color: #000;
+  color: #2f2d2d;
 }
 
 .hero form {
@@ -2062,7 +2062,7 @@ section {
 # Footer
 --------------------------------------------------------------*/
 .footer {
-  font-size: 14px;
+  font-size: 15px;
   background-color: #f05a22;
   padding: 15px 0;
   color: white;
