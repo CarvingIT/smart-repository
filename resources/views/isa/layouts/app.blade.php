@@ -126,9 +126,9 @@
                       <li><a href="/login">Login</a></li>
                     @endif
                       <li><a href="/about">About Repository</a></li>
-                      <li><a href="javascript:void(0)">FAQs</a></li>
+                      <li><a href="/faq">FAQs</a></li>
                       <li><a href="/feedback">Feedback</a></li>
-                      <li><a href="/contacts">Contact Us</a></li>
+                      <li><a href="/contact-us">Contact Us</a></li>
                     </ul>
                   </div>
                   <div class="col-lg-6">

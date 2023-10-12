@@ -242,3 +242,13 @@ Route::match(['get', 'post'], '/botman', 'BotManController@handle');
 
 Route::get('/countries', 'CountryController@index');
 Route::get('/themes', 'ThemeController@index');
+
+// contact-us, feedback, faqs
+Route::view('/contact-us', 'contact-us');
+Route::view('/faq', 'faq');
+
+// feedback form
+Route::get('/feedback', function(){ return view('feedback-form'); });
+Route::post('/feedback', '\App\Http\Controllers\ContactController@contact');
+Route::get('/feedback-thank-you', function(){ return view('feedback-thank-you'); });
+

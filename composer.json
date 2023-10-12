@@ -19,6 +19,7 @@
         "dragomirt/pdf-to-text": "^1.5",
         "elasticsearch/elasticsearch": "^7.0",
         "fideloper/proxy": "^4.0",
+        "gregwar/captcha": "^1.2",
         "html2text/html2text": "^4.3",
         "laravel-frontend-presets/material-dashboard": "^1.0",
         "laravel/framework": "6.20.*",
