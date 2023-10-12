@@ -241,3 +241,4 @@ Route::match(['get', 'post'], '/botman', 'BotManController@handle');
 //Countries and Themes
 
 Route::get('/countries', 'CountryController@index');
+Route::get('/themes', 'ThemeController@index');
