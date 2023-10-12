@@ -127,9 +127,13 @@ foreach($tags as $t){
 				</label>
 				-->
 				@php
+				$display='display:none;';
 				foreach($filters as $f){
+	 	 			if(!empty(Request::get('meta_'.$f->id))){
+						$display = '';
+ 					}
 					echo '<a href="#" onclick="$(\'#checkboxes_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
-					echo '<div id="checkboxes_'.$f->id.'" style="display:none;">';
+					echo '<div id="checkboxes_'.$f->id.'" style="'.$display.'">';
 					getTree($children, $f->options, $f->id);
 					echo '</div>';
 				}
