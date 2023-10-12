@@ -54,6 +54,8 @@
                 @endif
 
                 <div class="container">
+			<br />
+			<br />
                     <div class="row">
                         @forelse($posts as $post)
                             @include("binshopsblog::partials.index_loop")
