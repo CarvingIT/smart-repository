@@ -41,7 +41,7 @@
 				$checked = "checked";
 			}
 		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp;&nbsp;'.$t->label.'</label><br />';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
 		echo '</div>';
              }
          }
@@ -117,6 +117,7 @@ foreach($tags as $t){
 	<div class="row gy-4">
 	  <div class="col-lg-3">
 		<div class="services-list">
+			<h5>Filter</h5>
 		  <!--a href="#" class="active">By Location</a-->
 			<!--div class="form-check"-->
 				<!--
@@ -126,9 +127,15 @@ foreach($tags as $t){
 				</label>
 				-->
 				@php
+				$display='display:none;';
 				foreach($filters as $f){
-					echo 'By '.$f->label;
+	 	 			if(!empty(Request::get('meta_'.$f->id))){
+						$display = '';
+ 					}
+					echo '<a href="#" onclick="$(\'#checkboxes_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+					echo '<div id="checkboxes_'.$f->id.'" style="'.$display.'">';
 					getTree($children, $f->options, $f->id);
+					echo '</div>';
 				}
 				@endphp
 			<!--/div-->
