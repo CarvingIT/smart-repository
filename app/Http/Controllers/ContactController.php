@@ -27,16 +27,6 @@ class ContactController extends Controller
 		//code to send email
 		Mail::to(env('WEBMASTER_EMAIL'))->send(new ContactFormSubmission($req));
 	
-		// add to database
-		$feedback = new Feedback;
-		$feedback->name = $req->name;
-		$feedback->email = $req->email;
-		$feedback->address = $req->address;
-		$feedback->subject = $req->subject;
-		$feedback->message = $req->message;
-
-		$feedback->save();
-		
 		return redirect('/feedback-thank-you');
 	}
 }
