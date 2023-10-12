@@ -28,7 +28,7 @@
 
 
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-12">
 
                 @if($category_chain)
                     <div class="container">
@@ -65,8 +65,11 @@
                     </div>
                 </div>
             </div>
+		<!--
             <div class="col-md-3">
+                    @if($categories)
                 <h6>Blog Categories</h6>
+			@endif
                 <ul class="binshops-cat-hierarchy">
                     @if($categories)
                         @include("binshopsblog::partials._category_partial", [
@@ -79,6 +82,7 @@
                     @endif
                 </ul>
             </div>
+		-->
         </div>
 
         @if (config('binshopsblog.search.search_enabled') )
