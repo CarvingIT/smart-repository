@@ -6,6 +6,13 @@
 @section('content')
 <main id="main">
 @php
+	// get reverse meta field values
+	$rmf_values = App\ReverseMetaFieldValue::all();
+	$rmfv_map = [];
+	foreach($rmf_values as $rmfv){
+		$rmfv_map[$rmfv->meta_field_id][$rmfv->meta_value][] = $rmfv->document_id;
+	}
+	//print_r($rmfv_map);exit;
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
 	$filters = [];
@@ -16,7 +23,7 @@
 	}	
 
 	$search_query = Request::get('isa_search_parameter');
-	function getTree($children, $parent_id = null, $meta_id=null){
+	function getTree($children, $parent_id = null, $meta_id=null, $rmfv_map){
          if(empty($children['parent_'.$parent_id])) return;
          foreach($children['parent_'.$parent_id] as $t){
          $checked = '';
@@ -30,10 +37,11 @@
 		else{
 		// get compare with query string parameter to mark as checked
 		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+				$tid = $t->id;
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
 		echo '</div>';
 		}
-                  getTree($children, $t->id, $meta_id);
+                  getTree($children, $t->id, $meta_id, $rmfv_map);
              }
              else{
 			$checked = '';
@@ -41,7 +49,8 @@
 				$checked = "checked";
 			}
 		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+			$tid = $t->id;
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
 		echo '</div>';
              }
          }
@@ -134,7 +143,7 @@ foreach($tags as $t){
  					}
 					echo '<a href="#" onclick="$(\'#checkboxes_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
 					echo '<div id="checkboxes_'.$f->id.'" style="'.$display.'">';
-					getTree($children, $f->options, $f->id);
+					getTree($children, $f->options, $f->id, $rmfv_map);
 					echo '</div>';
 				}
 				@endphp
