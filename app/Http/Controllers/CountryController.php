@@ -13,7 +13,6 @@ class CountryController extends Controller
 {
      public function index(Taxonomy $taxonomy)
     {
-  
 	return view('isa.countries', ['taxonomies'=>$taxonomy->all(), 'activePage'=>'taxonomies-management', 'titlePage' => 'Taxonomies']);
     }
 }
