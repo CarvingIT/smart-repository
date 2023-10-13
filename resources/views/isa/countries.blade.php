@@ -92,13 +92,13 @@ function randomString(length) {
         				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
                 				// get compare with query string parameter to mark as checked
 						echo '<li>';
-                  				echo '<a href="#">'.$t->label.'</a>';
+                  				echo '<strong>'.$t->label.'</strong>';
 						echo '</li>';
                   				getTree($children, $t->id, $meta_id, $rmfv_map);
              				}
              				else{
 						echo '<li>';
-                  				echo '<a href="#">'.$t->label.'</a>';
+                  				echo '<a href="/documents/isa_document_search?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a>';
 						echo '</li>';
              				}
 				}#foreach	

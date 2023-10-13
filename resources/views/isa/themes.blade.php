@@ -92,14 +92,14 @@ function randomString(length) {
         				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
                 				// get compare with query string parameter to mark as checked
                                     echo '<li>';
-                  				echo '<a href="#">'.$t->label.'</a><br />';
+                  				echo '<a href="/documents/isa_document_search?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a><br />';
                                         echo '</li>';
                   				getTree($children, $t->id, $meta_id, $rmfv_map);
              				}
              				else{
-                                    echo '<li>';
-                  				echo '<a href="#">'.$t->label.'</a><br />';
-                                        echo '</li>';
+	                                    echo '<li>';
+                  				echo '<a href="/documents/isa_document_search?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">--&nbsp;'.$t->label.'</a><br />';
+                                            echo '</li>';
              				}
 				}#foreach	
 		}#function ends
@@ -116,7 +116,7 @@ function randomString(length) {
                 }
         }
                                 foreach($filters as $f){
-					if(preg_match("/Theme/i",$f->label)){
+					if(preg_match("/Theme|Themes/i",$f->label)){
                                         getTree($children, $f->options, $f->id);
 					}
                                 }
