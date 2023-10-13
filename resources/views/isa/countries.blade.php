@@ -97,9 +97,9 @@ function randomString(length) {
                   				getTree($children, $t->id, $meta_id, $rmfv_map);
              				}
              				else{
-						//echo '<li>';
-                  				//echo '<label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
-						//echo '</li>';
+						echo '<li>';
+                  				echo '<a href="#">'.$t->label.'</a>';
+						echo '</li>';
              				}
 				}#foreach	
 		}#function ends
@@ -117,7 +117,7 @@ function randomString(length) {
         }
                                 foreach($filters as $f){
 					$page = $_SERVER['REQUEST_URI'];
-					if(preg_match("/Countries|Places|Location/i",$f->label)){
+					if(preg_match("/Countries|Place|Location/i",$f->label)){
                                         getTree($children, $f->options, $f->id);
 					}
                                 }
