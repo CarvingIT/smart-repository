@@ -28,17 +28,12 @@
     </div>
 </div>
 -->
-
 <div class="row">
-
-<div class="col-md-5">
+<div class="col-md-5" style="border-bottom:1px solid #eee;">
+	<br/>
             <h5 class=''><a href='{{$post->url($locale, $routeWithoutLocale)}}'>{{$post->title}}</a></h5>
+                <span class="light-text">Authored by: </span> {{$post->post->author->name}}<br /> <span class="light-text">Posted at: </span> {{date('d M Y ', strtotime($post->post->posted_at))}}
+	<br/>
+	<br/>
 </div>
-<div class="col-md-4">
-                <span class="light-text">Authored by: </span> {{$post->post->author->name}} <span class="light-text">Posted at: </span> {{date('d M Y ', strtotime($post->post->posted_at))}}
-</div>
-<div class="col-md-3">
-                <a href="{{$post->url($locale, $routeWithoutLocale)}}" class="btn btn-primary">View Post</a>
-</div>
-
 </div>
