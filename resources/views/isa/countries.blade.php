@@ -64,7 +64,7 @@ function randomString(length) {
                     </div>
 	
                     <div class="container">
-                                <ul class="list-unstyled card-columns">
+                            <ul class="list-unstyled card-columns">
                                     @php
                                     $tags = App\Taxonomy::all();
                                     $children = [];
