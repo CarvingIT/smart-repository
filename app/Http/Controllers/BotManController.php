@@ -114,7 +114,7 @@ class BotManController extends Controller
 							$answer_full = $e->getMessage();		
 							break;
 						}
-						break; // this is added for using the first chunk to avoid rate limiting issue
+						//break; // this is added for using the first chunk to avoid rate limiting issue
 					}
 					if(empty($answer_full)){
 						$answer_full = 'Did not get any answer.';
