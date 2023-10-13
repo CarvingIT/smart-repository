@@ -175,7 +175,7 @@ foreach($tags as $t){
 		@endphp
 <p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
 		@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
-		{!! nl2br($document->meta_value($abstract_field_id)) !!}
+		{{ nl2br(strip_tags(html_entity_decode($document->meta_value($abstract_field_id)))) }}
 		@else
 		{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
 		@endif
