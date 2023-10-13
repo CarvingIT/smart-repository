@@ -85,7 +85,6 @@ function randomString(length) {
                                     }
                                     @endphp
                                 </ul>
-                                
                                 <ul class="list-unstyled card-columns">
                                     @php
                                     getTree($children);
