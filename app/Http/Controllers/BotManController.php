@@ -117,7 +117,7 @@ class BotManController extends Controller
 						//break; // this is added for using the first chunk to avoid rate limiting issue
 					}
 					if(empty($answer_full)){
-						$answer_full = 'Did not get any answer';
+						$answer_full = 'Did not get any answer.';
 					}
 					$this->say($answer_full);
 					$this->say('Press <strong>q</strong> for another question.');
@@ -127,7 +127,7 @@ class BotManController extends Controller
 			}
         };
 
-		$botman->ask('Type in your question', $botSearch);
+		$botman->ask('Type in your question.', $botSearch);
     }
 
 	function answer_not_found( bool $not_found = true ) {
