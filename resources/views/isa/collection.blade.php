@@ -167,7 +167,7 @@ foreach($tags as $t){
 			$meta_fields = $document->collection->meta_fields;
 			$abstract_field_id = null;
 			foreach($meta_fields as $m){
-				if(strtolower($m->label) == 'abstract'){
+				if($m->label == env('ABSTRACT_FIELD_LABEL','Abstract')){
 					$abstract_field_id = $m->id;
 					break;
 				}
@@ -175,7 +175,7 @@ foreach($tags as $t){
 		@endphp
 <p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
 		@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
-		{{ $document->meta_value($abstract_field_id) }}
+		{!! nl2br($document->meta_value($abstract_field_id)) !!}
 		@else
 		{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
 		@endif
