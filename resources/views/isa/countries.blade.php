@@ -63,13 +63,34 @@ function randomString(length) {
                     @endforeach
                     </div>
 	
-                    <div  class="container">
-                    <ul class="list-unstyled card-columns">
-                    @foreach ($taxonomies as $c)
-                                <li><a href="/countries">{{ $c->label }}</a></li><br>
-                            @endforeach
-                    </ul>
-                    </div>
+                    <div class="container">
+                            <ul class="list-unstyled card-columns">
+                                    @php
+                                    $tags = App\Taxonomy::all();
+                                    $children = [];
+                                    foreach($tags as $t){
+                                    $children['parent_'.$t->parent_id][] = $t;
+                                    }
+                                    function getTree($children, $parent_id = null){
+                                    if(empty($children['parent_'.$parent_id])) return;
+                                    foreach($children['parent_'.$parent_id] as $t){
+                                    if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
+                                    echo '<li>';
+                                        echo '<a href="#">'.$t->label.'</a>';
+                                        getTree($children, $t->id);
+                                        echo '</li>';
+                                        
+                                    }
+                                    }
+                                    }
+                                    @endphp
+                                </ul>
+                                <ul class="list-unstyled card-columns">
+                                    @php
+                                    getTree($children);
+                                    @endphp
+                                </ul>
+                            </div>
                 </div>
             </div>
         </div>
