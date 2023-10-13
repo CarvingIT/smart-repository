@@ -102,7 +102,7 @@ class BotManController extends Controller
 					foreach($matches as $chunk_id => $score){
 						try{
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
-							if( $answer !== false ) {
+							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
 								break;
         					}

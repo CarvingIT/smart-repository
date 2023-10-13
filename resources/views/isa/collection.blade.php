@@ -48,7 +48,7 @@
 			if(!empty(Request::get('meta_'.$meta_id)) && in_array($t->id, Request::get('meta_'.$meta_id))){
 				$checked = "checked";
 			}
-		echo '<div class="form-check">';
+			echo '<div class="form-check">';
 			$tid = $t->id;
                   echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
 		echo '</div>';
