@@ -116,7 +116,7 @@ function randomString(length) {
                 }
         }
                                 foreach($filters as $f){
-					if(preg_match("/Themes/i",$f->label)){
+					if(preg_match("/Theme/i",$f->label)){
                                         getTree($children, $f->options, $f->id);
 					}
                                 }
