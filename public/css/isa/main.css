@@ -2491,3 +2491,8 @@ margin-left: 8px;
 .content .container-fluid, .container .container-fluid{
 	margin-top:200px;
 }
+
+.search-result-meta{
+	font-weight:bold;
+	color:#333;
+}
