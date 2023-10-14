@@ -71,6 +71,7 @@ function randomString(length) {
                                     foreach($tags as $t){
                                     $children['parent_'.$t->parent_id][] = $t;
                                     }
+					/*
                                     function getTree($children, $parent_id = null){
                                     if(empty($children['parent_'.$parent_id])) return;
                                     foreach($children['parent_'.$parent_id] as $t){
@@ -83,12 +84,45 @@ function randomString(length) {
                                     }
                                     }
                                     }
+					*/
+
+		function getTree($children, $parent_id = null, $meta_id=null, $rmfv_map=null){
+		         if(empty($children['parent_'.$parent_id])) return;
+         			foreach($children['parent_'.$parent_id] as $t){
+        				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
+                				// get compare with query string parameter to mark as checked
+						echo '<li>';
+                  				echo '<strong>'.$t->label.'</strong>';
+						echo '</li>';
+                  				getTree($children, $t->id, $meta_id, $rmfv_map);
+             				}
+             				else{
+						echo '<li>';
+                  				echo '<a href="/documents/isa_document_search?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a>';
+						echo '</li>';
+             				}
+				}#foreach	
+		}#function ends
                                     @endphp
                                 </ul>
                                 <ul class="list-unstyled card-columns">
-                                    @php
-                                    getTree($children);
-                                    @endphp
+					@php
+	$collection = \App\Collection::find(1);
+	$meta_fields = $collection->meta_fields;
+        $filters = [];
+        foreach($meta_fields as $m){
+                if($m->type == 'TaxonomyTree'){
+                        $filters[] = $m;
+                }
+        }
+                                foreach($filters as $f){
+					$page = $_SERVER['REQUEST_URI'];
+					if(preg_match("/Country|Countries|Place|Location/i",$f->label)){
+                                        getTree($children, $f->options, $f->id);
+					}
+                                }
+                                @endphp
+
                                 </ul>
                             </div>
                 </div>
