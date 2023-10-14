@@ -54,4 +54,20 @@ class Util{
 
     return $results;
 	}
+
+	public static function highlightKeywords($text, $search_query){
+		$keywords = explode(" ", $search_query);
+		// keywords is an array
+		$lines = [];
+		foreach($keywords as $k){
+			$p = stripos($text, $k);
+			$offset = ($p < 30) ? 0 : ($p-30);
+			$line = substr($text, $offset, 100);
+			$pattern = '/'.$k.'/i';
+			$line = preg_replace($pattern, '<span class="highlight">'.$k.'</span>', $line);
+			$line = '.....'.$line.'.....';
+			$lines[] = $line;
+		}
+		return $lines;
+	}
 }

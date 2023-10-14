@@ -201,13 +201,15 @@ foreach($tags as $t){
 		</div>
 		<div class="row">
 		<div class="col-lg-12">
-		@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
-		{!! \Illuminate\Support\Str::limit(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id))))),
-			40, $end='...') 
-		!!}
-		@else
-		{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
-		@endif
+			@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
+			{!! \Illuminate\Support\Str::limit(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id))))),
+				40, $end='...') 
+			!!}
+			@else
+			{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
+			@endif
+			<br />
+			{!! implode(' ', App\Util::highlightKeywords($document->text_content, $search_query)) !!}		
 		</div>
 		</div>
 		<div class="row">&nbsp;</div>
