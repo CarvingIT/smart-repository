@@ -14,6 +14,7 @@ use Session;
 use App\Collection;
 use Spatie\PdfToText\Pdf;
 use App\MetaFieldValue;
+use App\ReverseMetaFieldValue;
 use App\Sysconfig;
 
 class DocumentController extends Controller
@@ -436,8 +437,9 @@ class DocumentController extends Controller
     }
 
     public function saveMetaData($document_id, $meta_data){
-        // first delete old and then save new 
-        //\App\MetaFieldValue::where('document_id','=', $document_id)->delete();
+		// reverse meta field values - first delete then add each 
+		// first delete if related this document any and then add
+		ReverseMetaFieldValue::where('document_id', $document_id)->delete();
 
         foreach($meta_data as $m){
 			if(is_object($m)){
@@ -450,13 +452,24 @@ class DocumentController extends Controller
             $m_f->document_id = $document_id;
             $m_f->meta_field_id = $m['field_id'];
 			if(is_array($m['field_value'])){
-				$m['field_value'] = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
+				$field_value_str = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
 			}
 			else{
-				$m['field_value'] = htmlentities($m['field_value']);
+				$field_value_str = htmlentities($m['field_value']);
 			}
-            $m_f->value = empty($m['field_value']) ? '' : $m['field_value'];
+            $m_f->value = empty($field_value_str) ? '' : $field_value_str;
             $m_f->save();
+
+			// save reverse meta field values
+			if(is_array($m['field_value'])){
+				foreach($m['field_value'] as $v){
+					$rmfv = new ReverseMetaFieldValue;
+					$rmfv->meta_field_id = $m['field_id'];
+					$rmfv->meta_value = $v;
+					$rmfv->document_id = $document_id;
+					$rmfv->save();
+				}
+			}
         }
     }
 
