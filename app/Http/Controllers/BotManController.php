@@ -98,6 +98,7 @@ class BotManController extends Controller
 				//$matches_details .= $chunks[0];
 				if(count($matches) == 0){
 					$this->say('I did not get an answer to your query.');
+					$this->ask('Try rephrasing your question.', $botSearch);
 				}
 				else{
 					// show answer here
