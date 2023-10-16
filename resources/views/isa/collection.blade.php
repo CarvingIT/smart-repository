@@ -15,9 +15,11 @@
 	//print_r($rmfv_map);exit;
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
+	$filter_labels = ['Continent',env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
 	$filters = [];
 	foreach($meta_fields as $m){
-		if($m->type == 'TaxonomyTree'){
+		//if($m->type == 'TaxonomyTree'){
+		if(in_array($m->label, $filter_labels)){
 			$filters[] = $m;
 		}
 	}	
@@ -127,28 +129,29 @@ foreach($tags as $t){
 	  <div class="col-lg-3">
 		<div class="services-list">
 			<h5>Filter</h5>
-		  <!--a href="#" class="active">By Location</a-->
-			<!--div class="form-check"-->
-				<!--
-				<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				<label class="form-check-label" for="flexCheckDefault">
-				Default checkbox
-				</label>
-				-->
 				@php
 				$display='display:none;';
 				foreach($filters as $f){
-	 	 			if(!empty(Request::get('meta_'.$f->id))){
+ 	 				if(!empty(Request::get('meta_'.$f->id))){
 						$display = '';
  					}
-					echo '<a href="#" onclick="$(\'#checkboxes_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
-					echo '<div id="checkboxes_'.$f->id.'" style="'.$display.'">';
-					getTree($children, $f->options, $f->id, $rmfv_map);
-					echo '</div>';
+					if($f->type == 'TaxonomyTree'){
+						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="'.$display.'">';
+						getTree($children, $f->options, $f->id, $rmfv_map);
+						echo '</div>';
+					}
+					if($f->type == 'Numeric'){
+						$numeric_val = (Request::get('meta_'.$f->id))?Request::get('meta_'.$f->id):0;
+						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="'.$display.'">';
+						echo '<input type="range" name="meta_'.$f->id.'" min="1950" max="2023" step="1" onchange="document.getElementById(\'range_meta_'.$f->id.'\').innerText=this.value;" onmouseup="this.form.submit();" value="'.$numeric_val.'">';
+						echo '<div id="range_meta_'.$f->id.'">'.$numeric_val.'</div>';
+						echo '</div>';
+
+					}
 				}
 				@endphp
-			<!--/div-->
-		  <!--a href="#">By Theme</a-->
 		<div class="form-check">
 		</div>
 		</div>
