@@ -208,7 +208,7 @@ foreach($tags as $t){
 			<p>
 			@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
 			{!! \Illuminate\Support\Str::limit(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id))))),
-				40, $end='...') 
+				250, $end='...') 
 			!!}
 			@else
 			{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
