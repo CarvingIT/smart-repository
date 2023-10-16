@@ -2491,3 +2491,16 @@ margin-left: 8px;
 .content .container-fluid, .container .container-fluid{
 	margin-top:200px;
 }
+
+/*--------------------------------------------------------------
+# Country & Theme list
+--------------------------------------------------------------*/
+.card-list {
+column-count: 2;
+}
+
+@media (max-width: 768px) {
+.card-list {
+column-count: 1;
+}
+}

@@ -8,10 +8,6 @@
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
-<style>
-.card-columns {
-   column-count: 2;
-}</style>
 <script>
 $(document).ready(function() {
     $('#collections').DataTable();
@@ -64,7 +60,7 @@ function randomString(length) {
                     </div>
 	
                     <div class="container">
-                            <ul class="list-unstyled card-columns">
+                            <ul class="list-unstyled card-list">
                                     @php
                                     $tags = App\Taxonomy::all();
                                     $children = [];
@@ -105,7 +101,7 @@ function randomString(length) {
 		}#function ends
                                     @endphp
                                 </ul>
-                                <ul class="list-unstyled card-columns">
+                                <ul class="list-unstyled card-list">
 					@php
 	$collection = \App\Collection::find(1);
 	$meta_fields = $collection->meta_fields;
