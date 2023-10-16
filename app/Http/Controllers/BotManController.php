@@ -18,6 +18,7 @@ class BotManController extends Controller
     public function handle(Request $req)
     {
         $botman = app('botman');
+
         $botman->hears('{message}', function($botman, $req, $message) {
             if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
                 $this->askName($botman);
@@ -29,7 +30,7 @@ class BotManController extends Controller
 				$this->helpMenu($botman);
 			}
 			else{
-				$this->unknownCommand($botman);
+				//$this->unknownCommand($botman);
 			}
         });
         $botman->listen();
@@ -57,7 +58,7 @@ class BotManController extends Controller
 		$this_controller = $this;
 		$this->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 
-        $botSearch = function(Answer $answer, $req) use ($this_controller) {
+        $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch) {
 			// get keywords
 			$question = $answer->getText();
 			// $keywords = RakePlus::create($question)->get(); // this gives phrases
@@ -80,9 +81,11 @@ class BotManController extends Controller
 				}
 				
 				$info_from_docs = '';
+				$doc_list = '';
 				foreach($documents_array->data as $d){
 					$doc = Document::find($d->id);
 					$info_from_docs .= $doc->text_content;
+					$doc_list .= '<a href="/document/'.$d->id.'">'.$d->title.'</a><br />';
 				}
 
 				// remove Page \d\d from the string
@@ -119,8 +122,10 @@ class BotManController extends Controller
 					if(empty($answer_full)){
 						$answer_full = 'Did not get any answer.';
 					}
+					$answer_full .= '<br/><br/> Documents for reference - <br />'.$doc_list;
 					$this->say($answer_full);
-					$this->say('Press <strong>q</strong> for another question.');
+					//$this->say('Press <strong>q</strong> for another question.');
+					$this->ask('Type in another question.', $botSearch);
 				}
 			}else{
 				$this->say('There was some error. Please try again.');
