@@ -79,10 +79,6 @@ class Util{
 			}
 		
 			if(!empty($line)){
-				/*
-				$pattern = '/'.$k.'/i';
-				$line = preg_replace($pattern, '<span class="highlight">$0</span>', $line);
-				*/
 				$sameline++;
 				if($sameline > 0){
 					// we don't need the next line
