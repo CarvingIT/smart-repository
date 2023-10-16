@@ -19,10 +19,6 @@
 
                 <div class="card-body">
                     <div>
-				
-<p>
-<strong>About ISA Repository </strong>
-</p>
 <p>
 The International Solar Alliance (ISA) is an action-oriented, member-driven, collaborative platform for increased deployment of solar energy technologies as a means for bringing energy access, ensuring energy security, and driving energy transition in its member countries.
 </p> 
