@@ -106,7 +106,7 @@
               <li><a href="/en/blog">Opinions</a></li>
             </ul>
           </li>
-          <li class="mobile-only"><a href="/abouts">About Repository</a></li>
+          <li class="mobile-only"><a href="/about">About Repository</a></li>
           <li class="mobile-only"><a href="javascript:void(0)">FAQs</a></li>
           <li class="mobile-only"><a href="/contact">Contact Us</a></li>
 	        <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->

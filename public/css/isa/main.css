@@ -2492,6 +2492,13 @@ margin-left: 8px;
 	margin-top:200px;
 }
 
+.search-result-meta{
+	font-weight:bold;
+	color:#333;
+}
+.highlight{
+	background-color:yellow;
+}
 /*--------------------------------------------------------------
 # Country & Theme list
 --------------------------------------------------------------*/
@@ -2502,5 +2509,4 @@ column-count: 2;
 @media (max-width: 768px) {
 .card-list {
 column-count: 1;
-}
 }

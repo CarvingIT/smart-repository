@@ -15,9 +15,11 @@
 	//print_r($rmfv_map);exit;
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
+	$filter_labels = ['Continent',env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
 	$filters = [];
 	foreach($meta_fields as $m){
-		if($m->type == 'TaxonomyTree'){
+		//if($m->type == 'TaxonomyTree'){
+		if(in_array($m->label, $filter_labels)){
 			$filters[] = $m;
 		}
 	}	
@@ -127,28 +129,29 @@ foreach($tags as $t){
 	  <div class="col-lg-3">
 		<div class="services-list">
 			<h5>Filter</h5>
-		  <!--a href="#" class="active">By Location</a-->
-			<!--div class="form-check"-->
-				<!--
-				<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				<label class="form-check-label" for="flexCheckDefault">
-				Default checkbox
-				</label>
-				-->
 				@php
 				$display='display:none;';
 				foreach($filters as $f){
-	 	 			if(!empty(Request::get('meta_'.$f->id))){
+ 	 				if(!empty(Request::get('meta_'.$f->id))){
 						$display = '';
  					}
-					echo '<a href="#" onclick="$(\'#checkboxes_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
-					echo '<div id="checkboxes_'.$f->id.'" style="'.$display.'">';
-					getTree($children, $f->options, $f->id, $rmfv_map);
-					echo '</div>';
+					if($f->type == 'TaxonomyTree'){
+						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="'.$display.'">';
+						getTree($children, $f->options, $f->id, $rmfv_map);
+						echo '</div>';
+					}
+					if($f->type == 'Numeric'){
+						$numeric_val = (Request::get('meta_'.$f->id))?Request::get('meta_'.$f->id):0;
+						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="'.$display.'">';
+						echo '<input type="range" name="meta_'.$f->id.'" min="1950" max="2023" step="1" onchange="document.getElementById(\'range_meta_'.$f->id.'\').innerText=this.value;" onmouseup="this.form.submit();" value="'.$numeric_val.'">';
+						echo '<div id="range_meta_'.$f->id.'">'.$numeric_val.'</div>';
+						echo '</div>';
+
+					}
 				}
 				@endphp
-			<!--/div-->
-		  <!--a href="#">By Theme</a-->
 		<div class="form-check">
 		</div>
 		</div>
@@ -166,20 +169,59 @@ foreach($tags as $t){
 			$document = \App\Document::find($result->id);
 			$meta_fields = $document->collection->meta_fields;
 			$abstract_field_id = null;
+			$country_field_id = null;
+			$year_field_id = null;
 			foreach($meta_fields as $m){
 				if($m->label == env('ABSTRACT_FIELD_LABEL','Abstract')){
 					$abstract_field_id = $m->id;
-					break;
+				}
+				else if($m->label == env('COUNTRY_FIELD_LABEL','Country')){
+					$country_field_id = $m->id;
+				}
+				else if($m->label == env('YEAR_FIELD_LABEL','Year')){
+					$year_field_id = $m->id;
 				}
 			}
 		@endphp
-<p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {!! $result->title !!}</a></b><br>
-		@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
-		{!! nl2br(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id)))))) !!}
-		@else
-		{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
+		<div class="row">
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {!! $result->title !!}</a>
+		</div>
+		<div class="row">
+		<div class="col-lg-9">
+		@if (!empty($document->meta_value($country_field_id)))
+			<span class="search-result-meta">
+			{{ env('COUNTRY_FIELD_LABEL','Country').': '.$document->meta_value($country_field_id) }}
+			</span>
 		@endif
-		</p>
+		</div>
+		<div class="col-lg-3">
+		@if (!empty($document->meta_value($year_field_id)))
+			<span class="search-result-meta">
+			{{ env('YEAR_FIELD_LABEL','Year').': '.$document->meta_value($year_field_id) }}
+			</span>
+		@endif
+		</div>
+		</div>
+		<div class="row">
+		<div class="col-lg-12">
+			@if (empty($search_query))
+			<p>
+			@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
+			{!! \Illuminate\Support\Str::limit(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id))))),
+				40, $end='...') 
+			!!}
+			@else
+			{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
+			@endif
+			</p>
+			@else
+			<p>
+			{!! implode('', App\Util::highlightKeywords($document->text_content, $search_query)) !!}		
+			</p>
+			@endif
+		</div>
+		</div>
+		<div class="row">&nbsp;</div>
 	@endforeach
 	@else
 		{{ __('No results found') }}
