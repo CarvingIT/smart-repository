@@ -8,6 +8,7 @@ use DonatelloZa\RakePlus\RakePlus;
 use App\Document;
 use App\Util;
 use App\ChatGPT;
+use Illuminate\Support\Facades\Log;
 
 class BotManController extends Controller
 {
@@ -140,38 +141,35 @@ class BotManController extends Controller
 
 	}
 
-	function answerQuestion( string $chunk, string $question ) {
+	public function answerQuestion( string $chunk, string $question ) {
 		try{
-		$chatgpt = $this->chatgpt;
-    	//$chatgpt->add_function( [$this, "answer_not_found"] );
-		//return 'here';
-    	$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt. If the answer can not be determined from the excerpt, call the answer_not_found function." );
-    	$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
-    	$chatgpt->umessage( $question );
+			$chatgpt = $this->chatgpt;
+    		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
+    		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
+    		$chatgpt->umessage( $question );
 	
-    	//$response = $chatgpt->response( raw_function_response: true );
-    	$response = $chatgpt->response( true );
+    		$response = $chatgpt->response( true );
 	
-    	if( isset( $response->function_call ) ) {
-        	return false;
-    	}
+    		if( isset( $response->function_call ) ) {
+        		return false;
+    		}
 	
-    	if( empty( $response->content ) ) {
-        	return false;
-    	}
+    		if( empty( $response->content ) ) {
+        		return false;
+    		}
 	
-    	if( $chatgpt->version() < 4 && ! $this->gpt3_check( $question, $response->content ) ) {
-        	return false;
-    	}
-
-    	return $response;
+    		if( $chatgpt->version() < 4 && ! $this->gpt3_check( $question, $response->content ) ) {
+        		return false;
+    		}
+    		return $response;
 		}
 		catch(\Exception $e){
-			return $e->getMessage();
+			Log::debug($e->getMessage());
+			return false;
 		}
-		}
+	}
 
-	function gpt3_check( $question, $answer ) {
+	public function gpt3_check( $question, $answer ) {
     	$chatgpt = new ChatGPT( getenv("OPENAI_API_KEY") );
     	$chatgpt->umessage( "Question: \"$question\"\nAnswer: \"$answer\"\n\nAnswer YES if the answer is similar to 'the answer to the question was not found in the information provided' or 'the excerpt does not mention that'. Answer only YES or NO" );
     	$response = $chatgpt->response();
