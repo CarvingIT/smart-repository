@@ -56,18 +56,52 @@ class Util{
 	}
 
 	public static function highlightKeywords($text, $search_query){
-		$keywords = explode(" ", $search_query);
+		$keywords = array_unique(explode(" ", $search_query));
 		// keywords is an array
 		$lines = [];
 		foreach($keywords as $k){
+			// if any of the earlier lines contain this keyword, 
+			// don't add that line
 			$p = stripos($text, $k);
 			$offset = ($p < 30) ? 0 : ($p-30);
 			$line = substr($text, $offset, 100);
-			$pattern = '/'.$k.'/i';
-			$line = preg_replace($pattern, '<span class="highlight">'.$k.'</span>', $line);
-			$line = '.....'.$line.'.....';
 			$lines[] = $line;
 		}
-		return $lines;
+		$lines_refined = [];
+		$line = array_shift($lines);
+		$sameline = 0;
+		foreach($keywords as $k){
+			if(stripos($line, $k) === false){
+				$lines_refined[] = $line;
+				$line = array_shift($lines);
+				$sameline = 0;
+				//$lines_refined[] = $k.' not found. Using next line - '.$line;
+			}
+		
+			if(!empty($line)){
+				/*
+				$pattern = '/'.$k.'/i';
+				$line = preg_replace($pattern, '<span class="highlight">$0</span>', $line);
+				*/
+				$sameline++;
+				if($sameline > 0){
+					// we don't need the next line
+					array_shift($lines);
+				}
+			}
+		}
+		$lines_refined[] = $line;
+		// also iterate over refined lines
+		$lines_refined_tmp = [];
+		foreach($lines_refined as $lr){
+			foreach($keywords as $k){
+				$pattern = '/'.$k.'/i';
+				$lr = preg_replace($pattern, '<span class="highlight">$0</span>', $lr);	
+			}
+			$lr = '.....'.$lr.'.....';
+			$lines_refined_tmp[] = $lr;
+		}
+		$lines_refined = $lines_refined_tmp;
+		return $lines_refined;
 	}
 }
