@@ -459,7 +459,7 @@ section {
     margin-right: 0;
   }
   .hero {
-    padding: 140px 0 60px 0;
+    padding: 0 0 60px 0;
   }
 }
 /*--------------------------------------------------------------
@@ -1897,7 +1897,7 @@ section {
   background-size: cover;
   background-position: center;
   position: relative;
-  padding: 120px 0 60px 0;
+  padding: 0 0 60px 0;
   margin: 46px 0 0;
   color: rgba(255, 255, 255, 0.8);
 
