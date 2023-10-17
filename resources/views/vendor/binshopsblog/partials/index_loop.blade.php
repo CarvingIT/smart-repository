@@ -19,7 +19,9 @@
             @endif
 
             <div class="post-details-bottom">
+		@if(!empty($post->post->author->name))
                 <span class="light-text">Authored by: </span> {{$post->post->author->name}} <span class="light-text">Posted at: </span> {{date('d M Y ', strtotime($post->post->posted_at))}}
+                @endif
             </div>
             <div class='text-center'>
                 <a href="{{$post->url($locale, $routeWithoutLocale)}}" class="btn btn-primary">View Post</a>
