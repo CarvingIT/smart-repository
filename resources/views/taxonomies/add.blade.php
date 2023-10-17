@@ -32,7 +32,7 @@
 
                   <div class="col-md-8">
                     <select class="form-control{{ $errors->has('parent_id') ? ' is-invalid' : '' }}" name="parent_id" id="pId">
-                      <option value="">Select Parent </option>
+                      <option value="">Select Parent</option>
 			                @foreach($parent_taxonomies as $p)
                       <option value="{{ $p->id }}" @if($p->id == $taxonomy->parent_id) selected @endif>{{ $p->label }} </option>
 			                  @endforeach
