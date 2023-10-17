@@ -58,6 +58,7 @@ class TaxonomyController extends Controller
     public function update(TaxonomyRequest $request, $id)
     {
 	$taxonomies = Taxonomy::find($id);
+    $taxonomies ->parent_id = $request->parent_id;
 	$taxonomies ->label = $request->label;
 	$taxonomies ->save();
 
