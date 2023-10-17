@@ -25,7 +25,7 @@
                 @endif
                 @csrf
                 @method('post')
-                <!--<div class="form-group row bmd-form-group" style="display:none">
+                <div class="form-group row bmd-form-group">
 		              <div class="col-md-4">
                   <label class="col-md-12 col-form-label text-md-right">{{ __('Parent') }}</label>
                   </div>
@@ -38,7 +38,7 @@
 			                  @endforeach
                     </select>
                   </div>
-                </div> -->
+                </div> 
                 <div class="form-group row bmd-form-group">
 		              <div class="col-md-4">
                   <label class="col-md-12 col-form-label text-md-right">{{ __('Label') }}</label>
@@ -61,6 +61,4 @@
       </div>
     </div>
 </div>
-
-
 @endsection
