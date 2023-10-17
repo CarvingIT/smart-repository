@@ -19,13 +19,12 @@
                 <form method="post" action="{{ route('taxonomies.update', $taxonomy) }}" autocomplete="off">
                 @csrf
                 @method('put')
-		          <!--<div class="form-group row bmd-form-group">
-                <div class="col-md-4" style="display:none">
+		          <div class="form-group row bmd-form-group">
+                <div class="col-md-4">
                   <label class="col-md-12 col-form-label text-md-right">{{ __('Parent') }}</label>
                   </div>
 
-                  <div class="col-md-8" style="display:none">
-
+                  <div class="col-md-8">
                     <select class="form-control{{ $errors->has('parent_id') ? ' is-invalid' : '' }}" name="parent_id" id="pId">
                       <option value="">Select Parent</option>
                         @foreach($parent_taxonomies as $p)
@@ -33,7 +32,7 @@
                         @endforeach
                     </select>
                   </div>
-                </div> -->
+                </div> 
 
                 <div class="form-group row bmd-form-group">
                   <div class="col-md-4">
