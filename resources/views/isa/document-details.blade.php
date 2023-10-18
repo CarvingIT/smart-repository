@@ -106,19 +106,19 @@ $(document).ready(function()
 				@elseif($document->type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
-					<div style="text-align:center;">
-                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
+					<div>
+                        <h6><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h6>
         				
         				</div>
             			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
 				@elseif($document->type == 'image/jpeg' || $document->type == 'image/png')
-					<div style="text-align:center;">
-                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
-					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}" style="width:50%">
+					<div class="col-md-12">
+                        <label>{{ $document->title }}</label>
+					
 					</div>
             			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_blank">
 				@else
-				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left; display:none;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
 				@endif
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
@@ -156,6 +156,16 @@ $(document).ready(function()
 				<br />
                         @endif
                         @endforeach
+						<div class="col-md-12"><label class="col-md-12"> Year </label></div>
+						<div class="col-md-12"><label class="col-md-12"> Country: </label></div>
+						<div class="col-md-12"><label class="col-md-12"> Abstract : </label></div>
+						<div class="col-md-12"><label class="col-md-12"> Publisher : </label></div>
+						<div class="col-md-12"><label class="col-md-12"> Author : </label></div>
+						<div class="col-md-12"><label class="col-md-12"> Serial Number </label></div>
+						<div class="col-md-12"><label class="col-md-12"> Document ID : </label></div>
+						<div class="col-md-12"><label class="col-md-12"> Rights :</label></div>
+						<div class="col-md-12"><label class="col-md-12"> URL : <a href="/collection/{{ $c->id }}/document/{{ $document->id }}">link</a></label></div>
+				<div class="col-md-12"><label class="col-md-12"><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"> Download </a></label></div>
 
 			@if(\Auth::user() && ($c->require_approval == 1))
                   	<div class="col-md-12">
@@ -245,7 +255,7 @@ $(document).ready(function()
 								<p>User: {{ @$audit_meta['user_name'] }}</p>
 								<p>User agent: {{ @$audit_meta['audit_user_agent'] }}</p>
 								<p> <a href="">URL: {{ @$audit_meta['audit_url'] }}</a></p>
-								<p>IP Address: {{ @$audit_meta['audit_ip_address'] }}</p>
+
 								<h4>Modifications</h4>
 								@foreach($modified as $mk => $mv)
 									@php
@@ -301,7 +311,7 @@ $(document).ready(function()
 							</div>	
 						@endif
 						@endif
-
+						
 
                     </div>
 
