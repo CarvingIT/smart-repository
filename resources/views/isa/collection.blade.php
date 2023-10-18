@@ -142,23 +142,26 @@ foreach($tags as $t){
 						echo '</div>';
 					}
 					if($f->type == 'Numeric'){
+						$meta_values = Request::get('meta_'.$f->id);
 						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
-						echo '<fieldset class="filter-price">';
-						echo '<div class="price-field">';
-						echo '<input type="range" id="lower" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" value="1950">';
-						echo '<input type="range" id="upper" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" value="2023">';
+						echo '<fieldset class="filter-range">';
+						echo '<div class="range-field">';
+						echo '<input type="range" id="year_lower_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
+							value="'.(!empty($meta_values[0])?$meta_values[0]:1950).'">';
+						echo '<input type="range" id="year_upper_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
+							value="'.(!empty($meta_values[1])?$meta_values[1]:2023).'">';
 						echo '</div>';
 						@endphp	
-						<div class="price-wrap">
-		                  <div class="price-wrap-1">
-                    		<input id="one">
-                    		<label for="one"></label>
+						<div class="range-wrap">
+		                  <div class="range-wrap-1">
+                    		<input id="start_year" class="lower">
+                    		<label for="start_year"></label>
                   		</div>
-                  		<div class="price-wrap_line">-</div>
-                  		<div class="price-wrap-2">
-                    		<input id="two">
-                    		<label for="two"></label>
+                  		<div class="range-wrap_line">-</div>
+                  		<div class="range-wrap-2">
+                    		<input id="end_year" class="upper">
+                    		<label for="end_year"></label>
                   		</div>
                 		</div>
 						@php
@@ -169,11 +172,11 @@ foreach($tags as $t){
 				}
 				@endphp
 <script>
-    var lowerSlider = document.getElementById('lower');
-    var upperSlider = document.getElementById('upper');
+    var lowerSlider = document.getElementById('year_lower_slider');
+    var upperSlider = document.getElementById('year_upper_slider');
 
-    document.querySelector('#two').value = upperSlider.value;
-    document.querySelector('#one').value = lowerSlider.value;
+    document.querySelector('#end_year').value = upperSlider.value;
+    document.querySelector('#start_year').value = lowerSlider.value;
 
     var lowerVal = parseInt(lowerSlider.value);
     var upperVal = parseInt(upperSlider.value);
@@ -188,7 +191,7 @@ foreach($tags as $t){
           upperSlider.value = 4;
         }
       }
-      document.querySelector('#two').value = this.value
+      document.querySelector('#end_year').value = this.value
     };
 
     lowerSlider.oninput = function () {
@@ -200,8 +203,15 @@ foreach($tags as $t){
           lowerSlider.value = parseInt(upperSlider.max) - 4;
         }
       }
-      document.querySelector('#one').value = this.value
+      document.querySelector('#start_year').value = this.value
     };
+
+	$('#year_lower_slider').on("mouseup", function(){
+		document.isa_search.submit();
+	});
+	$('#year_upper_slider').on("mouseup", function(){
+		document.isa_search.submit();
+	});
   </script>
 		<div class="form-check">
 		</div>

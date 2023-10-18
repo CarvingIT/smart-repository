@@ -2502,7 +2502,7 @@ margin-left: 8px;
 
 
 /* year-range filter */
-  .filter-price {
+  .filter-range {
       width: 115%;
       border: 0;
       padding: 0;
@@ -2515,7 +2515,7 @@ margin-left: 8px;
       margin: 0 0 20px;
     }
 
-    .price-title {
+    .range-title {
       position: relative;
       color: #fff;
       font-size: 14px;
@@ -2523,7 +2523,7 @@ margin-left: 8px;
       font-weight: 400;
     }
 
-    .price-field {
+    .range-field {
       position: relative;
       width: 100%;
       height: 36px;
@@ -2536,12 +2536,12 @@ margin-left: 8px;
       align-items: center;
     }
 
-    .price-field input[type=range] {
+    .range-field input[type=range] {
       position: absolute;
     }
 
     /* Reset style for input range */
-    .price-field input[type=range] {
+    .range-field input[type=range] {
       width: 188px;
       height: 2px;
       border: 0;
@@ -2552,16 +2552,16 @@ margin-left: 8px;
       -webkit-appearance: none;
     }
 
-    .price-field input[type=range]::-webkit-slider-thumb {
+    .range-field input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
     }
 
-    .price-field input[type=range]:active,
-    .price-field input[type=range]:focus {
+    .range-field input[type=range]:active,
+    .range-field input[type=range]:focus {
       outline: 0;
     }
 
-    .price-field input[type=range]::-ms-track {
+    .range-field input[type=range]::-ms-track {
       width: 188px;
       height: 2px;
       border: 0;
@@ -2577,7 +2577,7 @@ margin-left: 8px;
 
     /* Style toddler input range */
 
-    .price-field input[type=range]::-webkit-slider-thumb {
+    .range-field input[type=range]::-webkit-slider-thumb {
       /* WebKit/Blink */
       position: relative;
       -webkit-appearance: none;
@@ -2595,7 +2595,7 @@ margin-left: 8px;
       z-index: 100;
     }
 
-    .price-field input[type=range]::-moz-range-thumb {
+    .range-field input[type=range]::-moz-range-thumb {
       /* Firefox */
       position: relative;
       appearance: none;
@@ -2613,7 +2613,7 @@ margin-left: 8px;
       z-index: 100;
     }
 
-    .price-field input[type=range]::-ms-thumb {
+    .range-field input[type=range]::-ms-thumb {
       /* IE */
       position: relative;
       appearance: none;
@@ -2633,7 +2633,7 @@ margin-left: 8px;
 
     /* Style track input range */
 
-    .price-field input[type=range]::-webkit-slider-runnable-track {
+    .range-field input[type=range]::-webkit-slider-runnable-track {
       /* WebKit/Blink */
       width: 188px;
       height: 2px;
@@ -2642,7 +2642,7 @@ margin-left: 8px;
       border-radius: 5px;
     }
 
-    .price-field input[type=range]::-moz-range-track {
+    .range-field input[type=range]::-moz-range-track {
       /* Firefox */
       width: 188px;
       height: 2px;
@@ -2651,7 +2651,7 @@ margin-left: 8px;
       border-radius: 5px;
     }
 
-    .price-field input[type=range]::-ms-track {
+    .range-field input[type=range]::-ms-track {
       /* IE */
       width: 188px;
       height: 2px;
@@ -2662,7 +2662,7 @@ margin-left: 8px;
 
     /* Style for input value block */
 
-    .price-wrap {
+    .range-wrap {
       display: flex;
       justify-content: center;
       color: #fff;
@@ -2673,22 +2673,22 @@ margin-left: 8px;
       width: 100%;
     }
 
-    .price-wrap-1,
-    .price-wrap-2 {
+    .range-wrap-1,
+    .range-wrap-2 {
       display: flex;
     }
 
-    .price-title {
+    .range-title {
       margin-right: 5px;
       background-color: #d58e32;
     }
 
-    .price-wrap_line {
+    .range-wrap_line {
       margin: 0 10px;
     }
 
-    .price-wrap #one,
-    .price-wrap #two {
+    .range-wrap .lower,
+    .range-wrap .upper {
       width: 40px;
       text-align: right;
       margin: 0;
@@ -2703,18 +2703,18 @@ margin-left: 8px;
       font-weight: 400;
     }
 
-    .price-wrap label {
+    .range-wrap label {
       text-align: right;
     }
 
     /* Style for active state input */
 
-    .price-field input[type=range]:hover::-webkit-slider-thumb {
+    .range-field input[type=range]:hover::-webkit-slider-thumb {
       box-shadow: 0 0 0 0.5px #fff;
       transition-duration: 0.3s;
     }
 
-    .price-field input[type=range]:active::-webkit-slider-thumb {
+    .range-field input[type=range]:active::-webkit-slider-thumb {
       box-shadow: 0 0 0 0.5px #fff;
       transition-duration: 0.3s;
     }
