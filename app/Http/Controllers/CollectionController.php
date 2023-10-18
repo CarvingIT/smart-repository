@@ -244,7 +244,13 @@ class CollectionController extends Controller
 			if(preg_match('/^meta_(\d*)/', $p, $matches)){
 				// currently, no support for operator in the query string parameters
 				// default operator is '='
-				$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+				if(is_array($v) && count($v)==2){ // this is for range filters (numeric values). This condition needs to be refined.
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>$v[1]);
+				}
+				else{
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+				}
 			}
 		}
 		$meta_filters = array();

@@ -76,10 +76,13 @@ class Document extends Model implements Auditable
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) .' '. @$size[$factor];
     }
 
-    public function meta_value($meta_field_id){
+    public function meta_value($meta_field_id, $raw=false){
         $meta_value = \App\MetaFieldValue::where('document_id','=', $this->id)
             ->where('meta_field_id','=',$meta_field_id)->first();
 		if(!$meta_value) return null;
+		if($raw !== false){// return the json representation of array as is without getting label values
+			return $meta_value->value;
+		}
 
 		$meta_field_type = $meta_value->meta_field->type;
         if($meta_value){
