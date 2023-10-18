@@ -142,16 +142,67 @@ foreach($tags as $t){
 						echo '</div>';
 					}
 					if($f->type == 'Numeric'){
-						$numeric_val = (Request::get('meta_'.$f->id))?Request::get('meta_'.$f->id):0;
 						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
-						echo '<div id="filter_'.$f->id.'" style="'.$display.'">';
-						echo '<input type="range" name="meta_'.$f->id.'" min="1950" max="2023" step="1" onchange="document.getElementById(\'range_meta_'.$f->id.'\').innerText=this.value;" onmouseup="this.form.submit();" value="'.$numeric_val.'">';
-						echo '<div id="range_meta_'.$f->id.'">'.$numeric_val.'</div>';
+						echo '<div id="filter_'.$f->id.'">';
+						echo '<fieldset class="filter-price">';
+						echo '<div class="price-field">';
+						echo '<input type="range" id="lower" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" value="1950">';
+						echo '<input type="range" id="upper" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" value="2023">';
+						echo '</div>';
+						@endphp	
+						<div class="price-wrap">
+		                  <div class="price-wrap-1">
+                    		<input id="one">
+                    		<label for="one"></label>
+                  		</div>
+                  		<div class="price-wrap_line">-</div>
+                  		<div class="price-wrap-2">
+                    		<input id="two">
+                    		<label for="two"></label>
+                  		</div>
+                		</div>
+						@php
+						echo '</fieldset>';
 						echo '</div>';
 
 					}
 				}
 				@endphp
+<script>
+    var lowerSlider = document.getElementById('lower');
+    var upperSlider = document.getElementById('upper');
+
+    document.querySelector('#two').value = upperSlider.value;
+    document.querySelector('#one').value = lowerSlider.value;
+
+    var lowerVal = parseInt(lowerSlider.value);
+    var upperVal = parseInt(upperSlider.value);
+
+    upperSlider.oninput = function () {
+      lowerVal = parseInt(lowerSlider.value);
+      upperVal = parseInt(upperSlider.value);
+
+      if (upperVal < lowerVal + 4) {
+        lowerSlider.value = upperVal - 4;
+        if (lowerVal == lowerSlider.min) {
+          upperSlider.value = 4;
+        }
+      }
+      document.querySelector('#two').value = this.value
+    };
+
+    lowerSlider.oninput = function () {
+      lowerVal = parseInt(lowerSlider.value);
+      upperVal = parseInt(upperSlider.value);
+      if (lowerVal > upperVal - 4) {
+        upperSlider.value = lowerVal + 4;
+        if (upperVal == upperSlider.max) {
+          lowerSlider.value = parseInt(upperSlider.max) - 4;
+        }
+      }
+      document.querySelector('#one').value = this.value
+    };
+  </script>
 		<div class="form-check">
 		</div>
 		</div>
