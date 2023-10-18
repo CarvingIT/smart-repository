@@ -255,5 +255,4 @@ Route::get('/feedback-thank-you', function(){ return view('feedback-thank-you');
 // About Repository
 Route::view('/about', 'about-repository');
 
-// About Repository
-Route::view('/document-details', 'document-details');
+
