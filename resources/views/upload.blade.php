@@ -182,8 +182,8 @@ tinymce.init({
 					if(empty($children['parent_'.$parent_id])) return;
 					foreach($children['parent_'.$parent_id] as $t){
 							$selected = '';
-							if(@in_array($t->id, json_decode($document->meta_value($f->id)))){
-								$selected="selected";
+							if(@in_array($t->id, json_decode($document->meta_value($f->id, true)))){
+								$selected='selected="selected"';
 							}
 							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
 								echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
@@ -203,6 +203,9 @@ tinymce.init({
 			getTree($children, $document, $f, $f->options);
 			@endphp
 		</select>
+		<script>
+			$('#meta_field_{{$f->id}}').val({{ $document->meta_value($f->id, true) }});
+		</script>
         @endif
         </div>
     </div>
