@@ -2720,3 +2720,8 @@ margin-left: 8px;
       box-shadow: 0 0 0 0.5px #fff;
       transition-duration: 0.3s;
     }
+
+  /* checkbox labels on the search page */
+	.form-check-label{
+		display:inline;
+	}
