@@ -2504,12 +2504,12 @@ margin-left: 8px;
 /*--------------------------------------------------------------
 # Country & Theme list
 --------------------------------------------------------------*/
-.card-list {
+.ct-list {
 column-count: 2;
 }
 
 @media (max-width: 768px) {
-.card-list {
+.ct-list {
 column-count: 1;
 }
 
