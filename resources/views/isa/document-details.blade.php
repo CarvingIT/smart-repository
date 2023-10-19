@@ -136,7 +136,7 @@ $(document).ready(function()
 
 			@php 
 				$m = App\MetaFieldValue::where('document_id', $document->id)->where('meta_field_id', $meta_field->id)->first();
-				if(!$m) continue;
+				if(!$m || empty($m->value)) continue;
 				$meta_field_type = $meta_field->type;
 			 @endphp
                         @if(!empty($meta_labels[$m->meta_field_id]))
