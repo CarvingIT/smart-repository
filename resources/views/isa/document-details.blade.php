@@ -62,6 +62,11 @@ $(document).ready(function()
     });
 });
 </script>
+<style>
+	.container{
+		color:back;
+	}
+</style>
 @endif
 @endpush
 @section('content')
@@ -156,17 +161,22 @@ $(document).ready(function()
 				<br />
                         @endif
                         @endforeach
-						<div class="col-md-12"><label class="col-md-12"> Year </label></div>
-						<div class="col-md-12"><label class="col-md-12"> Country: </label></div>
-						<div class="col-md-12"><label class="col-md-12"> Abstract : </label></div>
-						<div class="col-md-12"><label class="col-md-12"> Publisher : </label></div>
-						<div class="col-md-12"><label class="col-md-12"> Author : </label></div>
-						<div class="col-md-12"><label class="col-md-12"> Serial Number </label></div>
-						<div class="col-md-12"><label class="col-md-12"> Document ID : </label></div>
-						<div class="col-md-12"><label class="col-md-12"> Rights :</label></div>
-						<div class="col-md-12"><label class="col-md-12"> URL : <a href="/collection/{{ $c->id }}/document/{{ $document->id }}">link</a></label></div>
-				<div class="col-md-12"><label class="col-md-12"><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"> Download </a></label></div>
+						<div class="col-md-12 row">
+						<div class="col-6"><label> <strong>Year :</strong> 2023 </label> </div>
+						<div class="col-6"><label><strong>Country :</strong>  India</label> </div>
+						</div>
+						
+						<div class="col-md-12"><label> <strong>Abstract :</strong>Solar energy, radiation from the Sun capable of producing heat, causing chemical reactions, or generating electricity. The total amount of solar energy incident on Earth is vastly in excess of the world’s current and anticipated energy requirements. If suitably harnessed, this highly diffused source has the potential to satisfy all future energy needs.Solar energy, radiation from the Sun capable of producing. In the 21st century solar energy is expected to become increasingly attractive as a renewable energy source because of its inexhaustible supply and its nonpolluting character, in stark contrast to the finite fossil fuels coal, petroleum, and natural gas. </label></div>
+						<div class="col-md-12 row">
+						<div class="col-md-6"><label> <strong>Publisher : </strong> ISA </label></div>
+						<div class="col-md-6"><label> <strong>Author : </strong> ISA</label></div>
+						<div class="col-md-6"><label> <strong>Serial Number:</strong> 01</label></div>
+						<div class="col-md-6"><label> <strong>Document ID :</strong>D-01 </label></div>
+						<div class="col-md-6"><label> <strong>Rights :</strong> ISA</label></div>
 
+						<div class="col-md-6"><label> <strong>URL : </strong><a href="/collection/{{ $c->id }}/document/{{ $document->id }}">link</a></label></div>
+				<div class="col-md-6"><label><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"> <strong>Download </strong></a></label></div>
+				</div>
 			@if(\Auth::user() && ($c->require_approval == 1))
                   	<div class="col-md-12">
 				<h3>Document Status</h3>
