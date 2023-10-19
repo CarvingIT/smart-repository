@@ -32,13 +32,10 @@
 -->
 <div class="row">
 <div class="col-md-12" style="border-bottom:1px solid #eee;">
-	<br/>
-            <h5 class=''><a href='{{$post->url($locale, $routeWithoutLocale)}}'>{{$post->title}}</a></h5>
+            <h3 class=''><i class="fa-solid fa-blog" style="color:#f05a22"></i>&nbsp;<a href='{{$post->url($locale, $routeWithoutLocale)}}'>{{$post->title}}</a></h3>
 		@if(!empty($post->post->author->name))
-                <em>{{$post->post->author->name}}</em><br />
+                <em>{{$post->post->author->name}}</em>
 		@endif
 		<p>{!! mb_strimwidth($post->post_body_output(), 0, 400, "...") !!}</p>
-	<br/>
-	<br/>
 </div>
 </div>
