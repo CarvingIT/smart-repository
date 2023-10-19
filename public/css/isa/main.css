@@ -2501,7 +2501,17 @@ margin-left: 8px;
 .highlight{
 	background-color:yellow;
 }
+/*--------------------------------------------------------------
+# Country & Theme list
+--------------------------------------------------------------*/
+.card-list {
+column-count: 2;
+}
 
+@media (max-width: 768px) {
+.card-list {
+column-count: 1;
+}
 
 /* year-range filter */
   .filter-range {
