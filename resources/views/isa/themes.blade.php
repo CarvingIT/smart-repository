@@ -96,7 +96,7 @@ function randomString(length) {
              				}
              				else{
 	                                    echo '<li>';
-                  				echo '<a href="/documents/isa_document_search?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a><br />';
+                  				echo '<a href="/collection/1?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a><br />';
                                             echo '</li>';
              				}
 				}#foreach	
