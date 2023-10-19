@@ -2,6 +2,35 @@
 @push('js')
 <script src="/js/jquery-ui.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
+<script>
+@php
+	$url = '/collection/1/search-results?isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
+@endphp
+$(document).ready(function() {
+$("#search-results").load('{{ $url }}');
+});
+
+function reloadSearchResults(){
+	var queryString = $('#isa_search').serialize();
+	//alert(queryString);
+	var url = '/collection/1/search-results?'+queryString;
+	$("#search-results").load(url);
+	return false;
+}
+function nextPage(){
+	var start = $('#search-results-start').val();
+	start = parseInt(start) + 10;
+	$('#search-results-start').val(start);
+	reloadSearchResults();
+}
+function previousPage(){
+	var start = $('#search-results-start').val();
+	start = parseInt(start) - 10;
+	$('#search-results-start').val(start);
+	reloadSearchResults();
+}
+
+</script>
 @endpush
 @section('content')
 <main id="main">
@@ -40,7 +69,7 @@
 		// get compare with query string parameter to mark as checked
 		echo '<div class="form-check">';
 				$tid = $t->id;
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="reloadSearchResults();" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
 		echo '</div>';
 		}
                   getTree($children, $t->id, $meta_id, $rmfv_map);
@@ -52,7 +81,7 @@
 			}
 			echo '<div class="form-check">';
 			$tid = $t->id;
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="this.form.submit();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="reloadSearchResults();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
 		echo '</div>';
              }
          }
@@ -62,6 +91,9 @@
 <!-- ======= Breadcrumbs ======= -->
     <div class="row justify-content-center">
 		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
+		<input type="hidden" name="length" id="search-results-length" value="10" />
+		<input type="hidden" name="start" id="search-results-start" value="0" />
+		@csrf
         <div class="col-md-12">
             <div class="card">
 				<div class="card-header card-header-primary">
@@ -88,19 +120,16 @@
 			</div>
 	
 			<div class="col-10">
-            <p>{{-- $collection->description --}}</p>
 			</div>
 			<div class="col-2 text-right">
 			</div>
-		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
-		@csrf
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keywords') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
 		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
-			<input type="submit" value="Search" name="isa_search" class="btn btn-sm btn-primary search">
+			<input type="button" value="Search" name="isa_search" class="btn btn-sm btn-primary search" onclick="reloadSearchResults()">
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -207,10 +236,10 @@ foreach($tags as $t){
     };
 
 	$('#year_lower_slider').on("mouseup", function(){
-		document.isa_search.submit();
+		reloadSearchResults();
 	});
 	$('#year_upper_slider').on("mouseup", function(){
-		document.isa_search.submit();
+		reloadSearchResults();
 	});
   </script>
 		<div class="form-check">
@@ -222,98 +251,11 @@ foreach($tags as $t){
 
 		</form><!-- isa_search form ends -->
 
-	  <div class="col-lg-9">
-<div class="row gy-4 pricing-item" data-aos-delay="100">
-	@if(!empty($results))
-	@foreach($results as $result)
-		@php 
-			$document = \App\Document::find($result->id);
-			$meta_fields = $document->collection->meta_fields;
-			$abstract_field_id = null;
-			$country_field_id = null;
-			$year_field_id = null;
-			foreach($meta_fields as $m){
-				if($m->label == env('ABSTRACT_FIELD_LABEL','Abstract')){
-					$abstract_field_id = $m->id;
-				}
-				else if($m->label == env('COUNTRY_FIELD_LABEL','Country')){
-					$country_field_id = $m->id;
-				}
-				else if($m->label == env('YEAR_FIELD_LABEL','Year')){
-					$year_field_id = $m->id;
-				}
-			}
-		@endphp
-		<div class="row">
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {!! $result->title !!}</a>
-		</div>
-		<div class="row">
-		<div class="col-lg-9">
-		@if (!empty($document->meta_value($country_field_id)))
-			<span class="search-result-meta">
-			{{ env('COUNTRY_FIELD_LABEL','Country').': '.$document->meta_value($country_field_id) }}
-			</span>
-		@endif
-		</div>
-		<div class="col-lg-3">
-		@if (!empty($document->meta_value($year_field_id)))
-			<span class="search-result-meta">
-			{{ env('YEAR_FIELD_LABEL','Year').': '.$document->meta_value($year_field_id) }}
-			</span>
-		@endif
-		</div>
-		</div>
-		<div class="row">
-		<div class="col-lg-12">
-			@if (empty($search_query))
-			<p>
-			@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
-			{!! \Illuminate\Support\Str::limit(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id))))),
-				250, $end='...') 
-			!!}
-			@else
-			{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
-			@endif
-			</p>
-			@else
-			<p>
-			{!! implode('', App\Util::highlightKeywords($document->text_content, $search_query)) !!}		
-			</p>
-			@endif
-		</div>
-		</div>
-		<div class="row">&nbsp;</div>
-	@endforeach
-	@else
-		{{ __('No results found') }}
-	@endif
-	</div>
-	  </div>
+<div class="col-lg-9" id="search-results">
+	<!-- search results -->
+</div>
 
 		</div> <!-- card -->
-<nav aria-label="Page navigation">
-<ul class="pagination justify-content-center">
-@php
-//$total_results_count=0;
-$length=10;
-$start = empty(Request::get('start'))? 0 : Request::get('start');
-if(empty(Request::get('meta'))){
-$taxonomies = '';
-}
-$collection_id = $collection->id;
-@endphp
-@if($start > 0)
-<li class="page-item disabled">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ @$meta_query }}&start={{ $start-10 }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
-</li>
-@endif
-@if($start < ($filtered_results_count - 10) && count($results) >= 10 )
-<li class="page-item">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ @$meta_query }}&start={{ $start+10 }}&length={{ $length }}">&raquo;</a>
-</li>
-@endif
-</ul>
-</nav>
 
 </form>
 	</div>

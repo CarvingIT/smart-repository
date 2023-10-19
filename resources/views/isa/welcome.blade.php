@@ -11,7 +11,7 @@
           <h4 class="text-center" data-aos="fade-up">Regulation Resource Repository for Solar Energy</h4>
           <p class="text-center" data-aos="fade-up" data-aos-delay="100">A comprehensive data repository for all regulations in ISA member countries relating to Solar Energy</p>
 
-          <form action="/documents/isa_document_search" class="form-search d-flex align-items-stretch mb-4" data-aos="fade-up" data-aos-delay="200" method="get" id="isa_search" name="isa_search">
+          <form action="/collection/1" class="form-search d-flex align-items-stretch mb-4" data-aos="fade-up" data-aos-delay="200" method="get" id="isa_search" name="isa_search">
 			<input type="hidden" name="collection_id" value="1" />
             <input type="text" class="form-control form-group" name="isa_search_parameter" placeholder="What are you looking for abc?">
             <button type="submit" value="Search" name="isa_search" class="btn btn-primary">Search</button>

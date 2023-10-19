@@ -256,4 +256,4 @@ Route::get('/feedback-thank-you', function(){ return view('feedback-thank-you');
 // About Repository
 Route::view('/about', 'about-repository');
 
-
+Route::get('/collection/{collection_id}/search-results', 'CollectionController@searchResults');
