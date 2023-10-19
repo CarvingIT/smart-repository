@@ -54,7 +54,9 @@
                 @endif
 
                 <div class="container">
-			<br />
+        @if (config('binshopsblog.search.search_enabled') )
+            @include('binshopsblog::sitewide.search_form')
+        @endif
 			<br />
                     <div class="row">
                         @forelse($posts as $post)
@@ -87,9 +89,11 @@
 		-->
         </div>
 
+	{{--
         @if (config('binshopsblog.search.search_enabled') )
             @include('binshopsblog::sitewide.search_form')
         @endif
+	--}}
         <div class="row">
             <div class="col-md-12 text-center">
                 @foreach($lang_list as $lang)

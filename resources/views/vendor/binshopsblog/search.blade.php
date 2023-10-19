@@ -5,6 +5,9 @@
 <div class="container-fluid">
     <div class='row'>
         <div class='col-sm-12'>
+            @if (config('binshopsblog.search.search_enabled') )
+                @include('binshopsblog::sitewide.search_form')
+            @endif
             <div class="row">
                 <div class="col-md-9">
                     <h2>Search Results for {{$query}}</h2>
@@ -15,7 +18,7 @@
                             @php $search_count += $search_count + 1; @endphp
                             <?php $post = $result->indexable; ?>
                             @if($post && is_a($post,\BinshopsBlog\Models\BinshopsPostTranslation::class))
-                                <h2>Search result #{{$search_count}}</h2>
+                                <h3>Search result #{{$search_count}}</h3>
                                 @include("binshopsblog::partials.index_loop")
                             @else
 
@@ -27,7 +30,7 @@
                     @endforelse
                 </div>
                 <div class="col-md-3">
-                    <h6>Blog Categories</h6>
+                    <!--h6>Blog Categories</h6-->
                     <ul class="binshops-cat-hierarchy">
                         @if($categories)
                             @include("binshopsblog::partials._category_partial", [
@@ -41,10 +44,12 @@
                 </div>
             </div>
 
+	{{--	
             @if (config('binshopsblog.search.search_enabled') )
                 @include('binshopsblog::sitewide.search_form')
             @endif
-
+	--}}    	
+	<br />
         </div>
     </div>
 

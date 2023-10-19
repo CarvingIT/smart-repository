@@ -161,6 +161,19 @@
     @yield('content')
   </div>
 </div>
+    <script>
+	    var botmanWidget = {
+			frameEndpoint: '/chatbot-frame.html',
+	        aboutText: 'ISA Repository',
+			aboutLink: "/",
+	        introMessage: "✋ Hello! <br />I understand the following instructions. <br/><strong>h</strong> - for the menu listing commands <br /><strong>q</strong> - Ask a question.",
+			title: "ISA RRR Chatbot",
+			mainColor:"#f05a22",
+			bubbleBackground:"#f05a22",
+			bubbleAvatarUrl: "/i/chatbot.png",
+	    };
+    </script>
+    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="container">
@@ -169,7 +182,6 @@
           <a href="/" class="logo d-flex align-items-center">
             <img src="/img/isa/img/site-logo-light.png" alt="Logo">
           </a>
-          <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
           <div class="social-links d-flex mt-4">
             <a href="https://www.facebook.com/InternationalSolarAlliance/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
             <a href="https://www.twitter.com/" class="twitter" target="_blank"><i class="bi bi-twitter"></i></a>

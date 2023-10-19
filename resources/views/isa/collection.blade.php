@@ -126,7 +126,7 @@ foreach($tags as $t){
 <section id="service-details" class="service-details">
   <div class="container">
 	<div class="row gy-4">
-	  <div class="col-lg-3">
+	  <div class="col-lg-3" style="margin-top:0;">
 		<div class="services-list">
 			<h5>Filter</h5>
 				@php
@@ -142,16 +142,77 @@ foreach($tags as $t){
 						echo '</div>';
 					}
 					if($f->type == 'Numeric'){
-						$numeric_val = (Request::get('meta_'.$f->id))?Request::get('meta_'.$f->id):0;
+						$meta_values = Request::get('meta_'.$f->id);
 						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
-						echo '<div id="filter_'.$f->id.'" style="'.$display.'">';
-						echo '<input type="range" name="meta_'.$f->id.'" min="1950" max="2023" step="1" onchange="document.getElementById(\'range_meta_'.$f->id.'\').innerText=this.value;" onmouseup="this.form.submit();" value="'.$numeric_val.'">';
-						echo '<div id="range_meta_'.$f->id.'">'.$numeric_val.'</div>';
+						echo '<div id="filter_'.$f->id.'">';
+						echo '<fieldset class="filter-range">';
+						echo '<div class="range-field">';
+						echo '<input type="range" id="year_lower_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
+							value="'.(!empty($meta_values[0])?$meta_values[0]:1950).'">';
+						echo '<input type="range" id="year_upper_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
+							value="'.(!empty($meta_values[1])?$meta_values[1]:2023).'">';
+						echo '</div>';
+						@endphp	
+						<div class="range-wrap">
+		                  <div class="range-wrap-1">
+                    		<input id="start_year" class="lower">
+                    		<label for="start_year"></label>
+                  		</div>
+                  		<div class="range-wrap_line">-</div>
+                  		<div class="range-wrap-2">
+                    		<input id="end_year" class="upper">
+                    		<label for="end_year"></label>
+                  		</div>
+                		</div>
+						@php
+						echo '</fieldset>';
 						echo '</div>';
 
 					}
 				}
 				@endphp
+<script>
+    var lowerSlider = document.getElementById('year_lower_slider');
+    var upperSlider = document.getElementById('year_upper_slider');
+
+    document.querySelector('#end_year').value = upperSlider.value;
+    document.querySelector('#start_year').value = lowerSlider.value;
+
+    var lowerVal = parseInt(lowerSlider.value);
+    var upperVal = parseInt(upperSlider.value);
+
+    upperSlider.oninput = function () {
+      lowerVal = parseInt(lowerSlider.value);
+      upperVal = parseInt(upperSlider.value);
+
+      if (upperVal < lowerVal + 4) {
+        lowerSlider.value = upperVal - 4;
+        if (lowerVal == lowerSlider.min) {
+          upperSlider.value = 4;
+        }
+      }
+      document.querySelector('#end_year').value = this.value
+    };
+
+    lowerSlider.oninput = function () {
+      lowerVal = parseInt(lowerSlider.value);
+      upperVal = parseInt(upperSlider.value);
+      if (lowerVal > upperVal - 4) {
+        upperSlider.value = lowerVal + 4;
+        if (upperVal == upperSlider.max) {
+          lowerSlider.value = parseInt(upperSlider.max) - 4;
+        }
+      }
+      document.querySelector('#start_year').value = this.value
+    };
+
+	$('#year_lower_slider').on("mouseup", function(){
+		document.isa_search.submit();
+	});
+	$('#year_upper_slider').on("mouseup", function(){
+		document.isa_search.submit();
+	});
+  </script>
 		<div class="form-check">
 		</div>
 		</div>
@@ -208,7 +269,7 @@ foreach($tags as $t){
 			<p>
 			@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
 			{!! \Illuminate\Support\Str::limit(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id))))),
-				40, $end='...') 
+				250, $end='...') 
 			!!}
 			@else
 			{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
@@ -261,19 +322,6 @@ $collection_id = $collection->id;
 </section><!-- End Service Details Section -->
 
 </main><!-- End #main -->
-    <script>
-	    var botmanWidget = {
-			frameEndpoint: '/chatbot-frame.html',
-	        aboutText: 'ISA Repository',
-			aboutLink: "/",
-	        introMessage: "✋ Hello! <br />I understand the following instructions. <br/><strong>h</strong> - for the menu listing commands <br /><strong>q</strong> - Ask a question.",
-			title: "ISA RRR Chatbot",
-			mainColor:"#f05a22",
-			bubbleBackground:"#f05a22",
-			bubbleAvatarUrl: "/i/chatbot.png",
-	    };
-    </script>
-    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
 
 <script>
 	@if(env('SEARCH_MODE') == 'elastic')

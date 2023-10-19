@@ -39,29 +39,75 @@
             <!-- End Stats Item -->
           </div>
 
-          <div class="row" data-aos="fade-up" data-aos-delay="400"> 
+				@php
+					$model_families = [];
+					$model_ids = [];
+					$document_ids = [];
+					$document_counts = [];
+					
+					$major_themes = explode("|",env('MAJOR_THEMES','A1|A2|A3'));
+					foreach($major_themes as $mt){
+						// get model of each
+						$theme_model = \App\Taxonomy::where('label', $mt)->first();
+						$model_families[$mt] = empty($theme_model)?[]: $theme_model->createFamily();
+					}
+					foreach($model_families as $mt=>$mf){
+						foreach($mf as $m){
+							$model_ids[$mt][] = $m->id;
+						}
+					}
+					//print_r($model_ids);
+					$theme_field_label = env('THEME_FIELD_LABEL','Theme');
+					$meta_field = \App\MetaField::where('collection_id',1)->where('label',$theme_field_label)->first();
+					if($meta_field){
+						foreach($major_themes as $mt){
+							$rmfv_models = \App\ReverseMetaFieldValue::where('meta_field_id', $meta_field->id)
+							->whereIn('meta_value', isset($model_ids[$mt])? $model_ids[$mt]: [])->get();
+							foreach($rmfv_models as $m){
+								$document_ids[$mt][] = $m->document_id;
+							}
+							if(isset($document_ids[$mt])){
+								$document_ids[$mt] = array_unique($document_ids[$mt]);
+								$document_counts[$mt] = count($document_ids[$mt]);
+							}
+						}
+					}
+				@endphp
 
+		<!--
+          <div class="row" data-aos="fade-up" data-aos-delay="400"> 
             <div class="col-lg-5 col-6">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
                 <a href="javascript:void(0)">LAWS, REGULATIONS AND POLICIES</a>
               </div>
-            </div><!-- End Stats Item -->
+            </div>
 
             <div class="col-lg-3 col-6">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
                 <a class="justify-content-center" href="javascript:void(0)">PUBLICATIONS</a>
               </div>
-            </div><!-- End Stats Item -->
+            </div>
 
             <div class="col-lg-4 col-6">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="1" class="purecounter"></span>
                 <a class="justify-content-center" href="javascript:void(0)">TECHNICAL STANDARDS</a>
               </div>
-            </div><!-- End Stats Item -->
+            </div>
+          </div>
+		-->
 
+          <div class="row" data-aos="fade-up" data-aos-delay="400"> 
+			@foreach($major_themes as $mt)
+            <div class="col-lg-4 col-4">
+              <div class="stats-item text-center w-100 h-100">
+                <span data-purecounter-start="0" data-purecounter-end="{{ isset($document_counts[$mt])?$document_counts[$mt]:0 }}" data-purecounter-duration="1" class="purecounter"></span>
+                <a class="justify-content-center" href="javascript:void(0)">{{ $mt }}</a>
+              </div>
+            </div><!-- End Stats Item -->
+			@endforeach
           </div>
 
         </div>

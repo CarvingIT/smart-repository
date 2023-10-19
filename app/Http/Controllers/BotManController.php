@@ -8,6 +8,7 @@ use DonatelloZa\RakePlus\RakePlus;
 use App\Document;
 use App\Util;
 use App\ChatGPT;
+use Illuminate\Support\Facades\Log;
 
 class BotManController extends Controller
 {
@@ -18,6 +19,7 @@ class BotManController extends Controller
     public function handle(Request $req)
     {
         $botman = app('botman');
+
         $botman->hears('{message}', function($botman, $req, $message) {
             if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
                 $this->askName($botman);
@@ -29,7 +31,7 @@ class BotManController extends Controller
 				$this->helpMenu($botman);
 			}
 			else{
-				$this->unknownCommand($botman);
+				//$this->unknownCommand($botman);
 			}
         });
         $botman->listen();
@@ -57,7 +59,7 @@ class BotManController extends Controller
 		$this_controller = $this;
 		$this->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 
-        $botSearch = function(Answer $answer, $req) use ($this_controller) {
+        $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch) {
 			// get keywords
 			$question = $answer->getText();
 			// $keywords = RakePlus::create($question)->get(); // this gives phrases
@@ -80,9 +82,11 @@ class BotManController extends Controller
 				}
 				
 				$info_from_docs = '';
+				$doc_list = '';
 				foreach($documents_array->data as $d){
 					$doc = Document::find($d->id);
 					$info_from_docs .= $doc->text_content;
+					$doc_list .= '<a href="/document/'.$d->id.'">'.$d->title.'</a><br />';
 				}
 
 				// remove Page \d\d from the string
@@ -95,6 +99,7 @@ class BotManController extends Controller
 				//$matches_details .= $chunks[0];
 				if(count($matches) == 0){
 					$this->say('I did not get an answer to your query.');
+					$this->ask('Try rephrasing your question.', $botSearch);
 				}
 				else{
 					// show answer here
@@ -119,8 +124,10 @@ class BotManController extends Controller
 					if(empty($answer_full)){
 						$answer_full = 'Did not get any answer.';
 					}
+					$answer_full .= '<br/><br/> Documents for reference - <br />'.$doc_list;
 					$this->say($answer_full);
-					$this->say('Press <strong>q</strong> for another question.');
+					//$this->say('Press <strong>q</strong> for another question.');
+					$this->ask('Type in another question.', $botSearch);
 				}
 			}else{
 				$this->say('There was some error. Please try again.');
@@ -134,38 +141,35 @@ class BotManController extends Controller
 
 	}
 
-	function answerQuestion( string $chunk, string $question ) {
+	public function answerQuestion( string $chunk, string $question ) {
 		try{
-		$chatgpt = $this->chatgpt;
-    	//$chatgpt->add_function( [$this, "answer_not_found"] );
-		//return 'here';
-    	$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt. If the answer can not be determined from the excerpt, call the answer_not_found function." );
-    	$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
-    	$chatgpt->umessage( $question );
+			$chatgpt = $this->chatgpt;
+    		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
+    		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
+    		$chatgpt->umessage( $question );
 	
-    	//$response = $chatgpt->response( raw_function_response: true );
-    	$response = $chatgpt->response( true );
+    		$response = $chatgpt->response( true );
 	
-    	if( isset( $response->function_call ) ) {
-        	return false;
-    	}
+    		if( isset( $response->function_call ) ) {
+        		return false;
+    		}
 	
-    	if( empty( $response->content ) ) {
-        	return false;
-    	}
+    		if( empty( $response->content ) ) {
+        		return false;
+    		}
 	
-    	if( $chatgpt->version() < 4 && ! $this->gpt3_check( $question, $response->content ) ) {
-        	return false;
-    	}
-
-    	return $response;
+    		if( $chatgpt->version() < 4 && ! $this->gpt3_check( $question, $response->content ) ) {
+        		return false;
+    		}
+    		return $response;
 		}
 		catch(\Exception $e){
-			return $e->getMessage();
+			Log::debug($e->getMessage());
+			return false;
 		}
-		}
+	}
 
-	function gpt3_check( $question, $answer ) {
+	public function gpt3_check( $question, $answer ) {
     	$chatgpt = new ChatGPT( getenv("OPENAI_API_KEY") );
     	$chatgpt->umessage( "Question: \"$question\"\nAnswer: \"$answer\"\n\nAnswer YES if the answer is similar to 'the answer to the question was not found in the information provided' or 'the excerpt does not mention that'. Answer only YES or NO" );
     	$response = $chatgpt->response();
