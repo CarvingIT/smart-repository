@@ -87,6 +87,7 @@ tinymce.init({
                     placeholder="If left blank, we shall guess!" maxlength="150" />
                     </div>
 		</div>
+		@if(empty($document->id) || $document->type != 'N/A')
 		<div class="form-group row">
 		   <div class="col-md-3">
 		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">Document</label>
@@ -96,17 +97,22 @@ tinymce.init({
     		   <input id="uploadfile" type="file" class="form-control-file" name="document" /> 
     		   </div>
 		</div>
+		@endif
+		@if(empty($document->id) || $document->type == 'N/A')
 		<div class="form-group row">
 		   <div class="col-md-3">
 		   <label for="externallink" class="col-md-12 col-form-label text-md-right">External Link</label>
 		   </div>
     		   <div class="col-md-9">
+				@if(empty($document->id))
 				Enter a link below only if there's no document to be uploaded. 
+				@endif
     		   <input type="text" class="form-control-file" name="external_link" 
 					value="@if(!empty($document->id)){{ html_entity_decode($document->external_link) }}@endif" 
                     placeholder="https://..." maxlength="150" > 
     		   </div>
 		</div>
+		@endif
 		@if(!empty($document->id) && $document->type != 'N/A')
 		<div class="form-group row">
 		   <div class="col-md-3">
