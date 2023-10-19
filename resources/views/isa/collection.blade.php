@@ -245,7 +245,7 @@ foreach($tags as $t){
 			}
 		@endphp
 		<div class="row">
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {!! $result->title !!}</a>
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {!! $result->title !!}</a>
 		</div>
 		<div class="row">
 		<div class="col-lg-9">

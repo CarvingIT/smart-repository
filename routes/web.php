@@ -104,9 +104,10 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 // media route; just like the document download route
 Route::get('/media/i/{filename}', 'MediaController@loadImage');
 // Document routes
-Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
-Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');
-Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('auth');
+Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('auth');
+Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
+
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
@@ -115,7 +116,7 @@ Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware
 // Upload documents with same meta-data
 Route::get('/collection/{collection_id}/document/{document_id}/same-meta-upload', 'DocumentController@sameMetaUpload')->middleware('document_add');
 // Document details (meta)
-Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware('auth');
 Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
 // See Diff in revisions
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
