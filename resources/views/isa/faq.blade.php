@@ -21,29 +21,52 @@
                     <div>
 				
 <p>
-<strong>What is Lorem Ipsum?</strong>
+<strong>What is ISA?</strong>
 </p>
 <p>
-Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+The International Solar Alliance (ISA) is an action-oriented, member-driven, collaborative platform for increased deployment of solar energy technologies as a means for bringing energy access, ensuring energy security, and driving energy transition in its member countries. The ISA strives to develop and deploy cost-effective and transformational energy solutions powered by the sun to help member countries develop low-carbon growth trajectories, with particular focus on delivering impact in countries categorized as Least Developed Countries (LDCs) and the Small Island Developing States (SIDS). To know more, <a href="/about">click here.</a> 
 </p>
 <p>
-<strong>Why do we use it?</strong>
+<strong>What is the aim of the Regulation Repository?</strong>
 </p>
 <p>
-It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+The Regulation Repository aims to serve as a single window platform to provide all law, regulations, policies, guidelines etc relevant to the solar energy sector related to ISA member countries. It serves to facilitate understanding of the complex regulatory landscape, promoting compliance with established standards. This repository supports research efforts and provides valuable insights for researchers, policymakers, and industry experts. To know more, <a href="/about">click here.</a>
 </p>
 <p>
-<strong>Where does it come from?</strong>
+<strong>Who are the stakeholders of the Repository?</strong>
 </p>
 <p>
-Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor sit amet..", comes from a line in section 1.10.32.
+The stakeholders of the Repository are diverse and include a wide range of individuals and organizations. These stakeholders typically consist of government agencies, policymakers, legal experts, solar industry professionals, researchers, academics, environmental organizations, clean energy advocates, businesses involved in solar energy, and the general public. The repository caters to all those interested in understanding, complying with, or contributing to solar energy regulation, making it a valuable resource for a broad spectrum of stakeholders within the solar energy sector.
 </p>
 <p>
-<strong>Where can I get some?</strong>
+<strong>What resource types are available in Repository?</strong>
 </p>
-
 <p>
-There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
+The Repository offers a rich array of resources that encompass legal, technical, and research documents related to solar energy. These resources include legal frameworks, regulations, case studies, reports, standards, academic research papers, theses, dissertations, expert opinions, and publications from ISA member countries. Additionally, it houses information on fiscal frameworks, pricing, taxation, and government initiatives in the solar energy sector. These diverse resources aim to provide a comprehensive and centralized source of knowledge for all aspects of solar energy regulation and industry development.
+</p>
+<p>
+<strong>How do I navigate the Repository?</strong>
+</p>
+<p>
+To navigate the Repository effectively, we recommend referring to the provided User Manual. This comprehensive guide will walk you through the repository's features, search functionalities, and how to access the specific resources you need, ensuring a seamless and productive experience.
+</p>
+<p>
+<strong>A document that would be relevant to the repository is not uploaded here. How can I inform/share it?</strong>
+</p>
+<p>
+If you have a document that you believe would be valuable for the Repository and it's not currently uploaded, we welcome your contribution. Please write to us at <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a> with the title “Additional Document for Regulation Repository”. We will work with you to make the document available in the Repository. Your contribution is highly appreciated as it helps enhance the repository's resources and benefit the broader solar energy community.
+</p>
+<p>
+<strong>I want to collaborate and write an opinion piece. How do I do it?</strong>
+</p>
+<p>
+We appreciate your interest in contributing an opinion piece to our Repository. To collaborate and submit your work, please contact us at <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a> and we will walk you through the submission process, including the editorial guidelines and any specific requirements for publication. When you write to us, we request you to title the email “Opinion piece for Regulation Repository” for faster and more efficient support. We look forward to featuring your valuable insights on solar energy regulation.
+</p>
+<p>
+<strong>I have a query that is not listed here. How do I address it?</strong>
+</p>
+<p>
+If your query is not listed in our FAQ section, we encourage you to reach out to us on <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a> for personalized assistance.
 </p>
                     </div>
                 </div>

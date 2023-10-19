@@ -5,7 +5,7 @@
     $meta_fields = $c->meta_fields;
     $meta_labels = array();
     foreach($meta_fields as $mf){
-        $meta_labels[$mf->id] = $mf->label;
+        $meta_labels[$mf->id] = @$mf->label;
     }
 	$col_config = json_decode($c->column_config);
 @endphp
@@ -62,6 +62,11 @@ $(document).ready(function()
     });
 });
 </script>
+<style>
+	.container{
+		color:back;
+	}
+</style>
 @endif
 @endpush
 @section('content')
@@ -106,19 +111,19 @@ $(document).ready(function()
 				@elseif($document->type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
-					<div style="text-align:center;">
-                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
+					<div>
+                        <h6><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h6>
         				
         				</div>
             			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
 				@elseif($document->type == 'image/jpeg' || $document->type == 'image/png')
-					<div style="text-align:center;">
-                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
-					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}" style="width:50%">
+					<div class="col-md-12">
+                        <label>{{ $document->title }}</label>
+					
 					</div>
             			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_blank">
 				@else
-				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left; display:none;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
 				@endif
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
@@ -156,7 +161,22 @@ $(document).ready(function()
 				<br />
                         @endif
                         @endforeach
+						<div class="col-md-12 row">
+						<div class="col-6"><label> <strong>Year :</strong> 2023 </label> </div>
+						<div class="col-6"><label><strong>Country :</strong>  India</label> </div>
+						</div>
+						
+						<div class="col-md-12"><label> <strong>Abstract :</strong>Solar energy, radiation from the Sun capable of producing heat, causing chemical reactions, or generating electricity. The total amount of solar energy incident on Earth is vastly in excess of the world’s current and anticipated energy requirements. If suitably harnessed, this highly diffused source has the potential to satisfy all future energy needs.Solar energy, radiation from the Sun capable of producing. In the 21st century solar energy is expected to become increasingly attractive as a renewable energy source because of its inexhaustible supply and its nonpolluting character, in stark contrast to the finite fossil fuels coal, petroleum, and natural gas. </label></div>
+						<div class="col-md-12 row">
+						<div class="col-md-6"><label> <strong>Publisher : </strong> ISA </label></div>
+						<div class="col-md-6"><label> <strong>Author : </strong> ISA</label></div>
+						<div class="col-md-6"><label> <strong>Serial Number:</strong> 01</label></div>
+						<div class="col-md-6"><label> <strong>Document ID :</strong>D-001 </label></div>
+						<div class="col-md-6"><label> <strong>Rights :</strong> ISA</label></div>
 
+						<div class="col-md-6"><label> <strong>URL : </strong><a href="/collection/{{ $c->id }}/document/{{ $document->id }}">link</a></label></div>
+				<div class="col-md-6"><label><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"> <strong>Download </strong></a></label></div>
+				</div>
 			@if(\Auth::user() && ($c->require_approval == 1))
                   	<div class="col-md-12">
 				<h3>Document Status</h3>
@@ -245,7 +265,7 @@ $(document).ready(function()
 								<p>User: {{ @$audit_meta['user_name'] }}</p>
 								<p>User agent: {{ @$audit_meta['audit_user_agent'] }}</p>
 								<p> <a href="">URL: {{ @$audit_meta['audit_url'] }}</a></p>
-								<p>IP Address: {{ @$audit_meta['audit_ip_address'] }}</p>
+
 								<h4>Modifications</h4>
 								@foreach($modified as $mk => $mv)
 									@php
@@ -253,7 +273,7 @@ $(document).ready(function()
 									$what_changed = $mk;
 									if($model_type == 'App\MetaFieldValue'){
 										$mfv = App\MetaFieldValue::find($model_id);
-										$what_changed = $mfv->meta_field->label;
+										$what_changed = @$mfv->meta_field->label;
 									}
 									@endphp
 								<p>
@@ -301,7 +321,7 @@ $(document).ready(function()
 							</div>	
 						@endif
 						@endif
-
+						
 
                     </div>
 
