@@ -207,11 +207,27 @@ class DocumentController extends Controller
             $this->createDocumentRevision($d);
 	}
 	else{ // no document is uploaded
-         if(!empty($request->input('approved_on'))){
+		if(!empty($request->input('external_link'))){
+			if(empty($request->input('document_id'))){
+				$d = new Document;
+			}
+			else{
+				$d = Document::find($request->input('document_id'));
+			}
+           	$d->collection_id = $request->input('collection_id');
+           	$d->created_by = \Auth::user()->id;
+			$d->title = empty($request->input('title'))?'Link '.@$request->input('external_link'):$request->input('title');
+			$d->path = 'N/A';
+			$d->type = 'N/A';
+			$d->size = 0;
+			$d->text_content = 'N/A';
+			$d->external_link = $request->input('external_link');
+		}
+        else if(!empty($request->input('approved_on'))){
            	$d->approved_by = \Auth::user()->id;
-		$d->approved_on = now();
+			$d->approved_on = now();
        	 }
-	 else{
+	 	else{
            	$d->approved_by = NULL;
 		$d->approved_on = NULL;
 	}
@@ -226,6 +242,7 @@ class DocumentController extends Controller
 				$messages[] = 'Document updated successfully!';
             }
             catch(\Exception $e){
+				echo $e->getMessage(); exit;
 				$errors[] = $e->getMessage();
             }
 	} // else ends (document not uploaded)
