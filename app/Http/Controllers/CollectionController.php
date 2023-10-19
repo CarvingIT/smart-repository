@@ -1416,7 +1416,8 @@ use App\UrlSuppression;
         	}
 	}
 
-	public function isaCollectionDocumentSearch(Request $request){
+	//public function isaCollectionDocumentSearch(Request $request){
+	public function searchResults(Request $request){
 		$collection_id = $request->collection_id;
 		$collection = \App\Collection::find($collection_id);
 		$keywords = $request->isa_search_parameter;
@@ -1461,7 +1462,7 @@ use App\UrlSuppression;
 			$user_id = empty(\Auth::user()->id)?null:\Auth::user()->id;
             $search_log_data = array('collection_id'=> $request->collection_id,
                 'user_id'=> $user_id,
-                'search_query'=> $request->isa_search_parameter,
+                'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
                 'meta_query'=> $meta_query,
                 'ip_address' => $request->ip(),
                 'results'=>$total_results_count);
@@ -1470,10 +1471,11 @@ use App\UrlSuppression;
             }
         }
 
-		return view('isa.collection',['collection'=>$collection, 
+		return view('search-results',['collection'=>$collection, 
 			'results'=>$documents_array->data,
 			'filtered_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
+            'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
 			'titlePage'=>'Documents']);
 	}
 
