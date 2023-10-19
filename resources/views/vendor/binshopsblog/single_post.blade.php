@@ -27,10 +27,10 @@
             @include("binshopsblog::partials.show_errors")
             @include("binshopsblog::partials.full_post_details")
 
-
+<hr />
             @if(config("binshopsblog.comments.type_of_comments_to_show","built_in") !== 'disabled')
                 <div class="" id='maincommentscontainer'>
-                    <h4 class='text-center' id='binshopsblogcomments'>Comments</h4>
+                    <h3 id='binshopsblogcomments'>Comments</h3>
                     @include("binshopsblog::partials.show_comments")
                 </div>
             @else

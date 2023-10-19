@@ -16,7 +16,8 @@
     </div>
 
 @empty
-    <div class='alert alert-info' style="background:#a13adc">No comments yet! Why don't you be the first?</div>
+    <!--div class='alert alert-info' style="background:#a13adc">No comments yet! Why don't you be the first?</div-->
+    <div>No comments yet! Why don't you be the first?</div>
 @endforelse
 
 @if(count($comments)> config("binshopsblog.comments.max_num_of_comments_to_show",500) - 1)
