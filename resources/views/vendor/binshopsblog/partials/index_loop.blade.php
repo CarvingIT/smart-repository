@@ -31,7 +31,7 @@
 </div>
 -->
 <div class="row">
-<div class="col-md-5" style="border-bottom:1px solid #eee;">
+<div class="col-md-12" style="border-bottom:1px solid #eee;">
 	<br/>
             <h5 class=''><a href='{{$post->url($locale, $routeWithoutLocale)}}'>{{$post->title}}</a></h5>
 		@if(!empty($post->post->author->name))
