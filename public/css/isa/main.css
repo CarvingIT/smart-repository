@@ -2508,10 +2508,12 @@ margin-left: 8px;
 column-count: 2;
 }
 
+/*
 @media (max-width: 768px) {
 .ct-list {
 column-count: 1;
 }
+*/
 
 /* year-range filter */
   .filter-range {
