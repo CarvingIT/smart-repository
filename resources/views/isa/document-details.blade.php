@@ -171,7 +171,7 @@ $(document).ready(function()
 						<div class="col-md-6"><label> <strong>Publisher : </strong> ISA </label></div>
 						<div class="col-md-6"><label> <strong>Author : </strong> ISA</label></div>
 						<div class="col-md-6"><label> <strong>Serial Number:</strong> 01</label></div>
-						<div class="col-md-6"><label> <strong>Document ID :</strong>D-01 </label></div>
+						<div class="col-md-6"><label> <strong>Document ID :</strong>D-001 </label></div>
 						<div class="col-md-6"><label> <strong>Rights :</strong> ISA</label></div>
 
 						<div class="col-md-6"><label> <strong>URL : </strong><a href="/collection/{{ $c->id }}/document/{{ $document->id }}">link</a></label></div>
