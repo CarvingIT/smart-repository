@@ -35,8 +35,9 @@
 	<br/>
             <h5 class=''><a href='{{$post->url($locale, $routeWithoutLocale)}}'>{{$post->title}}</a></h5>
 		@if(!empty($post->post->author->name))
-                <span class="light-text">Authored by: </span> {{$post->post->author->name}}<br /> <span class="light-text">Posted at: </span> {{date('d M Y ', strtotime($post->post->posted_at))}}
+                <em>{{$post->post->author->name}}</em><br />
 		@endif
+		<p>{!! mb_strimwidth($post->post_body_output(), 0, 400, "...") !!}</p>
 	<br/>
 	<br/>
 </div>
