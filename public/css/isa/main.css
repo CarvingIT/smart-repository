@@ -2030,7 +2030,7 @@ section {
 }
 
 .content-center {
-  max-width: 700px;
+  /*max-width: 700px;*/
   margin: 3.5rem auto 0;
 }
 .search-by {
