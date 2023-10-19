@@ -3,6 +3,8 @@
 @case("built_in")
 {{-- default - show our own comments--}}
 @include("binshopsblog::partials.built_in_comments")
+<br />
+<br />
 @include("binshopsblog::partials.add_comment_form")
 @break
 
