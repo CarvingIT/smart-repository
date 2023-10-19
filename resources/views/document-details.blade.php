@@ -5,7 +5,7 @@
     $meta_fields = $c->meta_fields;
     $meta_labels = array();
     foreach($meta_fields as $mf){
-        $meta_labels[$mf->id] = $mf->label;
+        $meta_labels[$mf->id] = @$mf->label;
     }
 	$col_config = json_decode($c->column_config);
 @endphp
@@ -256,7 +256,7 @@ $(document).ready(function()
 									$what_changed = $mk;
 									if($model_type == 'App\MetaFieldValue'){
 										$mfv = App\MetaFieldValue::find($model_id);
-										$what_changed = $mfv->meta_field->label;
+										$what_changed = @$mfv->meta_field->label;
 									}
 									@endphp
 								<p>
