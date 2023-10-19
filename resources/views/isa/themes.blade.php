@@ -61,7 +61,7 @@ function randomString(length) {
                     </div>
 	
                     <div class="container">
-                            <ul class="list-unstyled card-list">
+                            <ul class="list-unstyled ct-list">
                                     @php
                                     $tags = App\Taxonomy::all();
                                     $children = [];
@@ -89,7 +89,8 @@ function randomString(length) {
         				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
                 				// get compare with query string parameter to mark as checked
                                     echo '<li>';
-                  				echo '<a href="/documents/isa_document_search?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a><br />';
+                                        echo '<strong>'.$t->label.'</strong>';
+                  				
                                         echo '</li>';
                   				getTree($children, $t->id, $meta_id, $rmfv_map);
              				}
@@ -102,7 +103,7 @@ function randomString(length) {
 		}#function ends
                                     @endphp
                                 </ul>
-                                <ul class="list-unstyled card-list">
+                                <ul class="list-unstyled ct-list">
 					@php
 	$collection = \App\Collection::find(1);
 	$meta_fields = $collection->meta_fields;
