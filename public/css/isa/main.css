@@ -2504,6 +2504,7 @@ margin-left: 8px;
 /*--------------------------------------------------------------
 # Country & Theme list
 --------------------------------------------------------------*/
+/*
 .card-list {
 column-count: 2;
 }
@@ -2512,6 +2513,7 @@ column-count: 2;
 .card-list {
 column-count: 1;
 }
+*/
 
 /* year-range filter */
   .filter-range {
