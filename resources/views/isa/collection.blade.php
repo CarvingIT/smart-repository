@@ -96,8 +96,12 @@ function previousPage(){
           }
           else{
 				$checked = '';
+				if(!$show_filters){
+					$display = ' style="display:none;"';
+				}
 				if(!empty(Request::get('meta_'.$meta_id)) && in_array($t->id, Request::get('meta_'.$meta_id))){
 					$checked = "checked";
+					$display = '';
 				}
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
