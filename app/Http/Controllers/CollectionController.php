@@ -121,11 +121,20 @@ class CollectionController extends Controller
          return redirect('/admin/collectionmanagement');
     }
 
-    public function collection($collection_id){
+    public function collection($collection_id, Request $request){
         $collection = Collection::find($collection_id);
-        $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-	$documents = $this->approvalFilter($collection_id, $documents);
-        return view('isa.collection', ['collection'=>$collection, 'results'=>$documents,'documents'=>$documents, 'activePage'=>'collection','titlePage'=>'Collections', 'title'=>'Smart Repository']);
+		$length = empty($request->length)? 10 : $request->limit;
+		$start = empty($request->start)? 0 : $request->start;
+        $documents = \App\Document::where('collection_id','=',$collection_id)
+			 ->whereNotNull('approved_on')
+			 ->orderby('updated_at','DESC');
+		$total_count = $documents->count();
+		$documents = $documents->limit($length)->offset($start)->get();
+        return view('isa.collection', ['collection'=>$collection, 
+			'filtered_results_count'=>$total_count,
+			'results'=>$documents,'documents'=>$documents, 
+			'activePage'=>'collection','titlePage'=>'Collections', 
+			'title'=>'Smart Repository']);
     }
 
     public function collectionUsers($collection_id){
@@ -235,7 +244,13 @@ class CollectionController extends Controller
 			if(preg_match('/^meta_(\d*)/', $p, $matches)){
 				// currently, no support for operator in the query string parameters
 				// default operator is '='
-				$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+				if(is_array($v) && count($v)==2){ // this is for range filters (numeric values). This condition needs to be refined.
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>$v[1]);
+				}
+				else{
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+				}
 			}
 		}
 		$meta_filters = array();
@@ -257,10 +272,22 @@ class CollectionController extends Controller
 
             if($mf['operator'] == '='){
 				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
-                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
-                    }
-                );
+				if(is_array($mf['value'])){ 
+					// this is for array of values passed through the query string 
+					// e.g. &meta_10[]=somevalue&meta_10[]=someothervalue
+					//print_r($mf['value']);exit;
+					foreach($mf['value'] as $v){
+                		$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
+        					$query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$v.'"%');
+                    	});
+					}
+				}
+				else{
+                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                    	    $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
+                    	}
+                	);
+				}
             }
             else if($mf['operator'] == '>='){
                 $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
@@ -292,10 +319,12 @@ class CollectionController extends Controller
         else{
             $search_results = $this->searchDB($request); 
         }
+
         // log search query
 		$old_query = Session::get('search_query');
-		if($old_query != $request->search['value'] && 
-			!empty($request->search['value']) && strlen($request->search['value'])>3){
+
+		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
+			&& !$request->is('api/*') && strlen($request->search['value'])>3){
 			Session::put('search_query', $request->search['value']);
 			$meta_query = json_encode($this->getMetaFilters($request));
         	$search_log_data = array('collection_id'=> $request->collection_id, 
@@ -610,6 +639,7 @@ class CollectionController extends Controller
 		$documents = $documents
 			->orderBy($sort_column,$sort_direction)
         	        ->limit($length)->offset($request->start)->get();
+
 		if($request->is('api/*')){
 			return 
         		array(
@@ -964,7 +994,12 @@ $j++;
 	$meta_field->available_to = implode(",",$request->input('available_to'));
 	}
         $meta_field->type = $request->input('type');
-        $meta_field->options = $request->input('options');
+	if($request->type == 'TaxonomyTree'){
+        	$meta_field->options = $request->input('treeoptions');
+	}
+	else{
+        	$meta_field->options = $request->input('options');
+	}
         $meta_field->display_order = $request->input('display_order');
         $meta_field->is_required = $request->input('is_required');
         $meta_field->save();
@@ -1381,57 +1416,67 @@ use App\UrlSuppression;
         	}
 	}
 
-	public function isaCollectionDocumentSearch(Request $request){
-//echo $request->isa_search_parameter;
-//print_r($request->meta);
-//exit;
+	//public function isaCollectionDocumentSearch(Request $request){
+	public function searchResults(Request $request){
 		$collection_id = $request->collection_id;
 		$collection = \App\Collection::find($collection_id);
 		$keywords = $request->isa_search_parameter;
-		$taxonomy_ids = '';
-		if(!empty($request->meta)){
-			foreach($request->meta as $key => $value){
-				$taxonomy_ids .= '&meta_'.$value.'='.$value;
+		$meta_query = '';
+		$query_params = $request->query();
+		foreach($query_params as $p=>$v){
+			if(preg_match('/^meta_(\d*)/', $p, $matches)){
+				// currently, no support for operator in the query string parameters
+				// default operator is '='
+				//$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+				//print_r($matches); print_r($v); exit;
+				if(is_array($v)){
+					foreach($v as $x){
+						$meta_query .= '&meta_'.$matches[1].'[]='.$x;
+					}
+				}
+				else{
+					$meta_query .= '&meta_'.$matches[1].'='.$v;
+				}	
 			}
 		}
-		else{
-		$taxonomy_ids = '';
-		}
-
-//echo $taxonomy_ids; exit;
 		$client = new \GuzzleHttp\Client();
                 $http_host = request()->getHttpHost();
                 $protocol = request()->getScheme();
 		$length=10;
 		$start = empty($request->start)? 0 : $request->start;
-                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.$keywords.$taxonomy_ids.'&start='.$start.'&length='.$length;
+                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?log_search=0&search[value]='.$keywords.$meta_query.'&start='.$start.'&length='.$length;
 //echo $endpoint; exit;
                 $res = $client->get($endpoint);
                 $status_code = $res->getStatusCode();
                 if($status_code == 200){
-			$body = $res->getBody();
-                        $documents_array = json_decode($body);
-//print_r($documents_array->data); exit;
-                        $results = '';
-                        if(count($documents_array->data) == 0){
-                                $results .= "Did not find any documents matching your search. Press 2 to search again.";
-                        }
-                        else if(count($documents_array->data) > 10){
-                                $results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
-                        }
-                        else{
-                                $results .= 'Found '.$documents_array->recordsFiltered.' documents from '.$documents_array->recordsTotal.'.';
-                                $results .= '<br/>Listing 10 most relevant here.<br/>';
-                        }
-
-                        foreach($documents_array->data as $d){
-                                $results .= '<a href="/collection/1/document/'.$d->id.'">'.$d->title.'</a><br />';
-                        }
-		}
-
+					$body = $res->getBody();
+            		$documents_array = json_decode($body);
+				}
 		$total_results_count = $documents_array->recordsTotal;
-		return view('isa.collection',['collection'=>$collection, 'results'=>$documents_array->data,'total_results_count'=>$total_results_count,'taxonomies'=>$taxonomy_ids,'activePage'=>'Documents','titlePage'=>'Documents']);
+        // log search query
+        $old_query = Session::get('search_query');
+        if(!empty($request->isa_search_parameter) && $old_query != $request->isa_search_parameter &&
+            strlen($request->isa_search_parameter)>3){
+            Session::put('search_query', $request->isa_search_parameter);
+            $meta_query = json_encode($this->getMetaFilters($request));
+			$user_id = empty(\Auth::user()->id)?null:\Auth::user()->id;
+            $search_log_data = array('collection_id'=> $request->collection_id,
+                'user_id'=> $user_id,
+                'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
+                'meta_query'=> $meta_query,
+                'ip_address' => $request->ip(),
+                'results'=>$total_results_count);
+            if(!empty($request->collection_id)){
+                $this->logSearchQuery($search_log_data);
+            }
+        }
 
+		return view('search-results',['collection'=>$collection, 
+			'results'=>$documents_array->data,
+			'filtered_results_count'=>$total_results_count,
+			'activePage'=>'Documents',
+            'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
+			'titlePage'=>'Documents']);
 	}
 
 //Class Ends

@@ -36,6 +36,11 @@ body {
   font-family: var(--font-default);
   color: var(--color-default);
 }
+body {
+  background-color: #eee;
+  color: #3C4858;
+  font-weight: 300;
+}
 
 a {
   color: var(--color-primary);
@@ -314,13 +319,13 @@ section {
   z-index: 997;
 }
 .top-bar-link {
-  font-size: 11px;
+  font-size: 15px;
 }
 
 .top-bar-link a {
   display: flex;
   color: #fffddf;
-  font-size: 10px;
+  font-size: 15px;
 }
 .top-bar-link a:hover {
   color: #fff200;
@@ -358,9 +363,9 @@ section {
 }
 
 .header.sticked {
-  top: 46px !important;
+  top: 55px !important;
   /* background: rgba(240, 90, 34, 0.9); */
-  background:rgba(255, 255, 255, 1);
+  background:#eee;
   padding: 15px 0;
   box-shadow: 0px 2px 20px rgba(14, 29, 52, 0.1);
 }
@@ -412,7 +417,7 @@ section {
   height: 60px;
 }
 .introduce-text p {
-  font-size: 12px;
+  font-size: 15px;
   color: #000;
   display: flex;
   align-items: center;
@@ -459,7 +464,7 @@ section {
     margin-right: 0;
   }
   .hero {
-    padding: 140px 0 60px 0;
+    padding: 0 0 60px 0;
   }
 }
 /*--------------------------------------------------------------
@@ -542,7 +547,7 @@ section {
     z-index: 99;
     opacity: 0;
     visibility: hidden;
-    background: #fff;
+    /*background: #fff;*/
     box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
     transition: 0.3s;
     border-radius: 4px;
@@ -693,7 +698,7 @@ section {
   }
 
   .mobile-nav-show {
-    color: #fff;
+    color: #000;
     font-size: 28px;
     cursor: pointer;
     line-height: 0;
@@ -1812,7 +1817,9 @@ section {
 # Service Details Section
 --------------------------------------------------------------*/
 .service-details .services-list {
-  padding: 10px 30px;
+  
+  padding: 10px 5px;
+ 
   border: 1px solid #d3dff3;
   margin-bottom: 20px;
 }
@@ -1897,7 +1904,7 @@ section {
   background-size: cover;
   background-position: center;
   position: relative;
-  padding: 120px 0 60px 0;
+  padding: 0 0 60px 0;
   margin: 46px 0 0;
   color: rgba(255, 255, 255, 0.8);
 
@@ -1937,10 +1944,10 @@ section {
 }
 
 .hero p {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 400;
   margin-bottom: 20px;
-  color: #000;
+  color: #2f2d2d;
 }
 
 .hero form {
@@ -2023,7 +2030,7 @@ section {
 }
 
 .content-center {
-  max-width: 700px;
+  /*max-width: 700px;*/
   margin: 3.5rem auto 0;
 }
 .search-by {
@@ -2062,7 +2069,7 @@ section {
 # Footer
 --------------------------------------------------------------*/
 .footer {
-  font-size: 14px;
+  font-size: 15px;
   background-color: #f05a22;
   padding: 15px 0;
   color: white;
@@ -2327,7 +2334,7 @@ margin-left: 8px;
   justify-content: center;
   border: 1px solid #e4e9ec;
   border-radius: 2px;
-  background-color: #fff;
+  /*background-color: #fff;*/
   width: 32px;
   height: 32px;
   padding: 0;
@@ -2491,3 +2498,254 @@ margin-left: 8px;
 .content .container-fluid, .container .container-fluid{
 	margin-top:200px;
 }
+
+.search-result-meta{
+	font-weight:bold;
+	color:#333;
+}
+.highlight{
+	background-color:yellow;
+}
+/*--------------------------------------------------------------
+# Country & Theme list
+--------------------------------------------------------------*/
+.ct-list {
+column-count: 2;
+}
+
+/*
+@media (max-width: 768px) {
+.ct-list {
+column-count: 1;
+}
+*/
+
+/* year-range filter */
+  .filter-range {
+      width: 100%;
+      border: 0;
+      padding: 0;
+      margin: 0;
+      background-color: #f05a22;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      margin: 0 0 20px;
+    }
+
+    .range-title {
+      position: relative;
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.2em;
+      font-weight: 400;
+    }
+
+    .range-field {
+      position: relative;
+      width: 100%;
+      height: 36px;
+      box-sizing: border-box;
+      background: rgba(248, 247, 244, 0.2);
+      padding: 10px 10px;
+      border-radius: 3px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .range-field input[type=range] {
+      position: absolute;
+    }
+
+    /* Reset style for input range */
+    .range-field input[type=range] {
+      width: 188px;
+      height: 2px;
+      border: 0;
+      outline: 0;
+      box-sizing: border-box;
+      border-radius: 5px;
+      pointer-events: none;
+      -webkit-appearance: none;
+    }
+
+    .range-field input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+    }
+
+    .range-field input[type=range]:active,
+    .range-field input[type=range]:focus {
+      outline: 0;
+    }
+
+    .range-field input[type=range]::-ms-track {
+      width: 188px;
+      height: 2px;
+      border: 0;
+      outline: 0;
+      box-sizing: border-box;
+      border-radius: 5px;
+      pointer-events: none;
+      background: transparent;
+      border-color: transparent;
+      color: transparent;
+      border-radius: 5px;
+    }
+
+    /* Style toddler input range */
+
+    .range-field input[type=range]::-webkit-slider-thumb {
+      /* WebKit/Blink */
+      position: relative;
+      -webkit-appearance: none;
+      margin: 0;
+      border: 0;
+      outline: 0;
+      border-radius: 50%;
+      height: 10px;
+      width: 10px;
+      margin-top: -4px;
+      background-color: #fff;
+      cursor: pointer;
+      cursor: pointer;
+      pointer-events: all;
+      z-index: 100;
+    }
+
+    .range-field input[type=range]::-moz-range-thumb {
+      /* Firefox */
+      position: relative;
+      appearance: none;
+      margin: 0;
+      border: 0;
+      outline: 0;
+      border-radius: 50%;
+      height: 10px;
+      width: 10px;
+      margin-top: -5px;
+      background-color: #fff;
+      cursor: pointer;
+      cursor: pointer;
+      pointer-events: all;
+      z-index: 100;
+    }
+
+    .range-field input[type=range]::-ms-thumb {
+      /* IE */
+      position: relative;
+      appearance: none;
+      margin: 0;
+      border: 0;
+      outline: 0;
+      border-radius: 50%;
+      height: 10px;
+      width: 10px;
+      margin-top: -5px;
+      background-color: #fff;
+      cursor: pointer;
+      cursor: pointer;
+      pointer-events: all;
+      z-index: 100;
+    }
+
+    /* Style track input range */
+
+    .range-field input[type=range]::-webkit-slider-runnable-track {
+      /* WebKit/Blink */
+      width: 188px;
+      height: 2px;
+      cursor: pointer;
+      background: #fff;
+      border-radius: 5px;
+    }
+
+    .range-field input[type=range]::-moz-range-track {
+      /* Firefox */
+      width: 188px;
+      height: 2px;
+      cursor: pointer;
+      background: #fff;
+      border-radius: 5px;
+    }
+
+    .range-field input[type=range]::-ms-track {
+      /* IE */
+      width: 188px;
+      height: 2px;
+      cursor: pointer;
+      background: #fff;
+      border-radius: 5px;
+    }
+
+    /* Style for input value block */
+
+    .range-wrap {
+      display: flex;
+      justify-content: center;
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.2em;
+      font-weight: 400;
+      margin: 8px 0;
+      width: 100%;
+    }
+
+    .range-wrap-1,
+    .range-wrap-2 {
+      display: flex;
+    }
+
+    .range-title {
+      margin-right: 5px;
+      background-color: #d58e32;
+    }
+
+    .range-wrap_line {
+      margin: 0 10px;
+    }
+
+    .range-wrap .lower,
+    .range-wrap .upper {
+      width: 40px;
+      text-align: right;
+      margin: 0;
+      padding: 0;
+      margin-right: 4px;
+      background: 0;
+      border: 0;
+      outline: 0;
+      color: #fff;
+      font-size: 14px;
+      line-height: 1.2em;
+      font-weight: 400;
+    }
+
+    .range-wrap label {
+      text-align: right;
+    }
+
+    /* Style for active state input */
+
+    .range-field input[type=range]:hover::-webkit-slider-thumb {
+      box-shadow: 0 0 0 0.5px #fff;
+      transition-duration: 0.3s;
+    }
+
+    .range-field input[type=range]:active::-webkit-slider-thumb {
+      box-shadow: 0 0 0 0.5px #fff;
+      transition-duration: 0.3s;
+    }
+
+  /* checkbox labels on the search page */
+	.form-check-label{
+		display:inline;
+	}
+
+  /* remove the bg of navbar */
+
+  .navbar{
+	background-color:none !important;
+	box-shadow:none !important;
+  }

@@ -104,9 +104,10 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 // media route; just like the document download route
 Route::get('/media/i/{filename}', 'MediaController@loadImage');
 // Document routes
-Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
-Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');
-Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('auth');
+Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('auth');
+Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
+
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
@@ -115,12 +116,14 @@ Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware
 // Upload documents with same meta-data
 Route::get('/collection/{collection_id}/document/{document_id}/same-meta-upload', 'DocumentController@sameMetaUpload')->middleware('document_add');
 // Document details (meta)
-Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware('auth');
 Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
 // See Diff in revisions
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
 Route::get('/user/{user_id}/mydocs', 'DocumentController@listMyDocuments');
 
+// user downloads
+Route::get('/user/downloads','ReportsController@userDownloads')->middleware('auth');
 // Approvals
 Route::get('/document/{document_id}/approval', 'ApprovalsController@docApprovalForm');
 Route::post('/approvals/{approvable}/{approvable_id}/save_status', 'ApprovalsController@saveApprovalStatus');
@@ -235,3 +238,22 @@ Route::post('/admin/roles/delete','RoleController@destroy')->middleware('admin')
 Route::get('autocomplete', 'RoleController@autoComplete')->name('autocomplete');
 
 Route::match(['get', 'post'], '/botman', 'BotManController@handle');
+
+//Countries and Themes
+
+Route::get('/countries', 'CountryController@index');
+Route::get('/themes', 'ThemeController@index');
+
+// contact-us, feedback, faqs
+Route::view('/contact-us', 'contact-us');
+Route::view('/faq', 'faq');
+
+// feedback form
+Route::get('/feedback', function(){ return view('feedback-form'); });
+Route::post('/feedback', '\App\Http\Controllers\ContactController@contact');
+Route::get('/feedback-thank-you', function(){ return view('feedback-thank-you'); });
+
+// About Repository
+Route::view('/about', 'about-repository');
+
+Route::get('/collection/{collection_id}/search-results', 'CollectionController@searchResults');

@@ -11,9 +11,10 @@
           <h4 class="text-center" data-aos="fade-up">Regulation Resource Repository for Solar Energy</h4>
           <p class="text-center" data-aos="fade-up" data-aos-delay="100">A comprehensive data repository for all regulations in ISA member countries relating to Solar Energy</p>
 
-          <form action="#" class="form-search d-flex align-items-stretch mb-4" data-aos="fade-up" data-aos-delay="200">
-            <input type="text" class="form-control" placeholder="What are you looking for?">
-            <button type="submit" class="btn btn-primary">Search</button>
+          <form action="/collection/1" class="form-search d-flex align-items-stretch mb-4" data-aos="fade-up" data-aos-delay="200" method="get" id="isa_search" name="isa_search">
+			<input type="hidden" name="collection_id" value="1" />
+            <input type="text" class="form-control form-group" name="isa_search_parameter" placeholder="What are you looking for abc?">
+            <button type="submit" value="Search" name="isa_search" class="btn btn-primary">Search</button>
           </form>
 
           <div class="row gy-4 mb-3" data-aos="fade-up" data-aos-delay="400">
@@ -25,8 +26,8 @@
           <div class="col-lg-12 col-12 search-by">
               <div class="stats-item text-center w-100 h-100 browse-by">
                 <p>Browse By:</p>
-                <a href="javascript:void(0)" class="by-country">Country</a> Or 
-              &nbsp;  <a href="javascript:void(0)" class="by-theme">Theme</a>
+                <a href="/countries" class="by-country">Country</a> Or 
+              &nbsp;  <a href="/themes" class="by-theme">Theme</a>
               </div>
             </div>
             <!-- End Stats Item -->
@@ -38,29 +39,75 @@
             <!-- End Stats Item -->
           </div>
 
-          <div class="row" data-aos="fade-up" data-aos-delay="400"> 
+				@php
+					$model_families = [];
+					$model_ids = [];
+					$document_ids = [];
+					$document_counts = [];
+					
+					$major_themes = explode("|",env('MAJOR_THEMES','A1|A2|A3'));
+					foreach($major_themes as $mt){
+						// get model of each
+						$theme_model = \App\Taxonomy::where('label', $mt)->first();
+						$model_families[$mt] = empty($theme_model)?[]: $theme_model->createFamily();
+					}
+					foreach($model_families as $mt=>$mf){
+						foreach($mf as $m){
+							$model_ids[$mt][] = $m->id;
+						}
+					}
+					//print_r($model_ids);
+					$theme_field_label = env('THEME_FIELD_LABEL','Theme');
+					$meta_field = \App\MetaField::where('collection_id',1)->where('label',$theme_field_label)->first();
+					if($meta_field){
+						foreach($major_themes as $mt){
+							$rmfv_models = \App\ReverseMetaFieldValue::where('meta_field_id', $meta_field->id)
+							->whereIn('meta_value', isset($model_ids[$mt])? $model_ids[$mt]: [])->get();
+							foreach($rmfv_models as $m){
+								$document_ids[$mt][] = $m->document_id;
+							}
+							if(isset($document_ids[$mt])){
+								$document_ids[$mt] = array_unique($document_ids[$mt]);
+								$document_counts[$mt] = count($document_ids[$mt]);
+							}
+						}
+					}
+				@endphp
 
+		<!--
+          <div class="row" data-aos="fade-up" data-aos-delay="400"> 
             <div class="col-lg-5 col-6">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
                 <a href="javascript:void(0)">LAWS, REGULATIONS AND POLICIES</a>
               </div>
-            </div><!-- End Stats Item -->
+            </div>
 
             <div class="col-lg-3 col-6">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
                 <a class="justify-content-center" href="javascript:void(0)">PUBLICATIONS</a>
               </div>
-            </div><!-- End Stats Item -->
+            </div>
 
             <div class="col-lg-4 col-6">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="1" class="purecounter"></span>
                 <a class="justify-content-center" href="javascript:void(0)">TECHNICAL STANDARDS</a>
               </div>
-            </div><!-- End Stats Item -->
+            </div>
+          </div>
+		-->
 
+          <div class="row" data-aos="fade-up" data-aos-delay="400"> 
+			@foreach($major_themes as $mt)
+            <div class="col-lg-4 col-4">
+              <div class="stats-item text-center w-100 h-100">
+                <span data-purecounter-start="0" data-purecounter-end="{{ isset($document_counts[$mt])?$document_counts[$mt]:0 }}" data-purecounter-duration="1" class="purecounter"></span>
+                <a class="justify-content-center" href="javascript:void(0)">{{ $mt }}</a>
+              </div>
+            </div><!-- End Stats Item -->
+			@endforeach
           </div>
 
         </div>
@@ -84,8 +131,9 @@
               <div class="card-img">
                 <img src="design/assets/img/storage-service.jpg" alt="" class="img-fluid">
               </div>
-              <h3><a href="javascript:void(0)" class="stretched-link">Laws, Regulations & Policies</a></h3>
-              <p>Cumque eos in qui numquam. Aut aspernatur perferendis sed atque quia voluptas quisquam repellendus temporibus itaqueofficiis odit</p>
+              <h3><a href="javascript:void(0)">Laws, Regulations & Policies</a></h3>
+              <p>This section provides a comprehensive repository of laws, rules, and regulations governing clean and renewable energy, with a specific emphasis on solar energy, in ISA member countries. Explore this resource to gain insights into the legal framework shaping the sustainable energy transition across our diverse member nations.
+              <a href="javascript:void(0)" class="stretched-link">Read More</a></p>
             </div>
           </div><!-- End Card Item -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
@@ -94,7 +142,7 @@
                 <img src="design/assets/img/logistics-service.jpg" alt="" class="img-fluid">
               </div>
               <h3><a href="javascript:void(0)" class="stretched-link">Publications</a></h3>
-              <p>Asperiores provident dolor accusamus pariatur dolore nam id audantium ut et iure incidunt molestiae dolor ipsam ducimus occaecati nisi</p>
+              <p>This section offers a comprehensive collection of publications from ISA member countries. This diverse resource includes research papers, books, reports, case studies, theses, and more, spanning a broad spectrum of topics related to solar energy.<a href="javascript:void(0)" class="stretched-link">Read More</a></p>
             </div>
           </div><!-- End Card Item -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
@@ -103,7 +151,8 @@
                 <img src="design/assets/img/cargo-service.jpg" alt="" class="img-fluid">
               </div>
               <h3><a href="javascript:void(0)" class="stretched-link">Technical Standards</a></h3>
-              <p>Dicta quam similique quia architecto eos nisi aut ratione aut ipsum reiciendis sit doloremque oluptatem aut et molestiae ut et nihil</p>
+              <p>This section enlists various standards developed by governmental and non-governmental standardization organizations relating to technical specifications crucial for maintaining consistency, quality, and safety in solar energy fields. These standards foster uniformity and best practices across solar technology design, production, processes, and services, promoting industry excellence.
+              <a href="javascript:void(0)" class="stretched-link">Read More</a></p>
             </div>
           </div><!-- End Card Item -->
         </div>

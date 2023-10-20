@@ -29,11 +29,12 @@
 
   <!-- Template Main CSS File -->
   <link rel="stylesheet" href="{{url('/css/isa/main.css')}}" />
-  <link href="/css/isa/main.css" rel="stylesheet">
 
   <!-- Fonts -->
   <link href="/css/isa/fonts.css" rel="stylesheet">
+  <!--
   <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
+  -->
   <link href="/css/custom.css" rel="stylesheet" />
   <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
   <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
@@ -51,7 +52,6 @@
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
   
   <!-- CSS Files -->
-  <link href="{{ asset('material') }}/css/material-dashboard.css" rel="stylesheet" />
   <link href="/css/custom.css" rel="stylesheet" />
   <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
     
@@ -103,11 +103,10 @@
           <li class="dropdown">
             <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
-              <li><a href="/en/blog">Opinions</a></li>
-              <li><a href="javascript:void(0)">Link 2 (tbd)</a></li>
+              <li><a href="/en/blog">Views</a></li>
             </ul>
           </li>
-          <li class="mobile-only"><a href="/abouts">About Repository</a></li>
+          <li class="mobile-only"><a href="/about">About Repository</a></li>
           <li class="mobile-only"><a href="javascript:void(0)">FAQs</a></li>
           <li class="mobile-only"><a href="/contact">Contact Us</a></li>
 	        <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->
@@ -127,9 +126,9 @@
                       <li><a href="/login">Login</a></li>
                     @endif
                       <li><a href="/about">About Repository</a></li>
-                      <li><a href="javascript:void(0)">FAQs</a></li>
+                      <li><a href="/faq">FAQs</a></li>
                       <li><a href="/feedback">Feedback</a></li>
-                      <li><a href="/contacts">Contact Us</a></li>
+                      <li><a href="/contact-us">Contact Us</a></li>
                     </ul>
                   </div>
                   <div class="col-lg-6">
@@ -143,7 +142,8 @@
                       <li><a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomy') }}</a></li>
-                    @endif
+                      <li><a class="dropdown-item" href="/reports/search-queries">{{ __('Report of search queries') }}</a></li>
+                      @endif
                     </ul>
                   </div>
                 </div>
@@ -161,6 +161,19 @@
     @yield('content')
   </div>
 </div>
+    <script>
+	    var botmanWidget = {
+			frameEndpoint: '/chatbot-frame.html',
+	        aboutText: 'ISA Repository',
+			aboutLink: "/",
+	        introMessage: "✋ Hello! <br />I understand the following instructions. <br/><strong>h</strong> - for the menu listing commands <br /><strong>q</strong> - Ask a question.",
+			title: "ISA RRR Chatbot",
+			mainColor:"#f05a22",
+			bubbleBackground:"#f05a22",
+			bubbleAvatarUrl: "/i/chatbot.png",
+	    };
+    </script>
+    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="container">
@@ -169,7 +182,6 @@
           <a href="/" class="logo d-flex align-items-center">
             <img src="/img/isa/img/site-logo-light.png" alt="Logo">
           </a>
-          <!-- <p>Cras fermentum odio eu feugiat lide par naso tierra. Justo eget nada terra videa magna derita valies darta donna mare fermentum iaculis eu non diam phasellus.</p> -->
           <div class="social-links d-flex mt-4">
             <a href="https://www.facebook.com/InternationalSolarAlliance/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
             <a href="https://www.twitter.com/" class="twitter" target="_blank"><i class="bi bi-twitter"></i></a>

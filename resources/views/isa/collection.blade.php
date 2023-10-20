@@ -1,11 +1,62 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
+@push('js')
+<script src="/js/jquery-ui.js" defer></script>
+<link href="/css/jquery-ui.css" rel="stylesheet">
+<script>
+@php
+	$url = '/collection/1/search-results?isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
+@endphp
+$(document).ready(function() {
+$("#search-results").load('{{ $url }}');
+});
 
+function reloadSearchResults(){
+	// reset page to 0
+	$('#search-results-start').val(0);
+	var queryString = $('#isa_search').serialize();
+	//alert(queryString);
+	var url = '/collection/1/search-results?'+queryString;
+	$("#search-results").load(url);
+	return false;
+}
+function nextPage(){
+	var start = $('#search-results-start').val();
+	start = parseInt(start) + 10;
+	$('#search-results-start').val(start);
+	reloadSearchResults();
+}
+function previousPage(){
+	var start = $('#search-results-start').val();
+	start = parseInt(start) - 10;
+	$('#search-results-start').val(start);
+	reloadSearchResults();
+}
 
+</script>
+@endpush
 @section('content')
 <main id="main">
 @php
+	// get reverse meta field values
+	$rmf_values = App\ReverseMetaFieldValue::all();
+	$rmfv_map = [];
+	foreach($rmf_values as $rmfv){
+		$rmfv_map[$rmfv->meta_field_id][$rmfv->meta_value][] = $rmfv->document_id;
+	}
+	//print_r($rmfv_map);exit;
+	// get meta fields of this collection
+	$meta_fields = $collection->meta_fields;
+	$filter_labels = ['Continent',env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	$filters = [];
+	foreach($meta_fields as $m){
+		//if($m->type == 'TaxonomyTree'){
+		if(in_array($m->label, $filter_labels)){
+			$filters[] = $m;
+		}
+	}	
+
 	$search_query = Request::get('isa_search_parameter');
-	function getTree($children, $parent_id = null){
+	function getTree($children, $parent_id = null, $meta_id=null, $rmfv_map){
          if(empty($children['parent_'.$parent_id])) return;
          foreach($children['parent_'.$parent_id] as $t){
          $checked = '';
@@ -14,18 +65,25 @@
 	 		}
         if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
 		if(empty($t->parent_id)){
-		echo "<a href='#'>By ".$t->label."<br /><br />";
+		echo "By ".$t->label."<br /><br />";
 		}
 		else{
+		// get compare with query string parameter to mark as checked
 		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta['.$t->id.']" onChange="this.form.submit();"'.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+				$tid = $t->id;
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="reloadSearchResults();" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
 		echo '</div>';
 		}
-                  getTree($children, $t->id);
+                  getTree($children, $t->id, $meta_id, $rmfv_map);
              }
              else{
-		echo '<div class="form-check">';
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta['.$t->id.']" onChange="this.form.submit();"'.$checked.'><label class="form-check-label" for="flexCheckDefault">&nbsp;&nbsp;'.$t->label.'</label><br />';
+			$checked = '';
+			if(!empty(Request::get('meta_'.$meta_id)) && in_array($t->id, Request::get('meta_'.$meta_id))){
+				$checked = "checked";
+			}
+			echo '<div class="form-check">';
+			$tid = $t->id;
+                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="reloadSearchResults();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
 		echo '</div>';
              }
          }
@@ -34,6 +92,10 @@
 
 <!-- ======= Breadcrumbs ======= -->
     <div class="row justify-content-center">
+		<form name="isa_search" action="/documents/isa_document_search" method="get" id="isa_search">
+		<input type="hidden" name="length" id="search-results-length" value="10" />
+		<input type="hidden" name="start" id="search-results-start" value="0" />
+		@csrf
         <div class="col-md-12">
             <div class="card">
 				<div class="card-header card-header-primary">
@@ -56,25 +118,20 @@
 		  @endif
                  
                   </div>
-        </div>
-</div>
+		        </div>
+			</div>
 	
 			<div class="col-10">
-            <p>{{-- $collection->description --}}</p>
 			</div>
 			<div class="col-2 text-right">
 			</div>
-			@if(Auth::check() && Auth::user()->hasRole('admin'))
-		<form name="isa_search" action="/reports/search-queries" method="get" id="isa_search">
-		@endif	
-		@csrf
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Enter search keyword') }}</label>
+			<label for="collection_search">{{ __('Enter search keywords') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
 		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
-			<input type="submit" value="Search" name="isa_search" class="btn btn-sm btn-primary search">
+			<input type="button" value="Search" name="isa_search" class="btn btn-sm btn-primary search" onclick="reloadSearchResults()">
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -84,12 +141,7 @@
 		   </div>
 		  
 		</div>
-		</form>
 		
-		<!--/form-->
-
-		</div>
-
 <!-- End Breadcrumbs -->
 
 <!-- ======= Service Details Section ======= -->
@@ -105,27 +157,91 @@ foreach($tags as $t){
 <section id="service-details" class="service-details">
   <div class="container">
 	<div class="row gy-4">
-	  <div class="col-lg-3">
+	  <div class="col-lg-3" style="margin-top:0;">
 		<div class="services-list">
-		  <!--a href="#" class="active">By Location</a-->
-			<!--div class="form-check"-->
-				<!--
-				<input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
-				<label class="form-check-label" for="flexCheckDefault">
-				Default checkbox
-				</label>
-				-->
+			<h5>Filter</h5>
 				@php
-				getTree($children);
+				$display='display:none;';
+				foreach($filters as $f){
+ 	 				if(!empty(Request::get('meta_'.$f->id))){
+						$display = '';
+ 					}
+					if($f->type == 'TaxonomyTree'){
+						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="'.$display.'">';
+						getTree($children, $f->options, $f->id, $rmfv_map);
+						echo '</div>';
+					}
+					if($f->type == 'Numeric'){
+						$meta_values = Request::get('meta_'.$f->id);
+						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'">';
+						echo '<fieldset class="filter-range">';
+						echo '<div class="range-field">';
+						echo '<input type="range" id="year_lower_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
+							value="'.(!empty($meta_values[0])?$meta_values[0]:1950).'">';
+						echo '<input type="range" id="year_upper_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
+							value="'.(!empty($meta_values[1])?$meta_values[1]:2023).'">';
+						echo '</div>';
+						@endphp	
+						<div class="range-wrap">
+		                  <div class="range-wrap-1">
+                    		<input id="start_year" class="lower">
+                    		<label for="start_year"></label>
+                  		</div>
+                  		<div class="range-wrap_line">-</div>
+                  		<div class="range-wrap-2">
+                    		<input id="end_year" class="upper">
+                    		<label for="end_year"></label>
+                  		</div>
+                		</div>
+						@php
+						echo '</fieldset>';
+						echo '</div>';
+
+					}
+				}
 				@endphp
-			<!--/div-->
-		  <!--a href="#">By Theme</a-->
-<div class="form-check">
-</div>
-		  <a href="#">Filter 1</a>
-		  <a href="#">Filter 2</a>
-		  <a href="#">Filter 3</a>
-		  <a href="#">Filter 4</a>
+<script>
+    var lowerSlider = document.getElementById('year_lower_slider');
+    var upperSlider = document.getElementById('year_upper_slider');
+
+    document.querySelector('#end_year').value = upperSlider.value;
+    document.querySelector('#start_year').value = lowerSlider.value;
+
+    var lowerVal = parseInt(lowerSlider.value);
+    var upperVal = parseInt(upperSlider.value);
+
+    upperSlider.oninput = function () {
+      lowerVal = parseInt(lowerSlider.value);
+      upperVal = parseInt(upperSlider.value);
+
+      if (upperVal < lowerVal + 4) {
+        lowerSlider.value = upperVal - 4;
+        if (lowerVal == lowerSlider.min) {
+          upperSlider.value = 4;
+        }
+      }
+      document.querySelector('#end_year').value = this.value;
+	  reloadSearchResults();
+    };
+
+    lowerSlider.oninput = function () {
+      lowerVal = parseInt(lowerSlider.value);
+      upperVal = parseInt(upperSlider.value);
+      if (lowerVal > upperVal - 4) {
+        upperSlider.value = lowerVal + 4;
+        if (upperVal == upperSlider.max) {
+          lowerSlider.value = parseInt(upperSlider.max) - 4;
+        }
+      }
+      document.querySelector('#start_year').value = this.value;
+	  reloadSearchResults();
+    };
+
+  </script>
+		<div class="form-check">
+		</div>
 		</div>
 
 	  
@@ -133,69 +249,47 @@ foreach($tags as $t){
 
 		</form><!-- isa_search form ends -->
 
-	  <div class="col-lg-9">
-<div class="row gy-4 pricing-item" data-aos-delay="100">
-	@if(!empty($results))
-	@foreach($results as $result)
-		@php 
-			$document = \App\Document::find($result->id);
-		@endphp
-<p><b><a href="/collection/{{ $collection->id }}/document/{{ $result->id }}"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {{ $result->title }}</a></b><br>
-		{{-- $result->text_content --}}
-		{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
-		</p>
-	@endforeach
-	@else
-		{{ __('No results found') }}
-	@endif
-	</div>
-	  </div>
+<div class="col-lg-9" id="search-results">
+	<!-- search results -->
+</div>
 
-<nav aria-label="Page navigation">
-<ul class="pagination justify-content-center">
-@php
-$total_results_count=0;
-$length=10;
-$start = empty(Request::get('start'))? 0 : Request::get('start');
-if(empty(Request::get('meta'))){
-$taxonomies = '';
-}
-$collection_id = $collection->id;
-@endphp
-@if($start != 0)
-<li class="page-item disabled">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}" tabindex="-1" aria-disabled="true">&laquo;</a>
-</li>
-@endif
-@for($i=0;$i<=($total_results_count/10);$i++)
-<li class="page-item"><a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}">1</a></li>
-@endfor
-@if($start < ($total_results_count - 10))
-<li class="page-item">
-  <a class="services-pagination" href="/documents/isa_document_search?isa_search_parameter={{ $search_query }}&collection_id={{ $collection_id }}{{ $taxonomies }}&start={{ $start }}&length={{ $length }}">&raquo;</a>
-</li>
-@endif
-</ul>
-</nav>
+		</div> <!-- card -->
 
+</form>
 	</div>
 
   </div>
 </section><!-- End Service Details Section -->
 
 </main><!-- End #main -->
-    <script>
-	    var botmanWidget = {
-			frameEndpoint: '/chatbot-frame.html',
-	        aboutText: 'ISA Repository',
-			aboutLink: "/",
-	        introMessage: "✋ Hello from ISA! <br />I understand these instructions <br/> 1. Information about themes and sub-themes <br /> 2. Search the repository with keywords. <br/> (Type in just the number and press enter.)",
-			title: "ISA RRR Chatbot",
-			mainColor:"#f05a22",
-			bubbleBackground:"#f05a22",
-			bubbleAvatarUrl: "/i/chatbot.png",
-	    };
-    </script>
-    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
 
+<script>
+	@if(env('SEARCH_MODE') == 'elastic')
+	$(document).ready(function() {
+        //alert("js is working");
+        src = "{{ route('autosuggest') }}";
+        $( "#collection_search" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+                    method: 'GET',
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+						if(data.length > 0)
+                        response(data);
+                    },
+                });
+            },
+			select: function (event, ui){
+				$("#collection_search").val(ui.item.value);
+				return false;
+			},
+            minLength: 1,
+        });
+    });
+	@endif
+</script>
 @endsection

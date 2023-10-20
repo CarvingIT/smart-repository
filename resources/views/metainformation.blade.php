@@ -151,7 +151,7 @@ function showMetaFieldForm(){
                    <label for="tax-sel" class="col-md-12 col-form-label text-md-right">Select Tree</label> 
                    </div>
                     <div class="col-md-8">
-					<select class="selectpicker" name="options">
+					<select class="selectpicker" name="treeoptions">
 						@php
 							$trees = App\Taxonomy::where('parent_id', null)->get();
 							foreach($trees as $t){

@@ -28,7 +28,7 @@
 
 
         <div class="row">
-            <div class="col-md-9">
+            <div class="col-md-12">
 
                 @if($category_chain)
                     <div class="container">
@@ -54,6 +54,10 @@
                 @endif
 
                 <div class="container">
+        @if (config('binshopsblog.search.search_enabled') )
+            @include('binshopsblog::sitewide.search_form')
+        @endif
+			<br />
                     <div class="row">
                         @forelse($posts as $post)
                             @include("binshopsblog::partials.index_loop")
@@ -65,8 +69,11 @@
                     </div>
                 </div>
             </div>
+		<!--
             <div class="col-md-3">
+                    @if($categories)
                 <h6>Blog Categories</h6>
+			@endif
                 <ul class="binshops-cat-hierarchy">
                     @if($categories)
                         @include("binshopsblog::partials._category_partial", [
@@ -79,16 +86,19 @@
                     @endif
                 </ul>
             </div>
+		-->
         </div>
 
+	{{--
         @if (config('binshopsblog.search.search_enabled') )
             @include('binshopsblog::sitewide.search_form')
         @endif
+	--}}
         <div class="row">
             <div class="col-md-12 text-center">
                 @foreach($lang_list as $lang)
                     <a href="{{route("binshopsblog.index" , $lang->locale)}}">
-                        <span>{{$lang->name}}</span>
+                        <!--span>{{$lang->name}}</span-->
                     </a>
                 @endforeach
             </div>

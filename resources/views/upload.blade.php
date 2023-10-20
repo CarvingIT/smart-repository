@@ -84,19 +84,36 @@ tinymce.init({
 		   </div>
                     <div class="col-md-9">
                     <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ html_entity_decode($document->title) }}@endif" 
-                    placeholder="If left blank, we shall guess!" />
+                    placeholder="If left blank, we shall guess!" maxlength="150" />
                     </div>
 		</div>
+		@if(empty($document->id) || $document->type != 'N/A')
 		<div class="form-group row">
 		   <div class="col-md-3">
 		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">Document</label>
 		   </div>
     		   <div class="col-md-9">
-		   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
-    		   <input id="uploadfile" type="file" class="form-control-file" name="document" @if(empty($document->id)) {{ ' required' }}@endif> 
+			   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
+    		   <input id="uploadfile" type="file" class="form-control-file" name="document" /> 
     		   </div>
 		</div>
-		@if(!empty($document->id))
+		@endif
+		@if(empty($document->id) || $document->type == 'N/A')
+		<div class="form-group row">
+		   <div class="col-md-3">
+		   <label for="externallink" class="col-md-12 col-form-label text-md-right">External Link</label>
+		   </div>
+    		   <div class="col-md-9">
+				@if(empty($document->id))
+				Enter a link below only if there's no document to be uploaded. 
+				@endif
+    		   <input type="text" class="form-control-file" name="external_link" 
+					value="@if(!empty($document->id)){{ html_entity_decode($document->external_link) }}@endif" 
+                    placeholder="https://..." maxlength="150" > 
+    		   </div>
+		</div>
+		@endif
+		@if(!empty($document->id) && $document->type != 'N/A')
 		<div class="form-group row">
 		   <div class="col-md-3">
 		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">Uploaded Document</label>
@@ -182,8 +199,8 @@ tinymce.init({
 					if(empty($children['parent_'.$parent_id])) return;
 					foreach($children['parent_'.$parent_id] as $t){
 							$selected = '';
-							if(@in_array($t->id, json_decode($document->meta_value($f->id)))){
-								$selected="selected";
+							if(@in_array($t->id, json_decode($document->meta_value($f->id, true)))){
+								$selected='selected="selected"';
 							}
 							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
 								echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
@@ -203,6 +220,10 @@ tinymce.init({
 			getTree($children, $document, $f, $f->options);
 			@endphp
 		</select>
+        <script>
+             $('#meta_field_{{$f->id}}').val({{ preg_replace('/"/','',$document->meta_value($f->id, true)) }});
+        </script>
+
         @endif
         </div>
     </div>

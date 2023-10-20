@@ -92,9 +92,6 @@ for (i = 0; i < toggler.length; i++) {
                     <a href="{{ route('taxonomies.create') }}" class="btn btn-sm btn-primary" title="New Taxonomy Tree"><i class="material-icons">add</i></a>
                   </div>
                 </div>
-
-
-  
 		<div class="table-responsive">
 		    <h3>Taxonomy</h3>
 <ul>
