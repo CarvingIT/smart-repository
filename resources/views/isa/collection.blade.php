@@ -11,6 +11,8 @@ $("#search-results").load('{{ $url }}');
 });
 
 function reloadSearchResults(){
+	// reset page to 0
+	$('#search-results-start').val(0);
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
 	var url = '/collection/1/search-results?'+queryString;
@@ -220,7 +222,8 @@ foreach($tags as $t){
           upperSlider.value = 4;
         }
       }
-      document.querySelector('#end_year').value = this.value
+      document.querySelector('#end_year').value = this.value;
+	  reloadSearchResults();
     };
 
     lowerSlider.oninput = function () {
@@ -232,15 +235,10 @@ foreach($tags as $t){
           lowerSlider.value = parseInt(upperSlider.max) - 4;
         }
       }
-      document.querySelector('#start_year').value = this.value
+      document.querySelector('#start_year').value = this.value;
+	  reloadSearchResults();
     };
 
-	$('#year_lower_slider').on("mouseup", function(){
-		reloadSearchResults();
-	});
-	$('#year_upper_slider').on("mouseup", function(){
-		reloadSearchResults();
-	});
   </script>
 		<div class="form-check">
 		</div>
