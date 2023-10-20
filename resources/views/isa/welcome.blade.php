@@ -131,23 +131,9 @@
               <div class="card-img">
                 <img src="design/assets/img/storage-service.jpg" alt="" class="img-fluid">
               </div>
-              <h3><a href="javascript:void(0)" class="stretched-link">Laws, Regulations & Policies</a></h3>
-              <p>This section provides a comprehensive repository of laws, rules, and regulations governing clean and renewable energy, with a specific emphasis on solar energy, in ISA member countries. Explore this resource to gain insights into the legal framework shaping the sustainable energy transition across our diverse member nations.</p>
-              <h3><a href="javascript:void(0)" class="stretched-link">Energy Laws & Regulations</a></h3>
-             <p>This sub-section offers a thorough compilation of case laws, statutes, rules, regulations, and acts, all pivotal in shaping the clean and renewable energy sector with a specific focus on solar energy.</p> 
-<h3><a href="javascript:void(0)" class="stretched-link">Plans, Policies & Programmes</a></h3>
-<p>This sub-section includes the documents that form the backbone of public administration and government management like strategic plans, policies, roadmaps, guidelines, programs, and missions, essential for effective governance and the pursuit of national objectives and aspirations.</p>
- <h3><a href="javascript:void(0)" class="stretched-link">Tariff Policies and Framework</a></h3>
- <p>This sub-section houses documents which provide valuable insights into tariff structures and guidelines set by governments and regulatory bodies, focusing on renewable energy, particularly solar power.</p>
-<h3><a href="javascript:void(0)" class="stretched-link">Fiscal Frameworks </a></h3>
-<p>This sub-section provides policies and regulations that dictate a government's fiscal management. It encompasses crucial aspects such as subsidies, investments, and expenditure decisions relevant to the sector. </p>
- <h3><a href="javascript:void(0)" class="stretched-link">Financial Regulations</a></h3>
- <p>This sub-section offers a wealth of information on incentives and regulations specifically tailored to the solar sector. Discover the financial frameworks, rules, and incentives that drive investment and sustainability in solar energy.</p>
- <h3><a href="javascript:void(0)" class="stretched-link">Antitrust and Competition Legislations</a></h3>
- <p>This sub-section is a comprehensive resource that outlines legal frameworks aimed at fostering fair competition and preventing anticompetitive practices in markets which impact the solar energy investments.</p>
- <h3><a href="javascript:void(0)" class="stretched-link">Environmental Frameworks</a></h3>
- <p>This sub-section compiles the rules, guidelines, and principles set forth by governments and international bodies to safeguard the environment which have a bearing on the deployment of solar energy.</p>
-
+              <h3><a href="javascript:void(0)">Laws, Regulations & Policies</a></h3>
+              <p>This section provides a comprehensive repository of laws, rules, and regulations governing clean and renewable energy, with a specific emphasis on solar energy, in ISA member countries. Explore this resource to gain insights into the legal framework shaping the sustainable energy transition across our diverse member nations.
+              <a href="javascript:void(0)" class="stretched-link">Read More</a></p>
             </div>
           </div><!-- End Card Item -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
@@ -156,20 +142,7 @@
                 <img src="design/assets/img/logistics-service.jpg" alt="" class="img-fluid">
               </div>
               <h3><a href="javascript:void(0)" class="stretched-link">Publications</a></h3>
-              <p>This section offers a comprehensive collection of publications from ISA member countries. This diverse resource includes research papers, books, reports, case studies, theses, and more, spanning a broad spectrum of topics related to solar energy. </p>
-              <h3><a href="javascript:void(0)" class="stretched-link">Research Papers</a></h3>
-              <p>This sub-section has scholarly documents that provide an in-depth analysis, evaluation, or interpretation of a specific aspect of solar energy, based on empirical evidence. These papers are involved in thorough analysis and interpretation of data to contribute to the existing body of knowledge in academia.</p>
-<h3><a href="javascript:void(0)" class="stretched-link">Case Studies</a></h3>
-<p>This sub-section has documents that offer in-depth examinations of specific groups, communities, or regions. These methodical analyses explore various variables, providing comprehensive insights into real-world applications and the impact of solar energy initiatives on diverse units.</p>
-<h3><a href="javascript:void(0)" class="stretched-link">Thesis/Dissertation</a></h3>
-<p>This sub-section acts as a repository of scholarly work from graduate and postgraduate students. These Masters' theses and doctoral dissertations represent extensive research on various aspects of solar energy, offering valuable insights and contributions to the field of renewable energy and sustainability.</p>
-<h3><a href="javascript:void(0)" class="stretched-link">Views</a></h3>
-<p>This sub-section features insightful views and opinion pieces by sectoral experts. These pieces, often found in blogs, news sources, or magazines, offer subjective perspectives on solar energy. They can often provide valuable insights into industry trends, emerging issues, and expert viewpoints within the field.</p>
-<h3><a href="javascript:void(0)" class="stretched-link">Books</a></h3>
-<p>This sub-section has a curated collection of books dedicated to various aspects of solar energy. Covering topics ranging from solar technology and innovation to sustainable practices, this resource offers comprehensive knowledge and references for anyone interested in the field of solar energy.</p>
-<h3><a href="javascript:void(0)" class="stretched-link">Reports</a></h3>
-<p>This sub-section houses reports published by credible sources like international organizations, thinks tanks, research groups, governments etc offering a comprehensive analyses across the solar energy sector, designed to cater to the specific needs and interests of diverse audience.</p>
-
+              <p>This section offers a comprehensive collection of publications from ISA member countries. This diverse resource includes research papers, books, reports, case studies, theses, and more, spanning a broad spectrum of topics related to solar energy.<a href="javascript:void(0)" class="stretched-link">Read More</a></p>
             </div>
           </div><!-- End Card Item -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
@@ -178,12 +151,8 @@
                 <img src="design/assets/img/cargo-service.jpg" alt="" class="img-fluid">
               </div>
               <h3><a href="javascript:void(0)" class="stretched-link">Technical Standards</a></h3>
-              <p>This section enlists various standards developed by governmental and non-governmental standardization organizations relating to technical specifications crucial for maintaining consistency, quality, and safety in solar energy fields. These standards foster uniformity and best practices across solar technology design, production, processes, and services, promoting industry excellence.</p>
-              <h3><a href="javascript:void(0)" class="stretched-link">Process Standards</a></h3>
-              <p>This sub-section indexes procedures implemented within ISA member countries for maintaining product compliance and quality across the solar energy industry. These standards ensure the consistent achievement of desired outcomes, particularly in adhering to technical marketplace regulations.</p>
-<h3><a href="javascript:void(0)" class="stretched-link">Product Standards</a></h3>
-<p>This sub-section catalogues the technical directives delineating specifications and criteria that define the attributes and characteristics of products within ISA member countries. These standards are essential for ensuring product quality and compliance with industry norms in the solar energy sector.</p>
-
+              <p>This section enlists various standards developed by governmental and non-governmental standardization organizations relating to technical specifications crucial for maintaining consistency, quality, and safety in solar energy fields. These standards foster uniformity and best practices across solar technology design, production, processes, and services, promoting industry excellence.
+              <a href="javascript:void(0)" class="stretched-link">Read More</a></p>
             </div>
           </div><!-- End Card Item -->
         </div>
