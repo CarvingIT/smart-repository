@@ -86,7 +86,7 @@ class BotManController extends Controller
 				foreach($documents_array->data as $d){
 					$doc = Document::find($d->id);
 					$info_from_docs .= $doc->text_content;
-					$doc_list .= '<a href="/document/'.$d->id.'">'.$d->title.'</a><br />';
+					$doc_list .= '<a href="/collection/'. $doc->collection->id .'/document/'.$d->id.'">'.$d->title.'</a><br />';
 				}
 
 				// remove Page \d\d from the string
