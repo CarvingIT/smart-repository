@@ -47,7 +47,7 @@
                             <div class="form-group">
                                 <label id="author_email_label" for="author_email" style="color:#f05a22;">Your Email
                                     <small>(won't be displayed publicly)</small>
-                                </label>
+                                </label><br />
                                 <input
                                         type='email'
                                         class="form-control"
