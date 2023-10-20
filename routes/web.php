@@ -257,3 +257,8 @@ Route::get('/feedback-thank-you', function(){ return view('feedback-thank-you');
 Route::view('/about', 'about-repository');
 
 Route::get('/collection/{collection_id}/search-results', 'CollectionController@searchResults');
+
+// Major Themes
+Route::view('/laws', 'laws-regulations');
+Route::view('/publications', 'publications');
+Route::view('/technical', 'technical-standards');
