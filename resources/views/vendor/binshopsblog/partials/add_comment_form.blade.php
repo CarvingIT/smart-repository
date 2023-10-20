@@ -1,5 +1,5 @@
 <div class='add_comment_area'>
-    <h4>Add a comment</h4>
+    <h6>Add a comment</h6>
     <form method='post' action='{{route("binshopsblog.comments.add_new_comment",[app('request')->get('locale'),$post->slug])}}'>
         @csrf
 
@@ -9,7 +9,7 @@
             <div class='col'>
         	<div class="form-group ">
 
-            <label id="comment_label" for="comment" style="color:#f05a22;">Your Comment </label>
+            <label id="comment_label" for="comment" style="color:#f05a22;">Your Comment </label><br/>
                     <textarea
                             class="form-control"
                             name='comment'
@@ -28,7 +28,7 @@
             <div class='row'>
                     <div class='col'>
                         <div class="form-group ">
-                            <label id="author_name_label" for="author_name" style="color:#f05a22;">Your Name </label>
+                            <label id="author_name_label" for="author_name" style="color:#f05a22;">Your Name </label><br />
                             <input
                                     type='text'
                                     class="form-control"

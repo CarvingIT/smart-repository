@@ -103,7 +103,7 @@
           <li class="dropdown">
             <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
-              <li><a href="/en/blog">Opinions</a></li>
+              <li><a href="/en/blog">Views</a></li>
             </ul>
           </li>
           <li class="mobile-only"><a href="/about">About Repository</a></li>

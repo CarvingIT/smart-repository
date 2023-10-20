@@ -30,7 +30,7 @@
 <hr />
             @if(config("binshopsblog.comments.type_of_comments_to_show","built_in") !== 'disabled')
                 <div class="" id='maincommentscontainer'>
-                    <h3 id='binshopsblogcomments'>Comments</h3>
+                    <h5 id='binshopsblogcomments'>Comments</h5>
                     @include("binshopsblog::partials.show_comments")
                 </div>
             @else
