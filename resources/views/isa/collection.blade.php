@@ -19,6 +19,17 @@ function reloadSearchResults(){
 	$("#search-results").load(url);
 	return false;
 }
+function drillDown(checkbox_filter){
+	if($(checkbox_filter).is(':checked')){
+        //alert(checkbox_filter.value);
+		$('.child-of-'+checkbox_filter.value).show();
+	}
+    else{
+        //alert('unchecked');
+		$('.child-of-'+checkbox_filter.value).hide();
+	}
+	reloadSearchResults();
+}
 function nextPage(){
 	var start = $('#search-results-start').val();
 	start = parseInt(start) + 10;
@@ -46,7 +57,7 @@ function previousPage(){
 	//print_r($rmfv_map);exit;
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
-	$filter_labels = ['Continent',env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
 	$filters = [];
 	foreach($meta_fields as $m){
 		//if($m->type == 'TaxonomyTree'){
@@ -56,38 +67,45 @@ function previousPage(){
 	}	
 
 	$search_query = Request::get('isa_search_parameter');
-	function getTree($children, $parent_id = null, $meta_id=null, $rmfv_map){
+
+	function getTree($children, $rmfv_map, $parent_id = null, $meta_id=null, $show_filters=false){
+		 $display = '';
+		 if(!$show_filters){
+			$display = ' style="display:none;"';
+		 } 
          if(empty($children['parent_'.$parent_id])) return;
+
          foreach($children['parent_'.$parent_id] as $t){
-         $checked = '';
-	 	 if(!empty(Request::get('meta')) && in_array($t->id,Request::get('meta'))){
-			$checked = 'checked';
+         	$checked = '';
+	 	 	if(!empty(Request::get('meta')) && in_array($t->id,Request::get('meta'))){
+				$checked = 'checked';
+				$display = '';
 	 		}
-        if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
-		if(empty($t->parent_id)){
-		echo "By ".$t->label."<br /><br />";
-		}
-		else{
-		// get compare with query string parameter to mark as checked
-		echo '<div class="form-check">';
+        	if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
+				if(empty($t->parent_id)){
+					echo "By ".$t->label."<br /><br />";
+				}
+				else{
+					$tid = $t->id;
+					// get compare with query string parameter to mark as checked
+					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
+                	echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
+					echo '</div>';
+				}
+          		getTree($children, $rmfv_map, $t->id, $meta_id);
+          }
+          else{
+				$checked = '';
+				if(!empty(Request::get('meta_'.$meta_id)) && in_array($t->id, Request::get('meta_'.$meta_id))){
+					$checked = "checked";
+				}
+				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="reloadSearchResults();" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
-		echo '</div>';
-		}
-                  getTree($children, $t->id, $meta_id, $rmfv_map);
+                echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
+				echo '</div>';
              }
-             else{
-			$checked = '';
-			if(!empty(Request::get('meta_'.$meta_id)) && in_array($t->id, Request::get('meta_'.$meta_id))){
-				$checked = "checked";
-			}
-			echo '<div class="form-check">';
-			$tid = $t->id;
-                  echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="reloadSearchResults();" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
-		echo '</div>';
-             }
-         }
-}
+         } // foreach 
+}// function 
 @endphp
 
 <!-- ======= Breadcrumbs ======= -->
@@ -159,22 +177,18 @@ foreach($tags as $t){
 	<div class="row gy-4">
 	  <div class="col-lg-3" style="margin-top:0;">
 		<div class="services-list">
-			<h5>Filter</h5>
+			<h5>Filter By</h5>
 				@php
-				$display='display:none;';
 				foreach($filters as $f){
- 	 				if(!empty(Request::get('meta_'.$f->id))){
-						$display = '';
- 					}
 					if($f->type == 'TaxonomyTree'){
-						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
-						echo '<div id="filter_'.$f->id.'" style="'.$display.'">';
-						getTree($children, $f->options, $f->id, $rmfv_map);
-						echo '</div>';
+						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'">';
+						getTree($children, $rmfv_map, $f->options, $f->id, true);
+						echo "</div>\n";
 					}
 					if($f->type == 'Numeric'){
 						$meta_values = Request::get('meta_'.$f->id);
-						echo '<a href="#" onclick="$(\'#filter_'.$f->id.'\').toggle()">By '.$f->label.'</a>';
+						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
 						echo '<fieldset class="filter-range">';
 						echo '<div class="range-field">';
