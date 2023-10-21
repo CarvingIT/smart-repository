@@ -104,7 +104,7 @@ class BotManController extends Controller
 					//preg_replace('/Page \d\d*/',' ', $info_from_doc);
 
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
-					$chunks_doc = Util::createTextChunks($info_from_doc, 2000, 500);
+					$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
 					foreach($chunks_doc as $c){
 						$chunks[] = $c;
 					}
