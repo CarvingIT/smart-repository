@@ -5,7 +5,7 @@ namespace App;
 class Util{
 	public static function createTextChunks($text, $length, $overlap){
 		$chunks = [];
-		for($i=0; ($i * 4000)< strlen($text); $i++){
+		for($i=0; ($i * $length)< strlen($text); $i++){
 			if ($i == 0){
 				$chunks[] = substr($text, 0, $length);
 			}
