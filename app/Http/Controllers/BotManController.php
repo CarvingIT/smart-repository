@@ -100,10 +100,11 @@ class BotManController extends Controller
 						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
 					}
 					$info_from_doc .= $meta_info;
-					$info_from_doc .= "====DOC-".$doc->id."-====\n";
+					//$info_from_doc .= "====DOC-".$doc->id."-====\n";
 					//preg_replace('/Page \d\d*/',' ', $info_from_doc);
 
-					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
+					//$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
+					$chunks_doc = Util::createTextChunks($info_from_doc, 2000, 500);
 					foreach($chunks_doc as $c){
 						$chunks[] = $c;
 					}
@@ -125,11 +126,11 @@ class BotManController extends Controller
 					// show answer here
 					$answer_full = '';
 					foreach($matches as $chunk_id => $score){
+						if(strlen($chunks[$chunk_id]) > 4000){
+							Log::debug($chunks[$chunk_id]);
+							continue;
+						}
 						try{
-							if(strlen($chunks[$chunk_id]) > 4000){
-								Log::debug($chunks[$chunk_id]);
-								continue;
-							}
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
