@@ -67,7 +67,7 @@
     </style>
 <script>
 	$(document).ready(function(){
-		window.botmanChatWidget.whisper('q');
+		window.botmanChatWidget.whisper('xxxssfsdfsd');
 		window.botmanChatWidget.close();
 	});
 </script>
@@ -172,7 +172,7 @@
 			frameEndpoint: '/chatbot-frame.html',
 	        aboutText: 'ISA Repository',
 			aboutLink: "/",
-	        introMessage: "✋ Hello! I will try to answer your questions based on the documents that we have on this portal.",
+	        introMessage: "✋ Hello! <br />I will try to answer your questions based on the documents that we have on this portal.",
 			title: "ISA RRR Chatbot",
 			mainColor:"#f05a22",
 			bubbleBackground:"#f05a22",

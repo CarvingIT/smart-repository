@@ -90,9 +90,17 @@ class BotManController extends Controller
 				$doc_list = '';
 				foreach($documents_array->data as $d){
 					$doc = Document::find($d->id);
-					$info_from_docs .= $doc->text_content;
+					$info_from_docs .= $doc->title."\n";
+					$info_from_docs .= $doc->text_content."\n";
+					$meta_info = '';
+					foreach($doc->meta as $meta_value){
+						if(empty($meta_value->meta_field) || empty($doc->meta_value($meta_value->meta_field_id, true))) continue;
+						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
+					}
+					$info_from_docs .= $meta_info;
 					$doc_list .= '<a href="/collection/'. $doc->collection->id .'/document/'.$d->id.'">'.$d->title.'</a><br />';
 				}
+				//$this->say($info_from_docs); 
 
 				// remove Page \d\d from the string
 				$info_from_docs = preg_replace('/Page \d\d*/',' ', $info_from_docs);
