@@ -62,7 +62,6 @@ class BotManController extends Controller
     public function search($botman, $req)
     {
 		$this_controller = $this;
-		$this->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 
         $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch) {
 			// get keywords
@@ -103,8 +102,8 @@ class BotManController extends Controller
 					//$info_from_doc .= "====DOC-".$doc->id."-====\n";
 					//preg_replace('/Page \d\d*/',' ', $info_from_doc);
 
-					//$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
-					$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
+					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
+					//$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
 					foreach($chunks_doc as $c){
 						$chunks[] = $c;
 					}
@@ -131,6 +130,7 @@ class BotManController extends Controller
 							continue;
 						}
 						try{
+							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
