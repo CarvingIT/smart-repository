@@ -65,6 +65,12 @@
         color: #010a14 !important;
         }
     </style>
+<script>
+	$(document).ready(function(){
+		window.botmanChatWidget.whisper('q');
+		window.botmanChatWidget.close();
+	});
+</script>
 </head>
 <body>
   <!-- ======= Header ======= -->
@@ -166,7 +172,7 @@
 			frameEndpoint: '/chatbot-frame.html',
 	        aboutText: 'ISA Repository',
 			aboutLink: "/",
-	        introMessage: "✋ Hello! <br />I understand the following instructions. <br/><strong>h</strong> - for the menu listing commands <br /><strong>q</strong> - Ask a question.",
+	        introMessage: "✋ Hello! I will try to answer your questions based on the documents that we have on this portal.",
 			title: "ISA RRR Chatbot",
 			mainColor:"#f05a22",
 			bubbleBackground:"#f05a22",

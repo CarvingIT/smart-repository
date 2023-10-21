@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use BotMan\BotMan\BotMan;
 use Illuminate\Http\Request;
 use BotMan\BotMan\Messages\Incoming\Answer;
+use BotMan\BotMan\Messages\Conversations\Conversation;
 use DonatelloZa\RakePlus\RakePlus;
 use App\Document;
 use App\Util;
@@ -19,7 +20,7 @@ class BotManController extends Controller
     public function handle(Request $req)
     {
         $botman = app('botman');
-
+		
         $botman->hears('{message}', function($botman, $req, $message) {
             if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
                 $this->askName($botman);
@@ -32,9 +33,13 @@ class BotManController extends Controller
 			}
 			else{
 				//$this->unknownCommand($botman);
+				$this->search($botman, $req);
 			}
         });
         $botman->listen();
+		/*
+		$botman->startConversation(new QuestionAnswerMode);
+		*/
     }
 
     /**
@@ -175,5 +180,11 @@ class BotManController extends Controller
     	$response = $chatgpt->response();
 
     	return stripos( $response->content, "yes" ) === false;
+	}
+}
+
+class QuestionAnswerMode extends Conversation{
+	public function run(){
+		$this->say('HELLO');
 	}
 }
