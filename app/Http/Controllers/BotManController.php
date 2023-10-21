@@ -126,6 +126,10 @@ class BotManController extends Controller
 					$answer_full = '';
 					foreach($matches as $chunk_id => $score){
 						try{
+							if(strlen($chunks[$chunk_id]) > 4000){
+								Log::debug($chunks[$chunk_id]);
+								continue;
+							}
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
