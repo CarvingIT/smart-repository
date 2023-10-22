@@ -7,7 +7,8 @@
 	$url = '/collection/1/search-results?isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
 @endphp
 $(document).ready(function() {
-$("#search-results").load('{{ $url }}');
+	//$("#search-results").load('{{ $url }}');
+	reloadSearchResults();
 });
 
 function reloadSearchResults(){
