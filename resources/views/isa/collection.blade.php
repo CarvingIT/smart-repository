@@ -27,6 +27,7 @@ function drillDown(checkbox_filter){
     else{
         //alert('unchecked');
 		$('.child-of-'+checkbox_filter.value).hide();
+		$('.ch-child-of-'+checkbox_filter.value).prop('checked', false);
 	}
 	reloadSearchResults();
 }
@@ -52,7 +53,15 @@ function previousPage(){
 	$rmf_values = App\ReverseMetaFieldValue::all();
 	$rmfv_map = [];
 	foreach($rmf_values as $rmfv){
-		$rmfv_map[$rmfv->meta_field_id][$rmfv->meta_value][] = $rmfv->document_id;
+		$mf = \App\MetaField::where('id', $rmfv->meta_field_id)->first();
+		$rmfv_map[$rmfv->meta_field_id][$rmfv->meta_value][]=$rmfv->document_id;
+		/*
+		$tm_family = [];
+		if( $mf && $mf->type == 'TaxonomyTree'){
+			$mt = \App\Taxonomy::where('id',$rmfv->meta_value)->first();
+			$tm_family[$mf->id][$mt->id] = $mt->createFamily();
+		}
+		*/
 	}
 	//print_r($rmfv_map);exit;
 	// get meta fields of this collection
@@ -60,11 +69,11 @@ function previousPage(){
 	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
 	$filters = [];
 	foreach($meta_fields as $m){
-		//if($m->type == 'TaxonomyTree'){
 		if(in_array($m->label, $filter_labels)){
 			$filters[] = $m;
 		}
 	}	
+	
 
 	$search_query = Request::get('isa_search_parameter');
 
@@ -89,7 +98,7 @@ function previousPage(){
 					$tid = $t->id;
 					// get compare with query string parameter to mark as checked
 					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
-                	echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
+                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
 					echo '</div>';
 				}
           		getTree($children, $rmfv_map, $t->id, $meta_id);
@@ -105,7 +114,7 @@ function previousPage(){
 				}
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
-                echo '<input type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(isset($rmfv_map[$meta_id][$tid])?count($rmfv_map[$meta_id][$tid]):0).')</label><br />';
+                echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 				echo '</div>';
              }
          } // foreach 
