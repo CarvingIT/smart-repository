@@ -67,7 +67,7 @@
     </style>
 <script>
 	$(document).ready(function(){
-		window.botmanChatWidget.whisper('xxxssfsdfsd');
+		window.botmanChatWidget.whisper('q');
 		window.botmanChatWidget.close();
 	});
 </script>

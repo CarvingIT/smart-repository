@@ -72,7 +72,7 @@ class BotManController extends Controller
 			$client = new \GuzzleHttp\Client();
 			$http_host = request()->getHttpHost();
 			$protocol = request()->getScheme();
-			$endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.urlencode(implode(" ",$keywords));
+			$endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?length=25&search[value]='.urlencode(implode(" ",$keywords));
 
 			$res = $client->get($endpoint);
 
@@ -84,6 +84,8 @@ class BotManController extends Controller
 				if(count($documents_array->data) == 0){
 					$botman_results .= "I don't know.";
 				}
+
+				//$this->say(count($documents_array->data).' documents to be scanned.');
 				
 				$doc_list = '';
 				$chunks = [];
@@ -114,7 +116,8 @@ class BotManController extends Controller
 				$matches = Util::findMatches($chunks, $keywords);
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
-				$matches = array_slice($matches, 0, 10);
+				// take first 5 
+				$matches = array_slice($matches, 0, 5);
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
