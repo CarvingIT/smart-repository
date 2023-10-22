@@ -161,6 +161,9 @@
     <!-- End Services Section -->
 
     <!-- ======= News & Updates Section ======= -->
+@php
+$f = FeedReader::read('https://www.solarpowerworldonline.com/feed/');
+@endphp
     <section id="news-updates" class="news-updates-section pt-0">
       <div class="container" data-aos="fade-up">
         <div class="section-header">
@@ -169,61 +172,21 @@
         </div>
         <div class="slides-3 swiper" data-aos="fade-up">
           <div class="swiper-wrapper" >
+			@foreach ($f->get_items() as $item)
             <div class="swiper-slide">
               <div class="news-updates-item">
+				<!--
                 <img src="img/isa/img/news-updates/news-updates1.jpg" class="news-updates-img" alt="">
+				-->
                 <div class="news-updates-content">
-                  <h3>heading</h3>
+                  <h3>{{ $item->get_title() }}</h3>
                   <p>
-                    Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et. Maecen aliquam, risus at semper.
+					{!! $item->get_content() !!}
                   </p>
                 </div>
               </div>
             </div><!-- End news-updates item -->
-            <div class="swiper-slide">
-              <div class="news-updates-item">
-                <img src="img/isa/img/news-updates/news-updates2.jpg" class="news-updates-img" alt="">
-                <div class="news-updates-content">
-                  <h3>heading</h3>
-                  <p>
-                    Export tempor illum tamen malis malis eram quae irure esse labore quem cillum quid cillum eram malis quorum velit fore eram velit sunt aliqua noster fugiat irure amet legam anim culpa.
-                  </p>
-                </div>
-              </div>
-            </div><!-- End news-updates item -->
-            <div class="swiper-slide">
-              <div class="news-updates-item">
-                <img src="img/isa/img/news-updates/news-updates3.jpg" class="news-updates-img" alt="">
-                <div class="news-updates-content">
-                  <h3>heading</h3>
-                  <p>
-                    Enim nisi quem export duis labore cillum quae magna enim sint quorum nulla quem veniam duis minim tempor labore quem eram duis noster aute amet eram fore quis sint minim.
-                  </p>
-                </div>
-              </div>
-            </div><!-- End news-updates item -->
-            <div class="swiper-slide">
-              <div class="news-updates-item">
-                <img src="img/isa/img/news-updates/news-updates4.jpg" class="news-updates-img" alt="">
-                <div class="news-updates-content">
-                  <h3>heading</h3>
-                  <p>
-                    Fugiat enim eram quae cillum dolore dolor amet nulla culpa multos export minim fugiat minim velit minim dolor enim duis veniam ipsum anim magna sunt elit fore quem dolore labore illum veniam.
-                  </p>
-                </div>
-              </div>
-            </div><!-- End news-updates item -->
-            <div class="swiper-slide">
-              <div class="news-updates-item">
-                <img src="img/isa/img/news-updates/news-updates5.jpeg" class="news-updates-img" alt="">
-                <div class="news-updates-content">
-                  <h3>heading</h3>
-                  <p>
-                    Quis quorum aliqua sint quem legam fore sunt eram irure aliqua veniam tempor noster veniam enim culpa labore duis sunt culpa nulla illum cillum fugiat legam esse veniam culpa fore nisi cillum quid.
-                  </p>
-                </div>
-              </div>
-            </div><!-- End news-updates item -->
+			@endforeach
           </div>
           <!-- <div class="swiper-pagination"></div> -->
         </div>
