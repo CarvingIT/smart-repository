@@ -92,7 +92,6 @@ class BotManController extends Controller
 				foreach($documents_array->data as $d){
 					$info_from_doc = '';
 					$doc = Document::find($d->id);
-					$info_from_doc .= "====DOC-".$doc->id."-====\n";
 					$info_from_doc .= $doc->title."\n";
 					$info_from_doc .= $doc->text_content."\n";
 					$meta_info = '';
@@ -101,12 +100,11 @@ class BotManController extends Controller
 						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
 					}
 					$info_from_doc .= $meta_info;
-					//$info_from_doc .= "====DOC-".$doc->id."-====\n";
-					//preg_replace('/Page \d\d*/',' ', $info_from_doc);
 
 					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
 					foreach($chunks_doc as $c){
+						$c = "====DOC-".$doc->id."-====\n".$c;
 						$chunks[] = $c;
 					}
 				}
@@ -128,10 +126,6 @@ class BotManController extends Controller
 					// show answer here
 					$answer_full = '';
 					foreach($matches as $chunk_id => $score){
-						if(strlen($chunks[$chunk_id]) > 4000){
-							Log::debug($chunks[$chunk_id]);
-							continue;
-						}
 						try{
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
@@ -163,7 +157,7 @@ class BotManController extends Controller
 							$m_doc = Document::find($dm);
 							$doc_list .= '<a href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
 						}
-						$answer_full .= '<br/><br/>Found in - <br />'.$doc_list;
+						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
 						$this->say($answer_full);
 						//$this->say('Press <strong>q</strong> for another question.');
 						$this->ask('Type in another question.', $botSearch);
