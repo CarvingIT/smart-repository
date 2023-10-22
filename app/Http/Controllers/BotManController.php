@@ -147,10 +147,10 @@ class BotManController extends Controller
 							$answer_full = $e->getMessage();		
 							break;
 						}
-						$this->say('Did not get any answer. Try asking a more specific question.');
 					}
 					if(empty($answer_full)){
-						$answer_full = 'Did not get any answer.';
+						$this->say('I did not get an answer to your query.');
+						$this->ask('Try making your question more specific.', $botSearch);
 					}
 					else{
 						foreach($doc_matches as $dm){
