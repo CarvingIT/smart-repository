@@ -2749,3 +2749,29 @@ column-count: 1;
 	background-color:none !important;
 	box-shadow:none !important;
   }
+
+
+/*--------------------------------------------------------------
+# Countrys & Themes list
+--------------------------------------------------------------*/
+.ct-list {
+  column-count: 3 !important;
+  }
+
+  .ct-uppercase{
+    text-transform:uppercase !important;
+  }
+ 
+
+  .ct-num{
+    list-style-type:square !important;
+    color: #f35a0e;
+  }
+  
+  @media (max-width: 768px) {
+  .ct-list {
+  column-count: 1 !important;
+  }
+  }
+  
+  
