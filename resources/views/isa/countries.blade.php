@@ -87,7 +87,7 @@ function randomString(length) {
          			foreach($children['parent_'.$parent_id] as $t){
         				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
                 				// get compare with query string parameter to mark as checked
-						echo '<li class="ct-uppercase">';
+						echo '<li class="ct-uppercase">' ;
                   				echo '<strong>'.$t->label.'</strong>';
 						echo '</li>';
                   				getTree($children, $t->id, $meta_id, $rmfv_map);

@@ -2765,7 +2765,7 @@ column-count: 1;
 
   .ct-num{
     list-style-type:square !important;
-    color: #f35a0e;
+    color: #f35a0e !important;
   }
   
   @media (max-width: 768px) {
@@ -2773,5 +2773,3 @@ column-count: 1;
   column-count: 1 !important;
   }
   }
-  
-  
