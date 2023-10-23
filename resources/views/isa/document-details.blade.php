@@ -145,7 +145,7 @@ $(document).ready(function()
 							@else
                             <div class="col-md-3">
 							@endif
-                            <label style="margin-top:2em" for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
+                            <label style="margin-top:2em; color: black;" for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
                             <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! html_entity_decode($document->meta_value($m->meta_field_id)) !!}</div>
                             </div>
                        	@endif
@@ -154,6 +154,7 @@ $(document).ready(function()
 			@endif
 
                     </div>
+</div>
 
                    </div><!-- card body ends -->
                 </div>
