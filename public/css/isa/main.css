@@ -2749,3 +2749,13 @@ column-count: 1;
 	background-color:none !important;
 	box-shadow:none !important;
   }
+
+.pagination{
+	max-width:50%;
+	overflow:scroll;
+	margin:auto;
+}
+
+.current-page{
+	background-color:#ccc;
+}

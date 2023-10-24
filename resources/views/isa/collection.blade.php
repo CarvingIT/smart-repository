@@ -12,8 +12,6 @@ $(document).ready(function() {
 });
 
 function reloadSearchResults(){
-	// reset page to 0
-	$('#search-results-start').val(0);
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
 	var url = '/collection/1/search-results?'+queryString;
@@ -37,18 +35,28 @@ function nextPage(){
 	start = parseInt(start) + 10;
 	$('#search-results-start').val(start);
 	reloadSearchResults();
+	return false;
 }
 function previousPage(){
 	var start = $('#search-results-start').val();
 	start = parseInt(start) - 10;
 	$('#search-results-start').val(start);
 	reloadSearchResults();
+	return false;
+}
+
+function goToPage(page){
+	var start = (page - 1) * 10;
+	$('#search-results-start').val(start);
+	reloadSearchResults();
+	return false;
 }
 
 </script>
 @endpush
 @section('content')
 <main id="main">
+<a name="search-results"></a>
 @php
 	// get reverse meta field values
 	$rmf_values = App\ReverseMetaFieldValue::all();
@@ -266,7 +274,6 @@ foreach($tags as $t){
       document.querySelector('#start_year').value = this.value;
 	  reloadSearchResults();
     };
-
   </script>
 		<div class="form-check">
 		</div>
