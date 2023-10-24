@@ -179,7 +179,7 @@
 			bubbleAvatarUrl: "/i/chatbot.png",
 	    };
     </script>
-    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+    <script src='/js/botman_widget.js'></script>
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="container">
