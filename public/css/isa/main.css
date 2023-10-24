@@ -2752,7 +2752,7 @@ column-count: 1;
 
 .pagination{
 	max-width:50%;
-	overflow:scroll;
+	overflow-x:scroll;
 	margin:auto;
 }
 
