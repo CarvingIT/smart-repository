@@ -11,8 +11,6 @@ $("#search-results").load('{{ $url }}');
 });
 
 function reloadSearchResults(){
-	// reset page to 0
-	$('#search-results-start').val(0);
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
 	var url = '/collection/1/search-results?'+queryString;
@@ -24,18 +22,28 @@ function nextPage(){
 	start = parseInt(start) + 10;
 	$('#search-results-start').val(start);
 	reloadSearchResults();
+	return false;
 }
 function previousPage(){
 	var start = $('#search-results-start').val();
 	start = parseInt(start) - 10;
 	$('#search-results-start').val(start);
 	reloadSearchResults();
+	return false;
+}
+
+function goToPage(page){
+	var start = (page - 1) * 10;
+	$('#search-results-start').val(start);
+	reloadSearchResults();
+	return false;
 }
 
 </script>
 @endpush
 @section('content')
 <main id="main">
+<a name="search-results"></a>
 @php
 	// get reverse meta field values
 	$rmf_values = App\ReverseMetaFieldValue::all();
@@ -47,6 +55,7 @@ function previousPage(){
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
 	$filter_labels = ['Continent',env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	//$filter_labels = ['Continent',env('COUNTRY_FIELD_LABEL','Country')];
 	$filters = [];
 	foreach($meta_fields as $m){
 		//if($m->type == 'TaxonomyTree'){
@@ -238,7 +247,6 @@ foreach($tags as $t){
       document.querySelector('#start_year').value = this.value;
 	  reloadSearchResults();
     };
-
   </script>
 		<div class="form-check">
 		</div>

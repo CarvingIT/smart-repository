@@ -1453,6 +1453,7 @@ use App\UrlSuppression;
             		$documents_array = json_decode($body);
 				}
 		$total_results_count = $documents_array->recordsTotal;
+		$filtered_results_count = $documents_array->recordsFiltered;
         // log search query
         $old_query = Session::get('search_query');
         if(!empty($request->isa_search_parameter) && $old_query != $request->isa_search_parameter &&
@@ -1473,7 +1474,8 @@ use App\UrlSuppression;
 
 		return view('search-results',['collection'=>$collection, 
 			'results'=>$documents_array->data,
-			'filtered_results_count'=>$total_results_count,
+			'filtered_results_count'=>$filtered_results_count,
+			'total_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
             'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
 			'titlePage'=>'Documents']);
