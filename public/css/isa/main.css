@@ -2759,3 +2759,26 @@ column-count: 1;
 .current-page{
 	background-color:#ccc;
 }
+
+/*--------------------------------------------------------------
+# Countrys & Themes list
+--------------------------------------------------------------*/
+.ct-list {
+  column-count: 3 !important;
+  }
+
+  .ct-uppercase{
+    text-transform:uppercase !important;
+  }
+ 
+
+  .ct-num{
+    list-style-type:square !important;
+    color: #f35a0e !important;
+  }
+  
+  @media (max-width: 768px) {
+  .ct-list {
+  column-count: 1 !important;
+  }
+  }
