@@ -265,3 +265,5 @@ Route::view('/technical', 'technical-standards');
 
 // Terms of Service
 Route::view('/service', 'service');
+// Privacy policy
+Route::view('/policy', 'policy');
