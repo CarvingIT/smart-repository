@@ -9,6 +9,7 @@
                 <em>{{$post->post->author->name}}</em>
 		@endif
 		<p>{!! mb_strimwidth($post->post_body_output(), 0, 400, "...") !!}</p>
+		<br />
 		<span style="float:right;"><strong><a href='{{$post->url($locale, $routeWithoutLocale)}}'>More >></a></strong></span>
 </div>
 <!--/div-->
