@@ -9,6 +9,6 @@
                 <em>{{$post->post->author->name}}</em>
 		@endif
 		<p>{!! mb_strimwidth($post->post_body_output(), 0, 400, "...") !!}</p>
-		<div style="float:right;"><strong><a href='{{$post->url($locale, $routeWithoutLocale)}}'>More >></a></strong></div>
+		<p style="float:right;"><strong><a href='{{$post->url($locale, $routeWithoutLocale)}}'>More >></a></strong></p>
 </div>
 <!--/div-->
