@@ -262,3 +262,6 @@ Route::get('/collection/{collection_id}/search-results', 'CollectionController@s
 Route::view('/laws', 'laws-regulations');
 Route::view('/publications', 'publications');
 Route::view('/technical', 'technical-standards');
+
+// Privacy policy
+Route::view('/policy', 'policy');
