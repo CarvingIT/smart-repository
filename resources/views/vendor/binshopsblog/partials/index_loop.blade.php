@@ -8,8 +8,7 @@
 		@if(!empty($post->post->author->name))
                 <em>{{$post->post->author->name}}</em>
 		@endif
-		<p>{!! mb_strimwidth($post->post_body_output(), 0, 400, "...") !!}
-		<span style="float:right;"><strong><a href='{{$post->url($locale, $routeWithoutLocale)}}'>More >></a></strong></span>
-		</p>
+		<p>{!! mb_strimwidth($post->post_body_output(), 0, 400, "...") !!}</p>
+		<div style="float:right;"><strong><a href='{{$post->url($locale, $routeWithoutLocale)}}'>More >></a></strong></div>
 </div>
 <!--/div-->
