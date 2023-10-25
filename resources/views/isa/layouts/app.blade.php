@@ -201,7 +201,7 @@
           <p><a href="/">Home</a><br>
             <a href="/about">About Repository</a><br>
             <a href="/collection/1">Database</a><br>
-            <a href="#">Terms of Service</a><br>
+            <a href="/service">Terms of Service</a><br>
             <a href="#">Privacy policy</a>
           </p>
         </div>
