@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use BotMan\BotMan\BotMan;
 use Illuminate\Http\Request;
 use BotMan\BotMan\Messages\Incoming\Answer;
+use BotMan\BotMan\Messages\Conversations\Conversation;
 use DonatelloZa\RakePlus\RakePlus;
 use App\Document;
 use App\Util;
@@ -19,7 +20,7 @@ class BotManController extends Controller
     public function handle(Request $req)
     {
         $botman = app('botman');
-
+		
         $botman->hears('{message}', function($botman, $req, $message) {
             if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
                 $this->askName($botman);
@@ -32,9 +33,13 @@ class BotManController extends Controller
 			}
 			else{
 				//$this->unknownCommand($botman);
+				$this->search($botman, $req);
 			}
         });
         $botman->listen();
+		/*
+		$botman->startConversation(new QuestionAnswerMode);
+		*/
     }
 
     /**
@@ -57,7 +62,6 @@ class BotManController extends Controller
     public function search($botman, $req)
     {
 		$this_controller = $this;
-		$this->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 
         $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch) {
 			// get keywords
@@ -68,7 +72,7 @@ class BotManController extends Controller
 			$client = new \GuzzleHttp\Client();
 			$http_host = request()->getHttpHost();
 			$protocol = request()->getScheme();
-			$endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?search[value]='.urlencode(implode(" ",$keywords));
+			$endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?length=25&search[value]='.urlencode(implode(" ",$keywords));
 
 			$res = $client->get($endpoint);
 
@@ -80,23 +84,40 @@ class BotManController extends Controller
 				if(count($documents_array->data) == 0){
 					$botman_results .= "I don't know.";
 				}
+
+				//$this->say(count($documents_array->data).' documents to be scanned.');
 				
-				$info_from_docs = '';
 				$doc_list = '';
+				$chunks = [];
 				foreach($documents_array->data as $d){
+					$info_from_doc = '';
 					$doc = Document::find($d->id);
-					$info_from_docs .= $doc->text_content;
-					$doc_list .= '<a href="/document/'.$d->id.'">'.$d->title.'</a><br />';
+					$info_from_doc .= $doc->title."\n";
+					$info_from_doc .= $doc->text_content."\n";
+					$meta_info = '';
+					foreach($doc->meta as $meta_value){
+						if(empty($meta_value->meta_field) || empty($doc->meta_value($meta_value->meta_field_id, true))) continue;
+						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
+					}
+					$info_from_doc .= $meta_info;
+
+					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
+					//$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
+					foreach($chunks_doc as $c){
+						$c = "====DOC-".$doc->id."-====\n".$c;
+						$chunks[] = $c;
+					}
 				}
 
+				//$this->say($chunks[0]);
 				// remove Page \d\d from the string
-				$info_from_docs = preg_replace('/Page \d\d*/',' ', $info_from_docs);
-				$chunks = Util::createTextChunks($info_from_docs, 4000, 1000);
 				$matches = Util::findMatches($chunks, $keywords);
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
-				$matches = array_slice($matches, 0, 10);
+				// take first 5 
+				$matches = array_slice($matches, 0, 5);
 				//$matches_details .= $chunks[0];
+				$docs_containing_answer = [];
 				if(count($matches) == 0){
 					$this->say('I did not get an answer to your query.');
 					$this->ask('Try rephrasing your question.', $botSearch);
@@ -106,9 +127,16 @@ class BotManController extends Controller
 					$answer_full = '';
 					foreach($matches as $chunk_id => $score){
 						try{
+							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
+								// which chunk contains the answer ?
+								$chunk_containing_answer = $chunk_id;
+								$pattern = '/====DOC-(\d\d*)-====/';
+								preg_match($pattern, $chunks[$chunk_id], $doc_matches);
+								//$this->say(count($doc_matches). ' - '.serialize($doc_matches));
+								array_shift($doc_matches);
 								break;
         					}
 							else{
@@ -119,15 +147,21 @@ class BotManController extends Controller
 							$answer_full = $e->getMessage();		
 							break;
 						}
-						//break; // this is added for using the first chunk to avoid rate limiting issue
 					}
 					if(empty($answer_full)){
-						$answer_full = 'Did not get any answer.';
+						$this->say('I did not get an answer to your query.');
+						$this->ask('Try making your question more specific.', $botSearch);
 					}
-					$answer_full .= '<br/><br/> Documents for reference - <br />'.$doc_list;
-					$this->say($answer_full);
-					//$this->say('Press <strong>q</strong> for another question.');
-					$this->ask('Type in another question.', $botSearch);
+					else{
+						foreach($doc_matches as $dm){
+							$m_doc = Document::find($dm);
+							$doc_list .= '<a href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
+						}
+						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
+						$this->say($answer_full);
+						//$this->say('Press <strong>q</strong> for another question.');
+						$this->ask('Type in another question.', $botSearch);
+					}
 				}
 			}else{
 				$this->say('There was some error. Please try again.');
@@ -175,5 +209,11 @@ class BotManController extends Controller
     	$response = $chatgpt->response();
 
     	return stripos( $response->content, "yes" ) === false;
+	}
+}
+
+class QuestionAnswerMode extends Conversation{
+	public function run(){
+		$this->say('HELLO');
 	}
 }

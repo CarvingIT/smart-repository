@@ -65,6 +65,12 @@
         color: #010a14 !important;
         }
     </style>
+<script>
+	$(document).ready(function(){
+		window.botmanChatWidget.whisper('q');
+		window.botmanChatWidget.close();
+	});
+</script>
 </head>
 <body>
   <!-- ======= Header ======= -->
@@ -103,7 +109,7 @@
           <li class="dropdown">
             <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
-              <li><a href="/en/blog">Opinions</a></li>
+              <li><a href="/en/blog">Views</a></li>
             </ul>
           </li>
           <li class="mobile-only"><a href="/about">About Repository</a></li>
@@ -166,14 +172,14 @@
 			frameEndpoint: '/chatbot-frame.html',
 	        aboutText: 'ISA Repository',
 			aboutLink: "/",
-	        introMessage: "✋ Hello! <br />I understand the following instructions. <br/><strong>h</strong> - for the menu listing commands <br /><strong>q</strong> - Ask a question.",
+	        introMessage: "✋ Hello! <br />I will try to answer your questions based on the documents that we have on this portal.",
 			title: "ISA RRR Chatbot",
 			mainColor:"#f05a22",
 			bubbleBackground:"#f05a22",
 			bubbleAvatarUrl: "/i/chatbot.png",
 	    };
     </script>
-    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+    <script src='/js/botman_widget.js'></script>
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="container">
@@ -195,8 +201,8 @@
           <p><a href="/">Home</a><br>
             <a href="/about">About Repository</a><br>
             <a href="/collection/1">Database</a><br>
-            <a href="#">Terms of Service</a><br>
-            <a href="#">Privacy policy</a>
+            <a href="/service">Terms of Service</a><br>
+            <a href="/policy">Privacy policy</a>
           </p>
         </div>
         

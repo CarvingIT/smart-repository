@@ -244,7 +244,10 @@ class CollectionController extends Controller
 			if(preg_match('/^meta_(\d*)/', $p, $matches)){
 				// currently, no support for operator in the query string parameters
 				// default operator is '='
-				if(is_array($v) && count($v)==2){ // this is for range filters (numeric values). This condition needs to be refined.
+				// find type of meta field
+				$meta_field = \App\MetaField::where('id', $matches[1])->first();
+				if($meta_field && $meta_field->type == 'Numeric' && is_array($v) && count($v)==2){ 
+					// this is for range filters (numeric values). This condition needs to be refined.
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>$v[1]);
 				}
@@ -1453,6 +1456,7 @@ use App\UrlSuppression;
             		$documents_array = json_decode($body);
 				}
 		$total_results_count = $documents_array->recordsTotal;
+		$filtered_results_count = $documents_array->recordsFiltered;
         // log search query
         $old_query = Session::get('search_query');
         if(!empty($request->isa_search_parameter) && $old_query != $request->isa_search_parameter &&
@@ -1473,7 +1477,8 @@ use App\UrlSuppression;
 
 		return view('search-results',['collection'=>$collection, 
 			'results'=>$documents_array->data,
-			'filtered_results_count'=>$total_results_count,
+			'filtered_results_count'=>$filtered_results_count,
+			'total_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
             'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
 			'titlePage'=>'Documents']);

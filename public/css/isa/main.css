@@ -228,7 +228,7 @@ section {
   visibility: hidden;
   opacity: 0;
   right: 30px;
-  bottom: 90px;
+  bottom: 120px;
   z-index: 99999;
   background: #f05a22;
   width: 40px;
@@ -2755,4 +2755,36 @@ column-count: 1;
   {
     text-align: justify;
     padding: 0 30px 0 30px;
+  }
+.pagination{
+	max-width:50%;
+	overflow-x:scroll;
+	margin:auto;
+}
+
+.current-page{
+	background-color:#ccc;
+}
+
+/*--------------------------------------------------------------
+# Countrys & Themes list
+--------------------------------------------------------------*/
+.ct-list {
+  column-count: 3 !important;
+  }
+
+  .ct-uppercase{
+    text-transform:uppercase !important;
+  }
+ 
+
+  .ct-num{
+    list-style-type:square !important;
+    color: #f35a0e !important;
+  }
+  
+  @media (max-width: 768px) {
+  .ct-list {
+  column-count: 1 !important;
+  }
   }
