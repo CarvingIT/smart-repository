@@ -10,6 +10,8 @@ use App\Document;
 use App\Util;
 use App\ChatGPT;
 use Illuminate\Support\Facades\Log;
+use BotMan\BotMan\Messages\Attachments\File;
+use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 
 class BotManController extends Controller
 {
@@ -63,7 +65,7 @@ class BotManController extends Controller
     {
 		$this_controller = $this;
 
-        $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch) {
+        $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
 			// get keywords
 			$question = $answer->getText();
 			// $keywords = RakePlus::create($question)->get(); // this gives phrases
@@ -155,15 +157,32 @@ class BotManController extends Controller
 					else{
 						foreach($doc_matches as $dm){
 							$m_doc = Document::find($dm);
-							$doc_list .= '<a href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
+							$doc_list .= '<a target="_new" href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
 						}
 						if(auth()->user()){
 							$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
+							try{
+							// Create attachment
+							$attachment = new File('http://isa-rrr.local/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id, [
+    							'custom_payload' => true,
+							]);
+							
+							// Build message object
+							$message = OutgoingMessage::create($m_doc->title)
+            							->withAttachment($attachment);
+
+							}
+							catch(\Exception $e){
+								$this->say($e->getMessage());
+							}
+							// Reply message object
+							$this->say($answer_full);
+							//$this->say($message);
 						}
 						else{
 							$answer_full .= '<br/><br/>Login to download the document containing the answer.<br/>';
+							$this->say($answer_full);
 						}
-						$this->say($answer_full);
 						//$this->say('Press <strong>q</strong> for another question.');
 						$this->ask('Type in another question.', $botSearch);
 					}
