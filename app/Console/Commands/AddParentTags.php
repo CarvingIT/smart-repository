@@ -49,7 +49,7 @@ class AddParentTags extends Command
 		foreach($meta_fields as $m){
 			$meta_values = MetaFieldValue::where('meta_field_id', $m->id)->get();
 			foreach($meta_values as $mv){
-				$m_val_ar = json_decode($mv->value);
+				$m_val_ar = (array) json_decode($mv->value);
 				$new_vals = [];
 				foreach($m_val_ar as $v){
 					if(empty($t_parents[$v]) || $m->options == $t_parents[$v]) continue;
@@ -57,16 +57,6 @@ class AddParentTags extends Command
 				}
 				$m_val_ar = array_unique(array_merge((array)$m_val_ar, $new_vals));
 				$m_val_ar = array_map('strval', $m_val_ar);
-				/*
-				$m_val_ar = array_filter($m_val_ar, function($v){
-					if(empty($v)){
-						return false;
-					}
-					else{
-						return strval($v);
-					}
-				});
-				*/
 				// update the meta_values
 				echo json_encode($m_val_ar)."\n";
 				$mv->value = json_encode($m_val_ar);
