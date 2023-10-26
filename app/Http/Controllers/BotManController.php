@@ -157,7 +157,12 @@ class BotManController extends Controller
 							$m_doc = Document::find($dm);
 							$doc_list .= '<a href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
 						}
-						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
+						if(auth()->user()){
+							$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
+						}
+						else{
+							$answer_full .= '<br/><br/>Login to download the document containing the answer.<br/>';
+						}
 						$this->say($answer_full);
 						//$this->say('Press <strong>q</strong> for another question.');
 						$this->ask('Type in another question.', $botSearch);
