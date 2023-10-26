@@ -1,4 +1,15 @@
 <div class="row gy-4 pricing-item" data-aos-delay="100">
+	@php
+		function removeContinents($string){
+			$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
+			$str_values = explode(",", $string);
+			$new_str_values = [];
+			foreach($str_values as $v){
+				if (!in_array(ltrim(rtrim($v)), $continents)) $new_str_values[] = $v;
+			}
+			return implode(", ",$new_str_values);
+		}
+	@endphp
 	@if(!empty($results))
 	@foreach($results as $result)
 		@php 
@@ -19,15 +30,6 @@
 				}
 			}
 
-			function removeContinents($string){
-				$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
-				$str_values = explode(",", $string);
-				$new_str_values = [];
-				foreach($str_values as $v){
-					if (!in_array(ltrim(rtrim($v)), $continents)) $new_str_values[] = $v;
-				}
-				return implode(", ",$new_str_values);
-			}
 		@endphp
 		<div class="row">
 		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {!! $result->title !!}</a>
