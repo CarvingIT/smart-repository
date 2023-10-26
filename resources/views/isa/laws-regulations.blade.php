@@ -13,12 +13,12 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Laws, Regulations & Policies') }}</h4>
+                <h6 class="card-title">{{ __('Laws, Regulations & Policies') }}</h6>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 
                 <div class="card-body">
-                    <div>
+                    <div class="beautify">
                         <p><strong>Legal and Regulatory</strong></p>
                         <p>This section provides a comprehensive repository of laws, rules, and regulations governing clean and renewable energy, with a specific emphasis on solar energy, in ISA member countries. Explore this resource to gain insights into the legal framework shaping the sustainable energy transition across our diverse member nations.</p>
                         <p><strong>Energy Laws & Regulations</strong></p>

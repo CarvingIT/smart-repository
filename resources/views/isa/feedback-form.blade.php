@@ -27,7 +27,7 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Feedback') }}</h4>
+                <h6 class="card-title">{{ __('Feedback') }}</h6>
 			</div>
 			<div class="card-body">
 <!-- Content Box -->

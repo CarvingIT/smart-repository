@@ -13,12 +13,12 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Publications') }}</h4>
+                <h6 class="card-title">{{ __('Publications') }}</h6>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 
                 <div class="card-body">
-                    <div> 
+                <div class="beautify">
                         <p><strong>Publications</strong></p>
                         <p>This section offers a comprehensive collection of publications from ISA member countries. This diverse resource includes research papers, books, reports, case studies, theses, and more, spanning a broad spectrum of topics related to solar energy. </p>
                         <p><strong>Research Papers</strong></p>

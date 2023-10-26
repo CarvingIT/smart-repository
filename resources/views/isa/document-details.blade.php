@@ -76,7 +76,7 @@ $(document).ready(function()
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collection/{{ $c->id }}">{{$c->name}}</a> :: Document Details</h4></div>
+                <div class="card-header card-header-primary"><h6 class="card-title"><a href="/collection/{{ $c->id }}">{{$c->name}}</a> :: Document Details</h6></div>
                 <div class="card-body">
 
                   <div class="row">

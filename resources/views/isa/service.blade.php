@@ -13,12 +13,12 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Terms of Service') }}</h4>
+                <h6 class="card-title">{{ __('Terms of Service') }}</h6>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 
                 <div class="card-body">
-                    <div>
+                <div class="beautify">
 				
 <p>
 <strong>What is Terms of Service ?</strong>
