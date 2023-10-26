@@ -17153,9 +17153,9 @@ label {
 }
 
 .card [class*="card-header-"]:not(.card-header-icon):not(.card-header-text):not(.card-header-image) {
-  border-radius: 3px;
+  border-radius: 5px;
   margin-top: -20px;
-  padding: 15px;
+  padding: 10px;
 }
 
 .card [class*="card-header-"] .card-icon,

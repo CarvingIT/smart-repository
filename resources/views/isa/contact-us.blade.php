@@ -16,7 +16,7 @@
               </div>		
 
                 <div class="card-body">
-                    <div>
+                    <div class="beautify">
 						<p>
 						<strong>International Solar Alliance Secretariat</strong><br/>
 						Surya Bhawan,<br/>

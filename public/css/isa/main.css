@@ -2749,3 +2749,10 @@ column-count: 1;
 	background-color:none !important;
 	box-shadow:none !important;
   }
+
+  /*Beautification of pages*/
+   .beautify
+  {
+    text-align: justify;
+    padding: 0 30px 0 30px;
+  }
