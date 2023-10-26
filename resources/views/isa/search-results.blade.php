@@ -18,6 +18,16 @@
 					$year_field_id = $m->id;
 				}
 			}
+
+			function removeContinents($string){
+				$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
+				$str_values = explode(",", $string);
+				$new_str_values = [];
+				foreach($str_values as $v){
+					if (!in_array(ltrim(rtrim($v)), $continents)) $new_str_values[] = $v;
+				}
+				return implode(", ",$new_str_values);
+			}
 		@endphp
 		<div class="row">
 		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {!! $result->title !!}</a>
@@ -26,7 +36,7 @@
 		<div class="col-lg-9">
 		@if (!empty($document->meta_value($country_field_id)))
 			<span class="search-result-meta">
-			{{ env('COUNTRY_FIELD_LABEL','Country').': '.$document->meta_value($country_field_id) }}
+			{{ env('COUNTRY_FIELD_LABEL','Country').': '.removeContinents($document->meta_value($country_field_id)) }}
 			</span>
 		@endif
 		</div>
