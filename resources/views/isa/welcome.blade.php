@@ -162,6 +162,9 @@
     <!-- End Services Section -->
 
     <!-- ======= News & Updates Section ======= -->
+@php
+$f = FeedReader::read('https://www.solarpowerworldonline.com/feed/');
+@endphp
 
     <section id="news-updates" class="news-updates-section pt-0">
       <div class="container" data-aos="fade-up">
@@ -172,19 +175,21 @@
         <div class="slides-3 swiper" data-aos="fade-up">
           <div class="swiper-wrapper" >
 	
+@foreach ($f->get_items() as $item)
             <div class="swiper-slide">
               <div class="news-updates-item">
 				<!--
                 <img src="img/isa/img/news-updates/news-updates1.jpg" class="news-updates-img" alt="">
 				-->
                 <div class="news-updates-content">
-                  <h3></h3>
+                  <h3><a href="{{ $item->get_link() }}" target="_new">{{ $item->get_title() }}</a></h3>
                   <p>
-			
+					{!! $item->get_content() !!}	
                   </p>
                 </div>
               </div>
             </div><!-- End news-updates item -->
+@endforeach
 		
           </div>
           <!-- <div class="swiper-pagination"></div> -->
