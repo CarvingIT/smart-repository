@@ -10,6 +10,8 @@ use App\Document;
 use App\Util;
 use App\ChatGPT;
 use Illuminate\Support\Facades\Log;
+use BotMan\BotMan\Messages\Attachments\File;
+use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 
 class BotManController extends Controller
 {
@@ -63,7 +65,7 @@ class BotManController extends Controller
     {
 		$this_controller = $this;
 
-        $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch) {
+        $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
 			// get keywords
 			$question = $answer->getText();
 			// $keywords = RakePlus::create($question)->get(); // this gives phrases
@@ -159,11 +161,26 @@ class BotManController extends Controller
 						}
 						if(auth()->user()){
 							$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
+							/*
+							// Create attachment
+							$attachment = new File('/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id, [
+    							'custom_payload' => true,
+							]);
+							
+							// Build message object
+							$message = OutgoingMessage::create($m_doc->title)
+            							->withAttachment($attachment);
+
+							// Reply message object
+							$this->say('OK');
+							$botman->reply($message);
+							*/
+							$this->say($answer_full);
 						}
 						else{
 							$answer_full .= '<br/><br/>Login to download the document containing the answer.<br/>';
+							$this->say($answer_full);
 						}
-						$this->say($answer_full);
 						//$this->say('Press <strong>q</strong> for another question.');
 						$this->ask('Type in another question.', $botSearch);
 					}
