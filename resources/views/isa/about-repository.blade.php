@@ -16,7 +16,6 @@
                 <h6 class="card-title">{{ __('About the Regulation Repository') }}</h6>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
-
                 <div class="card-body">
                     <div class="beautify">
                         <p>

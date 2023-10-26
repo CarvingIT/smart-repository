@@ -11,7 +11,7 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h6 class="card-title">{{ __('Contact Us') }}</h6>
+                <h5 class="card-title">{{ __('Contact Us') }}</h5>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 
