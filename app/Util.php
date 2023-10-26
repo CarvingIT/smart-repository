@@ -56,13 +56,18 @@ class Util{
 	}
 
 	public static function highlightKeywords($text, $search_query){
-		$keywords = array_unique(explode(" ", $search_query));
+		$keywords = array_filter(array_unique(explode(" ", $search_query)),
+			function($val){
+			return (!preg_match('/[^a-z_\-0-9]/i',$val) && strlen($val) > 2);	
+		});
+		
 		// keywords is an array
 		$lines = [];
 		foreach($keywords as $k){
 			// if any of the earlier lines contain this keyword, 
 			// don't add that line
 			$p = stripos($text, $k);
+			if($p === false) continue;
 			$offset = ($p < 30) ? 0 : ($p-30);
 			$line = substr($text, $offset, 100);
 			$lines[] = $line;
@@ -91,8 +96,13 @@ class Util{
 		$lines_refined_tmp = [];
 		foreach($lines_refined as $lr){
 			foreach($keywords as $k){
-				$pattern = '/'.$k.'/i';
-				$lr = preg_replace($pattern, '<span class="highlight">$0</span>', $lr);	
+				//if(stripos($text, $k) !== false){
+				try{
+					$pattern = '/'.$k.'/i';
+					$lr = preg_replace($pattern, '<span class="highlight">$0</span>', $lr);	
+				}
+				catch(\Exception $e){
+				}
 			}
 			$lr = '.....'.$lr.'.....';
 			$lines_refined_tmp[] = $lr;
