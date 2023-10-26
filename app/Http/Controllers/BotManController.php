@@ -157,13 +157,13 @@ class BotManController extends Controller
 					else{
 						foreach($doc_matches as $dm){
 							$m_doc = Document::find($dm);
-							$doc_list .= '<a href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
+							$doc_list .= '<a target="_new" href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
 						}
 						if(auth()->user()){
 							$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
-							/*
+							try{
 							// Create attachment
-							$attachment = new File('/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id, [
+							$attachment = new File('http://isa-rrr.local/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id, [
     							'custom_payload' => true,
 							]);
 							
@@ -171,11 +171,13 @@ class BotManController extends Controller
 							$message = OutgoingMessage::create($m_doc->title)
             							->withAttachment($attachment);
 
+							}
+							catch(\Exception $e){
+								$this->say($e->getMessage());
+							}
 							// Reply message object
-							$this->say('OK');
-							$botman->reply($message);
-							*/
 							$this->say($answer_full);
+							//$this->say($message);
 						}
 						else{
 							$answer_full .= '<br/><br/>Login to download the document containing the answer.<br/>';
