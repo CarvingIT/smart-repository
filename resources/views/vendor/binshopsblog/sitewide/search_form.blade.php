@@ -1,7 +1,11 @@
-<div style='max-width:500px;margin:50px auto;' class='search-form-outer'>
+<div style='max-width:90%;margin:50px auto;' class='search-form-outer'>
     <form method='get' action='{{route("binshopsblog.search", app('request')->get('locale'))}}' class='text-center'>
-        <h4>Search for something in our blog:</h4>
-        <input type='text' name='s' placeholder='Search...' class='form-control' value='{{\Request::get("s")}}'>
-        <input type='submit' value='Search' class='btn btn-primary m-2'>
+        <input type='text' name='s' placeholder='Search blogs ...' class='search-field' value='{{\Request::get("s")}}' style="width:90%;padding-left:5px;">
+        <input type='submit' value='Search' class='btn btn-primary search' style="height:35px; padding:0 15px; margin-bottom:6px; font-size:0.8em;">
     </form>
 </div>
+<style>
+	::placeholder{
+		font-size:1em !important;
+	}
+</style>
