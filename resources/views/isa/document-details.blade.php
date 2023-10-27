@@ -120,6 +120,8 @@ $(document).ready(function()
                         <label>{{ $document->title }}</label>
 					
 					</div>
+				@elseif ($document->type == 'url')
+					<a href="{{ $document->external_link }}" target="_new"><img class="file-icon" src="/i/file-types/url.png"></a>&nbsp;<a href="{{ $document->external_link }}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a>
 				@else
 				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a>
 				@endif
