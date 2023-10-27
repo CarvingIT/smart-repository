@@ -31,7 +31,7 @@ class DocumentController extends Controller
         return view('my_documents',['documents'=>$documents,'activePage'=>'My Uploaded Documents','titlePage'=>'My Uploaded Documents']);
 	}
 
-    public function loadDocument($collection_id,$document_id){
+    public function loadDocument($collection_id,$document_id, Request $req){
         $doc = \App\Document::find($document_id);
 	if($doc->type == 'url'){
 		return redirect($doc->url);
