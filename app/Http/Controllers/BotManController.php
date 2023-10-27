@@ -24,15 +24,17 @@ class BotManController extends Controller
         $botman = app('botman');
 		
         $botman->hears('{message}', function($botman, $req, $message) {
-            if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
-                $this->askName($botman);
-            }
-			else if($message == 'q'){
+			if($message == 'q'){
 				$this->search($botman, $req);
+            }
+			/*
+            else if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
+                $this->askName($botman);
             }
 			else if($message == 'h'){
 				$this->helpMenu($botman);
 			}
+			*/
 			else{
 				//$this->unknownCommand($botman);
 				$this->search($botman, $req);
