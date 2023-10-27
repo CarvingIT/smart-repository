@@ -33,6 +33,9 @@ class DocumentController extends Controller
 
     public function loadDocument($collection_id,$document_id){
         $doc = \App\Document::find($document_id);
+	if($doc->type == 'url'){
+		return redirect($doc->url);
+	}
 	$collection_id = $doc->collection_id;
 	$collection = \App\Collection::find($collection_id);
 	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
@@ -230,7 +233,7 @@ class DocumentController extends Controller
            	$d->created_by = \Auth::user()->id;
 			$d->title = empty($request->input('title'))?'Link '.@$request->input('external_link'):$request->input('title');
 			$d->path = 'N/A';
-			$d->type = 'N/A';
+			$d->type = 'url';
 			$d->size = 0;
 			$d->text_content = 'N/A';
 			$d->external_link = $request->input('external_link');

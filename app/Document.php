@@ -58,6 +58,7 @@ class Document extends Model implements Auditable
             'exe'=>'exe',
             'mp3'=>'mp3',
             'mp4'=>'mp4',
+			'url'=>'url',
 	    'm4a'=>'m4a',
         );
         $path = empty($path) ? $this->path : $path;
