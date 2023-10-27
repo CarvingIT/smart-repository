@@ -2,6 +2,12 @@
 @push('js')
 <script src="/js/jquery-ui.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
+<style>
+	.form-check-label{
+		display:inline-block;
+		width:80%;
+	}
+</style>
 <script>
 @php
 	$url = '/collection/1/search-results?isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
@@ -107,7 +113,7 @@ function goToPage(page){
 					$tid = $t->id;
 					// get compare with query string parameter to mark as checked
 					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
-                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 					echo '</div>';
 				}
           		getTree($children, $rmfv_map, $t->id, $meta_id);
