@@ -2761,6 +2761,10 @@ column-count: 1;
   .ct-uppercase{
     text-transform:uppercase !important;
   }
+
+  .ct-sub{
+    padding-left: 30px !important;
+  }
  
 
   .ct-num{

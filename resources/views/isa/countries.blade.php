@@ -93,9 +93,11 @@ function randomString(length) {
                   				getTree($children, $t->id, $meta_id, $rmfv_map);
              				}
              				else{
+                                echo '<div class="ct-sub">';
 						echo '<li class="ct-num">';
                   				echo '<a href="/collection/1?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a>';
 						echo '</li>';
+                        echo '</div>';
              				}
 				}#foreach	
 		}#function ends
