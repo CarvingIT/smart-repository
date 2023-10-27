@@ -182,7 +182,7 @@ class BotManController extends Controller
 							//$this->say($message);
 						}
 						else{
-							$answer_full .= '<br/><br/>Login to download the document containing the answer.<br/>';
+							$answer_full .= '<br/><br/><a target="_new" href="/login">Login</a> to download the document containing the answer.<br/>';
 							$this->say($answer_full);
 						}
 						//$this->say('Press <strong>q</strong> for another question.');
