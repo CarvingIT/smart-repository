@@ -18,7 +18,7 @@
                             @php $search_count += $search_count + 1; @endphp
                             <?php $post = $result->indexable; ?>
                             @if($post && is_a($post,\BinshopsBlog\Models\BinshopsPostTranslation::class))
-                                <h3>Search result #{{$search_count}}</h3>
+                                <!--<h3>Search result #{{$search_count}}</h3>-->
                                 @include("binshopsblog::partials.index_loop")
                             @else
 
