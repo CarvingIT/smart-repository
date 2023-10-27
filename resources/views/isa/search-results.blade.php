@@ -73,7 +73,7 @@
 		<div class="row">
 
 <nav aria-label="Page navigation" style="text-align:center;">
-<div class="pagination">{{ $filtered_results_count }} of {{ $total_results_count }}</div>
+<div class="pagination">Filtered {{ $filtered_results_count }} of {{ $total_results_count }}</div>
 <ul class="pagination">
 @php
 //$total_results_count=0;
