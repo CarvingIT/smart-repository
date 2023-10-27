@@ -66,7 +66,7 @@ class DocumentController extends Controller
         $revision = \App\DocumentRevision::where('document_id','=', $document_id)
             ->orderby('id', 'DESC')->first();
         $hit->document_id = $document_id;
-        $hit->revision_id = $revision->id;
+        $hit->revision_id = empty($revision->id)? 0 : $revision->id;
         $hit->user_id = empty(\Auth::user()->id)? null : \Auth::user()->id;
         $hit->save(); 
     }
