@@ -593,21 +593,27 @@ class CollectionController extends Controller
 	$documents = $this->approvalFilter($request, $documents);
 	$filtered_count = $documents->count(); //- count($approval_exceptions);
 
-        if(!empty($request->embedded)){ 		
+    if(!empty($request->embedded)){ 		
 		$documents = $documents
-			 ->limit($request->length)->offset($request->start)->get();
-   	    	$results_data = $this->datatableFormatResultsEmbedded(
-			array('request'=>$request, 
-			'documents'=>$documents, 
-			'has_approval'=>$has_approval));
+		->limit($request->length)->offset($request->start)->get();
+       	$results_data = $this->datatableFormatResultsEmbedded(
+		array('request'=>$request, 
+		'documents'=>$documents, 
+		'has_approval'=>$has_approval));
 	}
 	else{
-		$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
+		$sort_column = @empty($columns[$request->order[0]['column']])?'':$columns[$request->order[0]['column']];
 		$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 		$length = empty($request->length)?10:$request->length;
+		if(!empty($sort_column)){
 		$documents = $documents
 			->orderBy($sort_column,$sort_direction)
-        	        ->limit($length)->offset($request->start)->get();
+   	        ->limit($length)->offset($request->start)->get();
+		}
+		else{// initial sorting is by relevance (or whatever order the database returns)
+		$documents = $documents
+   	        ->limit($length)->offset($request->start)->get();
+		}
 		if($request->is('api/*')){
 			return 
         		array(
