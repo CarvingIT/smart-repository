@@ -148,44 +148,24 @@ class BotManController extends Controller
 							}
 						}
 						catch(\Exception $e){
-							$answer_full = $e->getMessage();		
+							$this->say($e->getMessage());
 							break;
 						}
 					}
 					if(empty($answer_full)){
 						$this->say('I did not get an answer to your query.');
-						$this->ask('Try making your question more specific.', $botSearch);
+						$this->ask('Please see if you can find any documents 
+							<a target="_new" href="/collection/1?isa_search_parameter='.
+							urlencode(implode(' ',$keywords)).'">here</a>.', $botSearch);
+						//$this->ask('Try making your question more specific.', $botSearch);
 					}
 					else{
 						foreach($doc_matches as $dm){
 							$m_doc = Document::find($dm);
 							$doc_list .= '<a target="_new" href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
 						}
-						if(auth()->user()){
-							$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
-							try{
-							// Create attachment
-							$attachment = new File('http://isa-rrr.local/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id, [
-    							'custom_payload' => true,
-							]);
-							
-							// Build message object
-							$message = OutgoingMessage::create($m_doc->title)
-            							->withAttachment($attachment);
-
-							}
-							catch(\Exception $e){
-								$this->say($e->getMessage());
-							}
-							// Reply message object
-							$this->say($answer_full);
-							//$this->say($message);
-						}
-						else{
-							$answer_full .= '<br/><br/><a target="_new" href="/login">Login</a> to download the document containing the answer.<br/>';
-							$this->say($answer_full);
-						}
-						//$this->say('Press <strong>q</strong> for another question.');
+						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
+						$this->say($answer_full);
 						$this->ask('Type in another question.', $botSearch);
 					}
 				}
