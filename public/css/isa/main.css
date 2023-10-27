@@ -2777,3 +2777,12 @@ column-count: 1;
   column-count: 1 !important;
   }
   }
+
+  .c-icon{
+    font-size: x-large !important;
+    color: #f35a0e !important;
+  }
+  
+  .ct-geo{
+    padding-left: 5px !important;
+  }
