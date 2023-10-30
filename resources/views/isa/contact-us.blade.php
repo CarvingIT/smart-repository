@@ -11,13 +11,13 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Contact Us') }}</h4>
+                <h5 class="card-title">{{ __('Contact Us') }}</h5>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 
                 <div class="card-body">
-                    <div>
-						<p> 
+                    <div class="beautify">
+						<p>
 						<strong>International Solar Alliance Secretariat</strong><br/>
 						<span class="bi bi-geo-alt-fill c-icon"></span><span class="ct-geo">Surya Bhawan,</span><br/>
 						<span class="ct-sub">National Institute of Solar Energy Campus Gwal Pahari,</span><br/>

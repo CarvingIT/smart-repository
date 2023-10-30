@@ -2,7 +2,21 @@
 @push('js')
 <script src="/js/jquery-ui.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
+<style>
+	.form-check-label{
+		display:inline-block;
+		width:80%;
+	}
+</style>
 <script>
+$(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      return false;
+    }
+  });
+});
 @php
 	$url = '/collection/1/search-results?isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
 @endphp
@@ -12,8 +26,6 @@ $(document).ready(function() {
 });
 
 function reloadSearchResults(){
-	// reset page to 0
-	$('#search-results-start').val(0);
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
 	var url = '/collection/1/search-results?'+queryString;
@@ -37,18 +49,28 @@ function nextPage(){
 	start = parseInt(start) + 10;
 	$('#search-results-start').val(start);
 	reloadSearchResults();
+	return false;
 }
 function previousPage(){
 	var start = $('#search-results-start').val();
 	start = parseInt(start) - 10;
 	$('#search-results-start').val(start);
 	reloadSearchResults();
+	return false;
+}
+
+function goToPage(page){
+	var start = (page - 1) * 10;
+	$('#search-results-start').val(start);
+	reloadSearchResults();
+	return false;
 }
 
 </script>
 @endpush
 @section('content')
 <main id="main">
+<a name="search-results"></a>
 @php
 	// get reverse meta field values
 	$rmf_values = App\ReverseMetaFieldValue::all();
@@ -99,7 +121,7 @@ function previousPage(){
 					$tid = $t->id;
 					// get compare with query string parameter to mark as checked
 					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
-                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.'</label><br />';
+                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 					echo '</div>';
 				}
           		getTree($children, $rmfv_map, $t->id, $meta_id);
@@ -131,7 +153,7 @@ function previousPage(){
         <div class="col-md-12">
             <div class="card">
 				<div class="card-header card-header-primary">
-                	<h4 class="card-title ">{{ __('Database') }}</h4>
+                	<h5 class="card-title ">{{ __('Database') }}</h5>
             	</div>
 			<div class="card-body">
 			<div class="row">
@@ -266,7 +288,6 @@ foreach($tags as $t){
       document.querySelector('#start_year').value = this.value;
 	  reloadSearchResults();
     };
-
   </script>
 		<div class="form-check">
 		</div>

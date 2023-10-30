@@ -1,4 +1,15 @@
 <div class="row gy-4 pricing-item" data-aos-delay="100">
+	@php
+		function removeContinents($string){
+			$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
+			$str_values = explode(",", $string);
+			$new_str_values = [];
+			foreach($str_values as $v){
+				if (!in_array(ltrim(rtrim($v)), $continents)) $new_str_values[] = $v;
+			}
+			return implode(", ",$new_str_values);
+		}
+	@endphp
 	@if(!empty($results))
 	@foreach($results as $result)
 		@php 
@@ -20,13 +31,13 @@
 			}
 		@endphp
 		<div class="row">
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp; {!! $result->title !!}</a>
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
 		</div>
 		<div class="row">
 		<div class="col-lg-9">
 		@if (!empty($document->meta_value($country_field_id)))
 			<span class="search-result-meta">
-			{{ env('COUNTRY_FIELD_LABEL','Country').': '.$document->meta_value($country_field_id) }}
+			{{ env('COUNTRY_FIELD_LABEL','Country').': '.removeContinents($document->meta_value($country_field_id)) }}
 			</span>
 		@endif
 		</div>
@@ -57,14 +68,12 @@
 			@endif
 		</div>
 		</div>
-		<div class="row">&nbsp;</div>
 	@endforeach
-	@else
-		{{ __('No results found') }}
-	@endif
+		<div class="row">
 
-<nav aria-label="Page navigation">
-<ul class="pagination justify-content-center">
+<nav aria-label="Page navigation" style="text-align:center;">
+<div class="pagination">Filtered {{ $filtered_results_count }} of {{ $total_results_count }}</div>
+<ul class="pagination">
 @php
 //$total_results_count=0;
 $length=10;
@@ -73,19 +82,31 @@ if(empty(Request::get('meta'))){
 $taxonomies = '';
 }
 $collection_id = $collection->id;
+
+$total_pages = ($filtered_results_count / 10) + 1;
 @endphp
 @if($start > 0)
 <li class="page-item disabled">
-  <a class="services-pagination" href="#" onclick="previousPage()" tabindex="-1" aria-disabled="true">&laquo;</a>
+  <a class="services-pagination" href="javascript:void(0);" onclick="previousPage()" tabindex="-1" aria-disabled="true">&laquo;</a>
 </li>
 @endif
+@for ($p=1; $p<=$total_pages; $p++)
+<li class="page-item @if (($start+10)/10 == $p) {{ 'current-page' }} @endif">
+  <a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $p }})">{{ $p }}</a>
+</li>
+@endfor
 @if($start < ($filtered_results_count - 10) && count($results) >= 10 )
 <li class="page-item">
-  <a class="services-pagination" href="#" onclick="nextPage()">&raquo;</a>
+  <a class="services-pagination" href="javascript:void(0);" onclick="nextPage()">&raquo;</a>
 </li>
 @endif
 </ul>
 </nav>
+		</div>
+	@else
+		{{ __('No results found') }}
+	@endif
+
 
 	</div>
 

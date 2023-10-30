@@ -13,12 +13,12 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Technical Standards') }}</h4>
+                <h5 class="card-title">{{ __('Technical Standards') }}</h5>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 
                 <div class="card-body">
-                    <div>
+                <div class="beautify">
                         <p><strong>Technical Standards</strong></p>
                         <p>This section enlists various standards developed by governmental and non-governmental standardization organizations relating to technical specifications crucial for maintaining consistency, quality, and safety in solar energy fields. These standards foster uniformity and best practices across solar technology design, production, processes, and services, promoting industry excellence. </p>
                         <p><strong>Process Standards</strong></p>

@@ -66,10 +66,12 @@
         }
     </style>
 <script>
+	/*
 	$(document).ready(function(){
 		window.botmanChatWidget.whisper('q');
 		window.botmanChatWidget.close();
 	});
+	*/
 </script>
 </head>
 <body>
@@ -179,7 +181,13 @@
 			bubbleAvatarUrl: "/i/chatbot.png",
 	    };
     </script>
-    <script src='https://cdn.jsdelivr.net/npm/botman-web-widget@0/build/js/widget.js'></script>
+    <script src='/js/botman_widget.js'></script>
+	<script>
+		setTimeout(function(){
+		window.botmanChatWidget.whisper('q');
+		window.botmanChatWidget.close();
+		}, 1000);
+	</script>
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="container">
@@ -201,8 +209,8 @@
           <p><a href="/">Home</a><br>
             <a href="/about">About Repository</a><br>
             <a href="/collection/1">Database</a><br>
-            <a href="#">Terms of Service</a><br>
-            <a href="#">Privacy policy</a>
+            <a href="/service">Terms of Service</a><br>
+            <a href="/policy">Privacy policy</a>
           </p>
         </div>
         

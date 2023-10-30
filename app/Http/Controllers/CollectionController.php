@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 use App\StorageTypes;
 use App\SpideredDomain;
 use App\DesiredUrl;
@@ -244,7 +244,10 @@ class CollectionController extends Controller
 			if(preg_match('/^meta_(\d*)/', $p, $matches)){
 				// currently, no support for operator in the query string parameters
 				// default operator is '='
-				if(is_array($v) && count($v)==2){ // this is for range filters (numeric values). This condition needs to be refined.
+				// find type of meta field
+				$meta_field = \App\MetaField::where('id', $matches[1])->first();
+				if($meta_field && $meta_field->type == 'Numeric' && is_array($v) && count($v)==2){ 
+					// this is for range filters (numeric values). This condition needs to be refined.
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>$v[1]);
 				}
@@ -344,7 +347,10 @@ class CollectionController extends Controller
 	public function getElasticClient(){
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        return ClientBuilder::create()->setHosts($hosts)->build();
+	return ClientBuilder::create()->setHosts($hosts)
+	->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+	->build();
 	}
     // elastic search
     public function searchElastic($request){
@@ -624,22 +630,27 @@ class CollectionController extends Controller
 	$documents = $this->approvalFilter($request->collection_id, $documents);
 	$filtered_count = $documents->count(); //- count($approval_exceptions);
 
-        if(!empty($request->embedded)){ 		
+    if(!empty($request->embedded)){ 		
 		$documents = $documents
-			 ->limit($request->length)->offset($request->start)->get();
-   	    	$results_data = $this->datatableFormatResultsEmbedded(
-			array('request'=>$request, 
-			'documents'=>$documents, 
-			'has_approval'=>$has_approval));
+		->limit($request->length)->offset($request->start)->get();
+       	$results_data = $this->datatableFormatResultsEmbedded(
+		array('request'=>$request, 
+		'documents'=>$documents, 
+		'has_approval'=>$has_approval));
 	}
 	else{
-		$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
+		$sort_column = @empty($columns[$request->order[0]['column']])?'':$columns[$request->order[0]['column']];
 		$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 		$length = empty($request->length)?10:$request->length;
+		if(!empty($sort_column)){
 		$documents = $documents
 			->orderBy($sort_column,$sort_direction)
-        	        ->limit($length)->offset($request->start)->get();
-
+   	        ->limit($length)->offset($request->start)->get();
+		}
+		else{// initial sorting is by relevance (or whatever order the database returns)
+		$documents = $documents
+   	        ->limit($length)->offset($request->start)->get();
+		}
 		if($request->is('api/*')){
 			return 
         		array(
@@ -1453,6 +1464,7 @@ use App\UrlSuppression;
             		$documents_array = json_decode($body);
 				}
 		$total_results_count = $documents_array->recordsTotal;
+		$filtered_results_count = $documents_array->recordsFiltered;
         // log search query
         $old_query = Session::get('search_query');
         if(!empty($request->isa_search_parameter) && $old_query != $request->isa_search_parameter &&
@@ -1473,7 +1485,8 @@ use App\UrlSuppression;
 
 		return view('search-results',['collection'=>$collection, 
 			'results'=>$documents_array->data,
-			'filtered_results_count'=>$total_results_count,
+			'filtered_results_count'=>$filtered_results_count,
+			'total_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
             'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
 			'titlePage'=>'Documents']);

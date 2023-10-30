@@ -11,9 +11,9 @@
 	<div class="card">
                 <div class="card-header card-header-primary"><h4 class="card-title">Blog</h4></div>
 	<div class="card-body">
-<div class="row justify-content-center">
+	<div class="row justify-content-center">
         <div class="col-md-12">
-    <div class='col-sm-12 binshopsblog_container'>
+    		<div class='col-sm-12 binshopsblog_container'>
         @if(\Auth::check() && \Auth::user()->canManageBinshopsBlogPosts())
             <div class="text-center">
                 <p class='mb-1'>You are logged in as a blog admin user.

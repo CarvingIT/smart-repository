@@ -76,7 +76,7 @@ $(document).ready(function()
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collection/{{ $c->id }}">{{$c->name}}</a> :: Document Details</h4></div>
+                <div class="card-header card-header-primary"><h6 class="card-title"><a href="/collection/{{ $c->id }}">{{$c->name}}</a> :: Document Details</h6></div>
                 <div class="card-body">
 
                   <div class="row">
@@ -120,6 +120,8 @@ $(document).ready(function()
                         <label>{{ $document->title }}</label>
 					
 					</div>
+				@elseif ($document->type == 'url')
+					<a href="{{ $document->external_link }}" target="_new"><img class="file-icon" src="/i/file-types/url.png"></a>&nbsp;<a href="{{ $document->external_link }}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a>
 				@else
 				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a>
 				@endif
@@ -145,7 +147,7 @@ $(document).ready(function()
 							@else
                             <div class="col-md-3">
 							@endif
-                            <label style="margin-top:2em" for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
+                            <label style="margin-top:2em; color: black;" for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
                             <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! html_entity_decode($document->meta_value($m->meta_field_id)) !!}</div>
                             </div>
                        	@endif
@@ -154,6 +156,7 @@ $(document).ready(function()
 			@endif
 
                     </div>
+</div>
 
                    </div><!-- card body ends -->
                 </div>

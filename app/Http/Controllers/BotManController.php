@@ -10,6 +10,8 @@ use App\Document;
 use App\Util;
 use App\ChatGPT;
 use Illuminate\Support\Facades\Log;
+use BotMan\BotMan\Messages\Attachments\File;
+use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 
 class BotManController extends Controller
 {
@@ -22,15 +24,17 @@ class BotManController extends Controller
         $botman = app('botman');
 		
         $botman->hears('{message}', function($botman, $req, $message) {
-            if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
-                $this->askName($botman);
-            }
-			else if($message == 'q'){
+			if($message == 'q'){
 				$this->search($botman, $req);
+            }
+			/*
+            else if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
+                $this->askName($botman);
             }
 			else if($message == 'h'){
 				$this->helpMenu($botman);
 			}
+			*/
 			else{
 				//$this->unknownCommand($botman);
 				$this->search($botman, $req);
@@ -63,7 +67,7 @@ class BotManController extends Controller
     {
 		$this_controller = $this;
 
-        $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch) {
+        $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
 			// get keywords
 			$question = $answer->getText();
 			// $keywords = RakePlus::create($question)->get(); // this gives phrases
@@ -144,22 +148,24 @@ class BotManController extends Controller
 							}
 						}
 						catch(\Exception $e){
-							$answer_full = $e->getMessage();		
+							$this->say($e->getMessage());
 							break;
 						}
 					}
 					if(empty($answer_full)){
 						$this->say('I did not get an answer to your query.');
-						$this->ask('Try making your question more specific.', $botSearch);
+						$this->ask('Please see if you can find any documents 
+							<a target="_new" href="/collection/1?isa_search_parameter='.
+							urlencode(implode(' ',$keywords)).'">here</a>.', $botSearch);
+						//$this->ask('Try making your question more specific.', $botSearch);
 					}
 					else{
 						foreach($doc_matches as $dm){
 							$m_doc = Document::find($dm);
-							$doc_list .= '<a href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
+							$doc_list .= '<a target="_new" href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
 						}
 						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
 						$this->say($answer_full);
-						//$this->say('Press <strong>q</strong> for another question.');
 						$this->ask('Type in another question.', $botSearch);
 					}
 				}

@@ -31,8 +31,11 @@ class DocumentController extends Controller
         return view('my_documents',['documents'=>$documents,'activePage'=>'My Uploaded Documents','titlePage'=>'My Uploaded Documents']);
 	}
 
-    public function loadDocument($collection_id,$document_id){
+    public function loadDocument($collection_id,$document_id, Request $req){
         $doc = \App\Document::find($document_id);
+	if($doc->type == 'url'){
+		return redirect($doc->url);
+	}
 	$collection_id = $doc->collection_id;
 	$collection = \App\Collection::find($collection_id);
 	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
@@ -63,7 +66,7 @@ class DocumentController extends Controller
         $revision = \App\DocumentRevision::where('document_id','=', $document_id)
             ->orderby('id', 'DESC')->first();
         $hit->document_id = $document_id;
-        $hit->revision_id = $revision->id;
+        $hit->revision_id = empty($revision->id)? 0 : $revision->id;
         $hit->user_id = empty(\Auth::user()->id)? null : \Auth::user()->id;
         $hit->save(); 
     }
@@ -230,7 +233,7 @@ class DocumentController extends Controller
            	$d->created_by = \Auth::user()->id;
 			$d->title = empty($request->input('title'))?'Link '.@$request->input('external_link'):$request->input('title');
 			$d->path = 'N/A';
-			$d->type = 'N/A';
+			$d->type = 'url';
 			$d->size = 0;
 			$d->text_content = 'N/A';
 			$d->external_link = $request->input('external_link');
