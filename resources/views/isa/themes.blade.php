@@ -96,6 +96,7 @@ function randomString(length) {
       					 @endphp
 						@foreach ($major_themes as $mt)
 						<div class="col-lg-4">
+						<h5>{{ $mt }}</h5><br/>
                         <ul class="list-unstyled">
 							@php
 								getTree($children, $major_theme_ids[$mt]);	
