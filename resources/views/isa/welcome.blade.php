@@ -133,7 +133,7 @@
               </div>
               <h3><a href="javascript:void(0)">Laws, Regulations & Policies</a></h3>
               <p class ="beautify">This section provides a comprehensive repository of laws, rules, and regulations governing clean and renewable energy, with a specific emphasis on solar energy, in ISA member countries. Explore this resource to gain insights into the legal framework shaping the sustainable energy transition across our diverse member nations.</p>
-              <p><a href="/laws" class="stretched-link">Read More</a></p>
+              <p><a href="/laws" class="stretched-link">Read More >> </a></p>
             </div>
           </div><!-- End Card Item -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
@@ -143,7 +143,7 @@
               </div>
               <h3><a href="javascript:void(0)" class="stretched-link">Publications</a></h3>
               <p class ="beautify">This section offers a comprehensive collection of publications from ISA member countries. This diverse resource includes research papers, books, reports, case studies, theses, and more, spanning a broad spectrum of topics related to solar energy.</p>
-              <p><a href="/publications" class="stretched-link">Read More</a></p>
+              <p><a href="/publications" class="stretched-link">Read More >> </a></p>
             </div>
           </div><!-- End Card Item -->
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
@@ -153,7 +153,7 @@
               </div>
               <h3><a href="javascript:void(0)" class="stretched-link">Technical Standards</a></h3>
               <p class ="beautify">This section enlists various standards developed by governmental and non-governmental standardization organizations relating to technical specifications crucial for maintaining consistency, quality, and safety in solar energy fields. These standards foster uniformity and best practices across solar technology design, production, processes, and services, promoting industry excellence.</p>
-              <p> <a href="/technical" class="stretched-link">Read More</a></p>
+              <p> <a href="/technical" class="stretched-link">Read More >> </a></p>
             </div>
           </div><!-- End Card Item -->
         </div>
