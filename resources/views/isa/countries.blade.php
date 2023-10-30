@@ -60,7 +60,6 @@ function randomString(length) {
                     </div>
 	
                     <div class="container">
-                            <ul class="list-unstyled ct-list">
                                     @php
                                     $tags = App\Taxonomy::all();
                                     $children = [];
@@ -87,23 +86,19 @@ function randomString(length) {
          			foreach($children['parent_'.$parent_id] as $t){
         				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
                 				// get compare with query string parameter to mark as checked
-						echo '<li class="ct-uppercase">' ;
-                  				echo '<strong>'.$t->label.'</strong>';
-						echo '</li>';
+						echo '<h5>'.$t->label.'</h5>';
+								echo '<ul class="list-unstyled ct-list">';
                   				getTree($children, $t->id, $meta_id, $rmfv_map);
+								echo '</ul>';
              				}
              				else{
-                                echo '<div class="ct-sub">';
 						echo '<li class="ct-num">';
                   				echo '<a href="/collection/1?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a>';
 						echo '</li>';
-                        echo '</div>';
              				}
 				}#foreach	
 		}#function ends
                                     @endphp
-                                </ul>
-                                <ul class="list-unstyled ct-list">
 					@php
 	$collection = \App\Collection::find(1);
 	$meta_fields = $collection->meta_fields;
@@ -113,15 +108,14 @@ function randomString(length) {
                         $filters[] = $m;
                 }
         }
-                                foreach($filters as $f){
+                  foreach($filters as $f){
 					$page = $_SERVER['REQUEST_URI'];
 					if(preg_match("/Country|Countries|Place|Location/i",$f->label)){
-                                        getTree($children, $f->options, $f->id);
+                             getTree($children, $f->options, $f->id);
 					}
-                                }
-                                @endphp
+                  }
+                  @endphp
 
-                                </ul>
                             </div>
                 </div>
             </div>
