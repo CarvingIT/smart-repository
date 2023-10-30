@@ -182,8 +182,8 @@ $f = FeedReader::read('https://www.solarpowerworldonline.com/feed/');
                 <img src="img/isa/img/news-updates/news-updates1.jpg" class="news-updates-img" alt="">
 				-->
                 <div class="news-updates-content">
-                  <h3><a href="{{ $item->get_link() }}" target="_new">{{ $item->get_title() }}</a></h3>
-                  <p>
+                  <h3 class ="beautify"><a href="{{ $item->get_link() }}" target="_new">{{ $item->get_title() }}</a></h3>
+                  <p class ="beautify">
 					{!! $item->get_content() !!}	
                   </p>
                 </div>
