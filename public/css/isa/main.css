@@ -2788,3 +2788,20 @@ column-count: 1;
   column-count: 1 !important;
   }
   }
+
+  .c-icon{
+    font-size: x-large !important;
+    color: #f35a0e !important;
+    }
+    .ct-geo{
+    padding-left: 5px !important;
+    }
+    .ct-sub{
+    padding-left: 30px !important;
+    }
+    
+    .ct-subs{
+      padding-left: 8px !important;
+      }
+    
+    

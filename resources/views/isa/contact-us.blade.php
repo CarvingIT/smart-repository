@@ -19,8 +19,8 @@
                     <div>
 						<p> 
 						<strong>International Solar Alliance Secretariat</strong><br/>
-						<span class="ct-sub">Surya Bhawan,</span><br/>
-						<span class="bi bi-geo-alt-fill c-i"></span>National Institute of Solar Energy Campus Gwal Pahari,</span><br/>
+						<span class="bi bi-geo-alt-fill c-icon"></span><span class="ct-subs">Surya Bhawan,</span><br/>
+						<span class="ct-sub">National Institute of Solar Energy Campus Gwal Pahari,</span><br/>
 						<span class="ct-sub">Faridabad-Gurugram Road,</span><br/>
 						<span class="ct-sub">Gurugram, Haryana – 122003, India</span><br/>
 						<span class="bi bi-telephone c-icon"></span> +91 124 362 3090/69<br/>
