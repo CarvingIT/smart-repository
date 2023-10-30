@@ -63,7 +63,7 @@ function randomString(length) {
                     <div class="container">
 					<div class="row">
                             @php
-							$meta = App\MetaField::where('label', env('THEME_FIELD_LABEL','Theme'));
+							$meta = App\MetaField::where('label', env('THEME_FIELD_LABEL','Theme'))->first();
 							$meta_id = $meta->id;	
 							$major_themes = explode("|", env('MAJOR_THEMES',"themes"));
 							$major_theme_ids = [];
