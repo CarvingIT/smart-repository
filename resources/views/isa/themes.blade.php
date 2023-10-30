@@ -63,6 +63,8 @@ function randomString(length) {
                     <div class="container">
 					<div class="row">
                             @php
+							$meta = App\MetaField::where('label', env('THEME_FIELD_LABEL','Theme');
+							$meta_id = $meta->id;	
 							$major_themes = explode("|", env('MAJOR_THEMES',"themes"));
 							$major_theme_ids = [];
                             $tags = App\Taxonomy::all();
@@ -99,7 +101,7 @@ function randomString(length) {
 						<h5>{{ $mt }}</h5><br/>
                         <ul class="list-unstyled">
 							@php
-								getTree($children, $major_theme_ids[$mt]);	
+								getTree($children, $major_theme_ids[$mt], $meta_id);	
 							@endphp
                         </ul>
 						</div><!-- col-lg-4 -->
