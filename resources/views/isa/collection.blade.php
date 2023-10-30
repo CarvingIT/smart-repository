@@ -18,7 +18,7 @@ $(document).ready(function() {
   });
 });
 @php
-	$url = '/collection/1/search-results?isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
+	$url = '/collection/1/search-results?analyzer='.request()->get('analyzer').'&isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
 @endphp
 $(document).ready(function() {
 	//$("#search-results").load('{{ $url }}');
@@ -89,7 +89,8 @@ function goToPage(page){
 	//print_r($rmfv_map);exit;
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
-	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
 	$filters = [];
 	foreach($meta_fields as $m){
 		if(in_array($m->label, $filter_labels)){
@@ -180,7 +181,13 @@ function goToPage(page){
 			<div class="col-2 text-right">
 			</div>
 		<div class="row text-center">
-		   <div class="col-12">
+			<div class="col-1"></div>
+			<div class="col-2 text-left">
+			<input type="radio" name="analyzer" value="standard" onclick="reloadSearchResults()"/> Standard<br />
+			<input type="radio" name="analyzer" value="porter_stem_analyzer" onclick="reloadSearchResults()"/> Stemmer<br />
+			<input type="radio" name="analyzer" value="synonyms_analyzer" onclick="reloadSearchResults()"/> Synonym
+			</div>
+		   <div class="col-9">
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keywords') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />

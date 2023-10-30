@@ -59,7 +59,7 @@ class RebuildElasticIndex extends Command
 		->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
 		->build();
 	// first, clear the old index
-	$client->indices()->delete(array('index'=>$index));
+	//$client->indices()->delete(array('index'=>$index));
 
         foreach($docs as $d){
             $body = $d->toArray();
@@ -75,7 +75,9 @@ class RebuildElasticIndex extends Command
             $response = $client->index($params);
             print_r($response);
         }
+		$client->indices()->close(['index'=>'sr_documents']);
 		// add settings related to synonym analyzer
+		/*
 		$synonym_params = [
 			'index' => 'sr_documents',
    			'body' => [
@@ -103,9 +105,9 @@ class RebuildElasticIndex extends Command
        			]
    			]
 		];
-		$client->indices()->close(['index'=>'sr_documents']);
 		$response = $client->indices()->putSettings($synonym_params);
 		print_r($response);
+		*/
 		$client->indices()->open(['index'=>'sr_documents']);
     }
 }
