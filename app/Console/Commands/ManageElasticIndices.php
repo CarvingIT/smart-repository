@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 
 class ManageElasticIndices extends Command
 {
@@ -43,7 +43,10 @@ class ManageElasticIndices extends Command
 
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)->build();
+	$client = ClientBuilder::create()->setHosts($hosts)
+		 ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+                ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+		  ->build();
 		
 		if($operation == 'delete'){	
 			$client->indices()->delete(['index'=>$index]);

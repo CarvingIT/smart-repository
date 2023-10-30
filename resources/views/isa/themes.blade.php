@@ -61,67 +61,54 @@ function randomString(length) {
                     </div>
 	
                     <div class="container">
-                            <ul class="list-unstyled ct-list">
-                                    @php
-                                    $tags = App\Taxonomy::all();
-                                    $children = [];
-                                    foreach($tags as $t){
-                                    $children['parent_'.$t->parent_id][] = $t;
-                                    }
-					/*
-                                    function getTree($children, $parent_id = null){
-                                    if(empty($children['parent_'.$parent_id])) return;
-                                    foreach($children['parent_'.$parent_id] as $t){
-                                    if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
-                                    echo '<li>';
-                                        echo '<a href="#">'.$t->label.'</a>';
-                                        getTree($children, $t->id);
-                                        echo '</li>';
-                                        
-                                    }
-                                    }
-                                    }
-					*/
-
-		function getTree($children, $parent_id = null, $meta_id=null, $rmfv_map=null){
-		         if(empty($children['parent_'.$parent_id])) return;
-         			foreach($children['parent_'.$parent_id] as $t){
-        				if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
+					<div class="row">
+                            @php
+							$meta = App\MetaField::where('label', env('THEME_FIELD_LABEL','Theme'))->first();
+							$meta_id = $meta->id;	
+							$major_themes = explode("|", env('MAJOR_THEMES',"themes"));
+							$major_theme_ids = [];
+                            $tags = App\Taxonomy::all();
+                            $children = [];
+                            foreach($tags as $t){
+                              $children['parent_'.$t->parent_id][] = $t;
+								if(in_array($t->label, $major_themes)){
+									$major_theme_ids[$t->label] = $t->id;
+								}
+                            }
+					function getTree($children, $parent_id = null, $meta_id=null, $rmfv_map=null){
+		   		      if(empty($children['parent_'.$parent_id])) return;
+         				foreach($children['parent_'.$parent_id] as $t){
+        					if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
                 				// get compare with query string parameter to mark as checked
-                                    echo '<li  class="ct-uppercase">';
+                                    echo '<li>';
                                         echo '<strong>'.$t->label.'</strong>';
-                  				
-                                        echo '</li>';
-                  				getTree($children, $t->id, $meta_id, $rmfv_map);
+										echo '<ul>';
+                  						getTree($children, $t->id, $meta_id, $rmfv_map);
+										echo '</ul>';
+                                    echo '</li>';
              				}
              				else{
-	                                    echo '<li class="ct-num">';
-                  				echo '<a href="/collection/1?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a><br />';
-                                            echo '</li>';
+	                            echo '<li class="ct-num">';
+                  				echo '<a href="/collection/1?collection_id=1&meta_'.$meta_id.'[]='.$t->id.'">'.$t->label.'</a>';
+                                echo '</li>';
              				}
 				}#foreach	
 		}#function ends
-                                    @endphp
-                                </ul>
-                                <ul class="list-unstyled ct-list">
-					@php
-	$collection = \App\Collection::find(1);
-	$meta_fields = $collection->meta_fields;
-        $filters = [];
-        foreach($meta_fields as $m){
-                if($m->type == 'TaxonomyTree'){
-                        $filters[] = $m;
-                }
-        }
-                                foreach($filters as $f){
-					if(preg_match("/Theme|Themes/i",$f->label)){
-                                        getTree($children, $f->options, $f->id);
-					}
-                                }
-                                @endphp
+						
+      					 @endphp
+						@foreach ($major_themes as $mt)
+						<div class="col-lg-4">
+						<h5>{{ $mt }}</h5><br/>
+                        <ul class="list-unstyled">
+							@php
+								getTree($children, $major_theme_ids[$mt], $meta_id);	
+							@endphp
+                        </ul>
+						</div><!-- col-lg-4 -->
+						@endforeach
+						</div><!-- row -->
+                    </div>
 
-                                </ul>
-                            </div>
                 </div>
             </div>
         </div>

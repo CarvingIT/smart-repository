@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 use App\StorageTypes;
 use App\SpideredDomain;
 use App\DesiredUrl;
@@ -347,7 +347,10 @@ class CollectionController extends Controller
 	public function getElasticClient(){
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        return ClientBuilder::create()->setHosts($hosts)->build();
+	return ClientBuilder::create()->setHosts($hosts)
+	->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+	->build();
 	}
     // elastic search
     public function searchElastic($request){

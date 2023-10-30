@@ -71,7 +71,7 @@ h6 {
 }
 .btn {
 	border-color: #f05a22;
-	padding: 15px 30px;
+	/*padding: 15px 30px;*/
 }
 .btn:hover, .btn-check:checked + .btn, .btn.active, .btn.show, .btn:first-child:active, :not(.btn-check) + .btn:active {
 	background-color: #ffcb05;
@@ -2777,6 +2777,10 @@ column-count: 1;
   .ct-uppercase{
     text-transform:uppercase !important;
   }
+
+  .ct-sub{
+    padding-left: 30px !important;
+  }
  
 
   .ct-num{
@@ -2788,4 +2792,13 @@ column-count: 1;
   .ct-list {
   column-count: 1 !important;
   }
+  }
+
+  .c-icon{
+    font-size: x-large !important;
+    color: #f35a0e !important;
+  }
+  
+  .ct-geo{
+    padding-left: 5px !important;
   }

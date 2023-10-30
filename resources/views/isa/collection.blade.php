@@ -135,7 +135,7 @@ function goToPage(page){
 					$checked = "checked";
 					$display = '';
 				}
-				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
+				echo '<div class="form-check ct-sub child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
                 echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 				echo '</div>';
