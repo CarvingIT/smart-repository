@@ -18,6 +18,10 @@
 	form input, textarea{
 		width:100%;
 	}
+	select{
+		width: 100%;
+		background-color: white;
+	}
 	</style>
 @endpush
 <section id="main">
@@ -49,8 +53,15 @@
 						<input type="text" name="name" value="{{ old('name') }}" />
 					</div>
 					<div class="ff">
-						<label>Address <span class="required">*</span></label>
-						<textarea name="address">{{ old('address') }}</textarea>
+						<label>Occupation <span class="required">*</span></label>
+						<select name="Occupation" id="Occupation">
+							<option value="select">Select Here </option>
+							<option value="student">Student</option>
+							<option value="freelance">Freelance</option>
+							<option value="government">Government Officer</option>
+							<option value="professionals">professionals</option>
+							<option value="entrepreneur">Entrepreneur</option>
+						</select>
 					</div>
 					<div class="ff">
 						<label>Email <span class="required">*</span></label>

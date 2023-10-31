@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Document;
 use App\Collection;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 
 class RebuildElasticIndex extends Command
 {
@@ -54,9 +54,12 @@ class RebuildElasticIndex extends Command
         
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)->build();
+	$client = ClientBuilder::create()->setHosts($hosts)
+		->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+		->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+		->build();
 	// first, clear the old index
-	$client->indices()->delete(array('index'=>$index));
+	//$client->indices()->delete(array('index'=>$index));
 
         foreach($docs as $d){
             $body = $d->toArray();
@@ -72,7 +75,9 @@ class RebuildElasticIndex extends Command
             $response = $client->index($params);
             print_r($response);
         }
+		$client->indices()->close(['index'=>'sr_documents']);
 		// add settings related to synonym analyzer
+		/*
 		$synonym_params = [
 			'index' => 'sr_documents',
    			'body' => [
@@ -100,9 +105,9 @@ class RebuildElasticIndex extends Command
        			]
    			]
 		];
-		$client->indices()->close(['index'=>'sr_documents']);
 		$response = $client->indices()->putSettings($synonym_params);
 		print_r($response);
+		*/
 		$client->indices()->open(['index'=>'sr_documents']);
     }
 }

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 use App\StorageTypes;
 use App\SpideredDomain;
 use App\DesiredUrl;
@@ -19,6 +19,8 @@ use App\UserPermission;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\DocumentApproval;
 use App\Document;
+use Illuminate\Support\Facades\Log;
+use App\Synonyms;
 
 class CollectionController extends Controller
 {
@@ -347,25 +349,14 @@ class CollectionController extends Controller
 	public function getElasticClient(){
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        return ClientBuilder::create()->setHosts($hosts)->build();
+	return ClientBuilder::create()->setHosts($hosts)
+	->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+	->build();
 	}
     // elastic search
     public function searchElastic($request){
-        $params = array();
-        /*
-        $params = [
-            'index' => 'sr_documents',
-            'body'  => [
-                'query' => [
-                    'bool'=>[
-                        'filter' => [
-                            'term'=> ['collection_id' => $request->collection_id]
-                        ]
-                    ]
-                ]
-            ]
-        ];
-        */
+    $params = array();
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
@@ -412,9 +403,16 @@ class CollectionController extends Controller
             $words = explode(' ',$search_term);
 			$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
-			$synonym_search = 1; // put synonym search on if the value in session is ON
-			$analyzer = ($synonym_search)?'synonyms_analyzer':null;
-			
+			$analyzer = empty($request->analyzer) ? 'standard' : $request->analyzer; // standard analyzer is the default
+			Log::debug('Analyzer: '.$analyzer);
+
+			$es_title = 'title';
+			$es_text_content = 'text_content';
+			if($analyzer == 'porter_stem_analyzer'){
+				$es_title = 'title.porter_stem';
+				$es_text_content = 'text_content.porter_stem';
+			}
+	
 				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
 				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
 				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];
@@ -429,37 +427,43 @@ class CollectionController extends Controller
 								'should' => [
 									[
 										'match' => [
-											'title' => $q_without_and,
+											$es_title => $q_without_and,
 										]
 									],
 									[
 										'match' => [
-											'text_content' => $q_without_and
+											$es_text_content => $q_without_and
 										]
 									],
 									[
 										'match' => [
-											'title' => $title_q_with_and,
+											$es_title => $title_q_with_and,
 										]
 									],
 									[
 										'match' => [
-											'text_content' => $text_q_with_and
+											$es_text_content => $text_q_with_and
 										]
 									],
 									[
 										'match_phrase' => [
-											'title' => $q_title_phrase,
+											$es_title => $q_title_phrase,
 										]
 									],
 									[
 										'match_phrase' => [
-											'text_content' => $q_text_phrase
+											$es_text_content => $q_text_phrase
 										]
 									],
 								],
 								'minimum_should_match' => 3
 							],
+						],
+						'highlight' => [
+							'fields' => [
+								$es_text_content => [ 'type' => 'unified'],
+								$es_title => [ 'type' => 'unified']
+							]
 						]
 					]
 				];
@@ -492,12 +496,18 @@ class CollectionController extends Controller
 		}
 		catch(\Exception $e){
 			// some error; switch to db search
+			Log::debug($elastic_index);
+			Log::debug($e->getMessage());	
 			return $this->searchDB($request);
 		}
+			$highlights = [];
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
                 $document_ids[] = $h['_id'];
+				$highlights[$h['_id']] = $h['highlight'];
             }
+			//Log::debug(serialize($highlights));
+
             $documents = $documents->whereIn('id', $document_ids);
 			$ordered_document_ids = implode(",", $document_ids);
         }
@@ -541,6 +551,7 @@ class CollectionController extends Controller
 			return 
         	 array(
             'data'=>$documents,
+			'highlights'=>$highlights,
             'draw'=>(int) $request->draw,
             'recordsTotal'=> $total_count,
             'recordsFiltered' => $filtered_count,
@@ -1424,11 +1435,52 @@ use App\UrlSuppression;
         	}
 	}
 
+	/*
+	public function appendSynonyms($keywords){
+		$keywords_ar = explode(" ", $keywords);
+		$q = Synonyms::whereRaw('1 = 0');
+		foreach($keywords_ar as $kw){
+			$q = $q->orWhere('synonyms','like','%'.$kw.'%');
+		}
+		foreach($q->get() as $synonyms){
+			$synonyms_ar = explode(",", $synonyms->synonyms);
+			$keywords .= ' '.implode(' ',$synonyms_ar);
+		}	
+			$keywords_ar = preg_split('/[\s,]+/', $keywords);
+			$keywords_ar = array_unique($keywords_ar);
+			$keywords = implode(' ', $keywords_ar);
+		return $keywords;
+	}
+	
+	public function appendStemmas($keywords){
+		$keywords_ar = explode(" ", $keywords);
+		$client = $this->getElasticClient();
+		$params = [ 
+					//'index' => 'sr_documents',
+					'body' => [
+						//'analyzer'=>'porter_stem_analyzer', 
+						'analyzer'=>'simple', 
+						//'tokenizer'=>'whitespace',
+						//'filter'=>['porter_stem'],
+						'text'=>'The 2 QUICK Brown-Foxes jumped over the lazy dogs bone.',
+						'explain'=>true,
+						'attributes'=>['keyword']
+					]
+				];
+		$analysis = $client->indices()->analyze($params);
+		//$analysis = $analysis->wait();
+		Log::debug(json_encode($params['body']));
+		Log::debug(json_encode($analysis));
+		return $keywords;
+	}
+	*/
 	//public function isaCollectionDocumentSearch(Request $request){
 	public function searchResults(Request $request){
 		$collection_id = $request->collection_id;
+		$analyzer = $request->analyzer;
 		$collection = \App\Collection::find($collection_id);
 		$keywords = $request->isa_search_parameter;
+		
 		$meta_query = '';
 		$query_params = $request->query();
 		foreach($query_params as $p=>$v){
@@ -1452,7 +1504,7 @@ use App\UrlSuppression;
                 $protocol = request()->getScheme();
 		$length=10;
 		$start = empty($request->start)? 0 : $request->start;
-                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?log_search=0&search[value]='.$keywords.$meta_query.'&start='.$start.'&length='.$length;
+                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?analyzer='.$analyzer.'&log_search=0&search[value]='.$keywords.$meta_query.'&start='.$start.'&length='.$length;
 //echo $endpoint; exit;
                 $res = $client->get($endpoint);
                 $status_code = $res->getStatusCode();
@@ -1471,7 +1523,7 @@ use App\UrlSuppression;
 			$user_id = empty(\Auth::user()->id)?null:\Auth::user()->id;
             $search_log_data = array('collection_id'=> $request->collection_id,
                 'user_id'=> $user_id,
-                'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
+                'search_query'=> $keywords,
                 'meta_query'=> $meta_query,
                 'ip_address' => $request->ip(),
                 'results'=>$total_results_count);
@@ -1479,13 +1531,15 @@ use App\UrlSuppression;
                 $this->logSearchQuery($search_log_data);
             }
         }
-
+		$highlights = json_decode(json_encode(@$documents_array->highlights, true), true);
+		//Log::debug($highlights);exit;
 		return view('search-results',['collection'=>$collection, 
 			'results'=>$documents_array->data,
+			'highlights'=> $highlights,  
 			'filtered_results_count'=>$filtered_results_count,
 			'total_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
-            'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
+            'search_query'=> $keywords,
 			'titlePage'=>'Documents']);
 	}
 

@@ -109,7 +109,7 @@
           <li><a href="/">Home</a></li>
           <li><a href="/collection/1">Database</a></li>
           <li class="dropdown">
-            <a href="/"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
+            <a href="/en/blog"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
             <ul>
               <li><a href="/en/blog">Views</a></li>
             </ul>

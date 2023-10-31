@@ -18,7 +18,7 @@ $(document).ready(function() {
   });
 });
 @php
-	$url = '/collection/1/search-results?isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
+	$url = '/collection/1/search-results?analyzer='.request()->get('analyzer').'&isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
 @endphp
 $(document).ready(function() {
 	//$("#search-results").load('{{ $url }}');
@@ -90,6 +90,7 @@ function goToPage(page){
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
 	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
 	$filters = [];
 	foreach($meta_fields as $m){
 		if(in_array($m->label, $filter_labels)){
@@ -135,7 +136,7 @@ function goToPage(page){
 					$checked = "checked";
 					$display = '';
 				}
-				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
+				echo '<div class="form-check ct-sub child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
                 echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 				echo '</div>';
@@ -180,7 +181,23 @@ function goToPage(page){
 			<div class="col-2 text-right">
 			</div>
 		<div class="row text-center">
-		   <div class="col-12">
+			<div class="col-lg-3 text-left">
+				<div class="form-check">
+			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="standard" onclick="reloadSearchResults()" checked/> 
+			<div class="tooltip">Standard 
+  			<span class="tooltiptext">Default search</span>
+			</div><br /> 
+			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="porter_stem_analyzer" onclick="reloadSearchResults()"/> 
+			<div class="tooltip">Stemma 
+  			<span class="tooltiptext">e.g. try matching place in placed/places/...</span>
+			</div><br /> 
+			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="synonyms_analyzer" onclick="reloadSearchResults()"/> 
+			<div class="tooltip">Synonyms 
+  			<span class="tooltiptext">Match synonyms</span>
+			</div><br /> 
+				</div>
+			</div>
+		   <div class="col-lg-9">
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keywords') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
