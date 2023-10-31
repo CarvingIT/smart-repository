@@ -2250,6 +2250,7 @@ margin-left: 8px;
 .news-updates-section .swiper-slide {
 	display: flex;
 	height: auto;
+  background-color: white;
 }
 .news-updates-section .swiper-wrapper {
   height: auto;
@@ -2264,7 +2265,6 @@ margin-left: 8px;
 .news-updates-content {
   display: flex;
   flex-direction: column;
-  padding: 20px 20px;
   text-align: justify !important;
 }
 .news-updates-item .news-updates-img {
@@ -2274,12 +2274,17 @@ margin-left: 8px;
   max-width: 410px;
 }
 .news-updates-content h3 {
-  text-transform: capitalize;
-  color: #f58220;
-  margin: 0 0 10px;
+  font-weight: 500;
+  font-size: 18px;
+  margin-bottom: 5px;
+  padding: 20px 20px;
+  color: #f15c12e0 !important;
 }
 .news-updates-content p {
-  font-size: 14px;
+    padding: 0 20px;
+    margin-bottom: 30px;
+    color: var(--color-secondary);
+    font-size: 15px;
 }
 .news-updates-section .container {
 	position: relative;
