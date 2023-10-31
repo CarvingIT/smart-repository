@@ -54,20 +54,37 @@ class ManageElasticIndices extends Command
 		else if($operation == 'create'){
 			$params = ['index' => $index,
 				'body'=>[
+					'settings'=>[
+						'analysis' => [
+							'analyzer' => [
+								'porter_stem_analyzer'=>[
+									'tokenizer' => 'whitespace',
+									'filter' => ['lowercase', 'porter_stem']
+								]
+							]
+						]
+					],
 					'mappings'=>[
 						'properties'=>[
+							/*
 							'sr_vector'=>[
 								'type'=>"dense_vector",
 								'dims'=> 5,
 								'index'=> true,
 								'similarity'=>'dot_product'
 							],
+							*/
 							'title'=>[
 								'type'=>'text',
 								'fields'=>[
 									'keyword'=>[
 										'type'=>'keyword',
 										'ignore_above'=>256
+									],
+									'porter_stem'=>[
+										'type'=>'text',
+										'analyzer' => 'porter_stem_analyzer',
+										'search_analyzer' => 'porter_stem_analyzer'
 									]
 								],
 							],
@@ -77,6 +94,11 @@ class ManageElasticIndices extends Command
 									'keyword'=>[
 										'type'=>'keyword',
 										'ignore_above'=>256
+									],
+									'porter_stem'=>[
+										'type'=>'text',
+										'analyzer' => 'porter_stem_analyzer',
+										'search_analyzer' => 'porter_stem_analyzer'
 									]
 								],
 							],
@@ -86,13 +108,11 @@ class ManageElasticIndices extends Command
 			];
 			$client->indices()->create($params);
 
-			// add settings related to synonym analyzer
+			// add settings related to synonyms
 			$synonym_params = [
 				'index' => 'sr_documents',
     			'body' => [
         			'settings' => [
-           				'number_of_replicas' => 0,
-           				'refresh_interval' => -1,
 						'analysis' => [
 							'analyzer' => [
 								'synonyms_analyzer' => [
