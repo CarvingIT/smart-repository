@@ -62,20 +62,6 @@
 			@endif
 			</p>
 			@else
-				@php
-					// highlighting for synonym search
-					if(request()->get('analyzer') == 'synonyms_analyzer'){
-						$keywords = explode(" ", $search_query);
-						$q = \App\Synonyms::whereRaw('1 = 0');
-						foreach($keywords as $kw){
-							$q = $q->orWhere('synonyms','like','%'.$kw.'%');
-						}
-						foreach($q->get() as $synonyms){
-							$synonyms_ar = explode(",", $synonyms->synonyms);
-							$search_query .= ' '.implode(' ',$synonyms_ar);
-						}	
-					}
-				@endphp
 			<p>
 			{!! implode('', App\Util::highlightKeywords($document->text_content, $search_query)) !!}		
 			</p>

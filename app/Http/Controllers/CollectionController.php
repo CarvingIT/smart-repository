@@ -20,6 +20,7 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use App\DocumentApproval;
 use App\Document;
 use Illuminate\Support\Facades\Log;
+use App\Synonyms;
 
 class CollectionController extends Controller
 {
@@ -457,6 +458,12 @@ class CollectionController extends Controller
 								],
 								'minimum_should_match' => 3
 							],
+						],
+						'highlight' => [
+							'fields' => [
+								$es_text_content => [ 'type' => 'unified'],
+								$es_title => [ 'type' => 'unified']
+							]
 						]
 					]
 				];
@@ -493,10 +500,14 @@ class CollectionController extends Controller
 			Log::debug($e->getMessage());	
 			return $this->searchDB($request);
 		}
+			$highlights = [];
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
                 $document_ids[] = $h['_id'];
+				$highlights[$h['_id']] = $h['highlight'];
             }
+			//Log::debug(serialize($highlights));
+
             $documents = $documents->whereIn('id', $document_ids);
 			$ordered_document_ids = implode(",", $document_ids);
         }
@@ -540,6 +551,7 @@ class CollectionController extends Controller
 			return 
         	 array(
             'data'=>$documents,
+			'highlights'=>$highlights,
             'draw'=>(int) $request->draw,
             'recordsTotal'=> $total_count,
             'recordsFiltered' => $filtered_count,
@@ -1423,12 +1435,52 @@ use App\UrlSuppression;
         	}
 	}
 
+	/*
+	public function appendSynonyms($keywords){
+		$keywords_ar = explode(" ", $keywords);
+		$q = Synonyms::whereRaw('1 = 0');
+		foreach($keywords_ar as $kw){
+			$q = $q->orWhere('synonyms','like','%'.$kw.'%');
+		}
+		foreach($q->get() as $synonyms){
+			$synonyms_ar = explode(",", $synonyms->synonyms);
+			$keywords .= ' '.implode(' ',$synonyms_ar);
+		}	
+			$keywords_ar = preg_split('/[\s,]+/', $keywords);
+			$keywords_ar = array_unique($keywords_ar);
+			$keywords = implode(' ', $keywords_ar);
+		return $keywords;
+	}
+	
+	public function appendStemmas($keywords){
+		$keywords_ar = explode(" ", $keywords);
+		$client = $this->getElasticClient();
+		$params = [ 
+					//'index' => 'sr_documents',
+					'body' => [
+						//'analyzer'=>'porter_stem_analyzer', 
+						'analyzer'=>'simple', 
+						//'tokenizer'=>'whitespace',
+						//'filter'=>['porter_stem'],
+						'text'=>'The 2 QUICK Brown-Foxes jumped over the lazy dogs bone.',
+						'explain'=>true,
+						'attributes'=>['keyword']
+					]
+				];
+		$analysis = $client->indices()->analyze($params);
+		//$analysis = $analysis->wait();
+		Log::debug(json_encode($params['body']));
+		Log::debug(json_encode($analysis));
+		return $keywords;
+	}
+	*/
 	//public function isaCollectionDocumentSearch(Request $request){
 	public function searchResults(Request $request){
 		$collection_id = $request->collection_id;
 		$analyzer = $request->analyzer;
 		$collection = \App\Collection::find($collection_id);
 		$keywords = $request->isa_search_parameter;
+		
 		$meta_query = '';
 		$query_params = $request->query();
 		foreach($query_params as $p=>$v){
@@ -1471,7 +1523,7 @@ use App\UrlSuppression;
 			$user_id = empty(\Auth::user()->id)?null:\Auth::user()->id;
             $search_log_data = array('collection_id'=> $request->collection_id,
                 'user_id'=> $user_id,
-                'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
+                'search_query'=> $keywords,
                 'meta_query'=> $meta_query,
                 'ip_address' => $request->ip(),
                 'results'=>$total_results_count);
@@ -1479,13 +1531,14 @@ use App\UrlSuppression;
                 $this->logSearchQuery($search_log_data);
             }
         }
-
+		
 		return view('search-results',['collection'=>$collection, 
 			'results'=>$documents_array->data,
+			'highlights'=> $documents_array->highlights, 
 			'filtered_results_count'=>$filtered_results_count,
 			'total_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
-            'search_query'=> empty($request->isa_search_parameter)?'':$request->isa_search_parameter,
+            'search_query'=> $keywords,
 			'titlePage'=>'Documents']);
 	}
 
