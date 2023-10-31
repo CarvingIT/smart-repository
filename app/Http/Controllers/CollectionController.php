@@ -402,10 +402,9 @@ class CollectionController extends Controller
             $words = explode(' ',$search_term);
 			$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
-			$analyzer = $request->analyzer; // standard analyzer is the default
+			$analyzer = empty($request->analyzer) ? 'standard' : $request->analyzer; // standard analyzer is the default
 			Log::debug('Analyzer: '.$analyzer);
-			//$analyzer = 'synonyms_analyzer'; // synonyms
-			//$analyzer = 'porter_stem_analyzer'; // porter_stem
+
 			$es_title = 'title';
 			$es_text_content = 'text_content';
 			if($analyzer == 'porter_stem_analyzer'){

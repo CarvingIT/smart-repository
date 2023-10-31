@@ -89,8 +89,8 @@ function goToPage(page){
 	//print_r($rmfv_map);exit;
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
-	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
-	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
+	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
 	$filters = [];
 	foreach($meta_fields as $m){
 		if(in_array($m->label, $filter_labels)){
@@ -181,13 +181,23 @@ function goToPage(page){
 			<div class="col-2 text-right">
 			</div>
 		<div class="row text-center">
-			<div class="col-1"></div>
-			<div class="col-2 text-left">
-			<input type="radio" name="analyzer" value="standard" onclick="reloadSearchResults()"/> Standard<br />
-			<input type="radio" name="analyzer" value="porter_stem_analyzer" onclick="reloadSearchResults()"/> Stemmer<br />
-			<input type="radio" name="analyzer" value="synonyms_analyzer" onclick="reloadSearchResults()"/> Synonym
+			<div class="col-lg-3 text-left">
+				<div class="form-check">
+			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="standard" onclick="reloadSearchResults()" checked/> 
+			<div class="tooltip">Standard 
+  			<span class="tooltiptext">Default search</span>
+			</div><br /> 
+			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="porter_stem_analyzer" onclick="reloadSearchResults()"/> 
+			<div class="tooltip">Stemma 
+  			<span class="tooltiptext">e.g. try matching place in placed/places/...</span>
+			</div><br /> 
+			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="synonyms_analyzer" onclick="reloadSearchResults()"/> 
+			<div class="tooltip">Synonyms 
+  			<span class="tooltiptext">Match synonyms</span>
+			</div><br /> 
+				</div>
 			</div>
-		   <div class="col-9">
+		   <div class="col-lg-9">
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Enter search keywords') }}</label>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
