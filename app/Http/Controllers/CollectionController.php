@@ -464,7 +464,8 @@ class CollectionController extends Controller
 							'fields' => [
 								$es_text_content => [ 'type' => 'unified'],
 								$es_title => [ 'type' => 'unified']
-							]
+							],
+							'max_analyzed_offset'=>10000
 						]
 					]
 				];
@@ -504,7 +505,7 @@ class CollectionController extends Controller
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
                 $document_ids[] = $h['_id'];
-				$highlights[$h['_id']] = $h['highlight'];
+				$highlights[$h['_id']] = @$h['highlight'];
             }
 			//Log::debug(serialize($highlights));
 
