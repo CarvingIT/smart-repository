@@ -29,6 +29,16 @@
 					$year_field_id = $m->id;
 				}
 			}
+			$highlight = @$highlights[$document->id];
+			$highlight_serialized = serialize($highlight);
+			preg_match_all('#<em>(.*?)</em>#',$highlight_serialized, $matches);
+			array_shift($matches);
+			$highlight_keywords = $matches;	
+			$entered_keywords = explode(' ',$search_query);
+			//print_r($highlight_keywords);
+			//print_r($entered_keywords);
+			$highlight_keywords = array_merge($highlight_keywords[0], $entered_keywords);
+			//print_r($highlight_keywords); exit;
 		@endphp
 		<div class="row">
 		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
@@ -63,7 +73,7 @@
 			</p>
 			@else
 			<p>
-			{!! implode('', App\Util::highlightKeywords($document->text_content, $search_query)) !!}		
+			{!! implode('', App\Util::highlightKeywords($document->text_content, implode(' ',$highlight_keywords))) !!}		
 			</p>
 			@endif
 		</div>

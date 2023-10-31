@@ -1531,10 +1531,11 @@ use App\UrlSuppression;
                 $this->logSearchQuery($search_log_data);
             }
         }
-		
+		$highlights = json_decode(json_encode(@$documents_array->highlights, true), true);
+		//Log::debug($highlights);exit;
 		return view('search-results',['collection'=>$collection, 
 			'results'=>$documents_array->data,
-			'highlights'=> $documents_array->highlights, 
+			'highlights'=> $highlights,  
 			'filtered_results_count'=>$filtered_results_count,
 			'total_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
