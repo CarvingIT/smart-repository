@@ -398,6 +398,7 @@ class CollectionController extends Controller
 	}
         $total_count = $documents->count();
 
+		$highlights = [];
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $search_term = $request->search['value'];
             $words = explode(' ',$search_term);
@@ -500,7 +501,6 @@ class CollectionController extends Controller
 			Log::debug($e->getMessage());	
 			return $this->searchDB($request);
 		}
-			$highlights = [];
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
                 $document_ids[] = $h['_id'];
