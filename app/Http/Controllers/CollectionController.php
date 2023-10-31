@@ -465,7 +465,7 @@ class CollectionController extends Controller
 								$es_text_content => [ 'type' => 'unified'],
 								$es_title => [ 'type' => 'unified']
 							],
-							'max_analyzed_offset'=>10000
+							'max_analyzed_offset'=>100000
 						]
 					]
 				];
