@@ -3,8 +3,13 @@
 @section('content')
 <style>
 	strong{
-		font-weight:bold;
+		font-weight:600;
+        color: #f15c12e0;
+        font-size: 18px;
 	}
+    p{
+        font-size: 15px;
+    }
 </style>
 
 <div class="container">
@@ -16,15 +21,13 @@
                 <h6 class="card-title">{{ __('Terms of Service') }}</h6>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
-
+                <br>
                 <div class="card-body">
                 <div class="beautify">
 				
-<p>
-<strong>What is Terms of Service ?</strong>
-</p>
-<p>
-
+                <p>
+                <strong>What is Terms of Service?</strong>
+                </p>
                     </div>
                 </div>
             </div>

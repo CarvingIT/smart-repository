@@ -225,7 +225,7 @@
             <a href="/about">About Repository</a><br>
             <a href="/collection/1">Database</a><br>
             <a href="/service">Terms of Service</a><br>
-            <a href="/policy">Privacy policy</a>
+            <a href="/policy">Privacy Policy</a>
           </p>
         </div>
         
