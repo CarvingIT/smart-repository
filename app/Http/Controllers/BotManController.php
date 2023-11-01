@@ -135,7 +135,7 @@ class BotManController extends Controller
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
-					$this->say('Found '.count($documents_array->data).' documents that look relevant but could not answer your question.');
+					//$this->say('Found '.count($documents_array->data).' documents that look relevant but could not answer your question.');
 					return $this->ask('Try rephrasing your question.', $botSearch);
 				}
 				else{
@@ -166,11 +166,12 @@ class BotManController extends Controller
 							break;
 						}
 						if($open_ai_req_cnt == 1){
-							$this->say('I am still looking for answer to your question.');
+							//$botman->reply('I am still looking for an answer to your question.');
 						}
 						else{
-							$this->say('Be patient.');
+							//$botman->reply('Be patient.');
 						}
+						Log::debug('OpenAI request #'. $open_ai_req_cnt);
 					}
 					if(empty($answer_full)){
 						$this->say('I did not get an answer to your query.');
