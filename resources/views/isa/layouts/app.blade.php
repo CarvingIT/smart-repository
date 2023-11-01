@@ -114,9 +114,22 @@
               <li><a href="/en/blog">Views</a></li>
             </ul>
           </li>
+          @if(Auth::check())
+          <li class="mobile-only"><a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a></li>
+              @else
+              <li class="mobile-only"><a href="/login">Login</a></li>
+              @endif
           <li class="mobile-only"><a href="/about">About Repository</a></li>
-          <li class="mobile-only"><a href="javascript:void(0)">FAQs</a></li>
-          <li class="mobile-only"><a href="/contact">Contact Us</a></li>
+          <li class="mobile-only"><a href="/faq">FAQs</a></li>
+          <li class="mobile-only"><a href="/feedback">Feedback</a></li>
+          <li class="mobile-only"><a href="/contact-us">Contact Us</a></li>
+          @if(Auth::check() && Auth::user()->hasRole('admin'))
+          <li class="mobile-only"><a href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
+          <li class="mobile-only"><a href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a></li>
+          <li class="mobile-only"><a href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
+          <li class="mobile-only"><a href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomy') }}</a></li>
+          <li class="mobile-only"><a href="/reports/search-queries">{{ __('Report of search queries') }}</a></li>
+          @endif          
 	        <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->
           <li class="mega-menu">
             <a href="javascript:void(0)">
@@ -151,6 +164,8 @@
                       <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomy') }}</a></li>
                       <li><a class="dropdown-item" href="/reports/search-queries">{{ __('Report of search queries') }}</a></li>
+                      
+                      
                       @endif
                     </ul>
                   </div>
