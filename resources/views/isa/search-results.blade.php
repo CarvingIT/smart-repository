@@ -18,6 +18,11 @@
 			$abstract_field_id = null;
 			$country_field_id = null;
 			$year_field_id = null;
+			$govt_agency_field_id = null;
+			$theme_field_id = null;
+			$author_field_id = null;
+			$serial_num_field_id = null;
+			
 			foreach($meta_fields as $m){
 				if($m->label == env('ABSTRACT_FIELD_LABEL','Abstract')){
 					$abstract_field_id = $m->id;
@@ -28,31 +33,83 @@
 				else if($m->label == env('YEAR_FIELD_LABEL','Year')){
 					$year_field_id = $m->id;
 				}
+				else if($m->label == env('GOVT_AGENCY_FIELD_LABEL','Agency')){
+					$govt_agency_field_id = $m->id;
+				}
+				else if($m->label == env('THEME_FIELD_LABEL','Theme')){
+					$theme_field_id = $m->id;
+				}
+				else if($m->label == env('AUTHOR_FIELD_LABEL','Author')){
+					$author_field_id = $m->id;
+				}
+				else if($m->label == env('SERIAL_NUMBER_FIELD_LABEL','Author')){
+					$serial_num_field_id = $m->id;
+				}
 			}
+			$highlight = @$highlights[$document->id];
+			$highlight_serialized = serialize($highlight);
+			preg_match_all('#<em>(.*?)</em>#',$highlight_serialized, $matches);
+			array_shift($matches);
+			$highlight_keywords = $matches;	
+			$entered_keywords = explode(' ',$search_query);
+			//print_r($highlight_keywords);
+			//print_r($entered_keywords);
+			$highlight_keywords = array_merge($highlight_keywords[0], $entered_keywords);
+			//print_r($highlight_keywords); exit;
 		@endphp
 		<div class="row">
+		<h4>
+		@if ($result->type == 'url')
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
+		@else
 		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
+		@endif
+		</h4>
 		</div>
 		<div class="row">
-		<div class="col-lg-9">
-		@if (!empty($document->meta_value($country_field_id)))
-			<span class="search-result-meta">
-			{{ env('COUNTRY_FIELD_LABEL','Country').': '.removeContinents($document->meta_value($country_field_id)) }}
-			</span>
-		@endif
-		</div>
-		<div class="col-lg-3">
+		<div class="col-lg-2">
 		@if (!empty($document->meta_value($year_field_id)))
 			<span class="search-result-meta">
-			{{ env('YEAR_FIELD_LABEL','Year').': '.$document->meta_value($year_field_id) }}
+			<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;{{ $document->meta_value($year_field_id) }}
 			</span>
 		@endif
 		</div>
+		<div class="col-lg-10">
+		{{-- for publications --}}
+		@if (!empty($document->meta_value($author_field_id)))
+			<i class="fa fa-users" aria-hidden="true"></i>
+			<span class="search-result-meta">
+			{!! $document->meta_value($author_field_id) !!}
+			</span>
+		@endif
+		{{-- for technical standards --}}
+		@if (!empty($document->meta_value($serial_num_field_id)))
+			<i class="fa fa-bars" aria-hidden="true"></i>
+			<span class="search-result-meta">
+			{{ $document->meta_value($serial_num_field_id) }}
+			</span>
+		@endif
 		</div>
+		<div class="col-lg-12">
+		@if (!empty($document->meta_value($govt_agency_field_id)))
+			<i class="fa fa-university" aria-hidden="true"></i>
+			<span class="search-result-meta">
+			{!! $document->meta_value($govt_agency_field_id) !!}
+			</span>
+		@endif
+		</div>
+		<div class="col-lg-12">
+		@if (!empty($document->meta_value($country_field_id)))
+			<i class="fa fa-globe" aria-hidden="true"></i>
+			<span class="search-result-meta">
+			{{ removeContinents($document->meta_value($country_field_id)) }}
+			</span>
+		@endif
+		</div>
+		</div><!-- row -->
 		<div class="row">
 		<div class="col-lg-12">
 			@if (empty($search_query))
-			<p>
 			@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
 			{!! \Illuminate\Support\Str::limit(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id))))),
 				250, $end='...') 
@@ -60,26 +117,21 @@
 			@else
 			{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
 			@endif
-			</p>
 			@else
-				@php
-					// highlighting for synonym search
-					if(request()->get('analyzer') == 'synonyms_analyzer'){
-						$keywords = explode(" ", $search_query);
-						$q = \App\Synonyms::whereRaw('1 = 0');
-						foreach($keywords as $kw){
-							$q = $q->orWhere('synonyms','like','%'.$kw.'%');
-						}
-						foreach($q->get() as $synonyms){
-							$synonyms_ar = explode(",", $synonyms->synonyms);
-							$search_query .= ' '.implode(' ',$synonyms_ar);
-						}	
-					}
-				@endphp
-			<p>
-			{!! implode('', App\Util::highlightKeywords($document->text_content, $search_query)) !!}		
-			</p>
+			{!! implode('', App\Util::highlightKeywords($document->text_content, implode(' ',$highlight_keywords))) !!}		
 			@endif
+		</div>
+		</div>
+		<div class="row">
+		<div class="col-lg-12">
+		@if (!empty($document->meta_value($theme_field_id)))
+			<i class="fa fa-tag" aria-hidden="true"></i>
+			<span class="search-result-meta">
+			{{ removeContinents($document->meta_value($theme_field_id)) }}
+			</span>
+			<p>
+			</p>
+		@endif
 		</div>
 		</div>
 	@endforeach
