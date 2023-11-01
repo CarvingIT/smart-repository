@@ -17,21 +17,26 @@
 
 	form input, textarea{
 		width:100%;
+		
 	}
 	select{
 		width: 100%;
 		background-color: white;
+		color: #f05a22 !important;
+		font-size:14px !important;
+	}
+	label{
+		color:#f05a22;
+		font-size:15px !important;
 	}
 	</style>
 @endpush
-<section id="main">
-
     <div class="container">
         <div class="row">
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h6 class="card-title">{{ __('Feedback') }}</h6>
+                <h6 class="card-title">{{ __('FEEDBACK') }}</h6>
 			</div>
 			<div class="card-body">
 <!-- Content Box -->
@@ -45,35 +50,35 @@
                         </ul>
                     </div>
 				@endif
-
+<br>
 				<form method="post" action="/feedback">
 					@csrf
 					<div class="ff">
 						<label>Name <span class="required">*</span></label>
-						<input type="text" name="name" value="{{ old('name') }}" />
+						<input type="text" class="form-control" name="name" value="{{ old('name') }}" />
 					</div>
 					<div class="ff">
 						<label>Occupation <span class="required">*</span></label>
-						<select name="Occupation" id="Occupation">
-							<option value="select">Select Here </option>
+						<select name="Occupation" class="form-control"  id="Occupation">
+							<option value="select"><span>Select Here <i class="bi bi-chevron-down dropdown-indicator"></i> </span></option>
 							<option value="student">Student</option>
-							<option value="freelance">Freelance</option>
+							<option value="freelancer">Freelancer</option>
 							<option value="government">Government Officer</option>
-							<option value="professionals">professionals</option>
+							<option value="professionals">Professionals</option>
 							<option value="entrepreneur">Entrepreneur</option>
 						</select>
 					</div>
 					<div class="ff">
 						<label>Email <span class="required">*</span></label>
-						<input type="text" name="email" value="{{ old('email') }}" />
+						<input type="text" class="form-control"  name="email" value="{{ old('email') }}" />
 					</div>
 					<div class="ff">
 						<label>Subject <span class="required">*</span></label>
-						<input type="text" name="subject" value="{{ old('subject') }}" />
+						<input type="text" class="form-control"  name="subject" value="{{ old('subject') }}" />
 					</div>
 					<div class="ff">
 						<label>Message <span class="required">*</span></label>
-						<textarea name="message">{{ old('message') }}</textarea>
+						<textarea name="message" class="form-control" >{{ old('message') }}</textarea>
 					</div>
 					<div class="ff">
 					@php
@@ -87,7 +92,7 @@
                 <input type="text" style="width:200px;" class="form-control" name="CaptchaCode" id="CaptchaCode" placeholder="Enter the code">
 					</div>
 					<div class="ff">
-						<input type="submit" value="Submit" style="width:20%;"/>
+						<button type="submit" value="Submit" class="btn btn-primary">Submit</button>
 					</div>
 				</form>
               </div>
@@ -97,7 +102,6 @@
           </div>
         </div>
     </div>
-  </section> 
 
 
   @endsection
