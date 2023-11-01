@@ -193,8 +193,9 @@ function goToPage(page){
 			}
 			</style>
 		   </div>
+		  </div>
 		</div>
-		<div class="row">
+		<div class="row text-center">
 			<div class="col-lg-4">
 			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="standard" onclick="reloadSearchResults()" checked/> 
 			<span class="tooltip">Standard 
