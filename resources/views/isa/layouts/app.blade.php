@@ -66,12 +66,10 @@
         }
     </style>
 <script>
-	/*
-	$(document).ready(function(){
+	setTimeout(function(){
 		window.botmanChatWidget.whisper('q');
 		window.botmanChatWidget.close();
-	});
-	*/
+	}, 1000);
 </script>
 </head>
 <body>
@@ -183,10 +181,12 @@
     </script>
     <script src='/js/botman_widget.js'></script>
 	<script>
+		/*
 		setTimeout(function(){
 		window.botmanChatWidget.whisper('q');
 		window.botmanChatWidget.close();
 		}, 1000);
+		*/
 	</script>
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
