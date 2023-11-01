@@ -111,7 +111,7 @@ $(document).ready(function()
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
 					<div>
-                        <h6><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h6>
+                        <h4><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h4>
         				
         				</div>
             			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
@@ -121,7 +121,7 @@ $(document).ready(function()
 					
 					</div>
 				@elseif ($document->type == 'url')
-					<a href="{{ $document->external_link }}" target="_new"><img class="file-icon" src="/i/file-types/url.png"></a>&nbsp;<a href="{{ $document->external_link }}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a>
+					<h4><a href="{{ $document->external_link }}" target="_new"><img class="file-icon" src="/i/file-types/url.png"></a>&nbsp;<a href="{{ $document->external_link }}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a></h4>
 				@else
 				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a>
 				@endif
@@ -134,21 +134,30 @@ $(document).ready(function()
 			@if($c->content_type == 'Uploaded documents')
 			<div class="col-md-12">
 			<div class="row">
-				@foreach($document->collection->meta_fields as $meta_field)
 
 			@php 
-				$m = App\MetaFieldValue::where('document_id', $document->id)->where('meta_field_id', $meta_field->id)->first();
-				if(!$m || empty($m->value)) continue;
-				$meta_field_type = $meta_field->type;
+				$meta_by_label = [];
+				foreach($document->collection->meta_fields as $meta_field){
+					$m = App\MetaFieldValue::where('document_id', $document->id)->where('meta_field_id', $meta_field->id)->first();
+					if(!$m || empty($m->value)) continue;
+					//$meta_field_type = $meta_field->type;
+					$meta_by_label[$meta_labels[$meta_field->id]] = $m;
+				}
+				$meta_fields_reordered = ['Publication Year','Author/Corporate author','Series/Edition','Govt. Agency / Institution/ Publisher','Country','Abstract/Summary','Theme','Tags','Rights','Document ID#'];
 			 @endphp
+			@foreach($meta_fields_reordered as $meta_label)
+			@php
+			if(empty($meta_by_label[$meta_label])) continue;
+			$m = $meta_by_label[$meta_label];
+			@endphp
                         @if(!empty($meta_labels[$m->meta_field_id]))
-							@if ($meta_field_type == 'Textarea')
+			@if ($m->meta_field->type == 'Textarea')
+                            <div class="col-md-12" style="text-align:justify;">
+			@else
                             <div class="col-md-12">
-							@else
-                            <div class="col-md-3">
-							@endif
-                            <label style="margin-top:2em; color: black;" for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
-                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! html_entity_decode($document->meta_value($m->meta_field_id)) !!}</div>
+			@endif
+                            <label style="margin-top:2em; color: black;" for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12 search-result-meta">{{ $meta_labels[$m->meta_field_id] }}</label>
+                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! strip_tags(html_entity_decode($document->meta_value($m->meta_field_id))) !!}</div>
                             </div>
                        	@endif
                @endforeach
