@@ -18,6 +18,11 @@
 			$abstract_field_id = null;
 			$country_field_id = null;
 			$year_field_id = null;
+			$govt_agency_field_id = null;
+			$theme_field_id = null;
+			$author_field_id = null;
+			$serial_num_field_id = null;
+			
 			foreach($meta_fields as $m){
 				if($m->label == env('ABSTRACT_FIELD_LABEL','Abstract')){
 					$abstract_field_id = $m->id;
@@ -27,6 +32,12 @@
 				}
 				else if($m->label == env('YEAR_FIELD_LABEL','Year')){
 					$year_field_id = $m->id;
+				}
+				else if($m->label == env('GOVT_AGENCY_FIELD_LABEL','Agency')){
+					$govt_agency_field_id = $m->id;
+				}
+				else if($m->label == env('THEME_FIELD_LABEL','Theme')){
+					$theme_field_id = $m->id;
 				}
 			}
 			$highlight = @$highlights[$document->id];
@@ -44,21 +55,42 @@
 		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
 		</div>
 		<div class="row">
-		<div class="col-lg-9">
-		@if (!empty($document->meta_value($country_field_id)))
+		<div class="col-lg-3">
+		@if (!empty($document->meta_value($year_field_id)))
 			<span class="search-result-meta">
-			{{ env('COUNTRY_FIELD_LABEL','Country').': '.removeContinents($document->meta_value($country_field_id)) }}
+			{{ $document->meta_value($year_field_id) }}
 			</span>
 		@endif
 		</div>
 		<div class="col-lg-3">
-		@if (!empty($document->meta_value($year_field_id)))
+		{{-- for publications --}}
+		@if (!empty($document->meta_value($author_field_id)))
 			<span class="search-result-meta">
-			{{ env('YEAR_FIELD_LABEL','Year').': '.$document->meta_value($year_field_id) }}
+			{{ env('AUTHOR_FIELD_LABEL','Author').': '.$document->meta_value($author_field_id) }}
+			</span>
+		@endif
+		{{-- for technical standards --}}
+		@if (!empty($document->meta_value($serial_num_field_id)))
+			<span class="search-result-meta">
+			{{ env('SERIAL_NUMBER_FIELD_LABEL','Serial').': '.$document->meta_value($serial_num_field_id) }}
 			</span>
 		@endif
 		</div>
+		<div class="col-lg-3">
+		@if (!empty($document->meta_value($govt_agency_field_id)))
+			<span class="search-result-meta">
+			{{ env('GOVT_AGENCY_FIELD_LABEL','Agency').': '.$document->meta_value($govt_agency_field_id) }}
+			</span>
+		@endif
 		</div>
+		<div class="col-lg-3">
+		@if (!empty($document->meta_value($country_field_id)))
+			<span class="search-result-meta">
+			{{ removeContinents($document->meta_value($country_field_id)) }}
+			</span>
+		@endif
+		</div>
+		</div><!-- row -->
 		<div class="row">
 		<div class="col-lg-12">
 			@if (empty($search_query))
@@ -76,6 +108,15 @@
 			{!! implode('', App\Util::highlightKeywords($document->text_content, implode(' ',$highlight_keywords))) !!}		
 			</p>
 			@endif
+		</div>
+		</div>
+		<div class="row">
+		<div class="col-lg-6">
+		@if (!empty($document->meta_value($theme_field_id)))
+			<span class="search-result-meta">
+			{{ 'Themes | Sub-themes: '.removeContinents($document->meta_value($theme_field_id)) }}
+			</span>
+		@endif
 		</div>
 		</div>
 	@endforeach
