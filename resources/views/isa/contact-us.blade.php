@@ -3,7 +3,15 @@
 @section('content')
 
 <style>
-	strong{font-weight:bold;}
+	
+    strong{
+		font-weight:600;
+        color: #f15c12e0;
+        font-size: 18px;
+	}
+    p{
+        font-size: 16px;
+    }
 </style>
 <div class="container">
 <div class="container-fluid">
@@ -11,21 +19,23 @@
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h6 class="card-title">{{ __('CONTACT US') }}</h6>
+                <h6 class="card-title">{{ __('CONTACT us') }}</h6>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
-              </div>		
-
+              </div>	
+              
+              <br>
                 <div class="card-body">
-                    <div>
-						<p> 
-						<strong>International Solar Alliance Secretariat</strong><br/>
-						<span class="bi bi-geo-alt-fill c-icon"></span> Surya Bhawan,<br/>
-						<span class="ct-sub"></span> National Institute of Solar Energy Campus Gwal Pahari,<br/>
-						<span class="ct-sub"></span> Faridabad-Gurugram Road,<br/>
-						<span class="ct-sub"></span> Gurugram, Haryana – 122003, India<br/>
-						<span class="bi bi-telephone c-icon"></span> +91 124 362 3090/69<br/>
-                        <span class="bi bi-envelope c-icon"></span> info@isolaralliance.org
-						</p>
+                    <div class="beautify">
+				
+                        <p>
+                        <strong>International Solar Alliance Secretariat</strong>
+                        </p>
+                        <p><span class="bi bi-geo-alt-fill c-icon"></span> Surya Bhawan,</p>
+                        <p class="beautify">National Institute of Solar Energy Campus Gwal Pahari,</p>
+                        <p class="beautify">Faridabad-Gurugram Road,</p>
+                        <p><span class="bi bi-telephone c-icon"></span> +91 124 362 3090/69</p>
+                        <p><span class="bi bi-envelope c-icon"></span> info@isolaralliance.org</p>
+
                     </div>
                 </div>
             </div>
