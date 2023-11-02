@@ -62,7 +62,11 @@
 					if($meta_field){
 						foreach($major_themes as $mt){
 							$rmfv_models = \App\ReverseMetaFieldValue::where('meta_field_id', $meta_field->id)
-							->whereIn('meta_value', isset($model_ids[$mt])? $model_ids[$mt]: [])->get();
+							->whereHas('document',function($q){
+								$q->whereNotNull('approved_on');
+							})
+							->whereIn('meta_value', isset($model_ids[$mt])? $model_ids[$mt]: [])
+							->get();
 							foreach($rmfv_models as $m){
 								$document_ids[$mt][] = $m->document_id;
 							}
