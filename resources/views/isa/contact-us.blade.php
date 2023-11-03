@@ -3,7 +3,9 @@
 @section('content')
 
 <style>
-	strong{font-weight:bold;}
+	p{
+font-size: 15px;
+}
 </style>
 <div class="container">
 <div class="container-fluid">
@@ -14,18 +16,16 @@
                 <h6 class="card-title">{{ __('CONTACT US') }}</h6>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
-
+<br>
                 <div class="card-body">
-                    <div>
-						<p> 
-						<strong>International Solar Alliance Secretariat</strong><br/>
-						<span class="bi bi-geo-alt-fill c-icon"></span> Surya Bhawan,<br/>
-						<span class="ct-sub"></span> National Institute of Solar Energy Campus Gwal Pahari,<br/>
-						<span class="ct-sub"></span> Faridabad-Gurugram Road,<br/>
-						<span class="ct-sub"></span> Gurugram, Haryana – 122003, India<br/>
-						<span class="bi bi-telephone c-icon"></span> +91 124 362 3090/69<br/>
-                        <span class="bi bi-envelope c-icon"></span> info@isolaralliance.org
-						</p>
+                    <div class="beautify">
+                    <p><span class="bi bi-house-fill c-icon"></span> International Solar Alliance Secretariat</p>
+                        <p><span class="bi bi-geo-alt-fill c-icon"></span> Surya Bhawan,</p>
+                        <p class="beautify">National Institute of Solar Energy Campus Gwal Pahari,</p>
+                        <p class="beautify">Faridabad-Gurugram Road,</p>
+                        <p class="beautify">Gurugram, Haryana – 122003, India</p>
+                        <p><span class="bi bi-telephone c-icon"></span> +91 124 362 3090/69</p>
+                        <p><span class="bi bi-envelope c-icon"></span> <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a></p>
                     </div>
                 </div>
             </div>
