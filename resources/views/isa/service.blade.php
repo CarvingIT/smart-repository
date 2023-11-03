@@ -2,7 +2,7 @@
 
 @section('content')
 <style>
-	strong{
+	.strong{
 		font-weight:600;
         color: #f15c12e0;
         font-size: 18px;
@@ -25,9 +25,7 @@
                 <div class="card-body">
                 <div class="beautify">
 				
-                <p>
-                <strong>What is Terms of Service?</strong>
-                </p>
+                <p class="strong">What is Terms of Service.</p>
                     </div>
                 </div>
             </div>

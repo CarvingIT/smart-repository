@@ -1,12 +1,6 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar','title'=>'FAQ'])
 
 @section('content')
-<style>
-	strong{
-		font-weight:bold;
-	}
-</style>
-
 <div class="container">
 <div class="container-fluid">
     <div class="row">
