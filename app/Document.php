@@ -92,6 +92,7 @@ class Document extends Model implements Auditable
 					$taxonomy_models = Taxonomy::whereIn('id', @json_decode($meta_value->value))->get();
 					$terms = [];
 					foreach($taxonomy_models as $t){
+						if(strtolower($t->label) == 'all') return $t->label; // special value (ALL)
 						$terms[] = $t->label;
 					}
 					return implode(', ',$terms);
