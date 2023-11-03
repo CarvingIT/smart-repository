@@ -12,6 +12,7 @@ use App\ChatGPT;
 use Illuminate\Support\Facades\Log;
 use BotMan\BotMan\Messages\Attachments\File;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
+use App\BotmanAnswer;
 
 class BotManController extends Controller
 {
@@ -70,8 +71,18 @@ class BotManController extends Controller
         $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
 			// get keywords
 			$question = $answer->getText();
+			// check if this question was asked earlier
+			// saves time
+			$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
+			$botman_answer = BotmanAnswer::where('question', $question)->first();
+			if($botman_answer){
+				$this->say('This question was asked earlier and the answer was - <br />'. $botman_answer->answer);
+				return $this->ask('Ask another question.', $botSearch);
+			}
+
 			// $keywords = RakePlus::create($question)->get(); // this gives phrases
             $keywords = RakePlus::create($question)->keywords();
+			Log::debug('Keywords: '.implode(' ',$keywords));
 			//$this->say(implode(",",$keywords));
 			$client = new \GuzzleHttp\Client();
 			$http_host = request()->getHttpHost();
@@ -84,9 +95,10 @@ class BotManController extends Controller
 			if($status_code == 200){
 				$body = $res->getBody();
 				$documents_array = json_decode($body);
-				$botman_results = '';
+				Log::debug('Got '.count($documents_array->data). ' documents.');
 				if(count($documents_array->data) == 0){
-					$botman_results .= "I don't know.";
+					$this->say('I did not get any documents to answer your question from.');
+					return $this->ask('Try rephrasing your question.', $botSearch);
 				}
 
 				//$this->say(count($documents_array->data).' documents to be scanned.');
@@ -123,13 +135,15 @@ class BotManController extends Controller
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
-					$this->say('I did not get an answer to your query.');
-					$this->ask('Try rephrasing your question.', $botSearch);
+					//$this->say('Found '.count($documents_array->data).' documents that look relevant but could not answer your question.');
+					return $this->ask('Try rephrasing your question.', $botSearch);
 				}
 				else{
 					// show answer here
 					$answer_full = '';
+					$open_ai_req_cnt = 0;
 					foreach($matches as $chunk_id => $score){
+						$open_ai_req_cnt++;
 						try{
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
@@ -151,10 +165,17 @@ class BotManController extends Controller
 							$this->say($e->getMessage());
 							break;
 						}
+						if($open_ai_req_cnt == 1){
+							//$botman->reply('I am still looking for an answer to your question.');
+						}
+						else{
+							//$botman->reply('Be patient.');
+						}
+						Log::debug('OpenAI request #'. $open_ai_req_cnt);
 					}
 					if(empty($answer_full)){
 						$this->say('I did not get an answer to your query.');
-						$this->ask('Please see if you can find any documents 
+						return $this->ask('Please see if you can find any documents 
 							<a target="_new" href="/collection/1?isa_search_parameter='.
 							urlencode(implode(' ',$keywords)).'">here</a>.', $botSearch);
 						//$this->ask('Try making your question more specific.', $botSearch);
@@ -166,7 +187,13 @@ class BotManController extends Controller
 						}
 						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
 						$this->say($answer_full);
-						$this->ask('Type in another question.', $botSearch);
+						// log q and a here
+						$botman_answer = new BotmanAnswer;
+						$botman_answer->question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
+						$botman_answer->keywords = implode(' ',array_sort($keywords));	
+						$botman_answer->answer = $answer_full;
+						$botman_answer->save();
+						return $this->ask('Type in another question.', $botSearch);
 					}
 				}
 			}else{

@@ -1,7 +1,39 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
 
 @section('content')
-
+@push('js')
+<script src="/js/jquery-ui.js" defer></script>
+<link href="/css/jquery-ui.css" rel="stylesheet">
+<script>
+	@if(env('SEARCH_MODE') == 'elastic')
+	$(document).ready(function() {
+        //alert("js is working");
+        src = "{{ route('autosuggest') }}";
+        $( "#collection_search" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+                    method: 'GET',
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+						if(data.length > 0)
+                        response(data);
+                    },
+                });
+            },
+			select: function (event, ui){
+				$("#collection_search").val(ui.item.value);
+				return false;
+			},
+            minLength: 1,
+        });
+    });
+	@endif
+</script>
+@endpush
   <!-- ======= Hero Section ======= -->
   <section id="hero" class="hero d-flex align-items-center">
     <div class="container"  style="background-color: #eee;">
@@ -13,7 +45,7 @@
 
           <form action="/collection/1" class="form-search d-flex align-items-stretch mb-4" data-aos="fade-up" data-aos-delay="200" method="get" id="isa_search" name="isa_search">
 			<input type="hidden" name="collection_id" value="1" />
-            <input type="text" class="form-control form-group" name="isa_search_parameter" placeholder="What are you looking for abc?">
+            <input type="text" id="collection_search" class="form-control form-group" name="isa_search_parameter" placeholder="What are you looking for?">
             <button type="submit" value="Search" name="isa_search" class="btn btn-primary">Search</button>
           </form>
 
@@ -62,7 +94,11 @@
 					if($meta_field){
 						foreach($major_themes as $mt){
 							$rmfv_models = \App\ReverseMetaFieldValue::where('meta_field_id', $meta_field->id)
-							->whereIn('meta_value', isset($model_ids[$mt])? $model_ids[$mt]: [])->get();
+							->whereHas('document',function($q){
+								$q->whereNotNull('approved_on');
+							})
+							->whereIn('meta_value', isset($model_ids[$mt])? $model_ids[$mt]: [])
+							->get();
 							foreach($rmfv_models as $m){
 								$document_ids[$mt][] = $m->document_id;
 							}

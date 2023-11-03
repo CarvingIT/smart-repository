@@ -13,6 +13,10 @@ class Taxonomy extends Model
         return $this->hasMany('App\Taxonomy','parent_id','id') ;
     }
 
+	public function parent(){
+		return $this->belongsTo('App\Taxonomy','parent_id','id') ;
+	}
+
 	public function createFamily(){
 		// returns all models that are children, grand-children or grand-grand-children of this model	
 		$family[] = $this; // add self first
