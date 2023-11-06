@@ -58,11 +58,11 @@
     <style>
         .text-light {
 
-        color: #010a14 !important;
+        color: #f05a22 !important;
         }
         .text-light strong:hover {
-
-        color: #010a14 !important;
+        
+        color:#fff200 !important;
         }
     </style>
 <script>
