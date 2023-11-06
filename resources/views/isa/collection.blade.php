@@ -111,6 +111,8 @@ function goToPage(page){
          if(empty($children['parent_'.$parent_id])) return;
 
          foreach($children['parent_'.$parent_id] as $t){
+			// ignore label "ALL" 
+			if(preg_match('/^ALL$/i',$t->label)) continue;
          	$checked = '';
 	 	 	if(!empty(Request::get('meta')) && in_array($t->id,Request::get('meta'))){
 				$checked = 'checked';
