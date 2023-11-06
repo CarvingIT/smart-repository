@@ -71,18 +71,21 @@ class BotManController extends Controller
         $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
 			// get keywords
 			$question = $answer->getText();
+			// $keywords = RakePlus::create($question)->get(); // this gives phrases
+            $keywords = RakePlus::create($question)->keywords();
+			Log::debug('Keywords: '.implode(' ',$keywords));
 			// check if this question was asked earlier
 			// saves time
 			$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
 			$botman_answer = BotmanAnswer::where('question', $question)->first();
+			$related_docs_link = 'Find more related documents <a target="_new" href="/collection/1?isa_search_parameter='.
+                            urlencode(implode(' ',$keywords)).'">here</a>.';
 			if($botman_answer){
 				$this->say('This question was asked earlier and the answer was - <br />'. $botman_answer->answer);
+				$this->say($related_docs_link);
 				return $this->ask('Ask another question.', $botSearch);
 			}
 
-			// $keywords = RakePlus::create($question)->get(); // this gives phrases
-            $keywords = RakePlus::create($question)->keywords();
-			Log::debug('Keywords: '.implode(' ',$keywords));
 			//$this->say(implode(",",$keywords));
 			$client = new \GuzzleHttp\Client();
 			$http_host = request()->getHttpHost();
@@ -187,6 +190,7 @@ class BotManController extends Controller
 						}
 						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
 						$this->say($answer_full);
+						$this->say($related_docs_link);
 						// log q and a here
 						$botman_answer = new BotmanAnswer;
 						$botman_answer->question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
