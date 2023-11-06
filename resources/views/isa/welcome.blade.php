@@ -219,9 +219,12 @@ $f = FeedReader::read('https://www.solarpowerworldonline.com/feed/');
 				-->
                 <div class="news-updates-content">
                   <h3><a href="{{ $item->get_link() }}" target="_new">{{ $item->get_title() }}</a></h3>
-                  <p>
-					{!! $item->get_content() !!}	
-                  </p>
+                
+                  <?php
+                  $content = $item->get_content();
+                  $content = preg_replace('/<a(.*?)href=["\'](https?:\/\/[^\s"\'<>]+)["\'](.*?)>/i', '<a$1href="$2"$3 target="_blank">', $content);
+                  echo '<p>' . $content . '</p>';
+                  ?>
                 </div>
               </div>
             </div><!-- End news-updates item -->
