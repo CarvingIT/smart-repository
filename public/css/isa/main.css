@@ -2841,3 +2841,14 @@ column-count: 1;
 .tooltip:hover .tooltiptext {
   visibility: visible;
 }
+/*form input color*/
+.form-control:focus {
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  border-color: #f05a22;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgb(253 124 13 / 25%);
+  }
+  input.form-control{
+  background-image: linear-gradient(to top, #f05a22 2px, rgba(156, 39, 176, 0) 2px), linear-gradient(to top, #d2d2d2 1px, rgba(210, 210, 210, 0) 1px);
+}
