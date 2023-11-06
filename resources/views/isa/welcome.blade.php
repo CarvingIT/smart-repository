@@ -110,37 +110,12 @@
 					}
 				@endphp
 
-		<!--
-          <div class="row" data-aos="fade-up" data-aos-delay="400"> 
-            <div class="col-lg-5 col-6">
-              <div class="stats-item text-center w-100 h-100">
-                <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
-                <a href="javascript:void(0)">LAWS, REGULATIONS AND POLICIES</a>
-              </div>
-            </div>
-
-            <div class="col-lg-3 col-6">
-              <div class="stats-item text-center w-100 h-100">
-                <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
-                <a class="justify-content-center" href="javascript:void(0)">PUBLICATIONS</a>
-              </div>
-            </div>
-
-            <div class="col-lg-4 col-6">
-              <div class="stats-item text-center w-100 h-100">
-                <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="1" class="purecounter"></span>
-                <a class="justify-content-center" href="javascript:void(0)">TECHNICAL STANDARDS</a>
-              </div>
-            </div>
-          </div>
-		-->
-
           <div class="row" data-aos="fade-up" data-aos-delay="400"> 
 			@foreach($major_themes as $mt)
             <div class="col-lg-4 col-4">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="{{ isset($document_counts[$mt])?$document_counts[$mt]:0 }}" data-purecounter-duration="1" class="purecounter"></span>
-                <a class="justify-content-center" href="javascript:void(0)">{{ $mt }}</a>
+                <a class="justify-content-center" href="/collection/1?meta_{{ $meta_field->id }}[]={{ $theme_model->id }}">{{ $mt }}</a>
               </div>
             </div><!-- End Stats Item -->
 			@endforeach
