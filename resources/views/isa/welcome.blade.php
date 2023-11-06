@@ -78,9 +78,11 @@
 					$document_counts = [];
 					
 					$major_themes = explode("|",env('MAJOR_THEMES','A1|A2|A3'));
+					$major_theme_models = [];
 					foreach($major_themes as $mt){
 						// get model of each
 						$theme_model = \App\Taxonomy::where('label', $mt)->first();
+						$major_theme_models[$mt] = $theme_model;
 						$model_families[$mt] = empty($theme_model)?[]: $theme_model->createFamily();
 					}
 					foreach($model_families as $mt=>$mf){
@@ -115,7 +117,7 @@
             <div class="col-lg-4 col-4">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="{{ isset($document_counts[$mt])?$document_counts[$mt]:0 }}" data-purecounter-duration="1" class="purecounter"></span>
-                <a class="justify-content-center" href="/collection/1?meta_{{ $meta_field->id }}[]={{ $theme_model->id }}">{{ $mt }}</a>
+                <a class="justify-content-center" href="/collection/1?meta_{{ $meta_field->id }}[]={{ $major_theme_models[$mt]->id }}">{{ $mt }}</a>
               </div>
             </div><!-- End Stats Item -->
 			@endforeach

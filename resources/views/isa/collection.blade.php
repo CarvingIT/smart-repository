@@ -114,7 +114,7 @@ function goToPage(page){
 			// ignore label "ALL" 
 			if(preg_match('/^ALL$/i',$t->label)) continue;
          	$checked = '';
-	 	 	if(!empty(Request::get('meta')) && in_array($t->id,Request::get('meta'))){
+	 	 	if(!empty(Request::get('meta_'.$meta_id)) && in_array($t->id,Request::get('meta_'.$meta_id))){
 				$checked = 'checked';
 				$display = '';
 	 		}
