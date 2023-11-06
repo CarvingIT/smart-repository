@@ -50,7 +50,7 @@ class TaxonomyWildcardUpdate extends Command
 			$family[$m->id] = $m->parent->createFamily();
 			echo $m->id . " - ".count($family[$m->id])."\n";
 			foreach($family[$m->id] as $t){
-				$family_ids[$m->id][] = $t->id;
+				$family_ids[$m->id][] = ''.$t->id;
 			}
 		}
 		print_r($family_ids);
@@ -59,7 +59,7 @@ class TaxonomyWildcardUpdate extends Command
 			// get meta_values for this field
 			foreach(array_keys($family) as $all_val_id){
 				$meta_value = MetaFieldValue::where('meta_field_id', $mf->id)
-				->where('value','LIKE','%"'.$all_val_id.'"%')
+				->where('value','regexp','[^\d]'.$all_val_id.'[^\d]')
 				->first();
 				if(!$meta_value) continue;
 				//print_r(json_decode($meta_value->value));	
