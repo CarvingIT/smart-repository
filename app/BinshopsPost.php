@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Events\BinshopsPostSaved;
+use BinshopsBlog\Models\BinshopsPostTranslation;
 
 class BinshopsPost extends Model
 {
@@ -23,6 +24,15 @@ class BinshopsPost extends Model
             $this->is_published = 1;
             $this->save();
     }
+
+    public function defaultTitle(){
+           $post_translation = BinshopsPostTranslation::where('post_id', $this->id)->where('lang_id',1)->first();
+           if($post_translation){
+                   return $post_translation->title;
+           }
+           return '';
+    }
+
 
 	public function approval(){
         return $this->hasMany('App\DocumentApproval');

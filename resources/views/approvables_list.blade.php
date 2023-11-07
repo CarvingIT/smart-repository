@@ -43,12 +43,14 @@ $(document).ready(function() {
 			@foreach($approvables as $item)
 				@if($item->approvable_type == 'App\BinshopsPost')
 					@php 
-						$post = App\BinshopsPublish::where('post_id',$item->approvable_id)->first();
+						//$post = App\BinshopsPublish::where('post_id',$item->approvable_id)->first();
+						$post = App\BinshopsPost::find($item->approvable_id);
+					if(!$post) continue;
 				//print_r($post); echo $post->title; exit;
 					@endphp
 				@endif	
                         <tr>
-                                <td>@if($item->approvable_type == 'App\BinshopsPost'){{ $post->title }}@else {{ @$item->approvable->title }}@endif</td>
+                                <td>@if($item->approvable_type == 'App\BinshopsPost'){{ $post->defaultTitle() }}@else {{ @$item->approvable->title }}@endif</td>
                                 <td>{{ $item->comments }}</td>
                                 <td>{{ $item->created_at }}</td>
                         <td class="td-actions text-right">
