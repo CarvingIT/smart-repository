@@ -149,7 +149,7 @@ $taxonomies = '';
 }
 $collection_id = $collection->id;
 
-$total_pages = ($filtered_results_count / 10) + 1;
+$total_pages = ($filtered_results_count / 10) + (($filtered_results_count%10 === 0) ? 0 : 1);
 @endphp
 @if($start > 0)
 <li class="page-item disabled">
