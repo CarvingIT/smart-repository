@@ -59,7 +59,7 @@
 		@endphp
 		<div class="row">
 		<h4>
-		@if ($result->type == 'url')
+		@if (@$result->type == 'url')
 		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
 		@else
 		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
