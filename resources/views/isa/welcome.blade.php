@@ -118,7 +118,7 @@
             <div class="col-lg-4 col-4">
               <div class="stats-item text-center w-100 h-100">
                 <span data-purecounter-start="0" data-purecounter-end="{{ isset($document_counts[$mt])?$document_counts[$mt]:0 }}" data-purecounter-duration="1" class="purecounter"></span>
-                <a class="justify-content-center" href="/collection/1?meta_{{ $meta_field->id }}[]={{ $major_theme_models[$mt]->id }}">{{ $mt }}</a>
+                <a class="justify-content-center" href="/collection/1?meta_{{ @$meta_field->id }}[]={{ @$major_theme_models[$mt]->id }}">{{ $mt }}</a>
               </div>
             </div><!-- End Stats Item -->
 			@endforeach
