@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Collection;
+use App\Role;
 use Illuminate\Support\Facades\Auth;
 use Session;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 use App\StorageTypes;
 use App\SpideredDomain;
 use App\DesiredUrl;
@@ -16,6 +17,10 @@ use App\UrlSuppression;
 use App\CollectionMailbox;
 use App\UserPermission;
 use Rap2hpoutre\FastExcel\FastExcel;
+use App\DocumentApproval;
+use App\Document;
+use Illuminate\Support\Facades\Log;
+use App\Synonyms;
 
 class CollectionController extends Controller
 {
@@ -118,10 +123,20 @@ class CollectionController extends Controller
          return redirect('/admin/collectionmanagement');
     }
 
-    public function collection($collection_id){
+    public function collection($collection_id, Request $request){
         $collection = Collection::find($collection_id);
-        $documents = \App\Document::where('collection_id','=',$collection_id)->orderby('updated_at','DESC')->paginate(100);
-        return view('collection', ['collection'=>$collection, 'documents'=>$documents, 'activePage'=>'collection','titlePage'=>'Collections', 'title'=>'Smart Repository']);
+		$length = empty($request->length)? 10 : $request->limit;
+		$start = empty($request->start)? 0 : $request->start;
+        $documents = \App\Document::where('collection_id','=',$collection_id)
+			 ->whereNotNull('approved_on')
+			 ->orderby('updated_at','DESC');
+		$total_count = $documents->count();
+		$documents = $documents->limit($length)->offset($start)->get();
+        return view('collection', ['collection'=>$collection, 
+			'filtered_results_count'=>$total_count,
+			'results'=>$documents,'documents'=>$documents, 
+			'activePage'=>'collection','titlePage'=>'Collections', 
+			'title'=>'Smart Repository']);
     }
 
     public function collectionUsers($collection_id){
@@ -200,7 +215,7 @@ class CollectionController extends Controller
 		return $documents;
 	}
 
-    public function getMetaFilteredDocuments($request, $documents){
+	public function getMetaFilters($request){
 		// check if meta filters are present in the query
 		$query_params = $request->query();
 		$meta_filters_query = array();
@@ -209,6 +224,38 @@ class CollectionController extends Controller
 				// currently, no support for operator in the query string parameters
 				// default operator is '='
 				$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+			}
+		}
+		$meta_filters = array();
+		if(count($meta_filters_query)>0){
+			$meta_filters = $meta_filters_query;
+		}
+		else{
+			// else take from the session
+        	$all_meta_filters = Session::get('meta_filters');
+        	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
+		}
+		return $meta_filters;
+	}
+
+    public function getMetaFilteredDocuments($request, $documents){
+		// check if meta filters are present in the query
+		$query_params = $request->query();
+		$meta_filters_query = array();
+		foreach($query_params as $p=>$v){
+			if(preg_match('/^meta_(\d*)/', $p, $matches)){
+				// currently, no support for operator in the query string parameters
+				// default operator is '='
+				// find type of meta field
+				$meta_field = \App\MetaField::where('id', $matches[1])->first();
+				if($meta_field && $meta_field->type == 'Numeric' && is_array($v) && count($v)==2){ 
+					// this is for range filters (numeric values). This condition needs to be refined.
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>$v[1]);
+				}
+				else{
+					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+				}
 			}
 		}
 		$meta_filters = array();
@@ -230,10 +277,22 @@ class CollectionController extends Controller
 
             if($mf['operator'] == '='){
 				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
-                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
-                    }
-                );
+				if(is_array($mf['value'])){ 
+					// this is for array of values passed through the query string 
+					// e.g. &meta_10[]=somevalue&meta_10[]=someothervalue
+					//print_r($mf['value']);exit;
+					foreach($mf['value'] as $v){
+                		$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
+        					$query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$v.'"%');
+                    	});
+					}
+				}
+				else{
+                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                    	    $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
+                    	}
+                	);
+				}
             }
             else if($mf['operator'] == '>='){
                 $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
@@ -260,40 +319,52 @@ class CollectionController extends Controller
     // wrapper function for search
     public function search(Request $request){
         if(!empty(env('SEARCH_MODE')) && env('SEARCH_MODE') == 'elastic'){
-            return $this->searchElastic($request);
+            $search_results = $this->searchElastic($request);
         }
         else{
-            return $this->searchDB($request); 
+            $search_results = $this->searchDB($request); 
         }
+
+        // log search query
+		$old_query = Session::get('search_query');
+
+		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
+			&& !$request->is('api/*') && strlen($request->search['value'])>3){
+			Session::put('search_query', $request->search['value']);
+			$meta_query = json_encode($this->getMetaFilters($request));
+        	$search_log_data = array('collection_id'=> $request->collection_id, 
+                'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
+                'search_query'=> $request->search['value'], 
+                'meta_query'=> $meta_query,
+				'ip_address' => $request->ip(),
+                'results'=>$search_results['recordsFiltered']);
+	    	if(!empty($request->collection_id)){
+            	$this->logSearchQuery($search_log_data);
+	    	}
+        }
+
+        return json_encode($search_results, JSON_UNESCAPED_UNICODE);
     }
 
 	public function getElasticClient(){
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        return ClientBuilder::create()->setHosts($hosts)->build();
+	return ClientBuilder::create()->setHosts($hosts)
+	->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+	->build();
 	}
     // elastic search
     public function searchElastic($request){
-        $params = array();
-        /*
-        $params = [
-            'index' => 'sr_documents',
-            'body'  => [
-                'query' => [
-                    'bool'=>[
-                        'filter' => [
-                            'term'=> ['collection_id' => $request->collection_id]
-                        ]
-                    ]
-                ]
-            ]
-        ];
-        */
+    $params = array();
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
         	$elastic_index = 'sr_documents';
         	$documents = \App\Document::where('collection_id', $request->collection_id);
+			if($collection->require_approval){
+				$documents = $documents->whereNotNull('approved_on');
+			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
 				$documents = $documents->where('created_by', \Auth::user()->id);
@@ -318,7 +389,8 @@ class CollectionController extends Controller
 		}
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
-				if(!empty(\Auth::user()->id)){
+				$documents = $documents->whereNotNull('approved_on');
+				if(\Auth::user()->id){
 					$documents = $documents->orWhere('created_by', \Auth::user()->id);
 				}
         		$elastic_index = 'sr_documents';
@@ -326,14 +398,22 @@ class CollectionController extends Controller
 	}
         $total_count = $documents->count();
 
+		$highlights = [];
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $search_term = $request->search['value'];
             $words = explode(' ',$search_term);
 			$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
-			$synonym_search = 1; // put synonym search on if the value in session is ON
-			$analyzer = ($synonym_search)?'synonyms_analyzer':null;
-			
+			$analyzer = empty($request->analyzer) ? 'standard' : $request->analyzer; // standard analyzer is the default
+			Log::debug('Analyzer: '.$analyzer);
+
+			$es_title = 'title';
+			$es_text_content = 'text_content';
+			if($analyzer == 'porter_stem_analyzer'){
+				$es_title = 'title.porter_stem';
+				$es_text_content = 'text_content.porter_stem';
+			}
+	
 				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
 				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
 				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];
@@ -348,37 +428,44 @@ class CollectionController extends Controller
 								'should' => [
 									[
 										'match' => [
-											'title' => $q_without_and,
+											$es_title => $q_without_and,
 										]
 									],
 									[
 										'match' => [
-											'text_content' => $q_without_and
+											$es_text_content => $q_without_and
 										]
 									],
 									[
 										'match' => [
-											'title' => $title_q_with_and,
+											$es_title => $title_q_with_and,
 										]
 									],
 									[
 										'match' => [
-											'text_content' => $text_q_with_and
+											$es_text_content => $text_q_with_and
 										]
 									],
 									[
 										'match_phrase' => [
-											'title' => $q_title_phrase,
+											$es_title => $q_title_phrase,
 										]
 									],
 									[
 										'match_phrase' => [
-											'text_content' => $q_text_phrase
+											$es_text_content => $q_text_phrase
 										]
 									],
 								],
 								'minimum_should_match' => 3
 							],
+						],
+						'highlight' => [
+							'fields' => [
+								$es_text_content => [ 'type' => 'unified'],
+								$es_title => [ 'type' => 'unified']
+							],
+							'max_analyzed_offset'=>100000
 						]
 					]
 				];
@@ -411,12 +498,17 @@ class CollectionController extends Controller
 		}
 		catch(\Exception $e){
 			// some error; switch to db search
+			Log::debug($elastic_index);
+			Log::debug($e->getMessage());	
 			return $this->searchDB($request);
 		}
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
                 $document_ids[] = $h['_id'];
+				$highlights[$h['_id']] = @$h['highlight'];
             }
+			//Log::debug(serialize($highlights));
+
             $documents = $documents->whereIn('id', $document_ids);
 			$ordered_document_ids = implode(",", $document_ids);
         }
@@ -433,7 +525,7 @@ class CollectionController extends Controller
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
 	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
-	//$documents = $this->approvalFilter($request, $documents);
+	//$documents = $this->approvalFilter($request->collection_id, $documents);
 	//$documents = $documents->get();
 	$filtered_count = $documents->count(); 
 
@@ -447,19 +539,20 @@ class CollectionController extends Controller
              ->limit($length)->offset($request->start)->get();
 	}
 	else{
-	$sort_column = empty($sort_column)?'updated_at':$sort_column;
-	$documents = $documents
-		->orderby($sort_column,$sort_direction)
-        ->limit($length)->offset($request->start)->get();
+		$sort_column = empty($sort_column)?'updated_at':$sort_column;
+		$documents = $documents
+			->orderby($sort_column,$sort_direction)
+        	->limit($length)->offset($request->start)->get();
 	}
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
 		->where('require_approval','=','1')->get();
 
-		if($request->is('api/*')){
+		if($request->is('api/*') || $request->return_format == 'raw'){
 			return 
         	 array(
             'data'=>$documents,
+			'highlights'=>$highlights,
             'draw'=>(int) $request->draw,
             'recordsTotal'=> $total_count,
             'recordsFiltered' => $filtered_count,
@@ -478,17 +571,19 @@ class CollectionController extends Controller
             'recordsFiltered' => $filtered_count,
             'error'=> '',
         );
-		// logging of search is not done here
-		// refer to the searchDB function below
-        return json_encode($results, JSON_UNESCAPED_UNICODE);
+        //return json_encode($results, JSON_UNESCAPED_UNICODE);
+		return $results;
     }
 
     // db search (default)
-    public function searchDB($request){
+    public function searchDB(Request $request){
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
 		if($collection->content_type == 'Uploaded documents'){
         	$documents = \App\Document::where('collection_id', $request->collection_id);
+			if($collection->require_approval){
+        		$documents = $documents->whereNotNull('approved_on');
+			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
 				$documents = $documents->where('created_by', \Auth::user()->id);
@@ -541,33 +636,39 @@ class CollectionController extends Controller
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
 	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
-	$documents = $this->approvalFilter($request, $documents);
+	$documents = $this->approvalFilter($request->collection_id, $documents);
 	$filtered_count = $documents->count(); //- count($approval_exceptions);
 
     if(!empty($request->embedded)){ 		
 		$documents = $documents
-			 ->limit($request->length)->offset($request->start)->get();
-   	    $results_data = $this->datatableFormatResultsEmbedded(
-			array('request'=>$request, 
-			'documents'=>$documents, 
-			'has_approval'=>$has_approval));
+		->limit($request->length)->offset($request->start)->get();
+       	$results_data = $this->datatableFormatResultsEmbedded(
+		array('request'=>$request, 
+		'documents'=>$documents, 
+		'has_approval'=>$has_approval));
 	}
 	else{
-		$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
+		$sort_column = @empty($columns[$request->order[0]['column']])?'':$columns[$request->order[0]['column']];
 		$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 		$length = empty($request->length)?10:$request->length;
+		if(!empty($sort_column)){
 		$documents = $documents
-			->orderby($sort_column,$sort_direction)
-            ->limit($length)->offset($request->start)->get();
-		if($request->is('api/*')){
+			->orderBy($sort_column,$sort_direction)
+   	        ->limit($length)->offset($request->start)->get();
+		}
+		else{// initial sorting is by relevance (or whatever order the database returns)
+		$documents = $documents
+   	        ->limit($length)->offset($request->start)->get();
+		}
+		if($request->is('api/*') || $request->return_format == 'raw'){
 			return 
-        	 array(
-            'data'=>$documents,
-            'draw'=>(int) $request->draw,
-            'recordsTotal'=> \App\Document::where('collection_id',$request->collection_id)->count(),
-            'recordsFiltered' => $filtered_count,
-            'error'=> '',
-        	);
+        		array(
+            	    	'data'=>$documents,
+            	    	'draw'=>(int) $request->draw,
+            	    	'recordsTotal'=> \App\Document::where('collection_id',$request->collection_id)->count(),
+            	    	'recordsFiltered' => $filtered_count,
+            	    	'error'=> '',
+        		);
 		}
 		else{
         	$results_data = $this->datatableFormatResults(
@@ -585,23 +686,12 @@ class CollectionController extends Controller
             'error'=> '',
         );
 
-        // log search query
-        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-        $search_log_data = array('collection_id'=> $request->collection_id, 
-                'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
-                'search_query'=> $request->search['value'], 
-                'meta_query'=>'',
-                'results'=>$filtered_count);
-        //if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-	    	if(!empty($request->collection_id)){
-            	$this->logSearchQuery($search_log_data);
-	    	}
-        }
-        return json_encode($results, JSON_UNESCAPED_UNICODE);
+        //return json_encode($results, JSON_UNESCAPED_UNICODE);
+		return $results;
     }
 
-    private function approvalFilter($request, $documents){
-		if(empty($request->collection_id)){ // this is a search within all documents
+    private function approvalFilter($collection_id, $documents){
+		if(empty($collection_id)){ // this is a search within all documents
 			// approved where approval is needed
 			$documents = $documents
 			->where(function($query){
@@ -620,20 +710,22 @@ class CollectionController extends Controller
 			});
 			return $documents;
 		}
-		$collection = Collection::find($request->collection_id);
+		$collection = Collection::find($collection_id);
 		if($collection->content_type == 'Web resources'){
 			// all
 			return $documents;
 		}
 		else if($collection->content_type == 'Uploaded documents'){
 			if($collection->require_approval == 1){ 
+				/*
 				if(Auth::user() && Auth::user()->hasPermission($collection->id, 'APPROVE')){ // return all
 					return $documents;
 				}
-				else{ // return only approved
+				else{ // return only approvedSKK
+				*/
 					$documents = $documents->whereNotNull('approved_on');	
 					return $documents;
-				}
+				//}
 			}
 			else{ 
 				return $documents;
@@ -701,12 +793,13 @@ class CollectionController extends Controller
 		}
 	    if($content_type == 'Uploaded documents'){
             if(Auth::user()){
-                if(Auth::user()->canApproveDocument($d->id) && !$has_approval->isEmpty()){
-			if(!empty($d->approved_on)){
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="UnApprove document"><i class="material-icons">done</i></a>';
+                if(Auth::user()->canApproveDocument($d->id,Auth::user()->userrole(Auth::user()->id)) && !$has_approval->isEmpty()){
+			//if(!empty($d->approved_on)){
+			if(!empty($d->approval()->approval_status)){
+                //$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/approval" title="UnApprove document"><i class="material-icons">done</i></a>';
 			}
 			else{
-                $action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/edit" title="Approve document"><i class="material-icons">close</i></a>';
+                //$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/approval" title="Approve document"><i class="material-icons">close</i></a>';
 			}
 		}
                 if(Auth::user()->canEditDocument($d->id)){
@@ -921,7 +1014,12 @@ $j++;
 	$meta_field->available_to = implode(",",$request->input('available_to'));
 	}
         $meta_field->type = $request->input('type');
-        $meta_field->options = $request->input('options');
+	if($request->type == 'TaxonomyTree'){
+        	$meta_field->options = $request->input('treeoptions');
+	}
+	else{
+        	$meta_field->options = $request->input('options');
+	}
         $meta_field->display_order = $request->input('display_order');
         $meta_field->is_required = $request->input('is_required');
         $meta_field->save();
@@ -982,13 +1080,25 @@ $j++;
 	}
 
     public function logSearchQuery($data){
+		$meta_query = [];
+		foreach(json_decode($data['meta_query']) as $m){
+			unset($m->filter_id);
+			$meta_query[] = $m;
+		}
+		try{
         $search_log_entry = new \App\Searches;
         $search_log_entry->collection_id = $data['collection_id']; 
-        $search_log_entry->meta_query = $data['meta_query']; 
+        $search_log_entry->meta_query = json_encode($meta_query); 
         $search_log_entry->search_query = $data['search_query']; 
         $search_log_entry->user_id = $data['user_id']; 
+        $search_log_entry->ip_address = $data['ip_address']; 
         $search_log_entry->results = $data['results']; 
         $search_log_entry->save();
+		}
+		catch(\Exception $e){
+			print $e->getMessage();
+			exit;
+		}
     }
 
     public function deleteCollection(Request $request){
@@ -1136,7 +1246,8 @@ use App\UrlSuppression;
 	// column-config
 	public function showSettingsForm(Request $request){
 		$collection = Collection::find($request->collection_id);
-        return view('collection-settings', ['collection'=>$collection, 
+		$roles = Role::all();
+        return view('collection-settings', ['collection'=>$collection, 'roles'=>$roles,
 			'mailbox'=>CollectionMailbox::where('collection_id', $collection->id)->first()]);
 	}
 	
@@ -1323,6 +1434,87 @@ use App\UrlSuppression;
         	else{
         		return [];
         	}
+	}
+
+	/*
+	public function appendSynonyms($keywords){
+		$keywords_ar = explode(" ", $keywords);
+		$q = Synonyms::whereRaw('1 = 0');
+		foreach($keywords_ar as $kw){
+			$q = $q->orWhere('synonyms','like','%'.$kw.'%');
+		}
+		foreach($q->get() as $synonyms){
+			$synonyms_ar = explode(",", $synonyms->synonyms);
+			$keywords .= ' '.implode(' ',$synonyms_ar);
+		}	
+			$keywords_ar = preg_split('/[\s,]+/', $keywords);
+			$keywords_ar = array_unique($keywords_ar);
+			$keywords = implode(' ', $keywords_ar);
+		return $keywords;
+	}
+	
+	public function appendStemmas($keywords){
+		$keywords_ar = explode(" ", $keywords);
+		$client = $this->getElasticClient();
+		$params = [ 
+					//'index' => 'sr_documents',
+					'body' => [
+						//'analyzer'=>'porter_stem_analyzer', 
+						'analyzer'=>'simple', 
+						//'tokenizer'=>'whitespace',
+						//'filter'=>['porter_stem'],
+						'text'=>'The 2 QUICK Brown-Foxes jumped over the lazy dogs bone.',
+						'explain'=>true,
+						'attributes'=>['keyword']
+					]
+				];
+		$analysis = $client->indices()->analyze($params);
+		//$analysis = $analysis->wait();
+		Log::debug(json_encode($params['body']));
+		Log::debug(json_encode($analysis));
+		return $keywords;
+	}
+	*/
+	//public function isaCollectionDocumentSearch(Request $request){
+	public function searchResults(Request $request){
+		$collection_id = $request->collection_id;
+		$collection = \App\Collection::find($collection_id);
+		//$analyzer = $request->analyzer;
+		$keywords = $request->isa_search_parameter;
+		$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
+		
+		$search_results = $this->search($request);
+		//print_r($search_results); exit;
+		$search_results = json_decode($search_results);
+		$total_results_count = $search_results->recordsTotal;
+		$filtered_results_count = $search_results->recordsFiltered;
+        // log search query
+        $old_query = Session::get('search_query');
+        if(!empty($request->isa_search_parameter) && $old_query != $request->isa_search_parameter &&
+            strlen($request->isa_search_parameter)>3){
+            Session::put('search_query', $request->isa_search_parameter);
+            $meta_query = json_encode($this->getMetaFilters($request));
+			$user_id = empty(\Auth::user()->id)?null:\Auth::user()->id;
+            $search_log_data = array('collection_id'=> $request->collection_id,
+                'user_id'=> $user_id,
+                'search_query'=> $keywords,
+                'meta_query'=> $meta_query,
+                'ip_address' => $request->ip(),
+                'results'=>$total_results_count);
+            if(!empty($request->collection_id)){
+                $this->logSearchQuery($search_log_data);
+            }
+        }
+		$highlights = json_decode(json_encode(@$search_results->highlights, true), true);
+		//Log::debug($highlights);exit;
+		return view('search-results',['collection'=>$collection, 
+			'results'=>$search_results->data,
+			'highlights'=> $highlights,  
+			'filtered_results_count'=>$filtered_results_count,
+			'total_results_count'=>$total_results_count,
+			'activePage'=>'Documents',
+            'search_query'=> $keywords,
+			'titlePage'=>'Documents']);
 	}
 
 //Class Ends

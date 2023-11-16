@@ -7,6 +7,9 @@ foreach($config_details as $details){
 }
 $is_demo = env('IS_DEMO');
 $app_name = env('APP_NAME');
+if(empty($activePage)){
+$activePage = 'ISA-RRR';
+}
 @endphp
 <!-- Navbar -->
 <!--nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top "-->
@@ -33,9 +36,19 @@ $app_name = env('APP_NAME');
     </button>
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
+	<li class="nav-item{{ $activePage == 'dashboard' ? ' active' : '' }}">
+          <a href="/dashboard" class="nav-link">
+            <i class="material-icons">home</i> {{ __('Dashboard') }}
+          </a>
+        </li>
 	<li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
             <i class="material-icons">list</i> {{ __('Collections') }}
+          </a>
+        </li>
+	<li class="nav-item{{ $activePage == 'Blog' ? ' active' : '' }}">
+          <a href="/en/blog" class="nav-link">
+            <i class="material-icons">rss_feed</i> {{ __('Blog') }}
           </a>
         </li>
         <li class="nav-item{{ $activePage == 'documents' ? ' active' : '' }}">
@@ -76,16 +89,18 @@ $app_name = env('APP_NAME');
             </p>
 			-->
           </a>
-			<span class="howdy">Welcome @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif !</span>
+	  <span class="howdy" style="width:200px;"><a href="/dashboard" style="color:inherit !important;">Welcome @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>
             <a class="dropdown-item" href="/admin/storagemanagement">{{ __('Manage Storages') }}</a>
-	    <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
-	    <a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a>
-	    <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
+	         <a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a>
+           <a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomies') }}</a>
+ 	         <a class="dropdown-item" href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a>
+ 	         <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
+	         <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
             @endif
 	    <!--
             <div class="dropdown-divider"></div>

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Events\DocumentSaved;
 use App\Events\DocumentDeleted;
 use OwenIt\Auditing\Contracts\Auditable;
+use Carbon\Carbon;
+use App\Taxonomy;
 
 class Document extends Model implements Auditable
 {
@@ -56,6 +58,7 @@ class Document extends Model implements Auditable
             'exe'=>'exe',
             'mp3'=>'mp3',
             'mp4'=>'mp4',
+			'url'=>'url',
 	    'm4a'=>'m4a',
         );
         $path = empty($path) ? $this->path : $path;
@@ -74,11 +77,33 @@ class Document extends Model implements Auditable
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) .' '. @$size[$factor];
     }
 
-    public function meta_value($meta_field_id){
+    public function meta_value($meta_field_id, $raw=false){
         $meta_value = \App\MetaFieldValue::where('document_id','=', $this->id)
             ->where('meta_field_id','=',$meta_field_id)->first();
+		if(!$meta_value) return null;
+		if($raw !== false){// return the json representation of array as is without getting label values
+			return $meta_value->value;
+		}
+
+		$meta_field_type = $meta_value->meta_field->type;
         if($meta_value){
-            return $meta_value->value;
+			if(preg_match('/^\[.*\]$/',$meta_value->value)){
+				if($meta_field_type == 'TaxonomyTree'){
+					$taxonomy_models = Taxonomy::whereIn('id', @json_decode($meta_value->value))->get();
+					$terms = [];
+					foreach($taxonomy_models as $t){
+						if(strtolower($t->label) == 'all') return $t->label; // special value (ALL)
+						$terms[] = $t->label;
+					}
+					return implode(', ',$terms);
+				}
+				else{
+					return @implode(', ',@json_decode($meta_value->value));
+				}
+			}
+			else{
+            	return $meta_value->value;
+			}
         }
         return null;
     }
@@ -94,8 +119,25 @@ class Document extends Model implements Auditable
     public function owner(){
         return $this->belongsTo('App\User', 'created_by');
     }
+    public function approver(){
+        return $this->belongsTo('App\User', 'approved_by');
+    }
 
     public function collection(){
 	 return $this->belongsTo('App\Collection','collection_id');
+    }
+
+    public function approval(){
+	return $this->hasMany('App\DocumentApproval');
+    }
+
+    public function approvals(){
+	return $this->morphMany('App\Approval', 'approvable');
+    }
+    
+    public function publish(){
+	    $this->approved_by = auth()->user()->id;
+	    $this->approved_on = Carbon::now()->toDateTimeString();
+	    $this->save();
     }
 }

@@ -5,7 +5,7 @@ namespace App\Listeners;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\DocumentDeleted as DocumentDeletedNotification;
 

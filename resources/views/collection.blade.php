@@ -31,7 +31,7 @@ $(document).ready(function() {
 			foreach($column_config_meta_fields as $m_id){
 				$m = \App\MetaField::find($m_id);
 				$visible = 'false';
-				if(in_array($m->id, $column_config_meta_fields)){
+				if(in_array(@$m->id, $column_config_meta_fields)){
 				$visible = 'true';
 			}
 			echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
@@ -73,7 +73,7 @@ $(document).ready(function() {
 			@php
 			$m = \App\MetaField::find($m_id);
 			@endphp
-		{data:"meta_{{$m->id}}"},
+		{data:"meta_{{@$m->id}}"},
 		@endforeach
         {data:"actions"},
     ],
@@ -290,7 +290,7 @@ function randomString(length) {
 		   </div>
 		   </div>
 		   <div class="col-12 text-center">
-           <!--<i class="material-icons">search</i>-->
+           <i class="material-icons">search</i>
 		   </div>
 		</div>
 		</div><!-- search-filters-card -->

@@ -10,6 +10,9 @@ $( document ).ready(function() {
 	if(options_field_val != 'Select' && options_field_val != 'SelectCombo' && options_field_val != 'MultiSelect'){
     	$("#options-field").hide();
 	}
+	if(options_field_val != 'TaxonomyTree'){
+		$("#taxonomy-tree-selection").hide();
+	}
 
   $("#type").change(function() {
     var val = $(this).val();
@@ -19,6 +22,13 @@ $( document ).ready(function() {
     else {
         $("#options-field").hide();
     }
+
+	if(val === 'TaxonomyTree'){
+		$("#taxonomy-tree-selection").show();
+	}
+	else{
+		$("#taxonomy-tree-selection").hide();
+	}
   });
 
 
@@ -122,6 +132,7 @@ function showMetaFieldForm(){
                             <option value="MultiSelect" @if($edit_field->type == 'MultiSelect') selected @endif>Multiple select</option> 
                             <option value="SelectCombo" @if($edit_field->type == 'SelectCombo') selected @endif>Select with custom input</option> 
                             <option value="Date" @if($edit_field->type == 'Date') selected @endif>Date</option> 
+                            <option value="TaxonomyTree" @if($edit_field->type == 'TaxonomyTree') selected @endif>Taxonomy Tree</option> 
                         </select>
                     </div>
                    </div>
@@ -132,6 +143,22 @@ function showMetaFieldForm(){
                    </div>
                     <div class="col-md-8">
                     <input type="text" name="options" id="options" class="form-control" placeholder="Comma separated list of options" value="{{ $edit_field->options }}" />
+                    </div>
+                   </div>
+
+                   <div class="form-group row" id="taxonomy-tree-selection">
+		   			<div class="col-md-4">
+                   <label for="tax-sel" class="col-md-12 col-form-label text-md-right">Select Tree</label> 
+                   </div>
+                    <div class="col-md-8">
+					<select class="selectpicker" name="treeoptions">
+						@php
+							$trees = App\Taxonomy::where('parent_id', null)->get();
+							foreach($trees as $t){
+								echo '<option value="'.$t->id.'">'.$t->label.'</option>';
+							}
+						@endphp
+					</select>
                     </div>
                    </div>
                    <div class="form-group row" id="display-order">

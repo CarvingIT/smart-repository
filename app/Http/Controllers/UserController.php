@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Session;
+use App\Role;
+use App\UserRole;
 
 
 
@@ -22,8 +24,10 @@ class UserController extends Controller
      public function index(User $model)
     {
         #return view('users.index', ['users' => $model->paginate(15),'activePage'=>'Users']);		## This page is as it is.
+	$roles = Role::all();
 
-        return view('usermanagement', ['users'=>$model->all(), 'activePage'=>'user-management', 'titlePage' => 'Users']);
+        return view('usermanagement', ['users'=>$model->all(), 'roles'=>$roles,
+					 'activePage'=>'user-management', 'titlePage' => 'Users']);
     }
 
     /**
@@ -63,7 +67,9 @@ class UserController extends Controller
 		if(!auth()->user()->hasRole('admin')){
 			return abort(403);
 		}
-        return view('users.edit', compact('user'));
+	$roles = Role::all();
+        //return view('users.edit', compact('user'));
+        return view('users.edit', ['user'=>$user, 'roles'=>$roles]);
     }
 
     /**
@@ -80,7 +86,18 @@ class UserController extends Controller
             $request->merge(['password' => Hash::make($request->get('password'))])
                 ->except([$hasPassword ? '' : 'password']
         ));
-
+	if(!empty($request->user_role)){
+		$user_details = User::where('email',$request->email)->first();
+		$user_id = $user_details->id;
+		$role_id = $request->user_role;
+		$role_update = UserRole::where('user_id',$user_id)->first();
+		if(empty($role_update)){
+			$role_update = new UserRole();	
+		}
+		$role_update->user_id = $user_id;
+		$role_update->role_id = $role_id;
+		$role_update->save();
+	}
         return redirect()->route('user.index')->withStatus(__('User successfully updated.'));
     }
 

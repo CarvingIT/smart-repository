@@ -7,6 +7,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use App\UserRole;
+use App\Role;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -19,7 +21,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'organization', 'occupation',
     ];
 
     /**
@@ -48,6 +50,23 @@ class User extends Authenticatable implements MustVerifyEmail
     public function roles(){
         return $this->hasMany('App\UserRole');
     }
+    public function docApprovals(){
+        return $this->hasMany('App\DocumentApproval','approved_by');
+    }
+
+    public function userrole($user_id){
+	$role = UserRole::where('user_id',$user_id)->first();
+	if(!empty($role))
+	return $role->role_id;
+    }
+    public function userrolename($user_id){
+	$role = UserRole::where('user_id',$user_id)->first();
+	if(!empty($role)){
+	$role_details = Role::find($role->role_id);
+	return $role_details->name;
+	}
+    }
+
 
     public function hasRole($role_name){
         $roles = $this->roles()->get();
@@ -119,13 +138,49 @@ class User extends Authenticatable implements MustVerifyEmail
         return false;
     }
 
-    public function canApproveDocument($document_id){
+    public function canApproveDocument($document_id, $user_role=null){
         $document = \App\Document::find($document_id);
         $collection_id = $document->collection_id;
+	$collection_details = \App\Collection::find($collection_id);
+	$approval_roles = json_decode($collection_details->column_config);
+	
         if($this->hasPermission($collection_id, 'MAINTAINER') || 
-            ($this->hasPermission($collection_id, 'APPROVE') && $document->created_by == $this->id)){
+            ($this->hasPermission($collection_id, 'APPROVE') && $document->created_by == $this->id) || in_array($user_role,$approval_roles->approved_by)){
             return true;
         }
         return false;
     }
-}
+
+
+     /**
+     * Enter your own logic (e.g. if ($this->id === 1) to
+     *   enable this user to be able to add/edit blog posts
+     *
+     * @return bool - true = they can edit / manage blog posts,
+     *        false = they have no access to the blog admin panel
+     */
+    public function canManageBinshopsBlogPosts()
+    {
+        // Enter the logic needed for your app.
+        // Maybe you can just hardcode in a user id that you
+        //   know is always an admin ID?
+
+        if (       $this->id === 1
+             && $this->email === "your_admin_user@your_site.com"
+           ){
+
+           // return true so this user CAN edit/post/delete
+           // blog posts (and post any HTML/JS)
+
+           return true;
+        }
+
+        // otherwise return false, so they have no access
+        // to the admin panel (but can still view posts)
+
+        //return false;
+        return true;
+    }
+
+///// 
+} // End of the class

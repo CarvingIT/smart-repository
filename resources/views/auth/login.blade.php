@@ -12,7 +12,7 @@
 
         <div class="card card-login card-hidden mb-3">
           <div class="card-header card-header-primary text-center">
-            <h4 class="card-title"><strong>{{ __('Login') }}</strong></h4>
+            <h6 class="card-title"><strong>{{ __('Login') }}</strong></h6>
           </div>
           <div class="card-body">
             <p class="card-description text-center">{{ __('Sign in with your registered email address and the password') }}</p>
@@ -82,4 +82,5 @@
     </div>
   </div>
 </div>
+<br>
 @endsection

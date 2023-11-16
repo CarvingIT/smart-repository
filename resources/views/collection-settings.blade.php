@@ -12,6 +12,23 @@
   	});
   } );
   </script>
+<!--link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script-->
+<link href="/css/select2.min.css" rel="stylesheet" />
+<script src="/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    $("#selectsequence").select2();
+	$('#selectsequence').on("select2:select", function (evt) {
+		var element = evt.params.data.element;
+  		var $element = $(element);
+  		$element.detach();
+  		$(this).append($element);
+  		$(this).trigger("change");
+	});
+});
+  </script>
+
 @endpush
 
 @section('content')
@@ -20,7 +37,7 @@
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections')}}</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Settings</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Database')}} :: Configuration</h4></div>
                 <div class="col-md-12 text-right">
                 <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
                 </div>
@@ -88,6 +105,25 @@
            <div class="col-md-3"><input name="auth_user_permissions[]" type="checkbox" value="{{ $p->name }}" 
 			@if(!empty($column_config->auth_user_permissions) && in_array($p->name, $column_config->auth_user_permissions)) checked="checked" @endif /> {{ $p->description }}</div>
 			@endforeach
+		</div>
+
+		<h4>{{__('Document Approval Flow')}}</h4>
+		<div class="form-group row">
+			<select class="selectsequence" id="selectsequence" name="approved_by[]" multiple style="width:100%;">	
+				@if(!empty($column_config->approved_by))
+					@foreach($column_config->approved_by as $approver)
+						@foreach($roles as $role)
+							@if(!empty($column_config->approved_by) && $approver == $role->id)
+								<option value="{{ $role->id }}" @if(!empty($column_config->approved_by) && $role->id == $approver) selected @endif>{{ $role->name }}</option>
+							@endif
+						@endforeach
+			        	@endforeach
+				@else
+					@foreach($roles as $role)
+						<option value="{{ $role->id }}">{{ $role->name }}</option>
+					@endforeach
+				@endif
+			</select>
 		</div>
 
 		<h4>{{__('Info page')}}</h4>

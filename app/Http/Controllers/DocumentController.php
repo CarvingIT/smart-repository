@@ -14,6 +14,7 @@ use Session;
 use App\Collection;
 use Spatie\PdfToText\Pdf;
 use App\MetaFieldValue;
+use App\ReverseMetaFieldValue;
 use App\Sysconfig;
 
 class DocumentController extends Controller
@@ -23,16 +24,31 @@ class DocumentController extends Controller
         return view('all_documents');
 	}
 
-    public function loadDocument($collection_id,$document_id){
+    public function listMyDocuments(Request $request){
+	    $documents = Document::where('created_by',auth()->user()->id)
+		    ->orderBy('id','desc')
+		    ->get();
+        return view('my_documents',['documents'=>$documents,'activePage'=>'My Uploaded Documents','titlePage'=>'My Uploaded Documents']);
+	}
+
+    public function loadDocument($collection_id,$document_id, Request $req){
         $doc = \App\Document::find($document_id);
+	if($doc->type == 'url'){
+		return redirect($doc->url);
+	}
 	$collection_id = $doc->collection_id;
 	$collection = \App\Collection::find($collection_id);
 	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
 
         $this->recordHit($document_id);
-
-	## New code
 	$download_file = $this->downloadFile($doc,$storage_drive);
+	## New code
+	try{
+        //$this->recordHit($document_id);
+	//$download_file = $this->downloadFile($doc,$storage_drive);
+	}
+	catch(\Exception $e){
+	}
 	return $download_file;
     }
 
@@ -50,7 +66,7 @@ class DocumentController extends Controller
         $revision = \App\DocumentRevision::where('document_id','=', $document_id)
             ->orderby('id', 'DESC')->first();
         $hit->document_id = $document_id;
-        $hit->revision_id = $revision->id;
+        $hit->revision_id = empty($revision->id)? 0 : $revision->id;
         $hit->user_id = empty(\Auth::user()->id)? null : \Auth::user()->id;
         $hit->save(); 
     }
@@ -206,11 +222,27 @@ class DocumentController extends Controller
             $this->createDocumentRevision($d);
 	}
 	else{ // no document is uploaded
-         if(!empty($request->input('approved_on'))){
+		if(!empty($request->input('external_link'))){
+			if(empty($request->input('document_id'))){
+				$d = new Document;
+			}
+			else{
+				$d = Document::find($request->input('document_id'));
+			}
+           	$d->collection_id = $request->input('collection_id');
+           	$d->created_by = \Auth::user()->id;
+			$d->title = empty($request->input('title'))?'Link '.@$request->input('external_link'):$request->input('title');
+			$d->path = 'N/A';
+			$d->type = 'url';
+			$d->size = 0;
+			$d->text_content = 'N/A';
+			$d->external_link = $request->input('external_link');
+		}
+        else if(!empty($request->input('approved_on'))){
            	$d->approved_by = \Auth::user()->id;
-		$d->approved_on = now();
+			$d->approved_on = now();
        	 }
-	 else{
+	 	else{
            	$d->approved_by = NULL;
 		$d->approved_on = NULL;
 	}
@@ -225,6 +257,7 @@ class DocumentController extends Controller
 				$messages[] = 'Document updated successfully!';
             }
             catch(\Exception $e){
+				echo $e->getMessage(); exit;
 				$errors[] = $e->getMessage();
             }
 	} // else ends (document not uploaded)
@@ -436,8 +469,9 @@ class DocumentController extends Controller
     }
 
     public function saveMetaData($document_id, $meta_data){
-        // first delete old and then save new 
-        //\App\MetaFieldValue::where('document_id','=', $document_id)->delete();
+		// reverse meta field values - first delete then add each 
+		// first delete if related this document any and then add
+		ReverseMetaFieldValue::where('document_id', $document_id)->delete();
 
         foreach($meta_data as $m){
 			if(is_object($m)){
@@ -450,13 +484,24 @@ class DocumentController extends Controller
             $m_f->document_id = $document_id;
             $m_f->meta_field_id = $m['field_id'];
 			if(is_array($m['field_value'])){
-				$m['field_value'] = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
+				$field_value_str = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
 			}
 			else{
-				$m['field_value'] = htmlentities($m['field_value']);
+				$field_value_str = htmlentities($m['field_value']);
 			}
-            $m_f->value = empty($m['field_value']) ? '' : $m['field_value'];
+            $m_f->value = empty($field_value_str) ? '' : $field_value_str;
             $m_f->save();
+
+			// save reverse meta field values
+			if(is_array($m['field_value'])){
+				foreach($m['field_value'] as $v){
+					$rmfv = new ReverseMetaFieldValue;
+					$rmfv->meta_field_id = $m['field_id'];
+					$rmfv->meta_value = $v;
+					$rmfv->document_id = $document_id;
+					$rmfv->save();
+				}
+			}
         }
     }
 

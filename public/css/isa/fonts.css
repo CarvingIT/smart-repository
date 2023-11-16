@@ -1,0 +1,89 @@
+@font-face {
+    font-family: 'gothamregular';
+    src: url('/fonts/gotham/gotham_regular-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gotham_regular-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothammedium';
+    src: url('/fonts/gotham/gothammedium-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gothammedium-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothammedium';
+    src: url('/fonts/gotham/gothammedium_1-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gothammedium_1-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothammedium';
+    src: url('/fonts/gotham/gothammediumitalic-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gothammediumitalic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothambookitalic';
+    src: url('/fonts/gotham/gotham-bookitalic-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gotham-bookitalic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothambold';
+    src: url('/fonts/gotham/gothambold-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gothambold-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothamblack';
+    src: url('/fonts/gotham/gotham-black-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gotham-black-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothamlight';
+    src: url('/fonts/gotham/gotham-light-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gotham-light-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothamthin';
+    src: url('/fonts/gotham/gotham-thin-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gotham-thin-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'gothamthinitalic';
+    src: url('/fonts/gotham/gotham-thinitalic-webfont.woff2') format('woff2'),
+         url('/fonts/gotham/gotham-thinitalic-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Arial Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Arial Regular'), url('/fonts/arial/ARIAL.woff') format('woff');
+}
+@font-face {
+    font-family: 'Arial Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Arial Bold'), url('/fonts/arial/ARIALBD.woff') format('woff');
+}
+@font-face {
+    font-family: 'Arial Italic';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Arial Italic'), url('/fonts/arial/ARIALI.woff') format('woff');
+}
