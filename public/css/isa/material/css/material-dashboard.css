@@ -10833,7 +10833,7 @@ fieldset[disabled][disabled] .btn-group-raised .btn,
 }
 
 .form-check .form-check-label {
-  cursor: pointer;
+  /*cursor: pointer;*/
   padding-left: 0;
 }
 
@@ -11008,7 +11008,7 @@ fieldset[disabled] .form-check .form-check-input,
 }
 
 .form-check .form-check-label {
-  cursor: pointer;
+  /*cursor: pointer;*/
   padding-left: 25px;
   position: relative;
 }

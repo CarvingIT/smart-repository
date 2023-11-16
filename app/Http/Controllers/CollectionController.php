@@ -548,7 +548,7 @@ class CollectionController extends Controller
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
 		->where('require_approval','=','1')->get();
 
-		if($request->is('api/*')){
+		if($request->is('api/*') || $request->return_format == 'raw'){
 			return 
         	 array(
             'data'=>$documents,
@@ -660,7 +660,7 @@ class CollectionController extends Controller
 		$documents = $documents
    	        ->limit($length)->offset($request->start)->get();
 		}
-		if($request->is('api/*')){
+		if($request->is('api/*') || $request->return_format == 'raw'){
 			return 
         		array(
             	    	'data'=>$documents,
@@ -1478,43 +1478,16 @@ use App\UrlSuppression;
 	//public function isaCollectionDocumentSearch(Request $request){
 	public function searchResults(Request $request){
 		$collection_id = $request->collection_id;
-		$analyzer = $request->analyzer;
 		$collection = \App\Collection::find($collection_id);
+		//$analyzer = $request->analyzer;
 		$keywords = $request->isa_search_parameter;
+		$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
 		
-		$meta_query = '';
-		$query_params = $request->query();
-		foreach($query_params as $p=>$v){
-			if(preg_match('/^meta_(\d*)/', $p, $matches)){
-				// currently, no support for operator in the query string parameters
-				// default operator is '='
-				//$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
-				//print_r($matches); print_r($v); exit;
-				if(is_array($v)){
-					foreach($v as $x){
-						$meta_query .= '&meta_'.$matches[1].'[]='.$x;
-					}
-				}
-				else{
-					$meta_query .= '&meta_'.$matches[1].'='.$v;
-				}	
-			}
-		}
-		$client = new \GuzzleHttp\Client();
-                $http_host = request()->getHttpHost();
-                $protocol = request()->getScheme();
-		$length=10;
-		$start = empty($request->start)? 0 : $request->start;
-                $endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?analyzer='.$analyzer.'&log_search=0&search[value]='.$keywords.$meta_query.'&start='.$start.'&length='.$length;
-//echo $endpoint; exit;
-                $res = $client->get($endpoint);
-                $status_code = $res->getStatusCode();
-                if($status_code == 200){
-					$body = $res->getBody();
-            		$documents_array = json_decode($body);
-				}
-		$total_results_count = $documents_array->recordsTotal;
-		$filtered_results_count = $documents_array->recordsFiltered;
+		$search_results = $this->search($request);
+		//print_r($search_results); exit;
+		$search_results = json_decode($search_results);
+		$total_results_count = $search_results->recordsTotal;
+		$filtered_results_count = $search_results->recordsFiltered;
         // log search query
         $old_query = Session::get('search_query');
         if(!empty($request->isa_search_parameter) && $old_query != $request->isa_search_parameter &&
@@ -1532,10 +1505,10 @@ use App\UrlSuppression;
                 $this->logSearchQuery($search_log_data);
             }
         }
-		$highlights = json_decode(json_encode(@$documents_array->highlights, true), true);
+		$highlights = json_decode(json_encode(@$search_results->highlights, true), true);
 		//Log::debug($highlights);exit;
 		return view('search-results',['collection'=>$collection, 
-			'results'=>$documents_array->data,
+			'results'=>$search_results->data,
 			'highlights'=> $highlights,  
 			'filtered_results_count'=>$filtered_results_count,
 			'total_results_count'=>$total_results_count,
