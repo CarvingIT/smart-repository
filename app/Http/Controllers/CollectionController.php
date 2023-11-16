@@ -132,7 +132,7 @@ class CollectionController extends Controller
 			 ->orderby('updated_at','DESC');
 		$total_count = $documents->count();
 		$documents = $documents->limit($length)->offset($start)->get();
-        return view('isa.collection', ['collection'=>$collection, 
+        return view('collection', ['collection'=>$collection, 
 			'filtered_results_count'=>$total_count,
 			'results'=>$documents,'documents'=>$documents, 
 			'activePage'=>'collection','titlePage'=>'Collections', 
