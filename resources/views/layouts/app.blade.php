@@ -52,9 +52,9 @@ foreach($config as $c){
         <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
         <script src="{{ asset('material') }}/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
         <script src="{{ asset('material') }}/js/settings.js"></script>
+	@stack('js')
 	<!-- overriding css -->
 	<style>
-	@stack('js')
 @php
     $conf = \App\Sysconfig::all();
     $settings = array();
