@@ -8815,8 +8815,8 @@ a.text-dark:focus {
 
 .btn.btn-primary {
   color: #fff;
-  background-color: #f05a22;
-  border-color: #f05a22;
+  background-color: #9124a3;
+  border-color: #701c7e;
   box-shadow: 0 2px 2px 0 rgba(156, 39, 176, 0.14), 0 3px 1px -2px rgba(156, 39, 176, 0.2), 0 1px 5px 0 rgba(156, 39, 176, 0.12);
 }
 
@@ -8830,7 +8830,7 @@ a.text-dark:focus {
 .btn.btn-primary.focus,
 .btn.btn-primary:hover {
   color: #fff;
-  background-color: #f05a22;
+  background-color: #9124a3;
   border-color: #701c7e;
 }
 
@@ -16814,7 +16814,7 @@ label {
 .card.bg-primary,
 .card.card-rotate.bg-primary .front,
 .card.card-rotate.bg-primary .back {
-  background: linear-gradient(60deg,#f05a22, #f05a22);
+  background: linear-gradient(60deg,#ab47bc, #8e24aa);
 }
 
 .card .card-header-info .card-icon,

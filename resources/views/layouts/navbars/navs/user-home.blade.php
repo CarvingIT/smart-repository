@@ -51,11 +51,13 @@ $activePage = 'ISA-RRR';
             <i class="material-icons">rss_feed</i> {{ __('Blog') }}
           </a>
         </li>
+	@if(env('ENABLE_COMMON_SEARCH') == 1)
         <li class="nav-item{{ $activePage == 'documents' ? ' active' : '' }}">
           <a href="/documents" class="nav-link">
             <i class="material-icons">library_books</i> {{ __('All Documents') }}
           </a>
         </li>
+	@endif
 	@if(isset($is_demo) && $is_demo == 1)
         <li class="nav-item{{ $activePage == 'features' ? ' active' : '' }}">
           <a href="/features" class="nav-link">
