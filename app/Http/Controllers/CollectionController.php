@@ -489,8 +489,10 @@ class CollectionController extends Controller
 						],
 						'highlight' => [
 							'fields' => [
-								$es_text_content => [ 'type' => 'unified'],
-								$es_title => [ 'type' => 'unified']
+								'text_content' => [ 'type' => 'unified'],
+								'text_content.porter_stem' => [ 'type' => 'unified'],
+								'title' => [ 'type' => 'unified'],
+								'title.porter_stem' => [ 'type' => 'unified']
 							],
 							'max_analyzed_offset'=>100000
 						]
