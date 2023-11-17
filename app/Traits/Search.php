@@ -174,7 +174,7 @@ trait Search{
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
 				$documents = $documents->whereNotNull('approved_on');
-				if(\Auth::user()->id){
+				if(\Auth::user() && \Auth::user()->id){
 					$documents = $documents->orWhere('created_by', \Auth::user()->id);
 				}
         		$elastic_index = 'sr_documents';
@@ -716,6 +716,51 @@ trait Search{
         	else{
         		return [];
         	}
+	}
+
+    public function userCollections($perms = ['VIEW', 'MAINTAINER']){
+        /*
+         Get all public collections 
+         plus collections to which the current user has access.
+         Access to members-only collection is determined by db_table:user_permissions 
+        */
+        $user_collections = [];
+        $user_permissions = empty(Auth::user()) ? [] : Auth::user()->accessPermissions;
+        foreach($user_permissions as $u_p){
+            if(in_array($u_p->permission->name, $perms)
+				&& !in_array($u_p->collection_id, $user_collections)){
+                $user_collections[] = $u_p->collection_id;
+            }
+        }
+        $collections = Collection::where('parent_id', null)
+			->where(function($q) use($user_collections){
+				$q->whereIn('id', $user_collections)
+				->orWhere('type','=','Public');
+			})
+			->get();
+	return $collections;
+    }
+	public function getMetaFilters($request){
+		// check if meta filters are present in the query
+		$query_params = $request->query();
+		$meta_filters_query = array();
+		foreach($query_params as $p=>$v){
+			if(preg_match('/^meta_(\d*)/', $p, $matches)){
+				// currently, no support for operator in the query string parameters
+				// default operator is '='
+				$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'=', 'value'=>$v);
+			}
+		}
+		$meta_filters = array();
+		if(count($meta_filters_query)>0){
+			$meta_filters = $meta_filters_query;
+		}
+		else{
+			// else take from the session
+        	$all_meta_filters = Session::get('meta_filters');
+        	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
+		}
+		return $meta_filters;
 	}
 
 	//public function isaCollectionDocumentSearch(Request $request){

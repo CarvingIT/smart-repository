@@ -89,8 +89,10 @@ class BotManController extends Controller
 			}
 
 			//$this->say(implode(",",$keywords));
-			$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
-			$documents_array = $this_controller->search($request);
+			$request = new \Illuminate\Http\Request;
+			$request->merge(['search'=>['value'=>implode(",",$keywords)], 'length'=>10, 'return_format'=>'raw']);
+			$search_results = $this_controller->search($request);
+			$documents_array = json_decode($search_results);	
 
 				Log::debug('Got '.count($documents_array->data). ' documents.');
 				if(count($documents_array->data) == 0){
