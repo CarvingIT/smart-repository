@@ -214,6 +214,7 @@ function goToPage(page){
 		   </div>
 		  </div>
 		</div>
+		<!--
 		<div class="row text-center">
 			<div class="col-lg-4">
 			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="standard" onclick="reloadSearchResults()" checked/> 
@@ -234,6 +235,7 @@ function goToPage(page){
 			</span> 
 			</div>
 		</div>  
+		-->
 		
 <!-- End Breadcrumbs -->
 
