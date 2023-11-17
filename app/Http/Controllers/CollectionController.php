@@ -457,7 +457,7 @@ class CollectionController extends Controller
 										]
 									],
 								],
-								'minimum_should_match' => 3
+								'minimum_should_match' => 1
 							],
 						],
 						'highlight' => [
