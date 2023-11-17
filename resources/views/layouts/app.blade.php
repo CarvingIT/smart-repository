@@ -53,8 +53,8 @@ foreach($config as $c){
         <script src="{{ asset('material') }}/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
         <script src="{{ asset('material') }}/js/settings.js"></script>
 	<!-- overriding css -->
-	<style>
 	@stack('js')
+	<style>
 @php
     $conf = \App\Sysconfig::all();
     $settings = array();

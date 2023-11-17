@@ -3,6 +3,7 @@
 namespace App\Traits;
 use Illuminate\Http\Request;
 use Session;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Log;
