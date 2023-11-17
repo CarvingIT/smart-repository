@@ -402,8 +402,11 @@ class CollectionController extends Controller
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $search_term = $request->search['value'];
             $words = explode(' ',$search_term);
-			$search_mode = empty($request->search_mode)?'default':$request->search_mode;
+			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
+			/*
+			// not allowing users to control the selection of search analyzer
+			// this code is commented because we are merging all search options into one query
 			$analyzer = empty($request->analyzer) ? 'standard' : $request->analyzer; // standard analyzer is the default
 			Log::debug('Analyzer: '.$analyzer);
 
@@ -413,12 +416,16 @@ class CollectionController extends Controller
 				$es_title = 'title.porter_stem';
 				$es_text_content = 'text_content.porter_stem';
 			}
+			*/
 	
-				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
-				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
-				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];
-				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];
-				$q_without_and = ['query'=>$search_term, 'analyzer'=>$analyzer];
+				$title_q_with_and_syn = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>'synonyms_analyzer'];
+				$title_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
+				$text_q_with_and_syn = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'synonyms_analyzer'];
+				$text_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
+				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>'standard'];// just standard analyzer should be enough here
+				$q_without_and_syn = ['query'=>$search_term, 'analyzer'=>'synonyms_analyzer'];
+				$q_without_and_ps = ['query'=>$search_term, 'analyzer'=>'porter_stem_analyzer'];
+				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>'standard'];// just standard analyzer should be enough here
 
 				$params = [
 					'index' => 'sr_documents',
@@ -428,32 +435,52 @@ class CollectionController extends Controller
 								'should' => [
 									[
 										'match' => [
-											$es_title => $q_without_and,
+											'title' => $q_without_and_syn,
 										]
 									],
 									[
 										'match' => [
-											$es_text_content => $q_without_and
+											'title.porter_stem' => $q_without_and_ps,
 										]
 									],
 									[
 										'match' => [
-											$es_title => $title_q_with_and,
+											'text_content' => $q_without_and_syn
 										]
 									],
 									[
 										'match' => [
-											$es_text_content => $text_q_with_and
+											'text_content.porter_stem' => $q_without_and_ps
+										]
+									],
+									[
+										'match' => [
+											'title' => $title_q_with_and_syn,
+										]
+									],
+									[
+										'match' => [
+											'title.porter_stem' => $title_q_with_and_ps,
+										]
+									],
+									[
+										'match' => [
+											'text_content' => $text_q_with_and_syn,
+										]
+									],
+									[
+										'match' => [
+											'text_content.porter_stem' => $text_q_with_and_ps,
 										]
 									],
 									[
 										'match_phrase' => [
-											$es_title => $q_title_phrase,
+											'title' => $q_title_phrase,
 										]
 									],
 									[
 										'match_phrase' => [
-											$es_text_content => $q_text_phrase
+											'text_content' => $q_text_phrase
 										]
 									],
 								],
@@ -472,21 +499,6 @@ class CollectionController extends Controller
 	    	if(!empty($request->collection_id)){
             	$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
 			}
-			/*
-            foreach($words as $w){
-                $params['body']['query']['bool']['should'][]['wildcard']['title']=$w.'*';
-                $params['body']['query']['bool']['should'][]['wildcard']['text_content']=$w.'*';
-            }
-            	$params['body']['query']['bool']['minimum_should_match']= count($words);
-            	$params['body']['query']['bool']['boost']= 1.0;
-			*/
-            	//$params['body']['sort']= ['_score'];
-				
-			/*
-                $params['body']['query']['combined_fields']['query']= $search_term;
-                $params['body']['query']['combined_fields']['operator']= 'and';
-                $params['body']['query']['combined_fields']['fields']= ['title','text_content'];
-			*/
         }
         $columns = array('type', 'title', 'size', 'updated_at');
         if(!empty($params)){
