@@ -7,6 +7,20 @@
 		display:inline-block;
 		width:80%;
 	}
+.loader {
+  margin:0 auto;
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #f05a22; /* Orange */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 <script>
 $(document).ready(function() {
@@ -26,6 +40,7 @@ $(document).ready(function() {
 });
 
 function reloadSearchResults(){
+	$("#search-results").html('<div class="loader"></div>');
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
 	var url = '/collection/1/search-results?'+queryString;
