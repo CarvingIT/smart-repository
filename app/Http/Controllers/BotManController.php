@@ -13,9 +13,11 @@ use Illuminate\Support\Facades\Log;
 use BotMan\BotMan\Messages\Attachments\File;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use App\BotmanAnswer;
+use App\Traits\Search;
 
 class BotManController extends Controller
 {
+	use Search;
 	public $chatgpt;
     /**
      * Place your BotMan logic here.
@@ -26,7 +28,7 @@ class BotManController extends Controller
 		
         $botman->hears('{message}', function($botman, $req, $message) {
 			if($message == 'q'){
-				$this->search($botman, $req);
+				$this->questionAnswerMode($botman, $req);
             }
 			/*
             else if (strtolower($message) == 'hi' || strtolower($message) == 'hello') {
@@ -38,7 +40,7 @@ class BotManController extends Controller
 			*/
 			else{
 				//$this->unknownCommand($botman);
-				$this->search($botman, $req);
+				$this->questionAnswerMode($botman, $req);
 			}
         });
         $botman->listen();
@@ -64,7 +66,7 @@ class BotManController extends Controller
         });
     }
 
-    public function search($botman, $req)
+    public function questionAnswerMode($botman, $req)
     {
 		$this_controller = $this;
 
@@ -87,17 +89,9 @@ class BotManController extends Controller
 			}
 
 			//$this->say(implode(",",$keywords));
-			$client = new \GuzzleHttp\Client();
-			$http_host = request()->getHttpHost();
-			$protocol = request()->getScheme();
-			$endpoint = $protocol.'://'.$http_host.'/api/collection/1/search?length=25&search[value]='.urlencode(implode(" ",$keywords));
+			$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
+			$documents_array = $this_controller->search($request);
 
-			$res = $client->get($endpoint);
-
-			$status_code = $res->getStatusCode();
-			if($status_code == 200){
-				$body = $res->getBody();
-				$documents_array = json_decode($body);
 				Log::debug('Got '.count($documents_array->data). ' documents.');
 				if(count($documents_array->data) == 0){
 					$this->say('I did not get any documents to answer your question from.');
@@ -200,9 +194,9 @@ class BotManController extends Controller
 						return $this->ask('Type in another question.', $botSearch);
 					}
 				}
-			}else{
-				$this->say('There was some error. Please try again.');
-			}
+			//}else{
+				//$this->say('There was some error. Please try again.');
+			//}
         };
 
 		$botman->ask('Type in your question.', $botSearch);
@@ -246,11 +240,5 @@ class BotManController extends Controller
     	$response = $chatgpt->response();
 
     	return stripos( $response->content, "yes" ) === false;
-	}
-}
-
-class QuestionAnswerMode extends Conversation{
-	public function run(){
-		$this->say('HELLO');
 	}
 }
