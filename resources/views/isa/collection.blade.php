@@ -318,7 +318,10 @@ foreach($tags as $t){
         }
       }
       document.querySelector('#end_year').value = this.value;
-	  reloadSearchResults();
+    };
+
+    upperSlider.onmouseup = function () {
+	reloadSearchResults();
     };
 
     lowerSlider.oninput = function () {
@@ -331,7 +334,10 @@ foreach($tags as $t){
         }
       }
       document.querySelector('#start_year').value = this.value;
-	  reloadSearchResults();
+    };
+
+    lowerSlider.onmouseup = function () {
+	reloadSearchResults();
     };
   </script>
 		<div class="form-check">

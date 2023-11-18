@@ -201,15 +201,17 @@ trait Search{
 				$es_text_content = 'text_content.porter_stem';
 			}
 			*/
+	    		$analyzer = 'synonyms_analyzer';
+	    		$analyzer = 'standard';
 	
-				$title_q_with_and_syn = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>'synonyms_analyzer'];
+				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
 				$title_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
-				$text_q_with_and_syn = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'synonyms_analyzer'];
+				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
 				$text_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
-				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>'standard'];// just standard analyzer should be enough here
-				$q_without_and_syn = ['query'=>$search_term, 'analyzer'=>'synonyms_analyzer'];
+				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
+				$q_without_and = ['query'=>$search_term, 'analyzer'=>$analyzer];
 				$q_without_and_ps = ['query'=>$search_term, 'analyzer'=>'porter_stem_analyzer'];
-				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>'standard'];// just standard analyzer should be enough here
+				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
 
 				$params = [
 					'index' => 'sr_documents',
@@ -223,12 +225,17 @@ trait Search{
 											'title' => $q_title_phrase,
 										]
 									],
-									*/
 									[
 										'match' => [
-											'title' => $title_q_with_and_syn,
+											'title' => $title_q_with_and,
 										]
 									],
+									[
+										'match' => [
+											'text_content' => $text_q_with_and,
+										]
+									],
+									*/
 									[
 										'match_phrase' => [
 											'text_content' => $q_text_phrase
@@ -236,19 +243,15 @@ trait Search{
 									],
 									[
 										'match' => [
-											'text_content' => $text_q_with_and_syn,
+											'title' => $q_without_and,
 										]
 									],
 									[
 										'match' => [
-											'title' => $q_without_and_syn,
+											'text_content' => $q_without_and
 										]
 									],
-									[
-										'match' => [
-											'text_content' => $q_without_and_syn
-										]
-									],
+									/*
 									[
 										'match' => [
 											'title.porter_stem' => $title_q_with_and_ps,
@@ -259,6 +262,7 @@ trait Search{
 											'text_content.porter_stem' => $text_q_with_and_ps,
 										]
 									],
+									 */
 									[
 										'match' => [
 											'title.porter_stem' => $q_without_and_ps,
