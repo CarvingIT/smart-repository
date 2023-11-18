@@ -217,34 +217,21 @@ trait Search{
 						'query' => [
 							'bool' => [
 								'should' => [
+									/*
 									[
-										'match' => [
-											'title' => $q_without_and_syn,
+										'match_phrase' => [
+											'title' => $q_title_phrase,
 										]
 									],
-									[
-										'match' => [
-											'title.porter_stem' => $q_without_and_ps,
-										]
-									],
-									[
-										'match' => [
-											'text_content' => $q_without_and_syn
-										]
-									],
-									[
-										'match' => [
-											'text_content.porter_stem' => $q_without_and_ps
-										]
-									],
+									*/
 									[
 										'match' => [
 											'title' => $title_q_with_and_syn,
 										]
 									],
 									[
-										'match' => [
-											'title.porter_stem' => $title_q_with_and_ps,
+										'match_phrase' => [
+											'text_content' => $q_text_phrase
 										]
 									],
 									[
@@ -254,17 +241,32 @@ trait Search{
 									],
 									[
 										'match' => [
+											'title' => $q_without_and_syn,
+										]
+									],
+									[
+										'match' => [
+											'text_content' => $q_without_and_syn
+										]
+									],
+									[
+										'match' => [
+											'title.porter_stem' => $title_q_with_and_ps,
+										]
+									],
+									[
+										'match' => [
 											'text_content.porter_stem' => $text_q_with_and_ps,
 										]
 									],
 									[
-										'match_phrase' => [
-											'title' => $q_title_phrase,
+										'match' => [
+											'title.porter_stem' => $q_without_and_ps,
 										]
 									],
 									[
-										'match_phrase' => [
-											'text_content' => $q_text_phrase
+										'match' => [
+											'text_content.porter_stem' => $q_without_and_ps
 										]
 									],
 								],
@@ -283,7 +285,8 @@ trait Search{
 					]
 				];
 	    	if(!empty($request->collection_id)){
-            	$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
+				// this is currently done at the db level
+            	//$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
 			}
         }
         $columns = array('type', 'title', 'size', 'updated_at');

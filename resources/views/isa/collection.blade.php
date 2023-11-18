@@ -41,6 +41,10 @@ $(document).ready(function() {
 
 function reloadSearchResults(){
 	$("#search-results").html('<div class="loader"></div>');
+	$('html, body').animate({
+            scrollTop: $(".loader").offset().top - 200
+        }, 500);	
+
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
 	var url = '/collection/1/search-results?'+queryString;
