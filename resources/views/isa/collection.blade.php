@@ -320,7 +320,11 @@ foreach($tags as $t){
       document.querySelector('#end_year').value = this.value;
     };
 
-    upperSlider.onpointerup = function () {
+    upperSlider.onmouseup = function () {
+	reloadSearchResults();
+    };
+
+    upperSlider.ontouchend = function () {
 	reloadSearchResults();
     };
 
@@ -336,7 +340,10 @@ foreach($tags as $t){
       document.querySelector('#start_year').value = this.value;
     };
 
-    lowerSlider.onpointerup = function () {
+    lowerSlider.onmouseup = function () {
+	reloadSearchResults();
+    };
+    lowerSlider.ontouchend = function () {
 	reloadSearchResults();
     };
   </script>
