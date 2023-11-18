@@ -40,17 +40,20 @@ $(document).ready(function() {
 });
 
 function reloadSearchResults(){
-	$("#search-results").html('<div class="loader"></div>');
-	$('html, body').animate({
-            scrollTop: $(".loader").offset().top - 200
-        }, 500);	
+	showSpinner();
+	// go to the first page
+	$('#search-results-start').val(0);
+	loadSearchResults();
+}
 
+function loadSearchResults(){
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
 	var url = '/collection/1/search-results?'+queryString;
 	$("#search-results").load(url);
 	return false;
 }
+
 function drillDown(checkbox_filter){
 	if($(checkbox_filter).is(':checked')){
         //alert(checkbox_filter.value);
@@ -63,25 +66,37 @@ function drillDown(checkbox_filter){
 	}
 	reloadSearchResults();
 }
+
+function showSpinner(){
+	$("#search-results").html('<div class="loader"></div>');
+	$('html, body').animate({
+            scrollTop: $(".loader").offset().top - 200
+        }, 500);	
+}
+
 function nextPage(){
+	showSpinner();
 	var start = $('#search-results-start').val();
 	start = parseInt(start) + 10;
 	$('#search-results-start').val(start);
-	reloadSearchResults();
+	loadSearchResults();
 	return false;
 }
+
 function previousPage(){
+	showSpinner();
 	var start = $('#search-results-start').val();
 	start = parseInt(start) - 10;
 	$('#search-results-start').val(start);
-	reloadSearchResults();
+	loadSearchResults();
 	return false;
 }
 
 function goToPage(page){
+	showSpinner();
 	var start = (page - 1) * 10;
 	$('#search-results-start').val(start);
-	reloadSearchResults();
+	loadSearchResults();
 	return false;
 }
 
@@ -110,8 +125,8 @@ function goToPage(page){
 	//print_r($rmfv_map);exit;
 	// get meta fields of this collection
 	$meta_fields = $collection->meta_fields;
-	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
-	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
+	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
 	$filters = [];
 	foreach($meta_fields as $m){
 		if(in_array($m->label, $filter_labels)){
@@ -301,6 +316,7 @@ foreach($tags as $t){
     var lowerSlider = document.getElementById('year_lower_slider');
     var upperSlider = document.getElementById('year_upper_slider');
 
+	if(lowerSlider && upperSlider){
     document.querySelector('#end_year').value = upperSlider.value;
     document.querySelector('#start_year').value = lowerSlider.value;
 
@@ -346,6 +362,7 @@ foreach($tags as $t){
     lowerSlider.ontouchend = function () {
 	reloadSearchResults();
     };
+	}//if lowerSlider and upperSlider
   </script>
 		<div class="form-check">
 		</div>
