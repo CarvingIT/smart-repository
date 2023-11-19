@@ -108,8 +108,8 @@
             </div>
 			<div class="card-body">
 				<ul>
-					@foreach ($user_downloads as $d)
-					<li><a href="/document/{{ $d->document->id }}">{{ $d->document->title }}</a></li>
+						@foreach ($user_downloads as $d)
+						<li><a href="/document/{{ @$d->document->id }}">{{ @$d->document->title }}</a></li>
 					@endforeach	
 				</ul>
 			</div>

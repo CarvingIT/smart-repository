@@ -289,9 +289,11 @@ function randomString(length) {
 			</style>
 		   </div>
 		   </div>
+			<!--
 		   <div class="col-12 text-center">
            <i class="material-icons">search</i>
 		   </div>
+			-->
 		</div>
 		</div><!-- search-filters-card -->
 		<!-- show filters -->
@@ -385,7 +387,6 @@ function randomString(length) {
 				@endforeach
 			@endif
 
-			@if(env('SEARCH_MODE') == 'elastic')
 $(document).ready(function() {
         //alert("js is working");
         src = "{{ route('autosuggest') }}";
@@ -414,10 +415,8 @@ $(document).ready(function() {
             minLength: 1,
         });
     });
-			@else
-			$('#collection_search').keyup(function(){
-      			oTable.search($(this).val()).draw() ;
-			})
-			@endif
+		$('#collection_search').keyup(function(){
+   			oTable.search($(this).val()).draw() ;
+		})
 		</script>
 @endsection

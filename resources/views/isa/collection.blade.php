@@ -7,6 +7,20 @@
 		display:inline-block;
 		width:80%;
 	}
+.loader {
+  margin:0 auto;
+  border: 16px solid #f3f3f3; /* Light grey */
+  border-top: 16px solid #f05a22; /* Orange */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 <script>
 $(document).ready(function() {
@@ -26,12 +40,20 @@ $(document).ready(function() {
 });
 
 function reloadSearchResults(){
+	showSpinner();
+	// go to the first page
+	$('#search-results-start').val(0);
+	loadSearchResults();
+}
+
+function loadSearchResults(){
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
 	var url = '/collection/1/search-results?'+queryString;
 	$("#search-results").load(url);
 	return false;
 }
+
 function drillDown(checkbox_filter){
 	if($(checkbox_filter).is(':checked')){
         //alert(checkbox_filter.value);
@@ -44,25 +66,37 @@ function drillDown(checkbox_filter){
 	}
 	reloadSearchResults();
 }
+
+function showSpinner(){
+	$("#search-results").html('<div class="loader"></div>');
+	$('html, body').animate({
+            scrollTop: $(".loader").offset().top - 200
+        }, 500);	
+}
+
 function nextPage(){
+	showSpinner();
 	var start = $('#search-results-start').val();
 	start = parseInt(start) + 10;
 	$('#search-results-start').val(start);
-	reloadSearchResults();
+	loadSearchResults();
 	return false;
 }
+
 function previousPage(){
+	showSpinner();
 	var start = $('#search-results-start').val();
 	start = parseInt(start) - 10;
 	$('#search-results-start').val(start);
-	reloadSearchResults();
+	loadSearchResults();
 	return false;
 }
 
 function goToPage(page){
+	showSpinner();
 	var start = (page - 1) * 10;
 	$('#search-results-start').val(start);
-	reloadSearchResults();
+	loadSearchResults();
 	return false;
 }
 
@@ -187,8 +221,10 @@ function goToPage(page){
 		<div class="row text-center">
 		   <div class="col-lg-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Enter search keywords') }}</label>
-		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" />
+			<!--
+			<label for="collection_search">{{ __('Search data') }}</label>
+			-->
+		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" placeholder="Search data"/>
 		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
 			<input type="button" value="Search" name="isa_search" class="btn btn-sm btn-primary search" onclick="reloadSearchResults()">
 			<style>
@@ -199,6 +235,7 @@ function goToPage(page){
 		   </div>
 		  </div>
 		</div>
+		<!--
 		<div class="row text-center">
 			<div class="col-lg-4">
 			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="standard" onclick="reloadSearchResults()" checked/> 
@@ -219,6 +256,7 @@ function goToPage(page){
 			</span> 
 			</div>
 		</div>  
+		-->
 		
 <!-- End Breadcrumbs -->
 
@@ -280,6 +318,7 @@ foreach($tags as $t){
     var lowerSlider = document.getElementById('year_lower_slider');
     var upperSlider = document.getElementById('year_upper_slider');
 
+	if(lowerSlider && upperSlider){
     document.querySelector('#end_year').value = upperSlider.value;
     document.querySelector('#start_year').value = lowerSlider.value;
 
@@ -297,7 +336,14 @@ foreach($tags as $t){
         }
       }
       document.querySelector('#end_year').value = this.value;
-	  reloadSearchResults();
+    };
+
+    upperSlider.onmouseup = function () {
+	reloadSearchResults();
+    };
+
+    upperSlider.ontouchend = function () {
+	reloadSearchResults();
     };
 
     lowerSlider.oninput = function () {
@@ -310,8 +356,15 @@ foreach($tags as $t){
         }
       }
       document.querySelector('#start_year').value = this.value;
-	  reloadSearchResults();
     };
+
+    lowerSlider.onmouseup = function () {
+	reloadSearchResults();
+    };
+    lowerSlider.ontouchend = function () {
+	reloadSearchResults();
+    };
+	}//if lowerSlider and upperSlider
   </script>
 		<div class="form-check">
 		</div>
