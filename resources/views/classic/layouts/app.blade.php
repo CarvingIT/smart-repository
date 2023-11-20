@@ -197,11 +197,11 @@
         </div>
 
         <div class="col-lg-3 col-md-6 col-5 footer-contact text-md-start">
-          <h4>Quick Links</h4>
+          <!--<h4>Quick Links</h4>-->
         </div>
         
         <div class="col-lg-4 col-md-6 col-7 footer-contact text-md-start">
-          <h4>Contact Us</h4>
+          <!--<h4>Contact Us</h4>-->
           <p>
           </p>
         </div>

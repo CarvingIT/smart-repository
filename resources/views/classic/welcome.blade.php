@@ -35,8 +35,8 @@
 </script>
 @endpush
   <!-- ======= Hero Section ======= -->
-  <section id="hero" class="hero d-flex align-items-center">
-    <div class="container"  style="background-color: #444;">
+  <section id="hero" class="hero1 d-flex align-items-center">
+    <div class="container">
       <div class="row gy-4 d-flex justify-content-between">
         <div class="col-lg-12 order-2 order-lg-1 d-flex flex-column justify-content-center content-center">
 
