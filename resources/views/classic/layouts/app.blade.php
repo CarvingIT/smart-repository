@@ -102,22 +102,15 @@
       <nav id="navbar" class="navbar">
         <ul>
           <li><a href="/">Home</a></li>
-          <li><a href="/collection/1">Database</a></li>
-          <li class="dropdown">
-            <a href="/en/blog"><span>Collaborations</span><i class="bi bi-chevron-down dropdown-indicator"></i></a>
-            <ul>
-              <li><a href="/en/blog">Views</a></li>
-            </ul>
+          <li><a href="/collections">Collections</a></li>
+          <li>
+            <a href="/contact">Contact</a>
           </li>
           @if(Auth::check())
           <li class="mobile-only"><a href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a></li>
               @else
               <li class="mobile-only"><a href="/login">Login</a></li>
               @endif
-          <li class="mobile-only"><a href="/about">About Repository</a></li>
-          <li class="mobile-only"><a href="/faq">FAQs</a></li>
-          <li class="mobile-only"><a href="/feedback">Feedback</a></li>
-          <li class="mobile-only"><a href="/contact-us">Contact Us</a></li>
           @if(Auth::check() && Auth::user()->hasRole('admin'))
           <li class="mobile-only"><a href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
           <li class="mobile-only"><a href="/admin/rolesmanagement">{{ __('Manage Roles') }}</a></li>
@@ -141,10 +134,6 @@
                     @else
                       <li><a href="/login">Login</a></li>
                     @endif
-                      <li><a href="/about">About Repository</a></li>
-                      <li><a href="/faq">FAQs</a></li>
-                      <li><a href="/feedback">Feedback</a></li>
-                      <li><a href="/contact-us">Contact Us</a></li>
                     </ul>
                   </div>
                   <div class="col-lg-6">
