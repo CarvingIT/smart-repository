@@ -179,6 +179,7 @@
     @yield('content')
   </div>
 </div>
+@if(!empty(env('OPENAI_API_KEY')))
     <script>
 	    var botmanWidget = {
 			frameEndpoint: '/chatbot-frame.html',
@@ -192,6 +193,7 @@
 	    };
     </script>
     <script src='/js/botman_widget.js'></script>
+@endif
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="container">

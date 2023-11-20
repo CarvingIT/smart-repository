@@ -150,9 +150,9 @@ $(document).ready(function()
                             <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
 							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
+							@elseif ($m->meta_field->type ==  'TaxonomyTree')
+                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $document->meta_value($m->meta_field_id) }}</span>
 							@else
-                            <!--span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $m->value }}</span-->
-                            <!--div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $m->value !!}</div-->
                             <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $m->value !!}</div>
 							@endif
                             </div>
