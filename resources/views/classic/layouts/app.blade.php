@@ -8,10 +8,10 @@
   <meta content="" name="description">
   <meta content="" name="keywords">
   <!-- Favicons -->
-  <link rel="apple-touch-icon" sizes="180x180" href="/css/isa/img/favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/css/isa/img/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/css/isa/img/favicon/favicon-16x16.png">
-  <link rel="manifest" href="/css/isa/img/favicon/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/css/classic/img/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/css/classic/img/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/css/classic/img/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/css/classic/img/favicon/site.webmanifest">
   <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
   <!-- Google Fonts -->
@@ -19,19 +19,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600;1,700&family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
   <!-- Vendor CSS Files -->
-  <link href="/css/isa/material/css/material-dashboard.css" rel="stylesheet">
-  <link href="/css/isa/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="/css/isa/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="/css/isa/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
-  <link href="/css/isa/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="/css/isa/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-  <link href="/css/isa/vendor/aos/aos.css" rel="stylesheet">
+  <link href="/css/classic/material/css/material-dashboard.css" rel="stylesheet">
+  <link href="/css/classic/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/classic/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+  <link href="/css/classic/vendor/fontawesome-free/css/all.min.css" rel="stylesheet">
+  <link href="/css/classic/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+  <link href="/css/classic/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="/css/classic/vendor/aos/aos.css" rel="stylesheet">
 
   <!-- Template Main CSS File -->
-  <link rel="stylesheet" href="{{url('/css/isa/main.css')}}" />
+  <link rel="stylesheet" href="{{url('/css/classic/main.css')}}" />
 
   <!-- Fonts -->
-  <link href="/css/isa/fonts.css" rel="stylesheet">
+  <link href="/css/classic/fonts.css" rel="stylesheet">
   <!--
   <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
   -->
@@ -39,7 +39,7 @@
   <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
   <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
   <script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
-  <script src="/js/isa/main.js"></script>
+  <script src="/js/classic/main.js"></script>
   <!--script src="/js/jquery-3.5.1.js"></script-->
 
   @stack('js') 
@@ -76,9 +76,6 @@
   <!-- ======= Header ======= -->
 <div class="top-bar">
     <div class="container-fluid container-xl d-flex justify-content-end align-items-center">
-       <div class="top-bar-link">
-        Need a Guide? <a href="#">Start Here.</a>
-      </div>
       <div class="social-media-header">
         <a href="https://www.facebook.com/InternationalSolarAlliance/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
         <a href="https://twitter.com/isolaralliance" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
@@ -93,12 +90,12 @@
       @csrf
     </form>
     <a href="/" class="logo d-flex align-items-center">
-        <img src="/img/isa/img/site-logo.png" alt="Logo">
-        <img class="sticke-logo" src="/img/isa/img/site-logo.png" alt="Logo">
-        <div class="introduce-text">
-          <span class="vertical-line"></span>
-          <p>Regulation <br> Repository</p>
-        </div>
+
+	@if(!empty($sysconfig['logo_url']))
+	<img class="logo_img" src="/storage/{{ $sysconfig['logo_url'] }}">
+	@else
+	<img class="logo_img" src="/i/your-logo.png" />
+	@endif
       </a>
       <i class="mobile-nav-toggle mobile-nav-show bi bi-list"></i>
       <i class="mobile-nav-toggle mobile-nav-hide d-none bi bi-x"></i>
@@ -195,22 +192,11 @@
 	    };
     </script>
     <script src='/js/botman_widget.js'></script>
-	<script>
-		/*
-		setTimeout(function(){
-		window.botmanChatWidget.whisper('q');
-		window.botmanChatWidget.close();
-		}, 1000);
-		*/
-	</script>
   <!-- ======= Footer ======= -->
   <footer id="footer" class="footer">
     <div class="container">
       <div class="row gy-2">
         <div class="col-lg-5 col-md-12 footer-info">
-          <a href="/" class="logo d-flex align-items-center">
-            <img src="/img/isa/img/site-logo-light.png" alt="Logo">
-          </a>
           <div class="social-links d-flex mt-4">
             <a href="https://www.facebook.com/InternationalSolarAlliance/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
             <a href="https://www.twitter.com/" class="twitter" target="_blank"><i class="bi bi-twitter"></i></a>
@@ -221,29 +207,15 @@
 
         <div class="col-lg-3 col-md-6 col-5 footer-contact text-md-start">
           <h4>Quick Links</h4>
-          <p><a href="/">Home</a><br>
-            <a href="/about">About Repository</a><br>
-            <a href="/collection/1">Database</a><br>
-            <a href="/service">Terms of Service</a><br>
-            <a href="/policy">Privacy Policy</a>
-          </p>
         </div>
         
         <div class="col-lg-4 col-md-6 col-7 footer-contact text-md-start">
           <h4>Contact Us</h4>
           <p>
-            International Solar Alliance Secretariat<br>
-            Surya Bhawan, <br>
-            National Institute of Solar Energy Campus Gwal Pahari,<br>
-            Faridabad-Gurugram Road,<br>
-            Gurugram, Haryana – 122003,
-            India<br>
-            <strong>Tel:</strong> +91 124 362 3090/69<br>
-            <strong>Email:</strong> <a href="mailto:info@isolaralliance.org">info@isolaralliance.org</a><br>
           </p>
         </div>
        <div class="copyright col-lg-12 col-md-12 col-12 footer-contact ">
-        &copy; Copyright <strong><span>ISA</span></strong>. All Rights Reserved
+        &copy; Copyright. All Rights Reserved
       </div> 
       </div>
     </div>
@@ -253,12 +225,12 @@
 
 <div id="preloader"></div>
 <!-- Vendor JS Files -->
-<script src="/css/isa/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script src="/css/isa/vendor/purecounter/purecounter_vanilla.js"></script>
-<script src="/css/isa/vendor/glightbox/js/glightbox.min.js"></script>
-<script src="/css/isa/vendor/swiper/swiper-bundle.min.js"></script>
-<script src="/css/isa/vendor/aos/aos.js"></script>
-<script src="/css/isa/vendor/php-email-form/validate.js"></script>
+<script src="/css/classic/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/css/classic/vendor/purecounter/purecounter_vanilla.js"></script>
+<script src="/css/classic/vendor/glightbox/js/glightbox.min.js"></script>
+<script src="/css/classic/vendor/swiper/swiper-bundle.min.js"></script>
+<script src="/css/classic/vendor/aos/aos.js"></script>
+<script src="/css/classic/vendor/php-email-form/validate.js"></script>
 <!-- Template Main JS File -->
 <script src="{{ asset('material') }}/js/core/popper.min.js"></script>
 <script src="{{ asset('material') }}/js/core/bootstrap-material-design.min.js"></script>
