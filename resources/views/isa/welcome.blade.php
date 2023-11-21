@@ -177,7 +177,13 @@
 
     <!-- ======= News & Updates Section ======= -->
 @php
-$f = FeedReader::read('https://www.solarpowerworldonline.com/feed/');
+$feeds = ['https://www.solarpowerworldonline.com/feed/', 'https://cleantechnica.com/feed/','https://www.pveurope.eu/rss_feed/pve-rss-feed-news'];
+$items = [];
+foreach($feeds as $feed){
+	$f = FeedReader::read($feed);
+	$items_new = $f->get_items();
+	$items = array_merge($items, array_slice($items_new,0,4));
+}
 @endphp
 
     <section id="news-updates" class="news-updates-section pt-0">
@@ -189,7 +195,7 @@ $f = FeedReader::read('https://www.solarpowerworldonline.com/feed/');
         <div class="slides-3 swiper" data-aos="fade-up">
           <div class="swiper-wrapper" >
 	
-@foreach ($f->get_items() as $item)
+@foreach ($items as $item)
             <div class="swiper-slide">
               <div class="news-updates-item">
 				<!--
