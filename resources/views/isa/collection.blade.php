@@ -192,7 +192,7 @@ function goToPage(page){
         <div class="col-md-12">
             <div class="card">
 				<div class="card-header card-header-primary">
-                	<h5 class="card-title ">{{ __('Database') }}</h5>
+                	<h6 class="card-title ">{{ __('Database') }}</h6>
             	</div>
 			<div class="card-body">
 			<div class="row">
