@@ -3,7 +3,24 @@
 <head>
     <title>BotMan Widget</title>
     <meta charset="UTF-8">
+	<script type="text/javascript" src="/js/jquery-3.5.1.js"></script>
     <link rel="stylesheet" type="text/css" href="/css/chat.min.css">
+        <script>
+
+            setInterval(function () 
+            {        
+                if($( "ol.chat li:last-child" ).attr('class') ==='visitor')
+                {
+                    $( "ol.chat" ).append('<li class="indicator"><div class="loading-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></li>');
+                    $("#messageArea").scrollTop($(document).height());
+                }
+                else
+                {              
+                    if($( "ol.chat li:last-child" ).attr('class') ==='indicator' && $("ol.chat li:nth-last-child(2)").attr('class') ==='chatbot') $("ol.chat li .loading-dots").parent().remove();
+                }
+            }, 10);
+        
+        </script>
 </head>
 <body>
     <script id="botmanWidget" src='/js/chat.js'></script>

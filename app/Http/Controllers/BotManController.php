@@ -79,7 +79,7 @@ class BotManController extends Controller
 			// check if this question was asked earlier
 			// saves time
 			$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
-			$botman_answer = BotmanAnswer::where('question', $question)->first();
+			$botman_answer = BotmanAnswer::where('question', $question)->whereNotNull('answer')->first();
 			$related_docs_link = 'Find more related documents <a target="_new" href="/collection/1?isa_search_parameter='.
                             urlencode(implode(' ',$keywords)).'">here</a>.';
 			if($botman_answer){
@@ -96,6 +96,15 @@ class BotManController extends Controller
 
 				Log::debug('Got '.count($documents_array->data). ' documents.');
 				if(count($documents_array->data) == 0){
+					// log q without a
+					$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
+					$botman_answer = BotmanAnswer::where('question', $question)->first();
+					if(!$botman_answer){
+						$botman_answer = new BotmanAnswer;
+					}
+					$botman_answer->question = $question;
+					$botman_answer->keywords = implode(' ',array_sort($keywords));	
+					$botman_answer->save();
 					$this->say('I did not get any documents to answer your question from.');
 					return $this->ask('Try rephrasing your question.', $botSearch);
 				}
@@ -134,6 +143,15 @@ class BotManController extends Controller
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
+					// log q without a
+					$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
+					$botman_answer = BotmanAnswer::where('question', $question)->first();
+					if(!$botman_answer){
+						$botman_answer = new BotmanAnswer;
+					}
+					$botman_answer->question = $question;
+					$botman_answer->keywords = implode(' ',array_sort($keywords));	
+					$botman_answer->save();
 					//$this->say('Found '.count($documents_array->data).' documents that look relevant but could not answer your question.');
 					return $this->ask('Try rephrasing your question.', $botSearch);
 				}
@@ -173,6 +191,16 @@ class BotManController extends Controller
 						Log::debug('OpenAI request #'. $open_ai_req_cnt);
 					}
 					if(empty($answer_full)){
+						// log q without a
+						$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
+						$botman_answer = BotmanAnswer::where('question', $question)->first();
+						if(!$botman_answer){
+							$botman_answer = new BotmanAnswer;
+						}
+						$botman_answer->question = $question;
+						$botman_answer->keywords = implode(' ',array_sort($keywords));	
+						$botman_answer->save();
+
 						$this->say('I did not get an answer to your query.');
 						return $this->ask('Please see if you can find any documents 
 							<a target="_new" href="/collection/1?isa_search_parameter='.
@@ -188,8 +216,12 @@ class BotManController extends Controller
 						$this->say($answer_full);
 						$this->say($related_docs_link);
 						// log q and a here
-						$botman_answer = new BotmanAnswer;
-						$botman_answer->question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
+						$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
+						$botman_answer = BotmanAnswer::where('question', $question)->first();
+						if(!$botman_answer){
+							$botman_answer = new BotmanAnswer;
+						}
+						$botman_answer->question = $question;
 						$botman_answer->keywords = implode(' ',array_sort($keywords));	
 						$botman_answer->answer = $answer_full;
 						$botman_answer->save();
