@@ -17,7 +17,6 @@
 			<div class="card-body">
 				<ul>
 					<li><a href="/profile">Edit your profile</a></li>
-					<li><a href="#">Want to contribute?</a></li>
 				</ul>
 			</div>
             <!--<div class="card-footer">
@@ -27,6 +26,7 @@
             </div> -->
           </div>
         </div>
+		@if (count(auth()->user()->roles) > 0)
         <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
             <div class="card-header card-header-success card-header-icon">
@@ -35,7 +35,7 @@
                 <i class="material-icons">content_copy</i>
               </div>
               <p class="card-category">Documents</p>
-              <h3 class="card-title">{{ count($collections) }}</h3>
+              <h3 class="card-title">{{ \App\Document::where('created_by',auth()->user()->id)->count() }}</h3>
             </div>
 			<div class="card-body">
 				<ul>
@@ -59,7 +59,7 @@
                 <i class="material-icons">rss_feed</i>
               </div>
               <p class="card-category">Blogs</p>
-              <h3 class="card-title">{{ count($blogs) }}</h3>
+              <h3 class="card-title">{{ \App\BinshopsPost::where('user_id', auth()->user()->id)->count() }}</h3>
             </div>
 			<div class="card-body">
 				<ul>
@@ -68,13 +68,16 @@
 					<li><a href="/approvals/blogs/rejected">Rejected</a></li>
 				</ul>
 			</div>
+			<!--
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">access_time</i> campaign sent 2 days ago
               </div>
             </div>
+			-->
           </div>
         </div>
+		@endif
       </div>
       <div class="row">
       <div class="col-md-4">
@@ -85,17 +88,22 @@
 		</h4>
             </div>
             <div class="card-body">
+				@if (count($user_searches) == 0)
+				<p>Your last 10 searches will appear here.</p>
+				@endif
 				<ul>
 					@foreach ($user_searches as $s)
 					<li><a href="#">{{ $s->search_query }}</a></li>
 					@endforeach	
 				</ul>
 	    	</div>
+			<!--
             <div class="card-footer">
               <div class="stats">
 				<i class="material-icons">show_chart</i> View More
               </div>
             </div>
+			-->
           </div>
         </div>
         <div class="col-md-4">
@@ -107,17 +115,22 @@
               <!--div class="ct-chart" id="dailySalesChart"></div-->
             </div>
 			<div class="card-body">
+				@if (count($user_downloads) == 0)
+				<p>Your last 10 downloads will appear here.</p>
+				@endif
 				<ul>
 						@foreach ($user_downloads as $d)
 						<li><a href="/document/{{ @$d->document->id }}">{{ @$d->document->title }}</a></li>
 					@endforeach	
 				</ul>
 			</div>
+			<!--
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">show_chart</i> View More
               </div>
             </div>
+			-->
           </div>
         </div>
         <div class="col-md-4">
@@ -129,14 +142,23 @@
               <!--div class="ct-chart" id="completedTasksChart"></div-->
             </div>
             <div class="card-body">
+			  @if (count(auth()->user()->roles) == 0)
+				<p>If you would like to contribute to this portal write an email from your registered email address to admin@isa.org.</a>
+			  @else
+				<p>Contributors' manual</p>
+			  @endif
+			  <!--
               <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>
+			  -->
             </div>
+			<!--
             <div class="card-footer">
               <div class="stats">
                 <i class="material-icons">show_chart</i>View More
               </div>
             </div>
           </div>
+		 	-->
         </div>
       </div>
       <div class="row">
