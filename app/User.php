@@ -164,7 +164,7 @@ class User extends Authenticatable implements MustVerifyEmail
         // Enter the logic needed for your app.
         // Maybe you can just hardcode in a user id that you
         //   know is always an admin ID?
-		if($this->hasRole('admin')){
+		if(count($this->roles) > 0){
 			return true;
 		}
         return false;

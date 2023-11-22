@@ -1,6 +1,7 @@
 <ul class="list-group">
     <li class="list-group-item list-group-color justify-content-between lh-condensed">
         <div>
+			@if (auth()->user()->hasRole('admin'))
             <h6 class="my-0"><a href="{{ route('binshopsblog.admin.index') }}">Dashboard</a>
                 <span class="text-muted">(<?php
                     $categoryCount = \BinshopsBlog\Models\BinshopsPost::count();
@@ -10,14 +11,16 @@
                     ?>)</span>
             </h6>
             <small class="text-muted">Overview of your posts</small>
-
+			@endif
             <div class="list-group ">
 
+			@if (auth()->user()->hasRole('admin'))
                 <a href='{{ route('binshopsblog.admin.index') }}'
                    class='list-group-item list-group-color list-group-item list-group-color-action @if(\Request::route()->getName() === 'binshopsblog.admin.index') active @endif  '><i
                             class="fa fa-th fa-fw"
                             aria-hidden="true"></i>
                     All Posts</a>
+			@endif
                 <a href='{{ route('binshopsblog.admin.create_post') }}'
                    class='list-group-item list-group-color list-group-item list-group-color-action  @if(\Request::route()->getName() === 'binshopsblog.admin.create_post') active @endif  '><i
                             class="fa fa-plus fa-fw" aria-hidden="true"></i>
@@ -27,6 +30,7 @@
     </li>
 
 
+	@if (auth()->user()->hasRole('admin'))
     <li class="list-group-item list-group-color justify-content-between lh-condensed">
         <div>
             <h6 class="my-0"><a href="{{ route('binshopsblog.admin.comments.index') }}">Comments</a>
@@ -127,4 +131,5 @@
             </div>
         </li>
     @endif
+	@endif
 </ul>
