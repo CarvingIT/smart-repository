@@ -224,7 +224,7 @@ function goToPage(page){
 			<!--
 			<label for="collection_search">{{ __('Search data') }}</label>
 			-->
-		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" placeholder="Search data"/>
+		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" placeholder="Search Data e.g. Laws, Publication and Technical Standards."/>
 		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
 			<input type="button" value="Search" name="isa_search" class="btn btn-sm btn-primary search" onclick="reloadSearchResults()">
 			<style>
