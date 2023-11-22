@@ -73,8 +73,17 @@ class BotManController extends Controller
         $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
 			// get keywords
 			$question = $answer->getText();
-			// $keywords = RakePlus::create($question)->get(); // this gives phrases
-            $keywords = RakePlus::create($question)->keywords();
+			//$keywords = RakePlus::create($question, 'en_US', 0, false)->get(); // this gives phrases
+            $keywords = RakePlus::create($question)->keywords(); // this gives keywords without numbers
+			//$keywords = array_filter(explode(" ",preg_replace('/[^a-z0-9]+/i', ' ', $question)));// just removes punctuation marks 
+			// if there are any numbers in the query, treat them as keywords.
+			preg_match('/\b(\d+)\b/',$question, $matches);
+			if($matches){
+				foreach($matches as $m){
+					$keywords[] = $m;
+				}
+			}
+			$keywords = array_unique($keywords);
 			Log::debug('Keywords: '.implode(' ',$keywords));
 			// check if this question was asked earlier
 			// saves time
@@ -138,8 +147,8 @@ class BotManController extends Controller
 				$matches = Util::findMatches($chunks, $keywords);
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
-				// take first 5 
-				$matches = array_slice($matches, 0, 5);
+				// take first 3 
+				$matches = array_slice($matches, 0, 3);
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
