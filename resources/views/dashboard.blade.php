@@ -20,11 +20,11 @@
 					<li><a href="#">Want to contribute?</a></li>
 				</ul>
 			</div>
-            <div class="card-footer">
+            <!--<div class="card-footer">
               <div class="stats">
                 <i class="material-icons">info</i><a href="#">Some link</a>
               </div>
-            </div>
+            </div> -->
           </div>
         </div>
         <div class="col-lg-4 col-md-6 col-sm-6">
