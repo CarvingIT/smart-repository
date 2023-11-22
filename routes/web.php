@@ -32,7 +32,7 @@ Route::get('/faq', function () {
     return view('faq');
 });
 
-Route::get('/dashboard', 'HomeController@index')->name('dashboard');
+Route::get('/dashboard', 'HomeController@index')->name('dashboard')->middleware(['auth','verified']);
 Route::get('/collections', 'CollectionController@list');
 Route::get('/documents', 'DocumentController@list');
 
@@ -104,9 +104,9 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 // media route; just like the document download route
 Route::get('/media/i/{filename}', 'MediaController@loadImage');
 // Document routes
-Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('auth');
-Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('auth');
-Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
+Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware(['auth','verified']);
+Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware(['auth','verified']);
+Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware(['auth','verified']);
 
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
@@ -116,14 +116,14 @@ Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware
 // Upload documents with same meta-data
 Route::get('/collection/{collection_id}/document/{document_id}/same-meta-upload', 'DocumentController@sameMetaUpload')->middleware('document_add');
 // Document details (meta)
-Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware('auth');
+Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware(['auth','verified']);
 Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
 // See Diff in revisions
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
 Route::get('/user/{user_id}/mydocs', 'DocumentController@listMyDocuments');
 
 // user downloads
-Route::get('/user/downloads','ReportsController@userDownloads')->middleware('auth');
+Route::get('/user/downloads','ReportsController@userDownloads')->middleware(['auth','verfified']);
 // Approvals
 Route::get('/document/{document_id}/approval', 'ApprovalsController@docApprovalForm');
 Route::post('/approvals/{approvable}/{approvable_id}/save_status', 'ApprovalsController@saveApprovalStatus');
@@ -154,7 +154,7 @@ Route::get('/admin/disk-form/{disk_id}', 'DisksController@add_edit_disk')->middl
 Route::post('/admin/savedisk', 'DisksController@save')->middleware('admin');
 Route::post('/admin/disk/delete','DisksController@delete')->middleware('admin');
 
-Route::get('/home', 'HomeController@index')->name('home')->middleware('auth');
+Route::get('/home', 'HomeController@index')->name('home')->middleware(['auth','verified']);
 //Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['middleware' => 'auth'], function () {
@@ -187,7 +187,7 @@ Route::group(['middleware' => 'auth'], function () {
 	})->name('upgrade');
 });
 
-Route::group(['middleware' => ['auth']], function () {
+Route::group(['middleware' => ['auth', 'verified']], function () {
 	Route::resource('user', 'UserController', ['except' => ['show']]);
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);
