@@ -35,7 +35,8 @@ class SysConfigController extends Controller
 	}
 	foreach ($request->except('_token') as $key => $part) {
     	$c = Sysconfig::all();
-	if(!empty($c)){ 
+	//echo count($c);
+	if(count($c) > 0){ 
 	foreach($c as $config){
 		if(($config->param == 'logo_url' && empty($request->file('logo_url'))) || ($config->param == 'favicon_url' && !empty($request->file('favicon_url')))){ 
 			continue; 

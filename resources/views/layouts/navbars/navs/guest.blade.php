@@ -54,11 +54,13 @@ $collections = \App\Collection::all();
 		@endforeach
 
 	@endif
+	@if(env('ENABLE_BLOG') == 1)
 	<li class="nav-item{{ $activePage == 'Blog' ? ' active' : '' }}">
           <a href="/en/blog" class="nav-link">
             <i class="material-icons">rss_feed</i> {{ __('Blog') }}
           </a>
         </li>
+	@endif
 
 	@if(env('ENABLE_COMMON_SEARCH') == 1)
         <li class="nav-item{{ $activePage == 'documents' ? ' active' : '' }}">
