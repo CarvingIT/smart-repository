@@ -1,6 +1,7 @@
 @extends("binshopsblog_admin::layouts.admin_layout")
 @section("content")
 
+@if (auth()->user()->hasRole('admin'))
     @if($post_translations)
         <div class='search-form-outer mb-3'>
             <form method='get' action='{{route("binshopsblog.admin.searchblog", app('request')->get('locale'))}}' class='text-center'>
@@ -111,4 +112,5 @@
             <div class='alert alert-warning'>There were no results for this search!</div>
         @endif
     @endforelse
+	@endif {{-- condition for hasRole(admin) --}}
 @endsection
