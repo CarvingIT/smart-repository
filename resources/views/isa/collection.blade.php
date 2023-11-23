@@ -39,6 +39,18 @@ $(document).ready(function() {
 	reloadSearchResults();
 });
 
+function clearFilters(){
+	// clear checkboxes
+	$('input[type="checkbox"]').each(function() {
+			this.checked = false;
+	});
+	// reset range filter
+	$('#year_lower_slider').val(1950);
+	$('#year_upper_slider').val(2023);
+	
+	reloadSearchResults();
+}
+
 function reloadSearchResults(){
 	showSpinner();
 	// go to the first page
@@ -262,7 +274,7 @@ function goToPage(page){
 
 <!-- ======= Service Details Section ======= -->
 @php
-$tags = App\Taxonomy::all();
+$tags = App\Taxonomy::orderBy('label','ASC')->get();
 
 $children = [];
 foreach($tags as $t){

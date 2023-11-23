@@ -1,4 +1,7 @@
 <div class="row gy-4 pricing-item" data-aos-delay="100">
+	<div class="col-lg-12 text-right">
+	<a href="#" onclick="clearFilters();">Clear All Filters</a>
+	</div>
 	@php
 		function removeContinents($string){
 			$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
@@ -8,6 +11,14 @@
 				if (!in_array(ltrim(rtrim($v)), $continents)) $new_str_values[] = $v;
 			}
 			return implode(", ",$new_str_values);
+		}
+
+		function distinguishMajorThemes($string){
+			$major_themes = explode("|",env('MAJOR_THEMES', 'A|B|C'));
+			foreach($major_themes as $t){
+				$string = str_replace($t, '<em class="mt">'.$t.'</em>', $string);
+			}
+			return $string;
 		}
 	@endphp
 	@if(!empty($results))
@@ -60,9 +71,9 @@
 		<div class="row">
 		<h4>
 		@if (@$result->type == 'url')
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{!! strip_tags($document->title) !!}</a>
 		@else
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{!! strip_tags($document->title) !!}</a>
 		@endif
 		</h4>
 		</div>
@@ -127,7 +138,7 @@
 		@if (!empty($document->meta_value($theme_field_id)))
 			<i class="fa fa-tag" aria-hidden="true"></i>
 			<span class="search-result-meta">
-			{{ removeContinents($document->meta_value($theme_field_id)) }}
+			{!! distinguishMajorThemes($document->meta_value($theme_field_id)) !!}
 			</span>
 			<p>
 			</p>

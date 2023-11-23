@@ -66,10 +66,20 @@ class Util{
 		foreach($keywords as $k){
 			// if any of the earlier lines contain this keyword, 
 			// don't add that line
-			$p = stripos($text, $k);
-			if($p === false) continue;
+			//$p = stripos($text, $k);
+			$word_pattern = '/\b'.$k.'\b/';
+			preg_match($word_pattern, $text, $matches, PREG_OFFSET_CAPTURE);
+			if(empty($matches[0][1])) continue;
+			$p = $matches[0][1];
 			$offset = ($p < 30) ? 0 : ($p-30);
-			$line = substr($text, $offset, 100);
+			$length = strlen($text) < ($offset + 100) ? strlen($text) : $offset + 100;	
+			$line = substr($text, $offset, $length);
+			$boundary = '/\b/';
+			preg_match_all($boundary, $line, $b_matches, PREG_OFFSET_CAPTURE);	
+			$start = $b_matches[0][1][1];
+			$end = $b_matches[0][count($b_matches[0])-2][1];
+			//echo $start . ' - '. $end;	
+			$line = substr($line, $start, $end-$start);	
 			$lines[] = $line;
 		}
 		$lines_refined = [];
@@ -89,7 +99,7 @@ class Util{
 			foreach($keywords as $k){
 				//if(stripos($text, $k) !== false){
 				try{
-					$pattern = '/'.$k.'/i';
+					$pattern = '/\b'.$k.'\b/i';
 					$lr = preg_replace($pattern, '<span class="highlight">$0</span>', $lr);	
 				}
 				catch(\Exception $e){
