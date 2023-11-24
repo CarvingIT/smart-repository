@@ -77,7 +77,7 @@
 <div class="top-bar">
     <div class="container-fluid container-xl d-flex justify-content-end align-items-center">
        <div class="top-bar-link">
-        Need a Guide? <a href="#">Start Here.</a>
+        Need a Guide? <a href="/img/isa/img/ISA User Help Manual_V1.pdf" target="_new">Start Here.</a>
       </div>
       <div class="social-media-header">
         <a href="https://www.facebook.com/InternationalSolarAlliance/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
