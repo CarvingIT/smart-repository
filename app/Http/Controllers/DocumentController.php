@@ -495,6 +495,7 @@ class DocumentController extends Controller
 			// save reverse meta field values
 			if(is_array($m['field_value'])){
 				foreach($m['field_value'] as $v){
+					if(empty($v)) continue;
 					$rmfv = new ReverseMetaFieldValue;
 					$rmfv->meta_field_id = $m['field_id'];
 					$rmfv->meta_value = $v;
