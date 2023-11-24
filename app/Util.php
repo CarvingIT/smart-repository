@@ -72,7 +72,7 @@ class Util{
 			if(empty($matches[0][1])) continue;
 			$p = $matches[0][1];
 			$offset = ($p < 30) ? 0 : ($p-30);
-			$length = strlen($text) < ($offset + 100) ? strlen($text) : $offset + 100;	
+			$length = strlen($text) < ($offset + 100) ? strlen($text) - $offset : 100;	
 			$line = substr($text, $offset, $length);
 			$boundary = '/\b/';
 			preg_match_all($boundary, $line, $b_matches, PREG_OFFSET_CAPTURE);	
