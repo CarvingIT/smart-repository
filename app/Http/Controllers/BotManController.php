@@ -147,8 +147,8 @@ class BotManController extends Controller
 				$matches = Util::findMatches($chunks, $keywords);
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
-				// take first 3 
-				$matches = array_slice($matches, 0, 3);
+				// take first 5 
+				$matches = array_slice($matches, 0, 5);
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){

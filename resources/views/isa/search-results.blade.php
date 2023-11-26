@@ -2,7 +2,35 @@
 	<div class="col-lg-12 text-right">
 	<a href="#" onclick="clearFilters();">Clear All Filters</a>
 	</div>
+<style>
+	.tag{
+		background-color:#ccc;
+		margin-right:5px;
+		padding:3px;
+  		border-top-left-radius: 10px;
+  		border-bottom-left-radius: 10px;
+	}
+	.parent-tag{
+		background-color:#aaa;
+	}
+</style>
 	@php
+		$taxonomy = \App\Taxonomy::orderBy('parent_id','ASC')->orderBy('label', 'ASC')->get()->keyBy('id');
+		$children = [];
+		$taxonomy_ordered_by_id = [];
+		foreach($taxonomy as $t){
+			$children[$t->parent_id][] = $t->id; 
+			$taxonomy_ordered_by_id[] = $t->id;
+		}
+		function orderByHierarchy($taxonomy_ordered_by_id, $my_ids){
+			$ordered = [];
+			foreach($taxonomy_ordered_by_id as $t_id){
+				if(in_array($t_id, $my_ids)){
+					$ordered[] = $t_id;
+				}
+			}
+			return $ordered;
+		}
 		function removeContinents($string){
 			$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
 			$str_values = explode(",", $string);
@@ -136,9 +164,16 @@
 		<div class="row">
 		<div class="col-lg-12">
 		@if (!empty($document->meta_value($theme_field_id)))
-			<i class="fa fa-tag" aria-hidden="true"></i>
 			<span class="search-result-meta">
-			{!! distinguishMajorThemes($document->meta_value($theme_field_id)) !!}
+			{{-- distinguishMajorThemes($document->meta_value($theme_field_id)) --}} 
+			@php
+				$taxonomy_values = json_decode($document->meta_value($theme_field_id, true));
+				foreach(orderByHierarchy($taxonomy_ordered_by_id, $taxonomy_values) as $t){
+					$parent = isset($children[$t]) ? 'parent-tag' : '';
+					echo '<span class="tag '.$parent.'"><i class="fa fa-tag" aria-hidden="true"></i>
+					'.$taxonomy[$t]->label.'</span>';
+				}
+			@endphp
 			</span>
 			<p>
 			</p>
