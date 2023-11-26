@@ -102,8 +102,8 @@ $(document).ready(function()
                         <span id="doc-title" class="col-md-12"><!--h4-->
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
-					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
-            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_blank">
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
+            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_new">
 				@elseif($document->type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
@@ -113,19 +113,20 @@ $(document).ready(function()
         				<source src="/collection/{{ $c->id }}/document/{{ $document->id }}" type="video/mp4">
         				</video>
         				</div>
-            			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
+            			<a title="See online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
 				@elseif($document->type == 'image/jpeg' || $document->type == 'image/png')
 					<div style="text-align:center;">
                         		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
 					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}" style="width:50%">
 					</div>
-            			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_blank">
+            			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_blank">
 				@else
 				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
 				@endif
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
+			{!! strip_tags($document->title) !!}
 			</a>
 			</span>{{-- don't need this span --}}
                         </div>
