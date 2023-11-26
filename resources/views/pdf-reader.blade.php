@@ -1,6 +1,6 @@
 <html>
 <head>
-<script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
+<script src="/js/pdf.mjs"></script>
 <style>
 #the-canvas {
   /*border: 1px solid black;*/
@@ -37,7 +37,7 @@ var url = '/collection/{{ $collection_id }}/document/{{ $document_id }}';
 var pdfjsLib = window['pdfjs-dist/build/pdf'];
 
 // The workerSrc property shall be specified.
-pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.mjs';
 
 var pdfDoc = null,
     pageNum = 1,
