@@ -14,6 +14,7 @@ use BotMan\BotMan\Messages\Attachments\File;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use App\BotmanAnswer;
 use App\Traits\Search;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class BotManController extends Controller
 {
@@ -283,5 +284,11 @@ class BotManController extends Controller
     	$response = $chatgpt->response();
 
     	return stripos( $response->content, "yes" ) === false;
+	}
+
+	public function exportQuestionAnswers(){
+		$answers = BotmanAnswer::all();
+		return (new FastExcel($answers))
+    			->download('botman-data.xlsx');
 	}
 }

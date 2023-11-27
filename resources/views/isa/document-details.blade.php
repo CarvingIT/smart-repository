@@ -102,33 +102,41 @@ $(document).ready(function()
                     </div>
 
                   <div class="row">
-                    <div class="col-md-12">
-                        <span id="doc-title" class="col-md-12"><!--h4-->
+                    <div class="col-md-10">
+                        <!--<span id="doc-title" class="col-md-12">-->
+						<!--h4-->
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
-				<h4><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a></h4>
+				<h4><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{!! strip_tags($document->title) !!}</a></h4>
 				@elseif($document->type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
 					<div>
-                        <h4><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h4>
+                        <h4><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{!! strip_tags($document->title) !!}</h4>
         				
         				</div>
             			<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player" target="_blank">
 				@elseif($document->type == 'image/jpeg' || $document->type == 'image/png')
 					<div class="col-md-12">
-                        <label>{{ $document->title }}</label>
+                        <label>{!! strip_tags($document->title) !!}</label>
 					
 					</div>
 				@elseif ($document->type == 'url')
-					<h4><a href="{{ $document->external_link }}" target="_new"><img class="file-icon" src="/i/file-types/url.png"></a>&nbsp;<a href="{{ $document->external_link }}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a></h4>
+					<h4><a href="{{ $document->external_link }}" target="_new"><img class="file-icon" src="/i/file-types/url.png"></a>&nbsp;<a href="{{ $document->external_link }}" target="_new" style="text-decoration:underline;">{!! strip_tags($document->title) !!}</a></h4>
 				@else
-				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document->title }}</a>
+				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{!! strip_tags($document->title) !!}</a>
 				@endif
 			@else
 				{{-- --}}
 			@endif
                         </div>
+				<div class="col-md-2">
+				@if (auth()->user()->hasRole('admin'))
+				<a href="/document/{{ $document->id }}/edit">
+				<i class="fa-solid fa-pen"></i>
+				</a>
+				@endif
+				</div>
 				<br />
 
 			@if($c->content_type == 'Uploaded documents')
