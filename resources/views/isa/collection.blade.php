@@ -287,7 +287,7 @@ foreach($tags as $t){
 	<div class="row gy-4">
 	  <div class="col-lg-3" style="margin-top:0;">
 		<div class="services-list">
-			<h5>Filter By</h5>
+			<h5>Filter By <div style="float:right; cursor:pointer;" href="#" onclick="clearFilters();" title="Clear all filters"><i class="fa-solid fa-broom"></i></div></h5>
 				@php
 				foreach($filters as $f){
 					if($f->type == 'TaxonomyTree'){

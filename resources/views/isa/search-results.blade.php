@@ -1,6 +1,8 @@
 <div class="row gy-4 pricing-item" data-aos-delay="100">
 	<div class="col-lg-12 text-right">
+	<!--
 	<a href="#" onclick="clearFilters();">Clear All Filters</a>
+	-->
 	</div>
 <style>
 	.tag{
@@ -29,7 +31,6 @@
 				$major_theme_ids[] = $t->id;
 			}
 		}
-		print_r($major_theme_ids);
 		function orderByHierarchy($taxonomy_ordered_by_id, $my_ids){
 			$ordered = [];
 			foreach($taxonomy_ordered_by_id as $t_id){
