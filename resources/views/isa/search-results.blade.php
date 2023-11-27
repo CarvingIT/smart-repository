@@ -15,13 +15,19 @@
 	}
 </style>
 	@php
+		$major_themes = explode("|",env('MAJOR_THEMES', 'A|B|C'));
+		$major_theme_ids = [];
 		$taxonomy = \App\Taxonomy::orderBy('parent_id','ASC')->orderBy('label', 'ASC')->get()->keyBy('id');
 		$children = [];
 		$taxonomy_ordered_by_id = [];
 		foreach($taxonomy as $t){
 			$children[$t->parent_id][] = $t->id; 
 			$taxonomy_ordered_by_id[] = $t->id;
+			if(in_array($t->label, $major_themes)){
+				$major_theme_ids[] = $t->id;
+			}
 		}
+		print_r($major_theme_ids);
 		function orderByHierarchy($taxonomy_ordered_by_id, $my_ids){
 			$ordered = [];
 			foreach($taxonomy_ordered_by_id as $t_id){
@@ -169,7 +175,7 @@
 			@php
 				$taxonomy_values = json_decode($document->meta_value($theme_field_id, true));
 				foreach(orderByHierarchy($taxonomy_ordered_by_id, $taxonomy_values) as $t){
-					$parent = isset($children[$t]) ? 'parent-tag' : '';
+					$parent = in_array($taxonomy[$t]->id, $major_theme_ids) ? 'parent-tag' : '';
 					echo '<span class="tag '.$parent.'"><i class="fa fa-tag" aria-hidden="true"></i>
 					'.$taxonomy[$t]->label.'</span>';
 				}
