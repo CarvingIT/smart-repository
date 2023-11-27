@@ -4,6 +4,8 @@
 	</div>
 <style>
 	.tag{
+		display:inline-block;
+		margin-top:2px;
 		background-color:#ccc;
 		margin-right:5px;
 		padding:3px;
