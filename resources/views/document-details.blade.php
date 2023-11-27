@@ -121,7 +121,11 @@ $(document).ready(function()
 					</div>
             			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_blank">
 				@else
+				@if ($document->path != 'N/A')
 				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				@else
+				<img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;" />
+				@endif
 				@endif
 			@else
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
@@ -154,7 +158,7 @@ $(document).ready(function()
 							@elseif ($m->meta_field->type ==  'TaxonomyTree')
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $document->meta_value($m->meta_field_id) }}</span>
 							@else
-                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $m->value !!}</div>
+                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! html_entity_decode($m->value) !!}</div>
 							@endif
                             </div>
 				<br />
