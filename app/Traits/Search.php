@@ -188,19 +188,6 @@ trait Search{
             $words = explode(' ',$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
-			/*
-			// not allowing users to control the selection of search analyzer
-			// this code is commented because we are merging all search options into one query
-			$analyzer = empty($request->analyzer) ? 'standard' : $request->analyzer; // standard analyzer is the default
-			Log::debug('Analyzer: '.$analyzer);
-
-			$es_title = 'title';
-			$es_text_content = 'text_content';
-			if($analyzer == 'porter_stem_analyzer'){
-				$es_title = 'title.porter_stem';
-				$es_text_content = 'text_content.porter_stem';
-			}
-			*/
 	    		$analyzer = 'synonyms_analyzer';
 	    		$analyzer = 'standard';
 	
@@ -288,6 +275,19 @@ trait Search{
 						]
 					]
 				];
+
+			// add should s if the request is coming from chatbot
+			if($request->search_type == 'chatbot'){
+				$default_should = $params['body']['query']['bool']['should'];
+				$new_should = [
+									[
+										'match_phrase' => [
+											'title' => $q_title_phrase,
+										]
+									],
+							  ];
+				$params['body']['query']['bool']['should'] = array_merge($default_should, $new_should);
+			}
 	    	if(!empty($request->collection_id)){
 				// this is currently done at the db level
             	//$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
