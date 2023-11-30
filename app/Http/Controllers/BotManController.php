@@ -141,19 +141,22 @@ class BotManController extends Controller
 
 					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
+					$cnt = 0;
 					foreach($chunks_doc as $c){
+						$cnt++;
 						$c = "====DOC-".$doc->id."-====\n".$c;
-						$chunks[] = $c;
+						$chunks['ch_'.$cnt] = $c;
 					}
 				}
 
 				//$this->say($chunks[0]);
+				Log::debug('Created '.count($chunks).' chunks.');
 				// remove Page \d\d from the string
 				$matches = Util::findMatches($chunks, $keywords);
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
 				// take first 5 
-				$matches = array_slice($matches, 0, 25);
+				$matches = array_slice($matches, 0, 50);
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
@@ -179,7 +182,7 @@ class BotManController extends Controller
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 							$pattern = '/====DOC-(\d\d*)-====/';
 							preg_match($pattern, $chunks[$chunk_id], $doc_matches);
-							Log::debug('Chunk from doc '.$doc_matches[1]);
+							Log::debug('Chunk '.$chunk_id.' with score '.$score.' from doc '.$doc_matches[1]);
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
@@ -257,9 +260,13 @@ class BotManController extends Controller
 
 	public function answerQuestion( string $chunk, string $question ) {
 		try{
-		// remove double quotes from the chunk
-		//$chunk = str_replace('"',' ',$chunk);
+		// escape double quotes from the chunk
+		$chunk = str_replace('"','\"',$chunk);
 		$chunk = preg_replace('/[\x00-\x1F\x80-\xFF]/', ' ', $chunk);
+		$chunk = preg_replace('/\$/', '\$', $chunk);
+		$chunk = preg_replace('/\(/', '\(', $chunk);
+		$chunk = preg_replace('/\)/', '\)', $chunk);
+		$chunk = preg_replace('/\//', '\/', $chunk);
 		$chatgpt = $this->chatgpt;
     		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
     		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );

@@ -34,6 +34,7 @@ class Util{
     $results = [];
 
     foreach( $chunks as $chunk_id => $chunk ) {
+	$factor = 0;
         foreach( $keywords as $keyword ) {
             if( $chunk_id != 0 ) {
                 $chunk = substr( $chunk, $crop );
@@ -42,6 +43,7 @@ class Util{
                 $chunk = substr( $chunk, 0, -$crop );
             }
             $occurences = substr_count( $chunk, $keyword );
+	    if($occurences > 0) $factor++;
             if( ! isset( $results[$chunk_id] ) ) {
                 $results[$chunk_id] = 0;
             }
@@ -49,6 +51,7 @@ class Util{
                 $results[$chunk_id] += $occurences / $df[$keyword];
             }
         }
+	$results[$chunk_id] = $factor * $results[$chunk_id];
     }
     arsort( $results );
 

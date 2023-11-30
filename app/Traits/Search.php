@@ -352,7 +352,7 @@ trait Search{
         	$documents = $documents->whereIn('id', $document_ids);
 	}
 	$query = $documents->toSql();
-	Log::debug($query);
+	//Log::debug($query);
 	Log::debug('Count: '.$documents->count());
 
 	$filtered_count = $documents->count(); 
