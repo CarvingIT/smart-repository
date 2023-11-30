@@ -173,18 +173,26 @@ trait Search{
 		}
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
-				$documents = $documents->whereNotNull('approved_on');
+			$documents = $documents->where(function($query){
 				if(\Auth::user() && \Auth::user()->id){
-					$documents = $documents->orWhere('created_by', \Auth::user()->id);
+					$query->whereNotNull('approved_on')
+	   					->orWhere('created_by', \Auth::user()->id);
 				}
+				else{
+					$query->whereNotNull('approved_on');
+				}
+			});
         		$elastic_index = 'sr_documents';
 		}
+		//Log::debug($elastic_index.' - '.implode(",", $collection_ids));
 	}
         $total_count = $documents->count();
+	Log::debug('Count: '.$total_count);
 
 		$highlights = [];
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $search_term = $request->search['value'];
+	    Log::debug('Search term: '.$search_term);
             $words = explode(' ',$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
@@ -277,6 +285,7 @@ trait Search{
 				];
 
 			// add should s if the request is coming from chatbot
+			/*
 			if($request->search_type == 'chatbot'){
 				$default_should = $params['body']['query']['bool']['should'];
 				$new_should = [
@@ -288,12 +297,14 @@ trait Search{
 							  ];
 				$params['body']['query']['bool']['should'] = array_merge($default_should, $new_should);
 			}
+			*/
 	    	if(!empty($request->collection_id)){
 				// this is currently done at the db level
             	//$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
 			}
         }
         $columns = array('type', 'title', 'size', 'updated_at');
+	$ordered_document_ids = '';
         if(!empty($params)){
 	    $params['index'] = $elastic_index;
 	    $params['size'] = 1000;// set a max size returned by ES
@@ -314,9 +325,9 @@ trait Search{
             }
 			//Log::debug(serialize($highlights));
 
-            $documents = $documents->whereIn('id', $document_ids);
-			$ordered_document_ids = implode(",", $document_ids);
+	    $ordered_document_ids = implode(",", $document_ids);
         }
+	Log::debug('Ordered IDs: '.$ordered_document_ids);
         // get title filtered documents
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
             $documents = $this->getTitleFilteredDocuments($request, $documents);
@@ -332,16 +343,41 @@ trait Search{
 	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
 	//$documents = $this->approvalFilter($request->collection_id, $documents);
 	//$documents = $documents->get();
+	//Log::debug(str_replace('376','__376__',$ordered_document_ids));
+	//Log::debug(json_encode($document_ids));
+	Log::debug('Count before wherein: '.$documents->count());
+	Log::debug(@count($document_ids));
+	//Log::debug(json_encode($document_ids));
+	if(isset($document_ids) && count($document_ids) > 0){
+        	$documents = $documents->whereIn('id', $document_ids);
+	}
+	$query = $documents->toSql();
+	Log::debug($query);
+	Log::debug('Count: '.$documents->count());
+
 	$filtered_count = $documents->count(); 
 
 	$sort_column = empty($columns[@$request->order[0]['column']])?'':$columns[@$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 	$length = empty($request->length)?10:$request->length;
+	$start = empty($request->start)?0:$request->start;
 	if(!empty($params) && !empty($ordered_document_ids) && empty($sort_column)){
 	// initial sorting is by relevance
+	Log::debug('Collection count: '.$documents->count().' -- Ordered array count: '.count($document_ids));
+	if(!empty($ordered_document_ids)){
+		$documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
+	}
 	$documents = $documents
-		->orderByRaw("FIELD(id, $ordered_document_ids)")
-             ->limit($length)->offset($request->start)->get();
+	     ->offset($start)
+	     ->limit($length)
+	     ->get();
+
+		$doc_ids = [];
+		foreach($documents as $d){
+			$doc_ids[] = $d->id;
+		}
+		Log::debug('Doc ids in result: '.implode(",", $doc_ids));	
+		//exit;
 	}
 	else{
 		$sort_column = empty($sort_column)?'updated_at':$sort_column;

@@ -100,11 +100,14 @@ class BotManController extends Controller
 
 			//$this->say(implode(",",$keywords));
 			$request = new \Illuminate\Http\Request;
-			$request->merge(['search'=>['value'=>implode(" ",$keywords)],'search_type'=>'chatbot', 'length'=>10, 'return_format'=>'raw']);
+			//$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
+			$keyword_string = implode(" ", $keywords);
+			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>10, 'return_format'=>'raw']);
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 
 				Log::debug('Got '.count($documents_array->data). ' documents.');
+				//Log::debug(json_encode($documents_array->data));
 				if(count($documents_array->data) == 0){
 					// log q without a
 					$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
@@ -133,7 +136,8 @@ class BotManController extends Controller
 						if(empty($meta_value->meta_field) || empty($doc->meta_value($meta_value->meta_field_id, true))) continue;
 						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
 					}
-					$info_from_doc .= $meta_info;
+					//appending meta values to document content may not work
+					//$info_from_doc .= $meta_info;
 
 					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
@@ -149,7 +153,7 @@ class BotManController extends Controller
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
 				// take first 5 
-				$matches = array_slice($matches, 0, 5);
+				$matches = array_slice($matches, 0, 25);
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
@@ -173,13 +177,14 @@ class BotManController extends Controller
 						$open_ai_req_cnt++;
 						try{
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
+							$pattern = '/====DOC-(\d\d*)-====/';
+							preg_match($pattern, $chunks[$chunk_id], $doc_matches);
+							Log::debug('Chunk from doc '.$doc_matches[1]);
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
 								// which chunk contains the answer ?
 								$chunk_containing_answer = $chunk_id;
-								$pattern = '/====DOC-(\d\d*)-====/';
-								preg_match($pattern, $chunks[$chunk_id], $doc_matches);
 								//$this->say(count($doc_matches). ' - '.serialize($doc_matches));
 								array_shift($doc_matches);
 								break;
@@ -252,7 +257,10 @@ class BotManController extends Controller
 
 	public function answerQuestion( string $chunk, string $question ) {
 		try{
-			$chatgpt = $this->chatgpt;
+		// remove double quotes from the chunk
+		//$chunk = str_replace('"',' ',$chunk);
+		$chunk = preg_replace('/[\x00-\x1F\x80-\xFF]/', ' ', $chunk);
+		$chatgpt = $this->chatgpt;
     		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
     		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
     		$chatgpt->umessage( $question );
@@ -274,6 +282,7 @@ class BotManController extends Controller
 		}
 		catch(\Exception $e){
 			Log::debug($e->getMessage());
+			Log::debug($chunk);
 			return false;
 		}
 	}
