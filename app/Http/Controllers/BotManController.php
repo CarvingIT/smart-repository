@@ -103,7 +103,7 @@ class BotManController extends Controller
 			$request = new \Illuminate\Http\Request;
 			//$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
 			$keyword_string = implode(" ", $keywords);
-			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>5, 'return_format'=>'raw']);
+			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>10, 'return_format'=>'raw']);
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 
@@ -158,7 +158,7 @@ class BotManController extends Controller
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
 				// take first 5 
-				$matches = array_slice($matches, 0, 50);
+				$matches = array_slice($matches, 0, 20);
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
