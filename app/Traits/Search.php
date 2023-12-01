@@ -196,8 +196,8 @@ trait Search{
             $words = explode(' ',$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
+	    		//$analyzer = 'standard';
 	    		$analyzer = 'synonyms_analyzer';
-	    		$analyzer = 'standard';
 	
 				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
 				$title_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
@@ -214,7 +214,6 @@ trait Search{
 						'query' => [
 							'bool' => [
 								'should' => [
-									/*
 									[
 										'match_phrase' => [
 											'title' => $q_title_phrase,
@@ -230,7 +229,6 @@ trait Search{
 											'text_content' => $text_q_with_and,
 										]
 									],
-									*/
 									[
 										'match_phrase' => [
 											'text_content' => $q_text_phrase

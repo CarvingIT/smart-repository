@@ -146,7 +146,7 @@ class BotManController extends Controller
 						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
 					}
 					//appending meta values to document content may not work
-					//$info_from_doc .= $meta_info;
+					$info_from_doc .= $meta_info;
 
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
 					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 200);
@@ -187,7 +187,7 @@ class BotManController extends Controller
 					$answer_full = '';
 					$open_ai_req_cnt = 0;
 					foreach($matches as $chunk_id => $score){
-						if ($score === 0) continue;// no point in sending this to OpenAI
+						//if ($score === 0) continue;// no point in sending this to OpenAI
 						$open_ai_req_cnt++;
 						try{
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
