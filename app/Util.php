@@ -16,7 +16,7 @@ class Util{
 		return $chunks;
 	}
 
-	//public static function findMatches( array $chunks, array $keywords, int $crop = 500 ) {
+	//public static function findMatches( array $chunks, array $keywords, int $crop = 500 ) 
 	public static function findMatches( array $chunks, array $keywords, int $crop = 100 ) {
     $df = [];
 
@@ -115,4 +115,13 @@ class Util{
 		$lines_refined = $lines_refined_tmp;
 		return $lines_refined;
 	}
+
+	public static function standardizeQuestion($question){
+		// remove punctuation
+		$question = preg_replace("/(?![.=$'€%-])\p{P}/u", " ", $question);
+		// replace multiple spaces by one
+		$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
+		return $question;
+	}
+
 }

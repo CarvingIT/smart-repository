@@ -89,7 +89,8 @@ class BotManController extends Controller
 			// check if this question was asked earlier
 			// saves time
 			$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
-			$botman_answer = BotmanAnswer::where('question', $question)->whereNotNull('answer')->first();
+			$std_q = Util::standardizeQuestion($question);
+			$botman_answer = BotmanAnswer::where('question', $std_q)->whereNotNull('answer')->first();
 			$related_docs_link = 'Find more related documents <a target="_new" href="/collection/1?isa_search_parameter='.
                             urlencode(implode(' ',$keywords)).'">here</a>.';
 			if($botman_answer){
@@ -111,11 +112,11 @@ class BotManController extends Controller
 				if(count($documents_array->data) == 0){
 					// log q without a
 					$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
-					$botman_answer = BotmanAnswer::where('question', $question)->first();
+					$botman_answer = BotmanAnswer::where('question', $std_q)->first();
 					if(!$botman_answer){
 						$botman_answer = new BotmanAnswer;
 					}
-					$botman_answer->question = $question;
+					$botman_answer->question = $std_q;
 					$botman_answer->keywords = implode(' ',array_sort($keywords));	
 					$botman_answer->save();
 					$this->say('I did not get any documents to answer your question from.');
@@ -163,11 +164,11 @@ class BotManController extends Controller
 				if(count($matches) == 0){
 					// log q without a
 					$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
-					$botman_answer = BotmanAnswer::where('question', $question)->first();
+					$botman_answer = BotmanAnswer::where('question', $std_q)->first();
 					if(!$botman_answer){
 						$botman_answer = new BotmanAnswer;
 					}
-					$botman_answer->question = $question;
+					$botman_answer->question = $std_q;
 					$botman_answer->keywords = implode(' ',array_sort($keywords));	
 					$botman_answer->save();
 					//$this->say('Found '.count($documents_array->data).' documents that look relevant but could not answer your question.');
@@ -212,11 +213,11 @@ class BotManController extends Controller
 					if(empty($answer_full)){
 						// log q without a
 						$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
-						$botman_answer = BotmanAnswer::where('question', $question)->first();
+						$botman_answer = BotmanAnswer::where('question', $std_q)->first();
 						if(!$botman_answer){
 							$botman_answer = new BotmanAnswer;
 						}
-						$botman_answer->question = $question;
+						$botman_answer->question = $std_q;
 						$botman_answer->keywords = implode(' ',array_sort($keywords));	
 						$botman_answer->save();
 
@@ -236,11 +237,11 @@ class BotManController extends Controller
 						$this->say($related_docs_link);
 						// log q and a here
 						$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
-						$botman_answer = BotmanAnswer::where('question', $question)->first();
+						$botman_answer = BotmanAnswer::where('question', $std_q)->first();
 						if(!$botman_answer){
 							$botman_answer = new BotmanAnswer;
 						}
-						$botman_answer->question = $question;
+						$botman_answer->question = $std_q;
 						$botman_answer->keywords = implode(' ',array_sort($keywords));	
 						$botman_answer->answer = $answer_full;
 						$botman_answer->save();
