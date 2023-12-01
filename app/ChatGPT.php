@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use Illuminate\Support\Facades\Log;
 
 class ChatGPT {
     protected array $messages = [];
@@ -154,9 +155,15 @@ class ChatGPT {
             "Content-Type: application/json",
             "Authorization: Bearer " . $this->api_key
         ] );
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode(
-            $fields
-        ) );
+
+	try{
+		$json_encoded_fields = json_encode($fields);
+	}
+	catch(\Exception $e){
+		Log::debug($e->getMessage());
+		return null;
+	}
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $json_encoded_fields );
         curl_setopt( $ch, CURLOPT_POST, true );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
     
