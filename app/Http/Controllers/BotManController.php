@@ -188,7 +188,7 @@ class BotManController extends Controller
 								$answer_full .= $answer->content;
 								// which chunk contains the answer ?
 								$chunk_containing_answer = $chunk_id;
-								//$this->say(count($doc_matches). ' - '.serialize($doc_matches));
+								Log::debug('Received answer!');
 								array_shift($doc_matches);
 								break;
         					}
@@ -264,9 +264,10 @@ class BotManController extends Controller
 		$chunk = str_replace('"','\"',$chunk);
 		$chunk = preg_replace('/[\x00-\x1F\x80-\xFF]/', ' ', $chunk);
 		$chunk = preg_replace('/\$/', '\$', $chunk);
-		$chunk = preg_replace('/\(/', '\(', $chunk);
-		$chunk = preg_replace('/\)/', '\)', $chunk);
-		$chunk = preg_replace('/\//', '\/', $chunk);
+		$chunk = preg_replace('/\s+/', ' ', $chunk);
+		//$chunk = preg_replace('/\(/', '\(', $chunk);
+		//$chunk = preg_replace('/\)/', '\)', $chunk);
+		//$chunk = preg_replace('/\//', '\/', $chunk);
 		$chatgpt = $this->chatgpt;
     		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
     		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
