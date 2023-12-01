@@ -325,7 +325,7 @@ trait Search{
 
 	    $ordered_document_ids = implode(",", $document_ids);
         }
-	Log::debug('Ordered IDs: '.$ordered_document_ids);
+	//Log::debug('Ordered IDs: '.$ordered_document_ids);
         // get title filtered documents
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
             $documents = $this->getTitleFilteredDocuments($request, $documents);

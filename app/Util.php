@@ -124,4 +124,10 @@ class Util{
 		return $question;
 	}
 
+	public static function sanitizeText($text){
+		$text = preg_replace('/[\x00-\x1F\x80-\xFF]/',' ',$text);
+		$text = preg_replace('/\s+/',' ',$text);
+		$text = str_replace('&','and',$text);
+		return $text;
+	}
 }
