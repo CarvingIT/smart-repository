@@ -139,7 +139,8 @@ class BotManController extends Controller
 					//appending meta values to document content may not work
 					//$info_from_doc .= $meta_info;
 
-					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
+					//$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
+					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 200);
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
 					$cnt = 0;
 					foreach($chunks_doc as $c){

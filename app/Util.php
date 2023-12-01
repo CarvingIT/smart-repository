@@ -16,7 +16,8 @@ class Util{
 		return $chunks;
 	}
 
-	public static function findMatches( array $chunks, array $keywords, int $crop = 500 ) {
+	//public static function findMatches( array $chunks, array $keywords, int $crop = 500 ) {
+	public static function findMatches( array $chunks, array $keywords, int $crop = 100 ) {
     $df = [];
 
     foreach( $chunks as $chunk_id => $chunk ) {
