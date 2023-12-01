@@ -146,7 +146,9 @@ class BotManController extends Controller
 						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
 					}
 					//appending meta values to document content may not work
-					//$info_from_doc .= $meta_info;
+					$info_from_doc .= $meta_info;
+					//convert to utf-8
+					$info_from_doc = iconv(mb_detect_encoding($info_from_doc, mb_detect_order(), true), "UTF-8", $info_from_doc);
 
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
 					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 200);
