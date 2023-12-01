@@ -107,6 +107,8 @@ class BotManController extends Controller
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 
+			$highlights = $documents_array['highlights'];
+
 				Log::debug('Got '.count($documents_array->data). ' documents.');
 				//Log::debug(json_encode($documents_array->data));
 				if(count($documents_array->data) == 0){
@@ -127,9 +129,20 @@ class BotManController extends Controller
 				
 				$doc_list = '';
 				$chunks = [];
+				$keywords_n_variations = $keywords;
 				foreach($documents_array->data as $d){
 					$info_from_doc = '';
 					$doc = Document::find($d->id);
+
+					// get highlighted keywords
+					$highlight = @$highlights[$d->id];
+					$highlight_serialized = serialize($highlight);
+					preg_match_all('#<em>(.*?)</em>#',$highlight_serialized, $highlight_matches);
+					array_shift($highlight_matches);
+					$highlight_keywords = $highlight_matches;	
+					
+					$keywords_n_variations = array_unique(array_merge($highlight_keywords[0], $keywords_n_variations));
+
 					$info_from_doc .= $doc->title."\n";
 					$info_from_doc .= $doc->text_content."\n";
 					$meta_info = '';
@@ -154,7 +167,7 @@ class BotManController extends Controller
 				//$this->say($chunks[0]);
 				Log::debug('Created '.count($chunks).' chunks.');
 				// remove Page \d\d from the string
-				$matches = Util::findMatches($chunks, $keywords);
+				$matches = Util::findMatches($chunks, $keywords_n_variations);
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
 				// take first 5 
