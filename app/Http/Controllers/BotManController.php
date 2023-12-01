@@ -103,7 +103,7 @@ class BotManController extends Controller
 			$request = new \Illuminate\Http\Request;
 			//$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
 			$keyword_string = implode(" ", $keywords);
-			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>10, 'return_format'=>'raw']);
+			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>5, 'return_format'=>'raw']);
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 
