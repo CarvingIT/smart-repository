@@ -155,7 +155,7 @@ class ChatGPT {
             "Authorization: Bearer " . $this->api_key
         ] );
         curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode(
-            $fields
+            $fields, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         ) );
         curl_setopt( $ch, CURLOPT_POST, true );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );

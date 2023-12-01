@@ -263,9 +263,9 @@ class BotManController extends Controller
 	public function answerQuestion( string $chunk, string $question ) {
 		try{
 		// escape double quotes from the chunk
-		$chunk = str_replace('"','\"',$chunk);
-		$chunk = preg_replace('/[\x00-\x1F\x7F]/u', '', $chunk);
-		$chunk = preg_replace('/\$/', '\$', $chunk);
+		//$chunk = str_replace('"','\"',$chunk);
+		//$chunk = preg_replace('/[\x00-\x1F\x7F]/u', '', $chunk);
+		//$chunk = preg_replace('/\$/', '\$', $chunk);
 		$chunk = preg_replace('/\s+/', ' ', $chunk);
 		$chatgpt = $this->chatgpt;
     		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
