@@ -190,7 +190,7 @@ trait Search{
 	Log::debug('Count: '.$total_count);
 
 		$highlights = [];
-        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
+        if(!empty($request->search['value']) && strlen($request->search['value'])>1){
             $search_term = $request->search['value'];
 	    Log::debug('Search term: '.$search_term);
             $words = explode(' ',$search_term);

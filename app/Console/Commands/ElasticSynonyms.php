@@ -49,7 +49,9 @@ class ElasticSynonyms extends Command
 			$synonyms = Synonyms::all();
 			$file_contents ='';
 			foreach ($synonyms as $s){
-				$file_contents .= $s->synonyms."\n";
+				$synonyms_line = $s->synonyms;
+				$synonyms_line = preg_replace('/\s*,\s*/',', ',$synonyms_line);
+				$file_contents .= $synonyms_line."\n";
 			}
 
 			file_put_contents($synonyms_file_path, $file_contents);

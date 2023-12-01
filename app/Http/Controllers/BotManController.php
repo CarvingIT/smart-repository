@@ -102,7 +102,7 @@ class BotManController extends Controller
 			//$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
 			$request = new \Illuminate\Http\Request;
 			$keyword_string = implode(" ", $keywords);
-			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>20, 'return_format'=>'raw']);
+			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>5, 'return_format'=>'raw']);
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 
@@ -146,7 +146,7 @@ class BotManController extends Controller
 						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
 					}
 					//appending meta values to document content may not work
-					$info_from_doc .= $meta_info;
+					//$info_from_doc .= $meta_info;
 
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
 					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 200);
@@ -155,7 +155,8 @@ class BotManController extends Controller
 					foreach($chunks_doc as $c){
 						$cnt++;
 						$c = "====DOC-".$doc->id."-====\n".$c;
-						$chunks['ch_'.$cnt] = $c;
+						//$chunks['ch_'.$cnt] = $c;
+						$chunks[] = $c;
 					}
 				}
 
@@ -166,7 +167,7 @@ class BotManController extends Controller
 				//$this->say('Found '.count($matches). ' matches.');
 				$matches_details = '';
 				// take first 5 
-				$matches = array_slice($matches, 0, 20);
+				$matches = array_slice($matches, 0, 10);
 				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
 				if(count($matches) == 0){
@@ -187,7 +188,7 @@ class BotManController extends Controller
 					$answer_full = '';
 					$open_ai_req_cnt = 0;
 					foreach($matches as $chunk_id => $score){
-						//if ($score === 0) continue;// no point in sending this to OpenAI
+						if ($score === 0) continue;// no point in sending this to OpenAI
 						$open_ai_req_cnt++;
 						try{
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );

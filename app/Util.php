@@ -54,7 +54,7 @@ class Util{
         }
 	$results[$chunk_id] = $factor * $results[$chunk_id];
     }
-    arsort( $results );
+    //arsort( $results ); // intentionally avoiding revese sorting
 
     return $results;
 	}
