@@ -288,7 +288,7 @@ class BotManController extends Controller
     		return $response;
 		}
 		catch(\Exception $e){
-			Log::debug($e->getMessage());
+			Log::debug($e->getCode().' : '.$e->getMessage());
 			Log::debug('Strlen: '.strlen($chunk));
 			Log::debug($chunk);
 			return false;
