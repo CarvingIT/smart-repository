@@ -98,18 +98,22 @@ class BotManController extends Controller
 				$this->say($related_docs_link);
 				return $this->ask('Ask another question.', $botSearch);
 			}
-
 			//$this->say(implode(",",$keywords));
-			$request = new \Illuminate\Http\Request;
 			//$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
+			$request = new \Illuminate\Http\Request;
 			$keyword_string = implode(" ", $keywords);
-			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>10, 'return_format'=>'raw']);
+			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>20, 'return_format'=>'raw']);
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 
-			$highlights = $documents_array['highlights'];
-
-				Log::debug('Got '.count($documents_array->data). ' documents.');
+			$highlights = $documents_array->highlights;
+			$highlights_json = json_encode($highlights);
+			// get highlighted keywords
+			preg_match_all('#<em>(.*?)</em>#',$highlights_json, $highlight_matches);
+			array_shift($highlight_matches);
+			$keywords_n_variations = array_unique(array_merge($highlight_matches[0], $keywords));
+			Log::debug('Keywords with variations: '.implode(' ',$keywords_n_variations));
+			Log::debug('Got '.count($documents_array->data). ' documents.');
 				//Log::debug(json_encode($documents_array->data));
 				if(count($documents_array->data) == 0){
 					// log q without a
@@ -129,19 +133,10 @@ class BotManController extends Controller
 				
 				$doc_list = '';
 				$chunks = [];
-				$keywords_n_variations = $keywords;
 				foreach($documents_array->data as $d){
 					$info_from_doc = '';
 					$doc = Document::find($d->id);
 
-					// get highlighted keywords
-					$highlight = @$highlights[$d->id];
-					$highlight_serialized = serialize($highlight);
-					preg_match_all('#<em>(.*?)</em>#',$highlight_serialized, $highlight_matches);
-					array_shift($highlight_matches);
-					$highlight_keywords = $highlight_matches;	
-					
-					$keywords_n_variations = array_unique(array_merge($highlight_keywords[0], $keywords_n_variations));
 
 					$info_from_doc .= $doc->title."\n";
 					$info_from_doc .= $doc->text_content."\n";
@@ -183,7 +178,7 @@ class BotManController extends Controller
 					}
 					$botman_answer->question = $std_q;
 					$botman_answer->keywords = implode(' ',array_sort($keywords));	
-					$botman_answer->save();
+					//$botman_answer->save();
 					//$this->say('Found '.count($documents_array->data).' documents that look relevant but could not answer your question.');
 					return $this->ask('Try rephrasing your question.', $botSearch);
 				}
@@ -192,6 +187,7 @@ class BotManController extends Controller
 					$answer_full = '';
 					$open_ai_req_cnt = 0;
 					foreach($matches as $chunk_id => $score){
+						if ($score === 0) continue;// no point in sending this to OpenAI
 						$open_ai_req_cnt++;
 						try{
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
@@ -257,7 +253,7 @@ class BotManController extends Controller
 						$botman_answer->question = $std_q;
 						$botman_answer->keywords = implode(' ',array_sort($keywords));	
 						$botman_answer->answer = $answer_full;
-						$botman_answer->save();
+						//$botman_answer->save();
 						return $this->ask('Type in another question.', $botSearch);
 					}
 				}
