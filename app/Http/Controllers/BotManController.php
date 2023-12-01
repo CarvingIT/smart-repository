@@ -264,12 +264,9 @@ class BotManController extends Controller
 		try{
 		// escape double quotes from the chunk
 		$chunk = str_replace('"','\"',$chunk);
-		$chunk = preg_replace('/[\x00-\x1F\x80-\xFF]/', ' ', $chunk);
+		$chunk = preg_replace('/[\x00-\x1F\x7F]/u', '', $chunk);
 		$chunk = preg_replace('/\$/', '\$', $chunk);
 		$chunk = preg_replace('/\s+/', ' ', $chunk);
-		//$chunk = preg_replace('/\(/', '\(', $chunk);
-		//$chunk = preg_replace('/\)/', '\)', $chunk);
-		//$chunk = preg_replace('/\//', '\/', $chunk);
 		$chatgpt = $this->chatgpt;
     		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
     		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
@@ -292,6 +289,7 @@ class BotManController extends Controller
 		}
 		catch(\Exception $e){
 			Log::debug($e->getMessage());
+			Log::debug('Strlen: '.strlen($chunk));
 			Log::debug($chunk);
 			return false;
 		}
