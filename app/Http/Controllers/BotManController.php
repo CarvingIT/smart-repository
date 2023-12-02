@@ -134,10 +134,8 @@ class BotManController extends Controller
 				$doc_list = '';
 				$chunks = [];
 				foreach($documents_array->data as $d){
-					$doc_chunks = [];
 					$info_from_doc = '';
 					$doc = Document::find($d->id);
-
 
 					$info_from_doc .= $doc->title."\n";
 					$info_from_doc .= $doc->text_content."\n";
@@ -157,18 +155,13 @@ class BotManController extends Controller
 					$cnt = 0;
 					foreach($chunks_doc as $c){
 						$cnt++;
-						//$c = "====DOC-".$doc->id."-====\n".$c;
-						$doc_chunks['ch_'.$doc->id.'-'.$cnt] = $c;
-						//$chunks[] = $c;
+						$chunks['ch_'.$doc->id.'-'.$cnt] = $c;
 					}
-					$matches = Util::findMatches($doc_chunks, $keywords_n_variations);
-					// take first 5
-					//$matches = array_slice($matches, 0, 5);
-					// merge with all chunks
-					$chunks = array_merge($chunks, $matches);
 				}
 
+				$matches = Util::findMatches($chunks, $keywords_n_variations);
 				Log::debug('Created '.count($chunks).' chunks.');
+
 				//$this->say('Found '.count($matches). ' matches.');
 				$docs_containing_answer = [];
 				if(count($chunks) == 0){
@@ -189,18 +182,20 @@ class BotManController extends Controller
 					$answer_full = '';
 					$open_ai_req_cnt = 0;
 					$answer_chunk_id = null;
-					foreach($chunks as $chunk_id => $score){
-						if ($score === 0) continue;// no point in sending this to OpenAI
+					foreach($matches as $chunk_id => $score){
+						if (!$score || $score === 0) continue;// no point in sending this to OpenAI
 						$open_ai_req_cnt++;
+						Log::debug('OpenAI request #'. $open_ai_req_cnt);
 						try{
-							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
+							//$score = is_numeric($score)?$score:'unknown';
 							Log::debug('Chunk '.$chunk_id.' with score '.$score);
+							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
 								// which chunk contains the answer ?
 								$chunk_containing_answer = $chunk_id;
-								Log::debug('Received answer!');
+								Log::debug('Received answer on request #'.$open_ai_req_cnt);
 								$answer_chunk_id = $chunk_id;
 								break;
         						}
@@ -209,7 +204,6 @@ class BotManController extends Controller
 							$this->say($e->getMessage());
 							break;
 						}
-						Log::debug('OpenAI request #'. $open_ai_req_cnt);
 						if($open_ai_req_cnt >= 50) {
 							Log::debug('Stopping here. Could not get answer.');
 							break;
@@ -268,13 +262,8 @@ class BotManController extends Controller
 	}
 
 	public function answerQuestion( string $chunk, string $question ) {
-		try{
-		// escape double quotes from the chunk
-		//$chunk = str_replace('"','\"',$chunk);
-		//$chunk = preg_replace('/[\x00-\x1F\x7F]/u', '', $chunk);
-		//$chunk = preg_replace('/\$/', '\$', $chunk);
-		$chunk = preg_replace('/\s+/', ' ', $chunk);
 		if(empty($chunk)) return false;
+		try{
 		$chatgpt = $this->chatgpt;
     		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
     		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
@@ -298,7 +287,7 @@ class BotManController extends Controller
 		catch(\Exception $e){
 			Log::debug($e->getCode().' : '.$e->getMessage());
 			Log::debug('Strlen: '.strlen($chunk));
-			Log::debug($chunk);
+			//Log::debug($chunk);
 			return false;
 		}
 	}

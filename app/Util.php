@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use Illuminate\Support\Facades\Log;
 
 class Util{
 	public static function createTextChunks($text, $length, $overlap){
@@ -49,7 +50,7 @@ class Util{
                 $results[$chunk_id] = 0;
             }
             if( isset( $df[$keyword] ) && $df[$keyword] > 0 ) {
-                $results[$chunk_id] += $occurences / $df[$keyword];
+               	$results[$chunk_id] += $occurences / $df[$keyword];
             }
         }
 	$results[$chunk_id] = $factor * $results[$chunk_id];
@@ -126,9 +127,10 @@ class Util{
 
 	public static function sanitizeText($text){
 		$text = preg_replace('/[\x00-\x1F\x80-\xFF]/',' ',$text);
-		$text = preg_replace('/\s+/',' ',$text);
-		//$text = str_replace('&','and',$text);
+		$text = preg_replace("/\s+|[[:^print:]]/", " ", $text);
 		$text = str_replace("\0","",$text);
+		$text = preg_replace('/\s+/',' ',$text);
+		$text = ltrim(rtrim($text));
 		return htmlentities($text);
 	}
 }
