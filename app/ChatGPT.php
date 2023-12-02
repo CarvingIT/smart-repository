@@ -170,6 +170,8 @@ class ChatGPT {
         // get ChatGPT reponse
         $curl_exec = curl_exec( $ch );
         $response = json_decode( $curl_exec );
+
+	$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     
         // somewhat handle errors
         if( ! isset( $response->choices[0]->message ) ) {
@@ -178,7 +180,8 @@ class ChatGPT {
             } else {
                 $error = $curl_exec;
             }
-            throw new \Exception( "Error in OpenAI request: " . $error );
+	    Log::debug($curl_exec);
+            throw new \Exception( "HTTP code: ".$http_code." Error in OpenAI request: " . $json_encoded_fields );
         }
     
         // add response to messages

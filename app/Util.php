@@ -132,5 +132,6 @@ class Util{
 		$text = preg_replace('/\s+/',' ',$text);
 		$text = ltrim(rtrim($text));
 		return htmlentities($text);
+		//return $text;
 	}
 }

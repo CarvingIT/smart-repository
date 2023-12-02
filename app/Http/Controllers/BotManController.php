@@ -78,6 +78,9 @@ class BotManController extends Controller
             $keywords = RakePlus::create($question)->keywords(); // this gives keywords without numbers
 			//$keywords = array_filter(explode(" ",preg_replace('/[^a-z0-9]+/i', ' ', $question)));// just removes punctuation marks 
 			// if there are any numbers in the query, treat them as keywords.
+			if(!$keywords){
+				return $this->ask('Try rephrasing your question.', $botSearch);
+			}
 			preg_match('/\b(\d+)\b/',$question, $matches);
 			if($matches){
 				foreach($matches as $m){
@@ -286,7 +289,7 @@ class BotManController extends Controller
 		}
 		catch(\Exception $e){
 			Log::debug($e->getCode().' : '.$e->getMessage());
-			Log::debug('Strlen: '.strlen($chunk));
+			//Log::debug('Strlen: '.strlen($chunk));
 			//Log::debug($chunk);
 			return false;
 		}
@@ -297,6 +300,7 @@ class BotManController extends Controller
     	$chatgpt->umessage( "Question: \"$question\"\nAnswer: \"$answer\"\n\nAnswer YES if the answer is similar to 'the answer to the question was not found in the information provided' or 'the excerpt does not mention that'. Answer only YES or NO" );
     	$response = $chatgpt->response();
 
+	Log::debug('GPT 3 check response: '. $response->content);
     	return stripos( $response->content, "yes" ) === false;
 	}
 
