@@ -173,7 +173,7 @@ class BotManController extends Controller
 					}
 					$botman_answer->question = $std_q;
 					$botman_answer->keywords = implode(' ',array_sort($keywords));	
-					//$botman_answer->save();
+					$botman_answer->save();
 					//$this->say('Found '.count($documents_array->data).' documents that look relevant but could not answer your question.');
 					return $this->ask('Try rephrasing your question.', $botSearch);
 				}
@@ -245,7 +245,7 @@ class BotManController extends Controller
 						$botman_answer->question = $std_q;
 						$botman_answer->keywords = implode(' ',array_sort($keywords));	
 						$botman_answer->answer = $answer_full;
-						//$botman_answer->save();
+						$botman_answer->save();
 						return $this->ask('Type in another question.', $botSearch);
 					}
 				}
