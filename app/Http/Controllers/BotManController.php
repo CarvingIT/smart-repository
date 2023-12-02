@@ -102,7 +102,7 @@ class BotManController extends Controller
 			//$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
 			$request = new \Illuminate\Http\Request;
 			$keyword_string = implode(" ", $keywords);
-			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>5, 'return_format'=>'raw']);
+			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>25, 'return_format'=>'raw']);
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 
@@ -134,6 +134,7 @@ class BotManController extends Controller
 				$doc_list = '';
 				$chunks = [];
 				foreach($documents_array->data as $d){
+					$doc_chunks = [];
 					$info_from_doc = '';
 					$doc = Document::find($d->id);
 
@@ -156,23 +157,21 @@ class BotManController extends Controller
 					$cnt = 0;
 					foreach($chunks_doc as $c){
 						$cnt++;
-						$c = "====DOC-".$doc->id."-====\n".$c;
-						//$chunks['ch_'.$cnt] = $c;
-						$chunks[] = $c;
+						//$c = "====DOC-".$doc->id."-====\n".$c;
+						$doc_chunks['ch_'.$doc->id.'-'.$cnt] = $c;
+						//$chunks[] = $c;
 					}
+					$matches = Util::findMatches($doc_chunks, $keywords_n_variations);
+					// take first 5
+					//$matches = array_slice($matches, 0, 5);
+					// merge with all chunks
+					$chunks = array_merge($chunks, $matches);
 				}
 
-				//$this->say($chunks[0]);
 				Log::debug('Created '.count($chunks).' chunks.');
-				// remove Page \d\d from the string
-				$matches = Util::findMatches($chunks, $keywords_n_variations);
 				//$this->say('Found '.count($matches). ' matches.');
-				$matches_details = '';
-				// take first 5 
-				$matches = array_slice($matches, 0, 50);
-				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
-				if(count($matches) == 0){
+				if(count($chunks) == 0){
 					// log q without a
 					$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
 					$botman_answer = BotmanAnswer::where('question', $std_q)->first();
@@ -189,38 +188,32 @@ class BotManController extends Controller
 					// show answer here
 					$answer_full = '';
 					$open_ai_req_cnt = 0;
-					foreach($matches as $chunk_id => $score){
+					$answer_chunk_id = null;
+					foreach($chunks as $chunk_id => $score){
 						if ($score === 0) continue;// no point in sending this to OpenAI
 						$open_ai_req_cnt++;
 						try{
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
-							$pattern = '/====DOC-(\d\d*)-====/';
-							preg_match($pattern, $chunks[$chunk_id], $doc_matches);
-							Log::debug('Chunk '.$chunk_id.' with score '.$score.' from doc '.$doc_matches[1]);
+							Log::debug('Chunk '.$chunk_id.' with score '.$score);
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
 								// which chunk contains the answer ?
 								$chunk_containing_answer = $chunk_id;
 								Log::debug('Received answer!');
-								array_shift($doc_matches);
+								$answer_chunk_id = $chunk_id;
 								break;
-        					}
-							else{
-								//$answer_full = 'Did not get any answer';
-							}
+        						}
 						}
 						catch(\Exception $e){
 							$this->say($e->getMessage());
 							break;
 						}
-						if($open_ai_req_cnt == 1){
-							//$botman->reply('I am still looking for an answer to your question.');
-						}
-						else{
-							//$botman->reply('Be patient.');
-						}
 						Log::debug('OpenAI request #'. $open_ai_req_cnt);
+						if($open_ai_req_cnt >= 50) {
+							Log::debug('Stopping here. Could not get answer.');
+							break;
+						}
 					}
 					if(empty($answer_full)){
 						// log q without a
@@ -240,10 +233,12 @@ class BotManController extends Controller
 						//$this->ask('Try making your question more specific.', $botSearch);
 					}
 					else{
-						foreach($doc_matches as $dm){
-							$m_doc = Document::find($dm);
-							$doc_list .= '<a target="_new" href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
-						}
+						$m_doc_id = str_replace('ch_','',$answer_chunk_id);
+						$m_doc_id = substr($m_doc_id,0, strpos($m_doc_id,'-'));
+						Log::debug('Doc containing answer: '.$m_doc_id);
+						$m_doc = Document::find($m_doc_id);
+						$doc_list .= '<a target="_new" href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
+
 						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
 						$this->say($answer_full);
 						$this->say($related_docs_link);
@@ -279,6 +274,7 @@ class BotManController extends Controller
 		//$chunk = preg_replace('/[\x00-\x1F\x7F]/u', '', $chunk);
 		//$chunk = preg_replace('/\$/', '\$', $chunk);
 		$chunk = preg_replace('/\s+/', ' ', $chunk);
+		if(empty($chunk)) return false;
 		$chatgpt = $this->chatgpt;
     		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
     		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
