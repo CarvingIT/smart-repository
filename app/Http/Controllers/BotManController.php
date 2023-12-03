@@ -110,12 +110,16 @@ class BotManController extends Controller
 			$documents_array = json_decode($search_results);	
 
 			$highlights = $documents_array->highlights;
-			$highlights_json = json_encode($highlights);
+			$hl_ser = serialize($highlights);
 			// get highlighted keywords
-			preg_match_all('#<em>(.*?)</em>#',$highlights_json, $highlight_matches);
-			array_shift($highlight_matches);
-			$keywords_n_variations = array_unique(array_merge($highlight_matches[0], $keywords));
-			Log::debug('Keywords with variations: '.implode(' ',$keywords_n_variations));
+			preg_match_all('#<em>(.*?)</em>#',$hl_ser, $hl_matches);
+			array_shift($hl_matches);
+			$hl_matches = array_unique(array_map('strtolower', $hl_matches[0]));
+			//Log::debug(json_encode($hl_matches));exit;
+			$keywords_n_variations = array_merge(array_values($hl_matches), $keywords);
+			$keyword_string = implode(" ",$keywords_n_variations);
+			$keywords_n_variations = array_unique(explode(" ", $keyword_string));
+			Log::debug('Keywords with variations: '.implode(', ',$keywords_n_variations));
 			Log::debug('Got '.count($documents_array->data). ' documents.');
 				//Log::debug(json_encode($documents_array->data));
 				if(count($documents_array->data) == 0){
