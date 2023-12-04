@@ -73,7 +73,12 @@ class BotManController extends Controller
 
         $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
 			// get keywords
-			$question = $answer->getText();
+			$question = ltrim(rtrim($answer->getText()));
+
+			// find proper nouns
+			preg_match_all ('([A-Z][a-z]{1,2}\.\s+(?:[A-Z][a-z]+\s*)*|(?<!\. )(?<!;)(?:[A-Z][a-z]+\s*)+)',substr($question, strpos($question,' ')), $proper_noun_matches);
+			$proper_nouns = $proper_noun_matches[0];
+	
 			//$keywords = RakePlus::create($question, 'en_US', 0, false)->get(); // this gives phrases
             $keywords = RakePlus::create($question)->keywords(); // this gives keywords without numbers
 			//$keywords = array_filter(explode(" ",preg_replace('/[^a-z0-9]+/i', ' ', $question)));// just removes punctuation marks 
@@ -105,7 +110,14 @@ class BotManController extends Controller
 			//$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
 			$request = new \Illuminate\Http\Request;
 			$keyword_string = implode(" ", $keywords);
-			$request->merge(['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>25, 'return_format'=>'raw']);
+			$search_query = ['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>25, 'return_format'=>'raw']; 
+			// must have words for proper nouns like country-names
+			foreach($proper_nouns as $pn){
+				Log::debug($pn);
+				$search_query['must_match'][] = $pn;	
+			}
+			$request->merge($search_query);
+			Log::debug(json_encode($search_query)); 
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 

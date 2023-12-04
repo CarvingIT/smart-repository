@@ -282,20 +282,17 @@ trait Search{
 					]
 				];
 
-			// add should s if the request is coming from chatbot
-			/*
-			if($request->search_type == 'chatbot'){
-				$default_should = $params['body']['query']['bool']['should'];
-				$new_should = [
-									[
-										'match_phrase' => [
-											'title' => $q_title_phrase,
-										]
-									],
-							  ];
-				$params['body']['query']['bool']['should'] = array_merge($default_should, $new_should);
+			// add must match clause 
+			if(!empty($request->must_match) && count($request->must_match) > 0){
+				Log::debug('Adding must match clause.');
+				foreach($request->must_match as $must_keyword){
+					$params['body']['query']['bool']['must'][] = 
+										['match' => [
+											'text_content' => $must_keyword
+										]];
+				}
 			}
-			*/
+
 	    	if(!empty($request->collection_id)){
 				// this is currently done at the db level
             	//$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
