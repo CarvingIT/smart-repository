@@ -331,17 +331,12 @@ trait Search{
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
         // get Meta filtered documents
-        //$all_meta_filters = Session::get('meta_filters');
-        //if(!empty($all_meta_filters[$request->collection_id])){
-            $documents = $this->getMetaFilteredDocuments($request, $documents);
-        //}
+        $documents = $this->getMetaFilteredDocuments($request, $documents);
 
-	// get approval exception 
-	// the exceptions will be removed from the models with ->whereNotIn 
-	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
-	//$documents = $this->approvalFilter($request->collection_id, $documents);
-	//$documents = $documents->get();
-	//Log::debug(str_replace('376','__376__',$ordered_document_ids));
+	if($request->search_type == 'chatbot'){
+		$documents = $documents->where('type','<>','url');
+	}
+
 	//Log::debug(json_encode($document_ids));
 	Log::debug('Count before wherein: '.$documents->count());
 	Log::debug(@count($document_ids));
@@ -349,7 +344,7 @@ trait Search{
 	if(isset($document_ids) && count($document_ids) > 0){
         	$documents = $documents->whereIn('id', $document_ids);
 	}
-	$query = $documents->toSql();
+	//$query = $documents->toSql();
 	//Log::debug($query);
 	Log::debug('Count: '.$documents->count());
 
