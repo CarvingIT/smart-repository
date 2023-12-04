@@ -18,7 +18,7 @@ class Util{
 	}
 
 	//public static function findMatches( array $chunks, array $keywords, int $crop = 500 ) 
-	public static function findMatches( array $chunks, array $keywords, int $crop = 100 ) {
+	public static function findMatches( array $chunks, array $keywords, array $doc_scores = [], int $crop = 100 ) {
     $df = [];
 
     foreach( $chunks as $chunk_id => $chunk ) {
@@ -36,6 +36,9 @@ class Util{
     $results = [];
 
     foreach( $chunks as $chunk_id => $chunk ) {
+	$doc_id = str_replace('ch_','',$chunk_id);
+	$doc_id = substr($doc_id,0, strpos($doc_id,'-'));
+
 	$factor = 0;
         foreach( $keywords as $keyword ) {
             if( $chunk_id != 0 ) {
@@ -53,7 +56,10 @@ class Util{
                	$results[$chunk_id] += $occurences / $df[$keyword];
             }
         }
-	$results[$chunk_id] = $factor * $results[$chunk_id];
+	// multiply by score of the document and the factor
+	// factor is an iteger the value of which is equal to the number of keywords matched in a chunk
+	$doc_score = empty($doc_scores[$doc_id])? 1 : $doc_scores[$doc_id];
+	$results[$chunk_id] = $doc_score * $factor * $results[$chunk_id];
     }
     arsort( $results ); 
 

@@ -110,6 +110,7 @@ class BotManController extends Controller
 			$documents_array = json_decode($search_results);	
 
 			$highlights = $documents_array->highlights;
+			$scores = @$documents_array->scores;
 			$hl_ser = serialize($highlights);
 			// get highlighted keywords
 			preg_match_all('#<em>(.*?)</em>#',$hl_ser, $hl_matches);
@@ -118,8 +119,13 @@ class BotManController extends Controller
 			//Log::debug(json_encode($hl_matches));exit;
 			$keywords_n_variations = array_merge(array_values($hl_matches), $keywords);
 			$keyword_string = implode(" ",$keywords_n_variations);
-			$keywords_n_variations = array_unique(explode(" ", $keyword_string));
-			Log::debug('Keywords with variations: '.implode(', ',$keywords_n_variations));
+			$keywords_n_variations = array_unique(preg_split('/\b/', $keyword_string));
+
+			$keywords_n_variations = array_filter($keywords_n_variations, function($val){
+				return strlen($val)>1;
+			});
+
+			Log::debug('Keywords with variations: '.implode(',',$keywords_n_variations));
 			Log::debug('Got '.count($documents_array->data). ' documents.');
 				//Log::debug(json_encode($documents_array->data));
 				if(count($documents_array->data) == 0){
@@ -166,7 +172,9 @@ class BotManController extends Controller
 					}
 				}
 
-				$matches = Util::findMatches($chunks, $keywords_n_variations);
+				$scores = json_decode(json_encode($scores),true);
+				Log::debug(gettype($scores));
+				$matches = Util::findMatches($chunks, $keywords_n_variations, $scores);
 				Log::debug('Created '.count($chunks).' chunks.');
 
 				//$this->say('Found '.count($matches). ' matches.');

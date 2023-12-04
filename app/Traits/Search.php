@@ -303,6 +303,7 @@ trait Search{
         }
         $columns = array('type', 'title', 'size', 'updated_at');
 	$ordered_document_ids = '';
+        $scores = [];
         if(!empty($params)){
 	    $params['index'] = $elastic_index;
 	    $params['size'] = 1000;// set a max size returned by ES
@@ -318,11 +319,12 @@ trait Search{
 		}
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
-                $document_ids[] = $h['_id'];
-				$highlights[$h['_id']] = @$h['highlight'];
+                //$document_ids[] = $h['_id'];
+		$highlights[$h['_id']] = @$h['highlight'];
+		$scores[$h['_id']] = $h['_score'];
             }
-			//Log::debug(serialize($highlights));
-
+	//Log::debug(json_encode($scores));
+	    $document_ids = array_keys($scores);
 	    $ordered_document_ids = implode(",", $document_ids);
         }
 	//Log::debug('Ordered IDs: '.$ordered_document_ids);
@@ -385,12 +387,13 @@ trait Search{
 		if($request->is('api/*') || $request->return_format == 'raw'){
 			return 
         	 array(
-            'data'=>$documents,
-			'highlights'=>$highlights,
-            'draw'=>(int) $request->draw,
-            'recordsTotal'=> $total_count,
-            'recordsFiltered' => $filtered_count,
-            'error'=> '',
+            	'data'=>$documents,
+		'highlights'=>$highlights,
+		'scores'=>$scores,
+            	'draw'=>(int) $request->draw,
+            	'recordsTotal'=> $total_count,
+            	'recordsFiltered' => $filtered_count,
+            	'error'=> '',
         	);
 		}
 		else{
