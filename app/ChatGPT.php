@@ -158,6 +158,8 @@ class ChatGPT {
 
 	try{
 		$json_encoded_fields = json_encode($fields);
+		// not sure why this is needed
+		$json_encoded_fields = str_replace('\\',' ',$json_encoded_fields);
 	}
 	catch(\Exception $e){
 		Log::debug($e->getMessage());
