@@ -72,6 +72,7 @@ class BotManController extends Controller
 		$this_controller = $this;
 
         $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
+		$start_time = time();
 			// get keywords
 			$question = ltrim(rtrim($answer->getText()));
 
@@ -266,12 +267,16 @@ class BotManController extends Controller
 						// log q and a here
 						$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
 						$botman_answer = BotmanAnswer::where('question', $std_q)->first();
+						$end_time = time();
+						$answering_time = $end_time - $start_time;
 						if(!$botman_answer){
 							$botman_answer = new BotmanAnswer;
 						}
 						$botman_answer->question = $std_q;
 						$botman_answer->keywords = implode(' ',array_sort($keywords));	
 						$botman_answer->answer = $answer_full;
+						$botman_answer->answering_time = $answering_time;
+						$botman_answer->openai_req = $open_ai_req_cnt;
 						$botman_answer->save();
 						return $this->ask('Type in another question.', $botSearch);
 					}
