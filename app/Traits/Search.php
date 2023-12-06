@@ -173,36 +173,31 @@ trait Search{
 		}
 		else{
         		$documents = \App\Document::whereIn('collection_id', $collection_ids);
-				$documents = $documents->whereNotNull('approved_on');
+			$documents = $documents->where(function($query){
 				if(\Auth::user() && \Auth::user()->id){
-					$documents = $documents->orWhere('created_by', \Auth::user()->id);
+					$query->whereNotNull('approved_on')
+	   					->orWhere('created_by', \Auth::user()->id);
 				}
+				else{
+					$query->whereNotNull('approved_on');
+				}
+			});
         		$elastic_index = 'sr_documents';
 		}
+		//Log::debug($elastic_index.' - '.implode(",", $collection_ids));
 	}
         $total_count = $documents->count();
+	Log::debug('Count: '.$total_count);
 
 		$highlights = [];
-        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
+        if(!empty($request->search['value']) && strlen($request->search['value'])>1){
             $search_term = $request->search['value'];
+	    Log::debug('Search term: '.$search_term);
             $words = explode(' ',$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
-			/*
-			// not allowing users to control the selection of search analyzer
-			// this code is commented because we are merging all search options into one query
-			$analyzer = empty($request->analyzer) ? 'standard' : $request->analyzer; // standard analyzer is the default
-			Log::debug('Analyzer: '.$analyzer);
-
-			$es_title = 'title';
-			$es_text_content = 'text_content';
-			if($analyzer == 'porter_stem_analyzer'){
-				$es_title = 'title.porter_stem';
-				$es_text_content = 'text_content.porter_stem';
-			}
-			*/
+	    		//$analyzer = 'standard';
 	    		$analyzer = 'synonyms_analyzer';
-	    		$analyzer = 'standard';
 	
 				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
 				$title_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
@@ -219,7 +214,6 @@ trait Search{
 						'query' => [
 							'bool' => [
 								'should' => [
-									/*
 									[
 										'match_phrase' => [
 											'title' => $q_title_phrase,
@@ -235,7 +229,6 @@ trait Search{
 											'text_content' => $text_q_with_and,
 										]
 									],
-									*/
 									[
 										'match_phrase' => [
 											'text_content' => $q_text_phrase
@@ -288,12 +281,26 @@ trait Search{
 						]
 					]
 				];
+
+			// add must match clause 
+			if(!empty($request->must_match) && count($request->must_match) > 0){
+				Log::debug('Adding must match clause.');
+				foreach($request->must_match as $must_keyword){
+					$params['body']['query']['bool']['must'][] = 
+										['match' => [
+											'text_content' => $must_keyword
+										]];
+				}
+			}
+
 	    	if(!empty($request->collection_id)){
 				// this is currently done at the db level
             	//$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
 			}
         }
         $columns = array('type', 'title', 'size', 'updated_at');
+	$ordered_document_ids = '';
+        $scores = [];
         if(!empty($params)){
 	    $params['index'] = $elastic_index;
 	    $params['size'] = 1000;// set a max size returned by ES
@@ -309,39 +316,60 @@ trait Search{
 		}
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
-                $document_ids[] = $h['_id'];
-				$highlights[$h['_id']] = @$h['highlight'];
+                //$document_ids[] = $h['_id'];
+		$highlights[$h['_id']] = @$h['highlight'];
+		$scores[$h['_id']] = $h['_score'];
             }
-			//Log::debug(serialize($highlights));
-
-            $documents = $documents->whereIn('id', $document_ids);
-			$ordered_document_ids = implode(",", $document_ids);
+	//Log::debug(json_encode($scores));
+	    $document_ids = array_keys($scores);
+	    $ordered_document_ids = implode(",", $document_ids);
         }
+	//Log::debug('Ordered IDs: '.$ordered_document_ids);
         // get title filtered documents
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
         // get Meta filtered documents
-        //$all_meta_filters = Session::get('meta_filters');
-        //if(!empty($all_meta_filters[$request->collection_id])){
-            $documents = $this->getMetaFilteredDocuments($request, $documents);
-        //}
+        $documents = $this->getMetaFilteredDocuments($request, $documents);
 
-	// get approval exception 
-	// the exceptions will be removed from the models with ->whereNotIn 
-	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
-	//$documents = $this->approvalFilter($request->collection_id, $documents);
-	//$documents = $documents->get();
+	if($request->search_type == 'chatbot'){
+		$documents = $documents->where('type','<>','url');
+	}
+
+	//Log::debug(json_encode($document_ids));
+	Log::debug('Count before wherein: '.$documents->count());
+	Log::debug(@count($document_ids));
+	//Log::debug(json_encode($document_ids));
+	if(isset($document_ids) && count($document_ids) > 0){
+        	$documents = $documents->whereIn('id', $document_ids);
+	}
+	//$query = $documents->toSql();
+	//Log::debug($query);
+	Log::debug('Count: '.$documents->count());
+
 	$filtered_count = $documents->count(); 
 
 	$sort_column = empty($columns[@$request->order[0]['column']])?'':$columns[@$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 	$length = empty($request->length)?10:$request->length;
+	$start = empty($request->start)?0:$request->start;
 	if(!empty($params) && !empty($ordered_document_ids) && empty($sort_column)){
 	// initial sorting is by relevance
+	Log::debug('Collection count: '.$documents->count().' -- Ordered array count: '.count($document_ids));
+	if(!empty($ordered_document_ids)){
+		$documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
+	}
 	$documents = $documents
-		->orderByRaw("FIELD(id, $ordered_document_ids)")
-             ->limit($length)->offset($request->start)->get();
+	     ->offset($start)
+	     ->limit($length)
+	     ->get();
+
+		$doc_ids = [];
+		foreach($documents as $d){
+			$doc_ids[] = $d->id;
+		}
+		Log::debug('Doc ids in result: '.implode(",", $doc_ids));	
+		//exit;
 	}
 	else{
 		$sort_column = empty($sort_column)?'updated_at':$sort_column;
@@ -356,12 +384,13 @@ trait Search{
 		if($request->is('api/*') || $request->return_format == 'raw'){
 			return 
         	 array(
-            'data'=>$documents,
-			'highlights'=>$highlights,
-            'draw'=>(int) $request->draw,
-            'recordsTotal'=> $total_count,
-            'recordsFiltered' => $filtered_count,
-            'error'=> '',
+            	'data'=>$documents,
+		'highlights'=>$highlights,
+		'scores'=>$scores,
+            	'draw'=>(int) $request->draw,
+            	'recordsTotal'=> $total_count,
+            	'recordsFiltered' => $filtered_count,
+            	'error'=> '',
         	);
 		}
 		else{

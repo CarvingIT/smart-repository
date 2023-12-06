@@ -39,6 +39,18 @@ $(document).ready(function() {
 	reloadSearchResults();
 });
 
+function clearFilters(){
+	// clear checkboxes
+	$('input[type="checkbox"]').each(function() {
+			this.checked = false;
+	});
+	// reset range filter
+	$('#year_lower_slider').val(1950);
+	$('#year_upper_slider').val(2023);
+	
+	reloadSearchResults();
+}
+
 function reloadSearchResults(){
 	showSpinner();
 	// go to the first page
@@ -262,7 +274,7 @@ function goToPage(page){
 
 <!-- ======= Service Details Section ======= -->
 @php
-$tags = App\Taxonomy::all();
+$tags = App\Taxonomy::orderBy('label','ASC')->get();
 
 $children = [];
 foreach($tags as $t){
@@ -275,7 +287,7 @@ foreach($tags as $t){
 	<div class="row gy-4">
 	  <div class="col-lg-3" style="margin-top:0;">
 		<div class="services-list">
-			<h5>Filter By</h5>
+			<h5>Filter By <div style="float:right; cursor:pointer; border:1px solid #f05a22; padding:2px;border-radius:5px; background-color:#eee;" href="#" onclick="clearFilters();" title="Clear all filters"><i class="fa-solid fa-broom"></i></div></h5>
 				@php
 				foreach($filters as $f){
 					if($f->type == 'TaxonomyTree'){

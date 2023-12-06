@@ -1,5 +1,45 @@
 <div class="row gy-4 pricing-item" data-aos-delay="100">
+	<div class="col-lg-12 text-right">
+	<!--
+	<a href="#" onclick="clearFilters();">Clear All Filters</a>
+	-->
+	</div>
+<style>
+	.tag{
+		display:inline-block;
+		margin-top:2px;
+		background-color:#ccc;
+		margin-right:5px;
+		padding:3px;
+  		border-top-left-radius: 10px;
+  		border-bottom-left-radius: 10px;
+	}
+	.parent-tag{
+		background-color:#aaa;
+	}
+</style>
 	@php
+		$major_themes = explode("|",env('MAJOR_THEMES', 'A|B|C'));
+		$major_theme_ids = [];
+		$taxonomy = \App\Taxonomy::orderBy('parent_id','ASC')->orderBy('label', 'ASC')->get()->keyBy('id');
+		$children = [];
+		$taxonomy_ordered_by_id = [];
+		foreach($taxonomy as $t){
+			$children[$t->parent_id][] = $t->id; 
+			$taxonomy_ordered_by_id[] = $t->id;
+			if(in_array($t->label, $major_themes)){
+				$major_theme_ids[] = $t->id;
+			}
+		}
+		function orderByHierarchy($taxonomy_ordered_by_id, $my_ids){
+			$ordered = [];
+			foreach($taxonomy_ordered_by_id as $t_id){
+				if(in_array($t_id, $my_ids)){
+					$ordered[] = $t_id;
+				}
+			}
+			return $ordered;
+		}
 		function removeContinents($string){
 			$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
 			$str_values = explode(",", $string);
@@ -8,6 +48,14 @@
 				if (!in_array(ltrim(rtrim($v)), $continents)) $new_str_values[] = $v;
 			}
 			return implode(", ",$new_str_values);
+		}
+
+		function distinguishMajorThemes($string){
+			$major_themes = explode("|",env('MAJOR_THEMES', 'A|B|C'));
+			foreach($major_themes as $t){
+				$string = str_replace($t, '<em class="mt">'.$t.'</em>', $string);
+			}
+			return $string;
 		}
 	@endphp
 	@if(!empty($results))
@@ -60,9 +108,9 @@
 		<div class="row">
 		<h4>
 		@if (@$result->type == 'url')
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{!! strip_tags($document->title) !!}</a>
 		@else
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{{ $document->title }}</a>
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{!! strip_tags($document->title) !!}</a>
 		@endif
 		</h4>
 		</div>
@@ -125,9 +173,16 @@
 		<div class="row">
 		<div class="col-lg-12">
 		@if (!empty($document->meta_value($theme_field_id)))
-			<i class="fa fa-tag" aria-hidden="true"></i>
 			<span class="search-result-meta">
-			{{ removeContinents($document->meta_value($theme_field_id)) }}
+			{{-- distinguishMajorThemes($document->meta_value($theme_field_id)) --}} 
+			@php
+				$taxonomy_values = json_decode($document->meta_value($theme_field_id, true));
+				foreach(orderByHierarchy($taxonomy_ordered_by_id, $taxonomy_values) as $t){
+					$parent = in_array($taxonomy[$t]->id, $major_theme_ids) ? 'parent-tag' : '';
+					echo '<span class="tag '.$parent.'"><i class="fa fa-tag" aria-hidden="true"></i>
+					'.$taxonomy[$t]->label.'</span>';
+				}
+			@endphp
 			</span>
 			<p>
 			</p>

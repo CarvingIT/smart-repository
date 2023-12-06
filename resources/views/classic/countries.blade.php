@@ -61,7 +61,7 @@ function randomString(length) {
 	
                     <div class="container">
                                     @php
-                                    $tags = App\Taxonomy::all();
+                                    $tags = App\Taxonomy::orderBy('label', 'ASC')->get();
                                     $children = [];
                                     foreach($tags as $t){
                                     $children['parent_'.$t->parent_id][] = $t;

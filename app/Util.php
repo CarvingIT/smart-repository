@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use Illuminate\Support\Facades\Log;
 
 class Util{
 	public static function createTextChunks($text, $length, $overlap){
@@ -16,7 +17,8 @@ class Util{
 		return $chunks;
 	}
 
-	public static function findMatches( array $chunks, array $keywords, int $crop = 500 ) {
+	//public static function findMatches( array $chunks, array $keywords, int $crop = 500 ) 
+	public static function findMatches( array $chunks, array $keywords, array $doc_scores = [], int $crop = 100 ) {
     $df = [];
 
     foreach( $chunks as $chunk_id => $chunk ) {
@@ -34,6 +36,10 @@ class Util{
     $results = [];
 
     foreach( $chunks as $chunk_id => $chunk ) {
+	$doc_id = str_replace('ch_','',$chunk_id);
+	$doc_id = substr($doc_id,0, strpos($doc_id,'-'));
+
+	$factor = 0;
         foreach( $keywords as $keyword ) {
             if( $chunk_id != 0 ) {
                 $chunk = substr( $chunk, $crop );
@@ -42,15 +48,20 @@ class Util{
                 $chunk = substr( $chunk, 0, -$crop );
             }
             $occurences = substr_count( $chunk, $keyword );
+	    if($occurences > 0) $factor++;
             if( ! isset( $results[$chunk_id] ) ) {
                 $results[$chunk_id] = 0;
             }
             if( isset( $df[$keyword] ) && $df[$keyword] > 0 ) {
-                $results[$chunk_id] += $occurences / $df[$keyword];
+               	$results[$chunk_id] += $occurences / $df[$keyword];
             }
         }
+	// multiply by score of the document and the factor
+	// factor is an iteger the value of which is equal to the number of keywords matched in a chunk
+	$doc_score = empty($doc_scores[$doc_id])? 1 : $doc_scores[$doc_id];
+	$results[$chunk_id] = $doc_score * $factor * $results[$chunk_id];
     }
-    arsort( $results );
+    arsort( $results ); 
 
     return $results;
 	}
@@ -66,10 +77,20 @@ class Util{
 		foreach($keywords as $k){
 			// if any of the earlier lines contain this keyword, 
 			// don't add that line
-			$p = stripos($text, $k);
-			if($p === false) continue;
+			//$p = stripos($text, $k);
+			$word_pattern = '/\b'.$k.'\b/';
+			preg_match($word_pattern, $text, $matches, PREG_OFFSET_CAPTURE);
+			if(empty($matches[0][1])) continue;
+			$p = $matches[0][1];
 			$offset = ($p < 30) ? 0 : ($p-30);
-			$line = substr($text, $offset, 100);
+			$length = strlen($text) < ($offset + 100) ? strlen($text) - $offset : 100;	
+			$line = substr($text, $offset, $length);
+			$boundary = '/\b/';
+			preg_match_all($boundary, $line, $b_matches, PREG_OFFSET_CAPTURE);	
+			$start = $b_matches[0][1][1];
+			$end = $b_matches[0][count($b_matches[0])-2][1];
+			//echo $start . ' - '. $end;	
+			$line = substr($line, $start, $end-$start);	
 			$lines[] = $line;
 		}
 		$lines_refined = [];
@@ -89,7 +110,7 @@ class Util{
 			foreach($keywords as $k){
 				//if(stripos($text, $k) !== false){
 				try{
-					$pattern = '/'.$k.'/i';
+					$pattern = '/\b'.$k.'\b/i';
 					$lr = preg_replace($pattern, '<span class="highlight">$0</span>', $lr);	
 				}
 				catch(\Exception $e){
@@ -100,5 +121,23 @@ class Util{
 		}
 		$lines_refined = $lines_refined_tmp;
 		return $lines_refined;
+	}
+
+	public static function standardizeQuestion($question){
+		// remove punctuation
+		$question = preg_replace("/(?![.=$'€%-])\p{P}/u", " ", $question);
+		// replace multiple spaces by one
+		$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
+		return $question;
+	}
+
+	public static function sanitizeText($text){
+		$text = preg_replace('/[\x00-\x1F\x80-\xFF]/',' ',$text);
+		$text = preg_replace("/\s+|[[:^print:]]/", " ", $text);
+		$text = str_replace("\0","",$text);
+		$text = preg_replace('/\s+/',' ',$text);
+		$text = ltrim(rtrim($text));
+		return htmlentities($text);
+		//return $text;
 	}
 }

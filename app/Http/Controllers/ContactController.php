@@ -16,7 +16,7 @@ class ContactController extends Controller
        $req->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255'],
-			'address'=>['required', 'string','max:255'],
+			//'address'=>['required', 'string','max:255'],
 			'subject'=>['required', 'string','max:255'],
 			'message'=>['required', 'string','max:255'],
             'CaptchaCode'=> 'required|in:'.session('captcha_code'),

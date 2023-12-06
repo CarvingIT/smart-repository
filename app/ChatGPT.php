@@ -1,6 +1,7 @@
 <?php
 
 namespace App;
+use Illuminate\Support\Facades\Log;
 
 class ChatGPT {
     protected array $messages = [];
@@ -154,15 +155,25 @@ class ChatGPT {
             "Content-Type: application/json",
             "Authorization: Bearer " . $this->api_key
         ] );
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode(
-            $fields
-        ) );
+
+	try{
+		$json_encoded_fields = json_encode($fields);
+		// not sure why this is needed
+		//$json_encoded_fields = str_replace('\\',' ',$json_encoded_fields);
+	}
+	catch(\Exception $e){
+		Log::debug($e->getMessage());
+		return null;
+	}
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $json_encoded_fields );
         curl_setopt( $ch, CURLOPT_POST, true );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
     
         // get ChatGPT reponse
         $curl_exec = curl_exec( $ch );
         $response = json_decode( $curl_exec );
+
+	$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     
         // somewhat handle errors
         if( ! isset( $response->choices[0]->message ) ) {
@@ -171,7 +182,8 @@ class ChatGPT {
             } else {
                 $error = $curl_exec;
             }
-            throw new \Exception( "Error in OpenAI request: " . $error );
+	    Log::debug($curl_exec);
+            throw new \Exception( "HTTP code: ".$http_code." Error in OpenAI request: " . $json_encoded_fields );
         }
     
         // add response to messages

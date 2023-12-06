@@ -39,6 +39,8 @@
                 <h6 class="card-title">{{ __('FEEDBACK') }}</h6>
 			</div>
 			<div class="card-body">
+			<div class="beautify">
+				<br>
 <!-- Content Box -->
                 @if ($errors->any())
                 <h4>Errors</h4>
@@ -97,11 +99,10 @@
 				</form>
               </div>
 			</div>
+			</div>
 			<!-- Content Box Ends--> 
             
           </div>
         </div>
     </div>
-
-
   @endsection

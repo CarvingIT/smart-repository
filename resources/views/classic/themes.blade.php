@@ -67,7 +67,7 @@ function randomString(length) {
 							$meta_id = $meta->id;	
 							$major_themes = explode("|", env('MAJOR_THEMES',"themes"));
 							$major_theme_ids = [];
-                            $tags = App\Taxonomy::all();
+                            $tags = App\Taxonomy::orderBy('label','ASC')->get();
                             $children = [];
                             foreach($tags as $t){
                               $children['parent_'.$t->parent_id][] = $t;

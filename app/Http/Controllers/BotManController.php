@@ -14,6 +14,7 @@ use BotMan\BotMan\Messages\Attachments\File;
 use BotMan\BotMan\Messages\Outgoing\OutgoingMessage;
 use App\BotmanAnswer;
 use App\Traits\Search;
+use Rap2hpoutre\FastExcel\FastExcel;
 
 class BotManController extends Controller
 {
@@ -71,12 +72,21 @@ class BotManController extends Controller
 		$this_controller = $this;
 
         $botSearch = function(Answer $answer, $req) use ($this_controller, &$botSearch ,$botman) {
+		$start_time = time();
 			// get keywords
-			$question = $answer->getText();
+			$question = ltrim(rtrim($answer->getText()));
+
+			// find proper nouns
+			preg_match_all ('([A-Z][a-z]{1,2}\.\s+(?:[A-Z][a-z]+\s*)*|(?<!\. )(?<!;)(?:[A-Z][a-z]+\s*)+)',substr($question, strpos($question,' ')), $proper_noun_matches);
+			$proper_nouns = $proper_noun_matches[0];
+	
 			//$keywords = RakePlus::create($question, 'en_US', 0, false)->get(); // this gives phrases
             $keywords = RakePlus::create($question)->keywords(); // this gives keywords without numbers
 			//$keywords = array_filter(explode(" ",preg_replace('/[^a-z0-9]+/i', ' ', $question)));// just removes punctuation marks 
 			// if there are any numbers in the query, treat them as keywords.
+			if(!$keywords){
+				return $this->ask('Try rephrasing your question.', $botSearch);
+			}
 			preg_match('/\b(\d+)\b/',$question, $matches);
 			if($matches){
 				foreach($matches as $m){
@@ -88,7 +98,8 @@ class BotManController extends Controller
 			// check if this question was asked earlier
 			// saves time
 			$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question)));
-			$botman_answer = BotmanAnswer::where('question', $question)->whereNotNull('answer')->first();
+			$std_q = Util::standardizeQuestion($question);
+			$botman_answer = BotmanAnswer::where('question', $std_q)->whereNotNull('answer')->first();
 			$related_docs_link = 'Find more related documents <a target="_new" href="/collection/1?isa_search_parameter='.
                             urlencode(implode(' ',$keywords)).'">here</a>.';
 			if($botman_answer){
@@ -96,22 +107,48 @@ class BotManController extends Controller
 				$this->say($related_docs_link);
 				return $this->ask('Ask another question.', $botSearch);
 			}
-
 			//$this->say(implode(",",$keywords));
+			//$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
 			$request = new \Illuminate\Http\Request;
-			$request->merge(['search'=>['value'=>implode(",",$keywords)], 'length'=>10, 'return_format'=>'raw']);
+			$keyword_string = implode(" ", $keywords);
+			$search_query = ['search'=>['value'=>$keyword_string],'search_type'=>'chatbot', 'length'=>25, 'return_format'=>'raw']; 
+			// must have words for proper nouns like country-names
+			foreach($proper_nouns as $pn){
+				Log::debug($pn);
+				$search_query['must_match'][] = $pn;	
+			}
+			$request->merge($search_query);
+			Log::debug(json_encode($search_query)); 
 			$search_results = $this_controller->search($request);
 			$documents_array = json_decode($search_results);	
 
-				Log::debug('Got '.count($documents_array->data). ' documents.');
+			$highlights = $documents_array->highlights;
+			$scores = @$documents_array->scores;
+			$hl_ser = serialize($highlights);
+			// get highlighted keywords
+			preg_match_all('#<em>(.*?)</em>#',$hl_ser, $hl_matches);
+			array_shift($hl_matches);
+			$hl_matches = array_unique(array_map('strtolower', $hl_matches[0]));
+			//Log::debug(json_encode($hl_matches));exit;
+			$keywords_n_variations = array_merge(array_values($hl_matches), $keywords);
+			$keyword_string = implode(" ",$keywords_n_variations);
+			$keywords_n_variations = array_unique(preg_split('/\b/', $keyword_string));
+
+			$keywords_n_variations = array_filter($keywords_n_variations, function($val){
+				return strlen($val)>1;
+			});
+
+			Log::debug('Keywords with variations: '.implode(',',$keywords_n_variations));
+			Log::debug('Got '.count($documents_array->data). ' documents.');
+				//Log::debug(json_encode($documents_array->data));
 				if(count($documents_array->data) == 0){
 					// log q without a
 					$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
-					$botman_answer = BotmanAnswer::where('question', $question)->first();
+					$botman_answer = BotmanAnswer::where('question', $std_q)->first();
 					if(!$botman_answer){
 						$botman_answer = new BotmanAnswer;
 					}
-					$botman_answer->question = $question;
+					$botman_answer->question = $std_q;
 					$botman_answer->keywords = implode(' ',array_sort($keywords));	
 					$botman_answer->save();
 					$this->say('I did not get any documents to answer your question from.');
@@ -125,6 +162,7 @@ class BotManController extends Controller
 				foreach($documents_array->data as $d){
 					$info_from_doc = '';
 					$doc = Document::find($d->id);
+
 					$info_from_doc .= $doc->title."\n";
 					$info_from_doc .= $doc->text_content."\n";
 					$meta_info = '';
@@ -132,33 +170,36 @@ class BotManController extends Controller
 						if(empty($meta_value->meta_field) || empty($doc->meta_value($meta_value->meta_field_id, true))) continue;
 						$meta_info .= $meta_value->meta_field->label.': '.strip_tags($doc->meta_value($meta_value->meta_field_id))."\n";
 					}
+					//appending meta values to document content may not work
 					$info_from_doc .= $meta_info;
-
-					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
+					//convert to utf-8
+					//$info_from_doc = iconv(mb_detect_encoding($info_from_doc, mb_detect_order(), true), "UTF-8", $info_from_doc);
+					$info_from_doc = Util::sanitizeText($info_from_doc);
+					//$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 1000);
+					$chunks_doc = Util::createTextChunks($info_from_doc, 4000, 200);
 					//$chunks_doc = Util::createTextChunks($info_from_doc, 1500, 300);
+					$cnt = 0;
 					foreach($chunks_doc as $c){
-						$c = "====DOC-".$doc->id."-====\n".$c;
-						$chunks[] = $c;
+						$cnt++;
+						$chunks['ch_'.$doc->id.'-'.$cnt] = $c;
 					}
 				}
 
-				//$this->say($chunks[0]);
-				// remove Page \d\d from the string
-				$matches = Util::findMatches($chunks, $keywords);
+				$scores = json_decode(json_encode($scores),true);
+				Log::debug(gettype($scores));
+				$matches = Util::findMatches($chunks, $keywords_n_variations, $scores);
+				Log::debug('Created '.count($chunks).' chunks.');
+
 				//$this->say('Found '.count($matches). ' matches.');
-				$matches_details = '';
-				// take first 3 
-				$matches = array_slice($matches, 0, 3);
-				//$matches_details .= $chunks[0];
 				$docs_containing_answer = [];
-				if(count($matches) == 0){
+				if(count($chunks) == 0){
 					// log q without a
 					$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
-					$botman_answer = BotmanAnswer::where('question', $question)->first();
+					$botman_answer = BotmanAnswer::where('question', $std_q)->first();
 					if(!$botman_answer){
 						$botman_answer = new BotmanAnswer;
 					}
-					$botman_answer->question = $question;
+					$botman_answer->question = $std_q;
 					$botman_answer->keywords = implode(' ',array_sort($keywords));	
 					$botman_answer->save();
 					//$this->say('Found '.count($documents_array->data).' documents that look relevant but could not answer your question.');
@@ -168,45 +209,42 @@ class BotManController extends Controller
 					// show answer here
 					$answer_full = '';
 					$open_ai_req_cnt = 0;
+					$answer_chunk_id = null;
 					foreach($matches as $chunk_id => $score){
+						if (!$score || $score === 0) continue;// no point in sending this to OpenAI
 						$open_ai_req_cnt++;
+						Log::debug('OpenAI request #'. $open_ai_req_cnt);
 						try{
+							//$score = is_numeric($score)?$score:'unknown';
+							Log::debug('Chunk '.$chunk_id.' with score '.$score);
 							$this_controller->chatgpt = new ChatGPT( env("OPENAI_API_KEY") );
 							$answer = $this_controller->answerQuestion( $chunks[$chunk_id], $question );
 							if( $answer !== false && !empty($answer->content)) {
 								$answer_full .= $answer->content;
 								// which chunk contains the answer ?
 								$chunk_containing_answer = $chunk_id;
-								$pattern = '/====DOC-(\d\d*)-====/';
-								preg_match($pattern, $chunks[$chunk_id], $doc_matches);
-								//$this->say(count($doc_matches). ' - '.serialize($doc_matches));
-								array_shift($doc_matches);
+								Log::debug('Received answer on request #'.$open_ai_req_cnt);
+								$answer_chunk_id = $chunk_id;
 								break;
-        					}
-							else{
-								//$answer_full = 'Did not get any answer';
-							}
+        						}
 						}
 						catch(\Exception $e){
 							$this->say($e->getMessage());
 							break;
 						}
-						if($open_ai_req_cnt == 1){
-							//$botman->reply('I am still looking for an answer to your question.');
+						if($open_ai_req_cnt >= 50) {
+							Log::debug('Stopping here. Could not get answer.');
+							break;
 						}
-						else{
-							//$botman->reply('Be patient.');
-						}
-						Log::debug('OpenAI request #'. $open_ai_req_cnt);
 					}
 					if(empty($answer_full)){
 						// log q without a
 						$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
-						$botman_answer = BotmanAnswer::where('question', $question)->first();
+						$botman_answer = BotmanAnswer::where('question', $std_q)->first();
 						if(!$botman_answer){
 							$botman_answer = new BotmanAnswer;
 						}
-						$botman_answer->question = $question;
+						$botman_answer->question = $std_q;
 						$botman_answer->keywords = implode(' ',array_sort($keywords));	
 						$botman_answer->save();
 
@@ -217,22 +255,28 @@ class BotManController extends Controller
 						//$this->ask('Try making your question more specific.', $botSearch);
 					}
 					else{
-						foreach($doc_matches as $dm){
-							$m_doc = Document::find($dm);
-							$doc_list .= '<a target="_new" href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
-						}
+						$m_doc_id = str_replace('ch_','',$answer_chunk_id);
+						$m_doc_id = substr($m_doc_id,0, strpos($m_doc_id,'-'));
+						Log::debug('Doc containing answer: '.$m_doc_id);
+						$m_doc = Document::find($m_doc_id);
+						$doc_list .= '<a target="_new" href="/collection/'.$m_doc->collection->id.'/document/'.$m_doc->id.'">'.$m_doc->title.'</a><br/>';
+
 						$answer_full .= '<br/><br/>Reference - <br />'.$doc_list;
 						$this->say($answer_full);
 						$this->say($related_docs_link);
 						// log q and a here
 						$question = ltrim(rtrim(preg_replace('!\s+!', ' ', $question))); 
-						$botman_answer = BotmanAnswer::where('question', $question)->first();
+						$botman_answer = BotmanAnswer::where('question', $std_q)->first();
+						$end_time = time();
+						$answering_time = $end_time - $start_time;
 						if(!$botman_answer){
 							$botman_answer = new BotmanAnswer;
 						}
-						$botman_answer->question = $question;
+						$botman_answer->question = $std_q;
 						$botman_answer->keywords = implode(' ',array_sort($keywords));	
 						$botman_answer->answer = $answer_full;
+						$botman_answer->answering_time = $answering_time;
+						$botman_answer->openai_req = $open_ai_req_cnt;
 						$botman_answer->save();
 						return $this->ask('Type in another question.', $botSearch);
 					}
@@ -250,8 +294,9 @@ class BotManController extends Controller
 	}
 
 	public function answerQuestion( string $chunk, string $question ) {
+		if(empty($chunk)) return false;
 		try{
-			$chatgpt = $this->chatgpt;
+		$chatgpt = $this->chatgpt;
     		$chatgpt->smessage( "The user will give you an excerpt from a document. Answer the question based on the information in the excerpt." );
     		$chatgpt->umessage( "### EXCERPT FROM DOCUMENT:\n\n$chunk" );
     		$chatgpt->umessage( $question );
@@ -272,7 +317,9 @@ class BotManController extends Controller
     		return $response;
 		}
 		catch(\Exception $e){
-			Log::debug($e->getMessage());
+			Log::debug($e->getCode().' : '.$e->getMessage());
+			//Log::debug('Strlen: '.strlen($chunk));
+			//Log::debug($chunk);
 			return false;
 		}
 	}
@@ -282,6 +329,13 @@ class BotManController extends Controller
     	$chatgpt->umessage( "Question: \"$question\"\nAnswer: \"$answer\"\n\nAnswer YES if the answer is similar to 'the answer to the question was not found in the information provided' or 'the excerpt does not mention that'. Answer only YES or NO" );
     	$response = $chatgpt->response();
 
+	Log::debug('GPT 3 check response: '. $response->content);
     	return stripos( $response->content, "yes" ) === false;
+	}
+
+	public function exportQuestionAnswers(){
+		$answers = BotmanAnswer::all();
+		return (new FastExcel($answers))
+    			->download('botman-data.xlsx');
 	}
 }

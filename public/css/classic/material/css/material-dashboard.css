@@ -711,6 +711,8 @@ input[type="radio"],
 input[type="checkbox"] {
   box-sizing: border-box;
   padding: 0;
+  vertical-align:top;
+  margin-top:2px;
 }
 
 input[type="date"],
