@@ -79,7 +79,7 @@ class BotmanAnswerController extends Controller
 		$record->save();
 
 		Session::flash('alert-success', 'Record successfully updated.');
-        return redirect()->route('botman-answer.index')->withStatus(__('Record successfully updated.'));
+        return redirect()->route('botman-answers.index')->withStatus(__('Record successfully updated.'));
     }
 
     /**

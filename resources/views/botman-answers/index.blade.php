@@ -79,7 +79,7 @@ function randomString(length) {
                         <tr>
                             <td>{{ $r->question }}</td>
                             <td class="td-actions text-right">
-                            <a href="/admin/botman-answers/{{ $r->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
+                            <a href="/botman-answers/{{ $r->id }}/edit" rel="tooltip" class="btn btn-success btn-link">
 				    <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
 				</a>
