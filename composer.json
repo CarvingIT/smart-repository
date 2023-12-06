@@ -45,7 +45,7 @@
         "spatie/image-optimizer": "^1.2",
         "spatie/pdf-to-text": "^1.4",
         "swiftmailer/swiftmailer": "^6.0",
-        "thiagoalessio/tesseract_ocr": "^2.8",
+        "thiagoalessio/tesseract_ocr": "^2.13",
         "vedmant/laravel-feed-reader": "^1.6",
         "webpatser/laravel-uuid": "^3.0"
     },
