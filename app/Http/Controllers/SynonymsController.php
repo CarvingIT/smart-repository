@@ -88,7 +88,7 @@ class SynonymsController extends Controller
     {
 	$synonyms = \App\Synonyms::findOrFail($request->synonyms_id);
 	if(!empty($request->delete_captcha) &&
-                $request->delete_captcha == $request->delete_captcha){
+                $request->hidden_captcha == $request->delete_captcha){
         	$synonyms->delete();
 		Session::flash('alert-success', 'Synonyms successfully deleted.');
         	return redirect()->route('synonyms.index');
