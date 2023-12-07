@@ -39,12 +39,16 @@ class TaxonomyController extends Controller
 
     public function addstore(TaxonomyRequest $request, $id)
     {
+	try{
 	$taxonomy_new = new Taxonomy();
     $taxonomy_new ->label = $request->label;
     $taxonomy_new->parent_id = $id;
 	$taxonomy_new ->save();
-
-	Session::flash('alert-success', 'Taxonomy successfully added.');
+		Session::flash('alert-success', 'Taxonomy successfully added.');
+	}
+	catch(\Exception $e){
+		Session::flash('alert-error', $e->getMessage());
+	}
 	return redirect()->route('taxonomies.index');
     }
 
@@ -57,12 +61,16 @@ class TaxonomyController extends Controller
 
     public function update(TaxonomyRequest $request, $id)
     {
+	try{
 	$taxonomies = Taxonomy::find($id);
     $taxonomies ->parent_id = $request->parent_id;
 	$taxonomies ->label = $request->label;
 	$taxonomies ->save();
-
 	Session::flash('alert-success', 'Taxonomy successfully updated.');
+	}
+	catch(\Exception $e){
+		Session::flash('alert-error', $e->getMessage());
+	}
         return redirect()->route('taxonomies.index')->withStatus(__('Taxonomy successfully updated.'));
     }
 
