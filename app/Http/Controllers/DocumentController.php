@@ -257,7 +257,7 @@ class DocumentController extends Controller
 				$messages[] = 'Document updated successfully!';
             }
             catch(\Exception $e){
-				echo $e->getMessage(); exit;
+				//echo $e->getMessage(); exit;
 				$errors[] = $e->getMessage();
             }
 	} // else ends (document not uploaded)
