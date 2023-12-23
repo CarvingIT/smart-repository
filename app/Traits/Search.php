@@ -267,7 +267,7 @@ trait Search{
 										]
 									],
 								],
-								'minimum_should_match' => 1
+								//'minimum_should_match' => 1
 							],
 						],
 						'highlight' => [
@@ -306,7 +306,7 @@ trait Search{
 	    $params['size'] = 1000;// set a max size returned by ES
 		try{
 			$client = $this->getElasticClient();
-            $response = $client->search($params);
+            		$response = $client->search($params);
 		}
 		catch(\Exception $e){
 			// some error; switch to db search
@@ -320,7 +320,7 @@ trait Search{
 		$highlights[$h['_id']] = @$h['highlight'];
 		$scores[$h['_id']] = $h['_score'];
             }
-	//Log::debug(json_encode($scores));
+	//Log::debug(json_encode($response['hits']));
 	    $document_ids = array_keys($scores);
 	    $ordered_document_ids = implode(",", $document_ids);
         }

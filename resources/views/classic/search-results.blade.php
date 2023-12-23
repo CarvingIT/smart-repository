@@ -18,46 +18,6 @@
 		background-color:#aaa;
 	}
 </style>
-	@php
-		$major_themes = explode("|",env('MAJOR_THEMES', 'A|B|C'));
-		$major_theme_ids = [];
-		$taxonomy = \App\Taxonomy::orderBy('parent_id','ASC')->orderBy('label', 'ASC')->get()->keyBy('id');
-		$children = [];
-		$taxonomy_ordered_by_id = [];
-		foreach($taxonomy as $t){
-			$children[$t->parent_id][] = $t->id; 
-			$taxonomy_ordered_by_id[] = $t->id;
-			if(in_array($t->label, $major_themes)){
-				$major_theme_ids[] = $t->id;
-			}
-		}
-		function orderByHierarchy($taxonomy_ordered_by_id, $my_ids){
-			$ordered = [];
-			foreach($taxonomy_ordered_by_id as $t_id){
-				if(in_array($t_id, $my_ids)){
-					$ordered[] = $t_id;
-				}
-			}
-			return $ordered;
-		}
-		function removeContinents($string){
-			$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
-			$str_values = explode(",", $string);
-			$new_str_values = [];
-			foreach($str_values as $v){
-				if (!in_array(ltrim(rtrim($v)), $continents)) $new_str_values[] = $v;
-			}
-			return implode(", ",$new_str_values);
-		}
-
-		function distinguishMajorThemes($string){
-			$major_themes = explode("|",env('MAJOR_THEMES', 'A|B|C'));
-			foreach($major_themes as $t){
-				$string = str_replace($t, '<em class="mt">'.$t.'</em>', $string);
-			}
-			return $string;
-		}
-	@endphp
 	@if(!empty($results))
 	@foreach($results as $result)
 		@php 

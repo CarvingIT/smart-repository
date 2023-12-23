@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
 
 class ImportDocs extends Command
 {
@@ -42,7 +42,10 @@ class ImportDocs extends Command
     {
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)->build();
+        $client = ClientBuilder::create()->setHosts($hosts)
+                ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+                ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+                ->build();
 
 		// Is elastic search running ?
 		// get the indices and see if an error is returned
@@ -72,11 +75,14 @@ class ImportDocs extends Command
             echo "Aborting. One of --dir or --csv must be specified.\n";
         }
         if($dir){
+	    // create a sym link storage/app/import pointing to this dir
+	    @unlink('storage/app/import');
+	    symlink($dir, 'storage/app/import');
             //list the directory and take each file path in array
-            $list = scandir($dir);
+            $list = scandir('storage/app/import');
             foreach($list as $f){
-                if(is_file($dir.'/'.$f)){
-                   	$d = \App\Http\Controllers\DocumentController::importFile($collection_id, $dir.'/'.$f);
+                if(is_file('storage/app/import/'.$f)){
+                   	$d = \App\Http\Controllers\DocumentController::importFile($collection_id, 'import/'.$f);
                    	echo $dir.'/'.$f."\n";
 	    			// Update elastic index
 					if($es_on){
