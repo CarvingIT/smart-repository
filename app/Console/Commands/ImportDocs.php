@@ -13,7 +13,7 @@ class ImportDocs extends Command
      * @var string
      */
     protected $signature = 'SR:ImportDocs {collection_id : ID of the collection} 
-                {--dir= : Full path of the directory containing the documents to be imported} 
+                {--dir= : Full path of the directory containing the documents to be imported}
                 {--csv= : Full path of the CSV file containing file paths and meta data }';
 
     /**
@@ -71,13 +71,32 @@ class ImportDocs extends Command
         $dir = $this->option('dir');
         $csv = $this->option('csv');
         //echo "$collection_id  $dir  $csv\n";
-        if(empty($dir) && empty($csv)){
-            echo "Aborting. One of --dir or --csv must be specified.\n";
+        if(empty($dir)){
+            echo "Aborting. Option --dir must be specified.\n";
         }
         if($dir){
 	    // create a sym link storage/app/import pointing to this dir
 	    @unlink('storage/app/import');
 	    symlink($dir, 'storage/app/import');
+			//meta info file exists ?
+			$meta_info_file = 'storage/app/import/meta.csv';
+			$meta_values = [];
+			if(is_file($meta_info_file)){
+				$meta_lines = file($meta_info_file);
+				$header_row = array_shift($meta_lines);
+				// explode by \t char (tab separated values)	
+				$fields = explode("\t", $header_row);
+				foreach($meta_lines as $l){
+					$values = explode("\t", $l);
+					$row = [];
+					for($i=0; $i<count($fields); $i++){
+						$row[$fields[$i]] = $values[$i];	
+					}
+					$meta_values[] = $row;
+				}
+				print_r($meta_values);
+			}
+			exit;
             //list the directory and take each file path in array
             $list = scandir('storage/app/import');
             foreach($list as $f){
