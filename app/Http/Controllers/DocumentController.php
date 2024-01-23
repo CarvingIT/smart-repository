@@ -16,6 +16,7 @@ use Spatie\PdfToText\Pdf;
 use App\MetaFieldValue;
 use App\ReverseMetaFieldValue;
 use App\Sysconfig;
+use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
@@ -206,7 +207,7 @@ class DocumentController extends Controller
 		    	}
            	}
            	catch(\Exception $e){
-          		\Log::error($e->getMessage());
+          		Log::error($e->getMessage());
                	$d->text_content = '';
 				$warnings[] = 'No text was indexed. '. $e->getMessage();
            	}
@@ -477,6 +478,7 @@ class DocumentController extends Controller
 			if(is_object($m)){
 				$m = (array) $m;
 			}
+			if(empty($m['field_id'])) continue;
 			$m_f = \App\MetaFieldValue::where('document_id',$document_id)->where('meta_field_id', $m['field_id'])->first();
 			if(empty($m_f)){
             	$m_f = new \App\MetaFieldValue;

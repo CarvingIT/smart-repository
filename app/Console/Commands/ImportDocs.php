@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Elastic\Elasticsearch\ClientBuilder;
+use App\MetaField;
+use App\Taxonomy;
 
 class ImportDocs extends Command
 {
@@ -81,27 +83,73 @@ class ImportDocs extends Command
 			//meta info file exists ?
 			$meta_info_file = 'storage/app/import/meta.csv';
 			$meta_values = [];
+			$titles = [];
 			if(is_file($meta_info_file)){
 				$meta_lines = file($meta_info_file);
 				$header_row = array_shift($meta_lines);
 				// explode by \t char (tab separated values)	
 				$fields = explode("\t", $header_row);
+				$field_models = [];
+				foreach ($fields as $f){
+					$f_model = MetaField::where('label',$f)
+							->where('collection_id', $collection_id)
+							->first();	
+					if($f_model){
+						$field_models[] = $f_model;
+					}
+					else{
+						$field_models[] = null;
+					}
+				}
 				foreach($meta_lines as $l){
 					$values = explode("\t", $l);
 					$row = [];
 					for($i=0; $i<count($fields); $i++){
-						$row[$fields[$i]] = $values[$i];	
+						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
+						if($key == 'title'){
+							$titles[$values[0]] = $values[$i];
+							continue;
+						}
+						if($field_models[$i]){
+							if($field_models[$i]->type == 'TaxonomyTree'){
+								$t_id = $field_models[$i]->options;
+								$t = Taxonomy::find($t_id);
+								if(!$t) continue;
+								$t_family = $t->createFamily(); 
+								$val_ar = explode(',',$values[$i]);
+								$t_ids = [];
+								foreach($t_family as $tfm){
+									foreach($val_ar as $v){
+										if($tfm->label == $v){
+											//echo "ID of $v - ".$tfm->id."\n";
+											$t_ids[] = $tfm->id;
+										}
+									}
+								}
+								$row = ['field_id' => $key, 'field_value' => array_unique($t_ids)];
+								$meta_values[$values[0]][] = $row;
+							}
+							else{ // text, textarea etc are all default
+								$row = ['field_id' => $key, 'field_value'=>$values[$i]];	
+								$meta_values[$values[0]][] = $row;
+							}
+						}
 					}
-					$meta_values[] = $row;
 				}
-				print_r($meta_values);
+				//print_r($meta_values);
 			}
-			exit;
+			//exit;
             //list the directory and take each file path in array
             $list = scandir('storage/app/import');
             foreach($list as $f){
                 if(is_file('storage/app/import/'.$f)){
-                   	$d = \App\Http\Controllers\DocumentController::importFile($collection_id, 'import/'.$f);
+					print_r(@$meta_values[$f]);
+                   	$d = \App\Http\Controllers\DocumentController::importFile($collection_id, 'import/'.$f, @$meta_values[$f]);
+					// update title
+					if(!empty($titles[$f])){
+						$d->title = $titles[$f];
+						$d->save();
+					}
                    	echo $dir.'/'.$f."\n";
 	    			// Update elastic index
 					if($es_on){
@@ -124,9 +172,6 @@ class ImportDocs extends Command
 				  } // if ES is on
                 }
             }
-        }
-        else if($csv){
-
         }
     }
 }
