@@ -388,13 +388,13 @@ class DocumentController extends Controller
        	$d = \App\Document::find($document_id);
        	$collection_id = $d->collection_id;
 	if(!empty($request->delete_captcha) && 
-		$request->delete_captcha == $request->delete_captcha){
+		$request->delete_captcha == $request->hidden_captcha){
         	$d->delete();
                 Session::flash('alert-success', 'Document deleted successfully.');
         	return redirect('/collection/'.$collection_id); 
 	}
 	else{
-                Session::flash('alert-danger', 'Please fill Captcha');
+            Session::flash('alert-danger', 'Please fill Captcha');
         	return redirect('/collection/'.$collection_id); 
         }
 

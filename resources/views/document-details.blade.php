@@ -20,6 +20,26 @@
         'heightStyle': "content",
     });
   } );
+
+function randomString(length) {
+   var result           = '';
+   var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+   var charactersLength = characters.length;
+   for ( var i = 0; i < length; i++ ) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+   }
+   return result;
+}
+
+function showDeleteDialog(){
+    str = randomString(6);
+    $('#text_captcha').text(str);
+    $('#hidden_captcha').val(str);
+        deldialog = $( "#deletedialog" ).dialog({
+        title: 'Are you sure ?',
+        resizable: true
+        });
+}
 </script>
 @if (!empty($col_config->show_word_cloud))
 <script src="/js/jQWCloudv3.4.1.js"></script>
@@ -211,6 +231,28 @@ $(document).ready(function()
 
 			</div><!-- row ends -->
 			@endif
+
+        <div id="deletedialog" style="display:none;">
+        <form name="deletedoc" method="post" action="/document/delete">
+        @csrf
+        <p>Enter <span id="text_captcha"></span> to delete</p>
+        <input type="text" name="delete_captcha" value="" />
+        <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
+        <input type="hidden" id="delete_doc_id" name="document_id" value="{{ $document->id }}" />
+        <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+        </form>
+        </div>
+
+                  <div class="row">
+                      <div class="col-md-12">
+                        <a href="/document/{{ $document->id }}/edit" class="btn btn-sm btn-primary" title="Edit">
+                        <i class="material-icons">edit</i>
+                        </a>
+                        <a href="javascript:return false;" onclick="showDeleteDialog();" class="btn btn-sm btn-primary" title="Delete">
+                        <i class="material-icons">delete</i>
+                        </a>
+                      </div>
+                  </div>
 						@if (!empty($col_config->show_word_cloud))
                         <div class="col-md-12"><div id="wordcloud"><img src='/i/processing.gif'></div></div>
 						@endif
