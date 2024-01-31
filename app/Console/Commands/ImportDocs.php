@@ -136,12 +136,15 @@ class ImportDocs extends Command
 						}
 					}
 				}
-				//print_r($meta_values);
+				print_r($meta_values);
 			}
-			//exit;
+			#exit;
             //list the directory and take each file path in array
             $list = scandir('storage/app/import');
             foreach($list as $f){
+		// don't import meta.csv
+		if ($f == 'meta.csv') continue;
+
                 if(is_file('storage/app/import/'.$f)){
 					print_r(@$meta_values[$f]);
                    	$d = \App\Http\Controllers\DocumentController::importFile($collection_id, 'import/'.$f, @$meta_values[$f]);
