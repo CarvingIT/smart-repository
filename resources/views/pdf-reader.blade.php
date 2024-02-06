@@ -14,7 +14,7 @@
 }
 </style>
 
-<script src="//mozilla.github.io/pdf.js/build/pdf.mjs" type="module"></script>
+<script src="/js/pdf.mjs" type="module"></script>
 <script type="module">
   // If absolute URL from the remote server is provided, configure the CORS
   // header on that server.
@@ -24,7 +24,7 @@
   var { pdfjsLib } = globalThis;
 
   // The workerSrc property shall be specified.
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '//mozilla.github.io/pdf.js/build/pdf.worker.mjs';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/js/pdf.worker.mjs';
 
   var pdfDoc = null,
       pageNum = 1,

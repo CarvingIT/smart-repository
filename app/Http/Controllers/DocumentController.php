@@ -16,6 +16,7 @@ use Spatie\PdfToText\Pdf;
 use App\MetaFieldValue;
 use App\ReverseMetaFieldValue;
 use App\Sysconfig;
+use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
@@ -389,13 +390,13 @@ echo "SKK"; print_r($d);exit;
        	$d = \App\Document::find($document_id);
        	$collection_id = $d->collection_id;
 	if(!empty($request->delete_captcha) && 
-		$request->delete_captcha == $request->delete_captcha){
+		$request->delete_captcha == $request->hidden_captcha){
         	$d->delete();
                 Session::flash('alert-success', 'Document deleted successfully.');
         	return redirect('/collection/'.$collection_id); 
 	}
 	else{
-                Session::flash('alert-danger', 'Please fill Captcha');
+            Session::flash('alert-danger', 'Please fill Captcha');
         	return redirect('/collection/'.$collection_id); 
         }
 
@@ -479,6 +480,7 @@ echo "SKK"; print_r($d);exit;
 			if(is_object($m)){
 				$m = (array) $m;
 			}
+			if(empty($m['field_id'])) continue;
 			$m_f = \App\MetaFieldValue::where('document_id',$document_id)->where('meta_field_id', $m['field_id'])->first();
 			if(empty($m_f)){
             	$m_f = new \App\MetaFieldValue;

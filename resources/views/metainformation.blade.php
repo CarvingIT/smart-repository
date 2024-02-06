@@ -2,7 +2,6 @@
 
 @section('content')
 <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
 
 <script type="text/javascript">
 $( document ).ready(function() {
@@ -30,16 +29,6 @@ $( document ).ready(function() {
 		$("#taxonomy-tree-selection").hide();
 	}
   });
-
-
-  $('#metafields').DataTable({
-    "aoColumnDefs": [
-            { "bSortable": false, "aTargets": [4]}
-     ],
-    "searching": false, 
-    "paging": false, 
-    "info": false
-    });
 
 });
 
@@ -171,16 +160,16 @@ function showMetaFieldForm(){
                    </div>
 
                    <div class="form-group row" id="display-order">
-		   <div class="col-md-4">
-                   <label for="is_required" class="col-md-12 col-form-label text-md-right">Is required ?</label> 
+				   <div class="col-md-4">
                    </div>
                     <div class="col-md-8">
                     <input type="checkbox" name="is_required" id="is_required" class="form-control1" value="1" 
 					@if($edit_field->is_required == 1) {{ 'checked' }} @endif
 					/>
+                    <label for="is_required">Is required</label> 
                     </div>
                    </div>
-                
+
                    <div class="form-group row mb-0"><div class="col-md-12 offset-md-4">
 								<button type="submit" class="btn btn-primary">
                                     Save

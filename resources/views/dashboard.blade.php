@@ -4,6 +4,7 @@
     <div class="container-fluid">
 
       <div class="row">
+		@if (env('SHOW_PROFILE_CARD', 1) == 1)
         <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
             <div class="card-header card-header-warning card-header-icon">
@@ -26,6 +27,7 @@
             </div> -->
           </div>
         </div>
+		@endif
 		@if (count(auth()->user()->roles) > 0)
         <div class="col-lg-4 col-md-6 col-sm-6">
           <div class="card card-stats">
@@ -143,7 +145,7 @@
             </div>
             <div class="card-body">
 			  @if (count(auth()->user()->roles) == 0)
-				<p>If you would like to contribute to this portal write an email from your registered email address to admin@isa.org.</a>
+				<p>If you would like to contribute to this portal write an email from your registered email address to the administrator of this portal.</a>
 			  @else
 				<p>Contributors' manual</p>
 			  @endif

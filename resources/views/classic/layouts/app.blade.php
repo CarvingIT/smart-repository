@@ -38,9 +38,9 @@
   <link href="/css/custom.css" rel="stylesheet" />
   <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
   <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
-  <script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>
+  <script src="/js/jquery-3.5.1.js"></script>
+  <!--script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>-->
   <script src="/js/classic/main.js"></script>
-  <!--script src="/js/jquery-3.5.1.js"></script-->
 
   @stack('js') 
   <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('material') }}/img/apple-icon.png">
@@ -65,22 +65,39 @@
         color:#fff200 !important;
         }
     </style>
+@if(!empty(env('OPENAI_API_KEY')))
 <script>
 	setTimeout(function(){
 		window.botmanChatWidget.whisper('q');
 		window.botmanChatWidget.close();
 	}, 1000);
 </script>
+@endif
 </head>
 <body>
+@php
+	$sys_config = App\Sysconfig::all();
+	$settings = [];
+	foreach($sys_config as $sc){
+		$settings[$sc->param] = $sc->value;
+	}
+@endphp
   <!-- ======= Header ======= -->
 <div class="top-bar">
     <div class="container-fluid container-xl d-flex justify-content-end align-items-center">
       <div class="social-media-header">
-        <a href="https://www.facebook.com/InternationalSolarAlliance/" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="https://twitter.com/isolaralliance" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
-        <a href="https://www.youtube.com/@internationalsolaralliance" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
-        <a href="https://www.linkedin.com/company/internationalsolaralliance/?originalSubdomain=in" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+		@if (!empty($settings['facebook_link']))
+        <a href="{{ $settings['facebook_link'] }}" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+		@endif
+		@if (!empty($settings['twitter_link']))
+        <a href="{{ $settings['twitter_link'] }}" class="social-icon" target="_blank"><i class="fa-brands fa-twitter"></i></a>
+		@endif
+		@if (!empty($settings['youtube_link']))
+        <a href="{{ $settings['youtube_link'] }}" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+		@endif
+		@if (!empty($settings['linkedin_link']))
+        <a href="{{ $settings['linkedin_link'] }}" class="social-icon" target="_blank"><i class="fa-brands fa-linkedin-in"></i></a>
+		@endif
       </div>
     </div>
   </div>
@@ -189,10 +206,18 @@
       <div class="row gy-2">
         <div class="col-lg-5 col-md-12 footer-info">
           <div class="social-links d-flex mt-4">
-            <a href="https://www.facebook.com/InternationalSolarAlliance/" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
-            <a href="https://www.twitter.com/" class="twitter" target="_blank"><i class="bi bi-twitter"></i></a>
-            <a href="https://www.instagram.com/" class="instagram" target="_blank"><i class="bi bi-instagram"></i></a>
-            <a href="https://www.linkedin.com/company/internationalsolaralliance/?originalSubdomain=in" class="linkedin" target="_blank"><i class="bi bi-linkedin"></i></a>
+		@if (!empty($settings['facebook_link']))
+            <a href="{{ $settings['facebook_link'] }}" class="facebook" target="_blank"><i class="bi bi-facebook"></i></a>
+		@endif
+		@if (!empty($settings['twitter_link']))
+            <a href="{{ $settings['twitter_link'] }}" class="twitter" target="_blank"><i class="bi bi-twitter"></i></a>
+		@endif
+		@if (!empty($settings['instagram_link']))
+            <a href="{{ $settings['instagram_link'] }}" class="instagram" target="_blank"><i class="bi bi-instagram"></i></a>
+		@endif
+		@if (!empty($settings['linkedin_link']))
+            <a href="{{ $settings['linkedin_link'] }}" class="linkedin" target="_blank"><i class="bi bi-linkedin"></i></a>
+		@endif
           </div>
         </div>
 

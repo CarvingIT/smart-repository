@@ -18,46 +18,6 @@
 		background-color:#aaa;
 	}
 </style>
-	@php
-		$major_themes = explode("|",env('MAJOR_THEMES', 'A|B|C'));
-		$major_theme_ids = [];
-		$taxonomy = \App\Taxonomy::orderBy('parent_id','ASC')->orderBy('label', 'ASC')->get()->keyBy('id');
-		$children = [];
-		$taxonomy_ordered_by_id = [];
-		foreach($taxonomy as $t){
-			$children[$t->parent_id][] = $t->id; 
-			$taxonomy_ordered_by_id[] = $t->id;
-			if(in_array($t->label, $major_themes)){
-				$major_theme_ids[] = $t->id;
-			}
-		}
-		function orderByHierarchy($taxonomy_ordered_by_id, $my_ids){
-			$ordered = [];
-			foreach($taxonomy_ordered_by_id as $t_id){
-				if(in_array($t_id, $my_ids)){
-					$ordered[] = $t_id;
-				}
-			}
-			return $ordered;
-		}
-		function removeContinents($string){
-			$continents = ['Asia','Africa','Europe','North America','South America', 'Oceania'];
-			$str_values = explode(",", $string);
-			$new_str_values = [];
-			foreach($str_values as $v){
-				if (!in_array(ltrim(rtrim($v)), $continents)) $new_str_values[] = $v;
-			}
-			return implode(", ",$new_str_values);
-		}
-
-		function distinguishMajorThemes($string){
-			$major_themes = explode("|",env('MAJOR_THEMES', 'A|B|C'));
-			foreach($major_themes as $t){
-				$string = str_replace($t, '<em class="mt">'.$t.'</em>', $string);
-			}
-			return $string;
-		}
-	@endphp
 	@if(!empty($results))
 	@foreach($results as $result)
 		@php 
@@ -116,43 +76,10 @@
 		</div>
 		<div class="row">
 		<div class="col-lg-2">
-		@if (!empty($document->meta_value($year_field_id)))
-			<span class="search-result-meta">
-			<i class="fa fa-calendar" aria-hidden="true"></i>&nbsp;{{ $document->meta_value($year_field_id) }}
-			</span>
-		@endif
 		</div>
 		<div class="col-lg-10">
-		{{-- for publications --}}
-		@if (!empty($document->meta_value($author_field_id)))
-			<i class="fa fa-users" aria-hidden="true"></i>
-			<span class="search-result-meta">
-			{!! $document->meta_value($author_field_id) !!}
-			</span>
-		@endif
-		{{-- for technical standards --}}
-		@if (!empty($document->meta_value($serial_num_field_id)))
-			<i class="fa fa-bars" aria-hidden="true"></i>
-			<span class="search-result-meta">
-			{{ $document->meta_value($serial_num_field_id) }}
-			</span>
-		@endif
 		</div>
 		<div class="col-lg-12">
-		@if (!empty($document->meta_value($govt_agency_field_id)))
-			<i class="fa fa-university" aria-hidden="true"></i>
-			<span class="search-result-meta">
-			{!! $document->meta_value($govt_agency_field_id) !!}
-			</span>
-		@endif
-		</div>
-		<div class="col-lg-12">
-		@if (!empty($document->meta_value($country_field_id)))
-			<i class="fa fa-globe" aria-hidden="true"></i>
-			<span class="search-result-meta">
-			{{ removeContinents($document->meta_value($country_field_id)) }}
-			</span>
-		@endif
 		</div>
 		</div><!-- row -->
 		<div class="row">
@@ -168,25 +95,6 @@
 			@else
 			{!! implode('', App\Util::highlightKeywords($document->text_content, implode(' ',$highlight_keywords))) !!}		
 			@endif
-		</div>
-		</div>
-		<div class="row">
-		<div class="col-lg-12">
-		@if (!empty($document->meta_value($theme_field_id)))
-			<span class="search-result-meta">
-			{{-- distinguishMajorThemes($document->meta_value($theme_field_id)) --}} 
-			@php
-				$taxonomy_values = json_decode($document->meta_value($theme_field_id, true));
-				foreach(orderByHierarchy($taxonomy_ordered_by_id, $taxonomy_values) as $t){
-					$parent = in_array($taxonomy[$t]->id, $major_theme_ids) ? 'parent-tag' : '';
-					echo '<span class="tag '.$parent.'"><i class="fa fa-tag" aria-hidden="true"></i>
-					'.$taxonomy[$t]->label.'</span>';
-				}
-			@endphp
-			</span>
-			<p>
-			</p>
-		@endif
 		</div>
 		</div>
 	@endforeach
