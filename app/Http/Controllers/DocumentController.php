@@ -68,6 +68,7 @@ class DocumentController extends Controller
         $hit->document_id = $document_id;
         $hit->revision_id = empty($revision->id)? 0 : $revision->id;
         $hit->user_id = empty(\Auth::user()->id)? null : \Auth::user()->id;
+        $hit->added_on = NOW();
         $hit->save(); 
     }
 
@@ -153,10 +154,10 @@ class DocumentController extends Controller
             		$d = new Document;
         	}
 
-        $collection = \App\Collection::find($collection_id);
+        	$collection = \App\Collection::find($collection_id);
 		$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
 
-		if($request->hasFile('document')){
+	if($request->hasFile('document')){
 			$filename = $request->file('document')->getClientOriginalName();
             		$new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
 	
@@ -166,7 +167,7 @@ class DocumentController extends Controller
 			$driver = config("filesystems.disks.{$storage_drive}.driver");
 			if(in_array($driver, $storages_needing_dir_creation)){
 				$filepath = $request->file('document')
-                ->storeAs(null, $new_filename, $storage_drive);
+                				->storeAs(null, $new_filename, $storage_drive);
 			}
 			else{
 				$filepath = $request->file('document')
@@ -182,55 +183,55 @@ class DocumentController extends Controller
 			$filesize = $request->file('document')->getClientSize();
 			$mimetype = $request->file('document')->getMimeType();
 
-           	if(!empty($request->input('title'))){
-               $d->title = htmlentities($request->input('title'));
-           	}
-           	else{
-               $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
-           	}
-           	$d->collection_id = $request->input('collection_id');
-           	$d->created_by = \Auth::user()->id;
+           		if(!empty($request->input('title'))){
+               			$d->title = htmlentities($request->input('title'));
+           		}
+           		else{
+               			$d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
+           		}
+           		$d->collection_id = $request->input('collection_id');
+           		$d->created_by = \Auth::user()->id;
 
 			$d->size = $filesize;
 			$d->type = $mimetype;
-           	$d->path = $filepath;
+           		$d->path = $filepath;
 
-           	try{
-			    $text_content = $this->extractText($local_filepath, $mimetype);
-		    	$current_encoding = mb_detect_encoding($text_content, 'auto');
-				$d->text_content = mb_convert_encoding($text_content, "UTF-8");
+           		try{
+		    	$text_content = $this->extractText($local_filepath, $mimetype);
+			$current_encoding = mb_detect_encoding($text_content, 'auto');
+			$d->text_content = mb_convert_encoding($text_content, "UTF-8");
 		    	// Delete the file if the storage drive is other than local drive.
 		    	// Command to delete / unlink the file locally.
 		    	if($storage_drive != 'local'){
 		    		Storage::delete($local_filepath);
 		    	}
-           	}
-           	catch(\Exception $e){
+           		}
+           		catch(\Exception $e){
           		\Log::error($e->getMessage());
-               	$d->text_content = '';
-				$warnings[] = 'No text was indexed. '. $e->getMessage();
-           	}
-            try{
-                $d->save();
-				$messages[] = 'Document uploaded successfully!';
-            }
-            catch(\Exception $e){
-				return ['status'=>'failure', 'errors'=>[$e->getMessage()]];
-            }
+               		$d->text_content = '';
+			$warnings[] = 'No text was indexed. '. $e->getMessage();
+           		}
+            		try{
+                	$d->save();
+			$messages[] = 'Document uploaded successfully!';
+            		}
+            		catch(\Exception $e){
+			return ['status'=>'failure', 'errors'=>[$e->getMessage()]];
+            		}
 
-            // create revision
-            $this->createDocumentRevision($d);
+            		// create revision
+            		$this->createDocumentRevision($d);
 	}
 	else{ // no document is uploaded
 		if(!empty($request->input('external_link'))){
-			if(empty($request->input('document_id'))){
-				$d = new Document;
-			}
-			else{
-				$d = Document::find($request->input('document_id'));
-			}
-           	$d->collection_id = $request->input('collection_id');
-           	$d->created_by = \Auth::user()->id;
+			//if(empty($request->input('document_id'))){
+			//	$d = new Document;
+			//}
+			//else{
+			//	$d = Document::find($request->input('document_id'));
+			//}
+           		$d->collection_id = $request->input('collection_id');
+           		$d->created_by = \Auth::user()->id;
 			$d->title = empty($request->input('title'))?'Link '.@$request->input('external_link'):$request->input('title');
 			$d->path = 'N/A';
 			$d->type = 'url';
@@ -238,14 +239,14 @@ class DocumentController extends Controller
 			$d->text_content = 'N/A';
 			$d->external_link = $request->input('external_link');
 		}
-        else if(!empty($request->input('approved_on'))){
-           	$d->approved_by = \Auth::user()->id;
+        	else if(!empty($request->input('approved_on'))){
+           		$d->approved_by = \Auth::user()->id;
 			$d->approved_on = now();
-       	 }
+       	 	}
 	 	else{
-           	$d->approved_by = NULL;
-		$d->approved_on = NULL;
-	}
+           		$d->approved_by = NULL;
+			$d->approved_on = NULL;
+		}
 
 	//	Code to edit title of document starts
 		if(!empty($request->title)){
@@ -253,6 +254,7 @@ class DocumentController extends Controller
 		}
 	// Code to edit title of document ends
          try{
+echo "SKK"; print_r($d);exit;
                 $d->save();
 				$messages[] = 'Document updated successfully!';
             }
