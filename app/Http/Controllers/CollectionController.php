@@ -366,6 +366,7 @@ $j++;
 	}
         $meta_field->display_order = $request->input('display_order');
         $meta_field->is_required = $request->input('is_required');
+        $meta_field->is_filter = $request->input('is_filter');
         $meta_field->save();
         return $this->metaInformation($request->input('collection_id'));
     }

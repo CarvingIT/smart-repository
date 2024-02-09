@@ -22,12 +22,19 @@ $( document ).ready(function() {
         $("#options-field").hide();
     }
 
-	if(val === 'TaxonomyTree'){
-		$("#taxonomy-tree-selection").show();
-	}
-	else{
-		$("#taxonomy-tree-selection").hide();
-	}
+   if(val === 'TaxonomyTree'){
+	$("#taxonomy-tree-selection").show();
+   }
+   else{
+	$("#taxonomy-tree-selection").hide();
+   }
+
+    if(val === "Select" || val === "SelectCombo" || val === "MultiSelect" || val === 'Date' || val === 'TaxonomyTree') {
+        $("#is_filter_div").show();
+   }
+   else{
+        $("#is_filter_div").hide();
+   }
   });
 
 });
@@ -167,6 +174,17 @@ function showMetaFieldForm(){
 					@if($edit_field->is_required == 1) {{ 'checked' }} @endif
 					/>
                     <label for="is_required">Is required</label> 
+                    </div>
+                   </div>
+
+                   <div class="form-group row" id="is_filter_div">
+				   <div class="col-md-4">
+                   </div>
+                    <div class="col-md-8">
+                    <input type="checkbox" name="is_filter" id="is_filter" class="form-control1" value="1" 
+					@if($edit_field->is_filter == 1) {{ 'checked' }} @endif
+					/>
+                    <label for="is_required">Is filter</label> 
                     </div>
                    </div>
 
