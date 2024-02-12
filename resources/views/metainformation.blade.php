@@ -29,7 +29,7 @@ $( document ).ready(function() {
 	$("#taxonomy-tree-selection").hide();
    }
 
-    if(val === "Select" || val === "SelectCombo" || val === "MultiSelect" || val === 'Date' || val === 'TaxonomyTree') {
+    if(val === "Select" || val === "SelectCombo" || val === "MultiSelect" || val === 'Numeric' || val === 'TaxonomyTree') {
         $("#is_filter_div").show();
    }
    else{

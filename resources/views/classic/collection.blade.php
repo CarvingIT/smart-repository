@@ -141,11 +141,11 @@ function goToPage(page){
 	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
 	$filters = [];
 	foreach($meta_fields as $m){
-		if(in_array($m->label, $filter_labels)){
+		//if(in_array($m->label, $filter_labels)){
+		if($m->is_filter == 1){//SKK
 			$filters[] = $m;
 		}
 	}	
-	
 
 	$search_query = Request::get('isa_search_parameter');
 
@@ -323,6 +323,17 @@ foreach($tags as $t){
 						echo '</fieldset>';
 						echo '</div>';
 
+					}
+					if($f->type == 'Select'){
+						$options = explode(",",$f->options); 
+						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'">';
+						echo '<select name="meta_'.$f->id.'[]" class="form-control">';
+						foreach($options as $select_options){
+						echo '<option value="'.$select_options.'">'.$select_options.'</option>';
+						}
+						echo '</select>';
+						echo "</div>\n";
 					}
 				}
 				@endphp
