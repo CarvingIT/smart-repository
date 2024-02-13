@@ -146,7 +146,7 @@ class User extends Authenticatable implements MustVerifyEmail
 	
         if($this->hasPermission($collection_id, 'MAINTAINER') || 
             //($this->hasPermission($collection_id, 'APPROVE') && $document->created_by == $this->id) || 
-			($approval_roles && in_array($user_role,$approval_roles->approved_by))){
+			($collection_details->require_approval && $approval_roles && in_array($user_role,$approval_roles->approved_by))){
             return true;
         }
         return false;

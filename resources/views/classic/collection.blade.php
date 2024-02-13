@@ -119,9 +119,14 @@ function goToPage(page){
 <a name="search-results"></a>
 @php
 	// get reverse meta field values
-	$rmf_values = App\ReverseMetaFieldValue::whereHas('document', function($q){
-		$q->whereNotNull('approved_on');
-	})->get();
+	if($collection->require_approval){
+		$rmf_values = App\ReverseMetaFieldValue::whereHas('document', function($q){
+			$q->whereNotNull('approved_on');
+		})->get();
+	}
+	else{
+		$rmf_values = App\ReverseMetaFieldValue::all();
+	}
 	$rmfv_map = [];
 	foreach($rmf_values as $rmfv){
 		$mf = \App\MetaField::where('id', $rmfv->meta_field_id)->first();
