@@ -7,6 +7,7 @@ use App\Document;
 use App\Collection;
 use App\MetaField;
 use App\MetaFieldValue;
+use App\Taxonomy;
 
 class UpdateMeta extends Command
 {
@@ -82,6 +83,17 @@ class UpdateMeta extends Command
 					$field_val_model->meta_field_id = $meta_field->id;
 				}
 				if($meta_field->type == 'TaxonomyTree'){
+					// find relevant parent (category) in the taxonomies
+					$taxo_parent = $meta_field->options;
+					// there can be more than one comma separated values
+					$val_ar = explode(",", $values[$i]);
+					$t_models = Taxonomy::where('parent', $taxo_parent)
+						->whereIn('label', $val_ar)->get();
+					$t_ids = [];
+					foreach($t_models as $t){
+						$t_ids[] = $t->id;
+					}
+					$field_val_model->value = '['.implode(",", $t_ids).']';
 				}
 				else if($meta_field->type == "Select" || $meta_field->type == "MultiSelect"){
 					$field_val_model->value = '['.$values[$i].']';
