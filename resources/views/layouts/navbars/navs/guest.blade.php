@@ -38,22 +38,22 @@ $collections = \App\Collection::all();
             <i class="material-icons">home</i> {{ __('Home') }}
           </a>
         </li>
-	@if($has_collection_list == 1)
+	@if($has_collection_list === 1)
         <li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
             <i class="material-icons">list</i> {{ __('Collections') }}
           </a>
         </li>
 	@else
-		@foreach($collections as $c)
+	@foreach($collections as $c)
         <li class="nav-item">
           <a href="/collection/{{ $c->id }}" class="nav-link">
             <i class="material-icons">list</i>{{ $c->name }}
           </a>
         </li>
-		@endforeach
-
+	@endforeach
 	@endif
+
 	@if(env('ENABLE_BLOG') == 1)
 	<li class="nav-item{{ $activePage == 'Blog' ? ' active' : '' }}">
           <a href="/en/blog" class="nav-link">

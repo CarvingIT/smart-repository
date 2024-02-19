@@ -10,6 +10,8 @@ $app_name = env('APP_NAME');
 if(empty($activePage)){
 $activePage = 'ISA-RRR';
 }
+$has_collection_list = env('ENABLE_COLLECTION_LIST');
+$collections = \App\Collection::all();
 @endphp
 <!-- Navbar -->
 <!--nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top "-->
@@ -41,11 +43,23 @@ $activePage = 'ISA-RRR';
             <i class="material-icons">home</i> {{ __('Dashboard') }}
           </a>
         </li>
-	<li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
+
+	@if(env('ENABLE_COLLECTION_LIST') === 1)
+        <li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
             <i class="material-icons">list</i> {{ __('Collections') }}
           </a>
         </li>
+	@else
+	@foreach($collections as $c)
+        <li class="nav-item">
+          <a href="/collection/{{ $c->id }}" class="nav-link">
+            <i class="material-icons">list</i>{{ $c->name }}
+          </a>
+        </li>
+	@endforeach
+	@endif
+
 	@if(env('ENABLE_BLOG') == 1)
 	<li class="nav-item{{ $activePage == 'Blog' ? ' active' : '' }}">
           <a href="/en/blog" class="nav-link">
