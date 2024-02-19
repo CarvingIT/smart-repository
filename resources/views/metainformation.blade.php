@@ -151,7 +151,11 @@ function showMetaFieldForm(){
 						@php
 							$trees = App\Taxonomy::where('parent_id', null)->get();
 							foreach($trees as $t){
-								echo '<option value="'.$t->id.'">'.$t->label.'</option>';
+								$selected = '';
+								if(!empty($edit_field->options) && $edit_field->options == $t->id){
+									$selected = " selected";	
+								}
+								echo '<option value="'.$t->id.'"' .$selected.'>'.$t->label.'</option>';
 							}
 						@endphp
 					</select>
