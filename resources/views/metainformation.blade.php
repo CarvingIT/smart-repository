@@ -157,8 +157,8 @@ function showMetaFieldForm(){
 					</select>
                     </div>
                    </div>
-                   <div class="form-group row" id="display-order">
-		   <div class="col-md-4">
+                   <div class="form-group row">
+		   			<div class="col-md-4">
                    <label for="display_order" class="col-md-12 col-form-label text-md-right">Display Order</label> 
                    </div>
                     <div class="col-md-8">
@@ -166,7 +166,33 @@ function showMetaFieldForm(){
                     </div>
                    </div>
 
-                   <div class="form-group row" id="display-order">
+                   <div class="form-group row">
+		   			<div class="col-md-4">
+                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Width on info page</label> 
+                   </div>
+                    <div class="col-md-8">
+						@php
+							$extra_attributes = empty($edit_field->extra_attributes)? null : json_decode($edit_field->extra_attributes);
+							$width_on_info_page = @$extra_attributes->width_on_info_page;
+						@endphp
+						<select name="width_on_info_page" class="form-control">
+							<option value="12">Full</option>
+							<option value="1" @if($width_on_info_page == '1') selected @endif>1/12</option>
+							<option value="2" @if($width_on_info_page == '2') selected @endif>1/6</option>
+							<option value="3" @if($width_on_info_page == '3') selected @endif>1/4</option>
+							<option value="4" @if($width_on_info_page == '4') selected @endif>1/3</option>
+							<option value="5" @if($width_on_info_page == '5') selected @endif>5/12</option>
+							<option value="6" @if($width_on_info_page == '6') selected @endif>1/2</option>
+							<option value="7" @if($width_on_info_page == '7') selected @endif>7/12</option>
+							<option value="8" @if($width_on_info_page == '8') selected @endif>2/3</option>
+							<option value="9" @if($width_on_info_page == '9') selected @endif>3/4</option>
+							<option value="10" @if($width_on_info_page == '10') selected @endif>5/6</option>
+							<option value="11" @if($width_on_info_page == '11') selected @endif>11/12</option>
+						</select>
+                    </div>
+                   </div>
+
+                   <div class="form-group row">
 				   <div class="col-md-4">
                    </div>
                     <div class="col-md-8">
