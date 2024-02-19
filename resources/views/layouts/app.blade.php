@@ -27,7 +27,6 @@ foreach($config as $c){
    -->
     <!-- CSS Files -->
     <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
-    <link href="/css/custom.css" rel="stylesheet" />
     <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
     <!--
@@ -53,6 +52,7 @@ foreach($config as $c){
         <script src="{{ asset('material') }}/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
         <script src="{{ asset('material') }}/js/settings.js"></script>
 	@stack('js')
+    <link href="/css/custom.css" rel="stylesheet" />
 	<!-- overriding css -->
 	<style>
 @php
