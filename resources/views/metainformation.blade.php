@@ -172,6 +172,15 @@ function showMetaFieldForm(){
 
                    <div class="form-group row">
 		   			<div class="col-md-4">
+                   <label for="results_display_order" class="col-md-12 col-form-label text-md-right">Display Order in Search Results</label> 
+                   </div>
+                    <div class="col-md-8">
+                    <input type="text" name="results_display_order" id="results_display_order" class="form-control" placeholder="A number" value="{{ $edit_field->results_display_order}}" required />
+                    </div>
+                   </div>
+
+                   <div class="form-group row">
+		   			<div class="col-md-4">
                    <label for="display_order" class="col-md-12 col-form-label text-md-right">Width on info page</label> 
                    </div>
                     <div class="col-md-8">

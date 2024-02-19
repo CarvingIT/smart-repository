@@ -31,39 +31,13 @@
 			$author_field_id = null;
 			$serial_num_field_id = null;
 			
-			foreach($meta_fields as $m){
-				if($m->label == env('ABSTRACT_FIELD_LABEL','Abstract')){
-					$abstract_field_id = $m->id;
-				}
-				else if($m->label == env('COUNTRY_FIELD_LABEL','Country')){
-					$country_field_id = $m->id;
-				}
-				else if($m->label == env('YEAR_FIELD_LABEL','Year')){
-					$year_field_id = $m->id;
-				}
-				else if($m->label == env('GOVT_AGENCY_FIELD_LABEL','Agency')){
-					$govt_agency_field_id = $m->id;
-				}
-				else if($m->label == env('THEME_FIELD_LABEL','Theme')){
-					$theme_field_id = $m->id;
-				}
-				else if($m->label == env('AUTHOR_FIELD_LABEL','Author')){
-					$author_field_id = $m->id;
-				}
-				else if($m->label == env('SERIAL_NUMBER_FIELD_LABEL','Author')){
-					$serial_num_field_id = $m->id;
-				}
-			}
 			$highlight = @$highlights[$document->id];
 			$highlight_serialized = serialize($highlight);
 			preg_match_all('#<em>(.*?)</em>#',$highlight_serialized, $matches);
 			array_shift($matches);
 			$highlight_keywords = $matches;	
 			$entered_keywords = explode(' ',$search_query);
-			//print_r($highlight_keywords);
-			//print_r($entered_keywords);
 			$highlight_keywords = array_merge($highlight_keywords[0], $entered_keywords);
-			//print_r($highlight_keywords); exit;
 		@endphp
 		<div class="row">
 		<h4>
@@ -75,24 +49,30 @@
 		</h4>
 		</div>
 		<div class="row">
-		<div class="col-lg-2">
-		</div>
-		<div class="col-lg-10">
-		</div>
-		<div class="col-lg-12">
-		</div>
+			@foreach ($meta_fields as $m)
+				@if (empty($m->results_display_order)) 
+					@continue
+				@else
+					@php
+						$extra_attributes = json_decode($m->extra_attributes);
+						$w = $extra_attributes->width_on_info_page;
+					@endphp
+					@if (!empty($document->meta_value($m->id)))
+					<div class="col-lg-{{ $w }}">
+						@if ($m->type == 'Textarea')
+						{{ $document->meta_value($m->id) }}
+						@else
+						<strong>{{ $document->meta_value($m->id) }}</strong>
+						@endif
+					</div>
+					@endif
+				@endif
+			@endforeach
 		</div><!-- row -->
+
 		<div class="row">
 		<div class="col-lg-12">
-			@if (empty($search_query))
-			@if (!empty($abstract_field_id) && !empty($document->meta_value($abstract_field_id)))
-			{!! \Illuminate\Support\Str::limit(ltrim(rtrim(strip_tags(html_entity_decode($document->meta_value($abstract_field_id))))),
-				250, $end='...') 
-			!!}
-			@else
-			{{ \Illuminate\Support\Str::limit($document->text_content, 250, $end='...') }}
-			@endif
-			@else
+			@if (!empty($search_query))
 			{!! implode('', App\Util::highlightKeywords($document->text_content, implode(' ',$highlight_keywords))) !!}		
 			@endif
 		</div>

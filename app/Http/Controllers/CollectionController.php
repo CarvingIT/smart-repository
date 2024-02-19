@@ -365,6 +365,7 @@ $j++;
         	$meta_field->options = $request->input('options');
 	}
         $meta_field->display_order = $request->input('display_order');
+        $meta_field->results_display_order = $request->input('results_display_order');
         $meta_field->is_required = $request->input('is_required');
         $meta_field->is_filter = $request->input('is_filter');
 		// extra attributes

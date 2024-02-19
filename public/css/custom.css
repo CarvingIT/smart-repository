@@ -271,3 +271,6 @@ ul, #myUL {
     outline: 0;
 }
 
+strong{
+	font-weight:bold;
+}
