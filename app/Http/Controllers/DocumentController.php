@@ -255,7 +255,6 @@ class DocumentController extends Controller
 		}
 	// Code to edit title of document ends
          try{
-echo "SKK"; print_r($d);exit;
                 $d->save();
 				$messages[] = 'Document updated successfully!';
             }
