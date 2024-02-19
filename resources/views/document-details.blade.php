@@ -157,7 +157,7 @@ $(document).ready(function()
 				<br />
 
 			@if($c->content_type == 'Uploaded documents')
-			<div class="col-md-12">
+			<div class="col-md-12 row">
 				@foreach($document->collection->meta_fields as $meta_field)
 
 			@php 
@@ -166,12 +166,13 @@ $(document).ready(function()
 				$meta_field_type = $meta_field->type;
 			 @endphp
                         @if(!empty($meta_labels[$m->meta_field_id]))
-							@if ($meta_field_type == 'Textarea')
-                            <div class="col-md-12">
-							@else
-                            <!--div class="col-md-3"-->
-                            <div class="col-md-12">
-							@endif
+
+							@php
+								$extra_attributes = empty($m->meta_field->extra_attributes) ? null : json_decode($m->meta_field->extra_attributes);
+								$w = empty($extra_attributes->width_on_info_page)? 12 : $extra_attributes->width_on_info_page;
+							@endphp
+                            <div class="col-md-{{ $w }}">
+
                             <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
 							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>

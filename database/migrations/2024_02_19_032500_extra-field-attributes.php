@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnIsFilterMetaFields extends Migration
+class ExtraFieldAttributes extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddColumnIsFilterMetaFields extends Migration
     public function up()
     {
         Schema::table('meta_fields', function (Blueprint $table) {
-		$table->tinyInteger('is_filter')->nullable();
+		$table->text('extra_attributes')->nullable();
         });
     }
 
@@ -26,7 +26,7 @@ class AddColumnIsFilterMetaFields extends Migration
     public function down()
     {
         Schema::table('meta_fields', function (Blueprint $table) {
-		$table->dropColumn('is_filter');
+		$table->dropColumn('extra_attributes');
         });
     }
 }
