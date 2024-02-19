@@ -280,7 +280,7 @@ function randomString(length) {
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Start typing to initiate search within the document content') }}</label>
+			<label for="collection_search">{{ __('Start typing minimum of 4 characters to initiate search within the document content') }}</label>
 		    <input type="text" class="search-field" id="collection_search" />
 			<style>
 			.dataTables_filter {
