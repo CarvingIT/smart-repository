@@ -80,7 +80,7 @@
 	@endforeach
 		<div class="row">
 
-<nav aria-label="Page navigation" style="text-align:center;">
+<nav aria-label="Page navigation" style="text-align:center; width:100%;">
 <div class="pagination">Filtered {{ $filtered_results_count }} of {{ $total_results_count }}</div>
 <ul class="pagination">
 @php
