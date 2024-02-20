@@ -31,9 +31,6 @@
 
   <!-- Fonts -->
   <link href="/css/classic/fonts.css" rel="stylesheet">
-  <!--
-  <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
-  -->
   <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
   <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
   <script src="/js/jquery-3.5.1.js"></script>
@@ -71,6 +68,20 @@
 	}, 1000);
 </script>
 @endif
+    <!-- overriding css -->
+    <style>
+@php
+    $conf = \App\Sysconfig::all();
+    $settings = array();
+    foreach($conf as $c){
+        $settings[$c->param] = $c->value;
+    }
+@endphp
+                    @if(!empty($settings['overridingcss']))
+                    {!! $settings['overridingcss'] !!}
+                    @endif
+    </style>
+
 </head>
 <body>
 @php
