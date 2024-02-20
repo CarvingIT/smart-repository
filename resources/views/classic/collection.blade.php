@@ -260,28 +260,6 @@ function goToPage(page){
 		   </div>
 		  </div>
 		</div>
-		<!--
-		<div class="row text-center">
-			<div class="col-lg-4">
-			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="standard" onclick="reloadSearchResults()" checked/> 
-			<span class="tooltip">Standard 
-  			<span class="tooltiptext">Default search</span>
-			</span> 
-			</div>
-			<div class="col-lg-4">
-			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="porter_stem_analyzer" onclick="reloadSearchResults()"/> 
-			<span class="tooltip">Stemma 
-  			<span class="tooltiptext">e.g. try matching place in placed/places/...</span>
-			</span> 
-			</div>
-			<div class="col-lg-4">
-			<input type="radio" name="analyzer" style="vertical-align:bottom;" value="synonyms_analyzer" onclick="reloadSearchResults()"/> 
-			<span class="tooltip">Synonyms 
-  			<span class="tooltiptext">Match synonyms</span>
-			</span> 
-			</div>
-		</div>  
-		-->
 		
 <!-- End Breadcrumbs -->
 
@@ -404,24 +382,22 @@ foreach($tags as $t){
   </script>
 		<div class="form-check">
 		</div>
+
 		</div>
-
-	  
-	  </div>
-
-		</form><!-- isa_search form ends -->
-
+	  </div><!-- col-lg-3 -->
 <div class="col-lg-9" id="search-results">
 	<!-- search results -->
 </div>
 
+	</div><!-- row -->
+  </div><!-- container -->
+</section><!-- End Service Details Section -->
 		</div> <!-- card -->
 
+</div>
 </form>
-	</div>
 
-  </div>
-</section><!-- End Service Details Section -->
+</div>
 
 </main><!-- End #main -->
 

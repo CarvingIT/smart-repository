@@ -1,8 +1,5 @@
 <div class="row gy-4 pricing-item" data-aos-delay="100">
 	<div class="col-lg-12 text-right">
-	<!--
-	<a href="#" onclick="clearFilters();">Clear All Filters</a>
-	-->
 	</div>
 <style>
 	.tag{
@@ -18,7 +15,7 @@
 		background-color:#aaa;
 	}
 </style>
-	@if(!empty($results))
+	@if (!empty($results))
 	@foreach($results as $result)
 		@php 
 			$document = \App\Document::find($result->id);
@@ -111,11 +108,11 @@ $total_pages = ($filtered_results_count / 10) + (($filtered_results_count%10 ===
 @endif
 </ul>
 </nav>
-		</div>
+</div>
 	@else
 		{{ __('No results found') }}
+		
 	@endif
-
 
 	</div>
 

@@ -96,16 +96,15 @@ trait Search{
 					// e.g. &meta_10[]=somevalue&meta_10[]=someothervalue
 					//print_r($mf['value']);exit;
 					foreach($mf['value'] as $v){
-                		$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
+                				$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
         					$query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$v.'"%');
-                    	});
+                    				});
 					}
 				}
 				else{
-                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                    	    $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
-                    	}
-                	);
+                			$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                    	    		$query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
+                    			});
 				}
             }
             else if($mf['operator'] == '>='){
