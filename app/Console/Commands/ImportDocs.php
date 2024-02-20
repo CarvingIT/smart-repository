@@ -44,10 +44,6 @@ class ImportDocs extends Command
     {
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)
-                ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
-                ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
-                ->build();
 
 		// Is elastic search running ?
 		// get the indices and see if an error is returned
@@ -61,8 +57,12 @@ class ImportDocs extends Command
     					]
 				];
 		try{
+        $client = ClientBuilder::create()->setHosts($hosts)
+                ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+                ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+                ->build();
 			$es_on = true;
-			$results = $client->search($params);
+			//$results = $client->search($params);
 		}
 		catch(\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
 			echo "WARNING: ElasticSearch nodes are not available. When the service starts, re-indexing will have to be done.\n";

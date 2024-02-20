@@ -487,7 +487,7 @@ class DocumentController extends Controller
             $m_f->document_id = $document_id;
             $m_f->meta_field_id = $m['field_id'];
 			if(is_array($m['field_value'])){
-				$field_value_str = json_encode($m['field_value'], JSON_UNESCAPED_UNICODE);
+				$field_value_str = json_encode(array_map('strval',$m['field_value']), JSON_UNESCAPED_UNICODE);
 			}
 			else{
 				$field_value_str = htmlentities($m['field_value']);
