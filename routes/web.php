@@ -263,3 +263,9 @@ Route::view('/technical', 'technical-standards');
 Route::view('/service', 'service');
 // Privacy policy
 Route::view('/policy', 'policy');
+
+
+// PayTM payments
+Route::get('/initiate','PaytmController@initiate')->name('initiate.payment');
+Route::post('/payment','PaytmController@pay')->name('make.payment');
+Route::post('/payment/status', 'PaytmController@paymentCallback')->name('status');

@@ -177,6 +177,7 @@ return [
 		Aacotroneo\Saml2\Saml2ServiceProvider::class,
 		Creativeorange\Gravatar\GravatarServiceProvider::class,
 		App\Providers\GoogleDriveServiceProvider::class,
+		Anand\LaravelPaytmWallet\PaytmWalletServiceProvider::class,
     ],
 
     /*
@@ -230,6 +231,7 @@ return [
 	'Gravatar' => Creativeorange\Gravatar\Facades\Gravatar::class,
 	'FastExcel' => Rap2hpoutre\FastExcel\Facades\FastExcel::class,
 	'Image' => Intervention\Image\Facades\Image::class,
+	'PaytmWallet' => Anand\LaravelPaytmWallet\Facades\PaytmWallet::class,
     ],
 
 ];
