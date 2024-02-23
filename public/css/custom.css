@@ -274,3 +274,8 @@ ul, #myUL {
 strong{
 	font-weight:bold;
 }
+
+@media (min-width: 1200px) {
+  .container {
+    width: 1140px;
+  } 
