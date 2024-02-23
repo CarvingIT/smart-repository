@@ -372,6 +372,8 @@ $j++;
 		if(!empty($request->input('width_on_info_page'))){
 			$extra_attributes = empty($meta_field->extra_attaibutes) ? [] :json_decode($meta_field->extra_attaibutes); 
 			$extra_attributes['width_on_info_page'] = $request->input('width_on_info_page');
+			$extra_attributes['numeric_min_value'] = $request->input('numeric_min_value');
+			$extra_attributes['numeric_max_value'] = $request->input('numeric_max_value');
 			$meta_field->extra_attributes = json_encode($extra_attributes);
 		}
 

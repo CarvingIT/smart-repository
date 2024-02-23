@@ -60,9 +60,17 @@ function clearFilters(){
 	});
 	// reset range filter
    @foreach ($filters as $f)
+	   @php
+              $extra_attributes = empty($f->extra_attributes)? null : json_decode($f->extra_attributes);
+              $numeric_min_value = @$extra_attributes->numeric_min_value;
+              $numeric_max_value = @$extra_attributes->numeric_max_value;
+           @endphp
+
    @if ($f->type == 'Numeric')
-	$('#meta_{{ $f->id }}_lower_slider').val(1950);
-	$('#meta_{{ $f->id }}_upper_slider').val(2023);
+	//$('#meta_{{ $f->id }}_lower_slider').val(1950);
+	//$('#meta_{{ $f->id }}_upper_slider').val(2023);
+	$('#meta_{{ $f->id }}_lower_slider').val({{ $numeric_min_value }});
+	$('#meta_{{ $f->id }}_upper_slider').val({{ $numeric_max_value }});
    @endif
    @endforeach
 	
