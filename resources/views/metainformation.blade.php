@@ -35,6 +35,14 @@ $( document ).ready(function() {
    else{
         $("#is_filter_div").hide();
    }
+
+    if(val === 'Numeric') {
+        $("#numeric_values_div").show();
+   }
+   else{
+        $("#numeric_values_div").hide();
+   }
+
   });
 
 });
@@ -161,6 +169,34 @@ function showMetaFieldForm(){
 					</select>
                     </div>
                    </div>
+			@if($edit_field->type =='Numeric')
+	           <div id="numeric_values_div" style="display:block;">	
+			@else
+	           <div id="numeric_values_div" style="display:none;">	
+		        @endif
+			@php
+	                  $extra_attributes = empty($edit_field->extra_attributes)? null : json_decode($edit_field->extra_attributes);
+                          $numeric_min_value = @$extra_attributes->numeric_min_value;
+                          $numeric_max_value = @$extra_attributes->numeric_max_value;
+                        @endphp
+
+                   <div class="form-group row">
+		   			<div class="col-md-4">
+                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Minimum Value</label> 
+                   </div>
+                    <div class="col-md-8">
+                    <input type="text" name="numeric_min_value" id="numeric_min_value" class="form-control" placeholder="A number" value="{{ $numeric_min_value}}" required />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+		   			<div class="col-md-4">
+                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Maximum Value</label> 
+                   </div>
+                    <div class="col-md-8">
+                    <input type="text" name="numeric_max_value" id="numeric_max_value" class="form-control" placeholder="A number" value="{{ $numeric_max_value}}" required />
+                    </div>
+                   </div>
+		   </div>
                    <div class="form-group row">
 		   			<div class="col-md-4">
                    <label for="display_order" class="col-md-12 col-form-label text-md-right">Display Order</label> 
