@@ -313,9 +313,9 @@ foreach($tags as $t){
 						echo '<fieldset class="filter-range">';
 						echo '<div class="range-field">';
 						echo '<input type="range" id="meta_'.$f->id.'_lower_slider" name="meta_'.$f->id.'[]" min="'.$numeric_min_value.'" max="'.$numeric_max_value.'" step="1" 
-							value="'.(!empty($meta_values[0])?$meta_values[0]:1950).'">';
+							value="'.(!empty($meta_values[0])?$meta_values[0]:$numeric_min_value).'">';
 						echo '<input type="range" id="meta_'.$f->id.'_upper_slider" name="meta_'.$f->id.'[]" min="'.$numeric_min_value.'" max="'.$numeric_max_value.'" step="1" 
-							value="'.(!empty($meta_values[1])?$meta_values[1]:2023).'">';
+							value="'.(!empty($meta_values[1])?$meta_values[1]:$numeric_max_value).'">';
 						echo '</div>';
 						@endphp	
 						<div class="range-wrap">
@@ -410,7 +410,7 @@ foreach($tags as $t){
 
 		</div>
 	  </div><!-- col-lg-3 -->
-<div class="col-lg-9" id="search-results">
+<div class="col-lg-9" id="search-results" style="padding-left:3%;">
 	<!-- search results -->
 </div>
 

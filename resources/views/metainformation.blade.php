@@ -252,6 +252,18 @@ function showMetaFieldForm(){
                     </div>
                    </div>
 
+                   <div class="form-group row">
+		   <div class="col-md-4">
+                   </div>
+                   <div class="col-md-8">
+			@php $show_on_details_page = @$extra_attributes->show_on_details_page @endphp
+                   <input type="checkbox" name="show_on_details_page" id="show_on_details_page" class="form-control1" value="1" 
+				@if($show_on_details_page == 1) {{ 'checked' }} @endif
+				/>
+                    <label for="show_on_details_page">Show on details page</label> 
+                    </div>
+                   </div>
+
                    <div class="form-group row" id="is_filter_div">
 				   <div class="col-md-4">
                    </div>

@@ -170,6 +170,8 @@ $(document).ready(function()
 							@php
 								$extra_attributes = empty($m->meta_field->extra_attributes) ? null : json_decode($m->meta_field->extra_attributes);
 								$w = empty($extra_attributes->width_on_info_page)? 12 : $extra_attributes->width_on_info_page;
+								$show_on_details_page = empty($extra_attributes->show_on_details_page)? '' : $extra_attributes->show_on_details_page;
+				if($show_on_details_page == 0) continue;
 							@endphp
                             <div class="col-md-{{ $w }}">
 
