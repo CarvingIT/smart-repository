@@ -127,20 +127,31 @@ tinymce.init({
 		@endif
 	<div class="select-data-container" style="position:fixed; top:25%; z-index:1000;"></div>
 	@php
+	/*
 	$user_permissions = \App\UserPermission::select('permission_id')->where('user_id', Auth::user()->id)->get();
 	foreach($user_permissions as $permission){
 		$user_per[] = $permission->permission_id;
 	}
+	*/
+
+	$user_rol = [];
+	$user_roles = \App\UserRole::where('user_id',auth()->user()->id)->get();
+	foreach($user_roles as $u_r){
+		$user_rol[] = $u_r->role_id;
+	}
 	@endphp		
     @foreach($collection->meta_fields as $f)
 	@php 
-		$permission_intersection = [];
+		//$permission_intersection = [];
+		$role_intersection = [];
 		if(!empty($f->available_to)){ 
 			$available_to = explode(",",$f->available_to);
-			$permission_intersection = array_intersect($user_per,$available_to);
+			//$permission_intersection = array_intersect($user_per,$available_to);
+			$role_intersection = array_intersect($user_rol,$available_to);
 		} 
 		@endphp
-	@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))
+	{{--@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))--}}
+	@if(in_array('1',$user_rol) || !empty($role_intersection) || (!empty($f->available_to) && $f->available_to == '100'))
     <div class="form-group row">
 		   <div class="col-md-3">
     			<label for="meta_field_{{$f->id}}" class="col-md-12 col-form-label text-md-right">{{$f->label}}</label>
