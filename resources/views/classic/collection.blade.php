@@ -341,6 +341,15 @@ foreach($tags as $t){
 						echo '</select>';
 						echo "</div>\n";
 					}
+					/*
+					else if($f->type == 'Text'){
+						$options = explode(",",$f->options); 
+						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'">';
+						echo '<input type="text" name="meta_'.$f->id.'[]" class="form-control">';
+						echo "</div>\n";
+					}
+					*/
 				}
 				@endphp
 <script>
