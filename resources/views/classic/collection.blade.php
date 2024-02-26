@@ -303,14 +303,18 @@ foreach($tags as $t){
 						echo "</div>\n";
 					}
 					else if($f->type == 'Numeric'){
+              				$extra_attributes = empty($f->extra_attributes)? null : json_decode($f->extra_attributes);
+              				$numeric_min_value = @$extra_attributes->numeric_min_value;
+              				$numeric_max_value = @$extra_attributes->numeric_max_value;
+
 						$meta_values = Request::get('meta_'.$f->id);
 						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
 						echo '<fieldset class="filter-range">';
 						echo '<div class="range-field">';
-						echo '<input type="range" id="meta_'.$f->id.'_lower_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
+						echo '<input type="range" id="meta_'.$f->id.'_lower_slider" name="meta_'.$f->id.'[]" min="'.$numeric_min_value.'" max="'.$numeric_max_value.'" step="1" 
 							value="'.(!empty($meta_values[0])?$meta_values[0]:1950).'">';
-						echo '<input type="range" id="meta_'.$f->id.'_upper_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
+						echo '<input type="range" id="meta_'.$f->id.'_upper_slider" name="meta_'.$f->id.'[]" min="'.$numeric_min_value.'" max="'.$numeric_max_value.'" step="1" 
 							value="'.(!empty($meta_values[1])?$meta_values[1]:2023).'">';
 						echo '</div>';
 						@endphp	
@@ -341,15 +345,6 @@ foreach($tags as $t){
 						echo '</select>';
 						echo "</div>\n";
 					}
-					/*
-					else if($f->type == 'Text'){
-						$options = explode(",",$f->options); 
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
-						echo '<div id="filter_'.$f->id.'">';
-						echo '<input type="text" name="meta_'.$f->id.'[]" class="form-control">';
-						echo "</div>\n";
-					}
-					*/
 				}
 				@endphp
 <script>
@@ -359,8 +354,10 @@ foreach($tags as $t){
     var upperSlider_meta_{{ $f->id }} = document.getElementById('meta_{{ $f->id }}_upper_slider');
 
  if(lowerSlider_meta_{{ $f->id }} && upperSlider_meta_{{ $f->id }}){
-    document.querySelector('#end_meta_{{ $f->id }}').value = upperSlider.value;
-    document.querySelector('#start_meta_{{ $f->id }}').value = lowerSlider.value;
+    //document.querySelector('#end_meta_{{ $f->id }}').value = upperSlider.value;
+    //document.querySelector('#start_meta_{{ $f->id }}').value = lowerSlider.value;
+    document.querySelector('#end_meta_{{ $f->id }}').value = upperSlider_meta_{{ $f->id }}.value;
+    document.querySelector('#start_meta_{{ $f->id }}').value = lowerSlider_meta_{{ $f->id }}.value;
 
     var lowerVal_meta_{{ $f->id }} = parseInt(lowerSlider_meta_{{ $f->id }}.value);
     var upperVal_meta_{{ $f->id }} = parseInt(upperSlider_meta_{{ $f->id }}.value);
