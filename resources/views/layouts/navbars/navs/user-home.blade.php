@@ -44,7 +44,7 @@ $collections = \App\Collection::all();
           </a>
         </li>
 
-	@if(env('ENABLE_COLLECTION_LIST') === 1)
+	@if(env('ENABLE_COLLECTION_LIST') == 1)
         <li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
           <a href="/collections" class="nav-link">
             <i class="material-icons">list</i> {{ __('Collections') }}

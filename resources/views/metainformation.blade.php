@@ -35,6 +35,14 @@ $( document ).ready(function() {
    else{
         $("#is_filter_div").hide();
    }
+
+    if(val === 'Numeric') {
+        $("#numeric_values_div").show();
+   }
+   else{
+        $("#numeric_values_div").hide();
+   }
+
   });
 
 });
@@ -92,29 +100,29 @@ function showMetaFieldForm(){
                     </div>
                    </div>
 			<!-- Field available to -->
-		@php $columns = Schema::getColumnListing('meta_fields'); 
+		@php /*$columns = Schema::getColumnListing('meta_fields'); */
 				//print_r($columns);
 		@endphp
-		@if(in_array('available_to',$columns)) 
+		{{-- @if(in_array('available_to',$columns)) --}}
                    <div class="form-group row">
                    <div class="col-md-4">
                    <label for="placeholder" class="col-md-12 col-form-label text-md-right">Field available to</label> 
 		   </div>
                    <div class="col-md-8">
 				@php 
-				if(!empty($edit_field->available_to)){
-					$permissions_array = explode(",",$edit_field->available_to);
-				} 
+				$roles = \App\Role::get();
+				$roles_array = [];
+				$roles_array = explode(",",$edit_field->available_to);
 				@endphp
                         <select class="selectpicker" id="available_to" name="available_to[]" title="Permissions " multiple>
                                 <option value="100">All</option> 
-				@foreach($permissions as $permission)
-                            	<option value="{{ $permission->id }}" @if(!empty($edit_field->available_to) && in_array($permission->id,$permissions_array)) selected @endif>{{ $permission->name }}</option> 
+				@foreach($roles as $role)
+                            	<option value="{{ $role->id }}" @if(!empty($edit_field->available_to) && in_array($role->id,$roles_array)) selected @endif>{{ $role->name }}</option> 
 				@endforeach
                         </select>
                    </div>
                    </div>
-		@endif {{-- if of checking available_to field exists ends--}}		
+		{{--@endif --}} {{-- if of checking available_to field exists ends--}}		
                    <div class="form-group row">
                    <div class="col-md-4">
                    <label for="type" class="col-md-12 col-form-label text-md-right">Field type</label> 
@@ -161,6 +169,34 @@ function showMetaFieldForm(){
 					</select>
                     </div>
                    </div>
+			@if($edit_field->type =='Numeric')
+	           <div id="numeric_values_div" style="display:block;">	
+			@else
+	           <div id="numeric_values_div" style="display:none;">	
+		        @endif
+			@php
+	                  $extra_attributes = empty($edit_field->extra_attributes)? null : json_decode($edit_field->extra_attributes);
+                          $numeric_min_value = @$extra_attributes->numeric_min_value;
+                          $numeric_max_value = @$extra_attributes->numeric_max_value;
+                        @endphp
+
+                   <div class="form-group row">
+		   			<div class="col-md-4">
+                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Minimum Value</label> 
+                   </div>
+                    <div class="col-md-8">
+                    <input type="text" name="numeric_min_value" id="numeric_min_value" class="form-control" placeholder="A number" value="{{ $numeric_min_value}}" />
+                    </div>
+                   </div>
+                   <div class="form-group row">
+		   			<div class="col-md-4">
+                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Maximum Value</label> 
+                   </div>
+                    <div class="col-md-8">
+                    <input type="text" name="numeric_max_value" id="numeric_max_value" class="form-control" placeholder="A number" value="{{ $numeric_max_value}}" />
+                    </div>
+                   </div>
+		   </div>
                    <div class="form-group row">
 		   			<div class="col-md-4">
                    <label for="display_order" class="col-md-12 col-form-label text-md-right">Display Order</label> 
@@ -213,6 +249,18 @@ function showMetaFieldForm(){
 					@if($edit_field->is_required == 1) {{ 'checked' }} @endif
 					/>
                     <label for="is_required">Is required</label> 
+                    </div>
+                   </div>
+
+                   <div class="form-group row">
+		   <div class="col-md-4">
+                   </div>
+                   <div class="col-md-8">
+			@php $show_on_details_page = @$extra_attributes->show_on_details_page @endphp
+                   <input type="checkbox" name="show_on_details_page" id="show_on_details_page" class="form-control1" value="1" 
+				@if($show_on_details_page == 1) {{ 'checked' }} @endif
+				/>
+                    <label for="show_on_details_page">Show on details page</label> 
                     </div>
                    </div>
 

@@ -32,6 +32,20 @@ $(document).ready(function() {
   });
 });
 @php
+
+	// get meta fields of this collection
+	$meta_fields = $collection->meta_fields;
+	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
+	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
+	$filters = [];
+	foreach($meta_fields as $m){
+		//if(in_array($m->label, $filter_labels)){
+		if($m->is_filter == 1){//SKK
+			$filters[] = $m;
+		}
+	}	
+
+
 	$url = '/collection/1/search-results?analyzer='.request()->get('analyzer').'&isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
 @endphp
 $(document).ready(function() {
@@ -45,8 +59,20 @@ function clearFilters(){
 			this.checked = false;
 	});
 	// reset range filter
-	$('#year_lower_slider').val(1950);
-	$('#year_upper_slider').val(2023);
+   @foreach ($filters as $f)
+	   @php
+              $extra_attributes = empty($f->extra_attributes)? null : json_decode($f->extra_attributes);
+              $numeric_min_value = @$extra_attributes->numeric_min_value;
+              $numeric_max_value = @$extra_attributes->numeric_max_value;
+           @endphp
+
+   @if ($f->type == 'Numeric')
+	//$('#meta_{{ $f->id }}_lower_slider').val(1950);
+	//$('#meta_{{ $f->id }}_upper_slider').val(2023);
+	$('#meta_{{ $f->id }}_lower_slider').val({{ $numeric_min_value }});
+	$('#meta_{{ $f->id }}_upper_slider').val({{ $numeric_max_value }});
+   @endif
+   @endforeach
 	
 	reloadSearchResults();
 }
@@ -140,17 +166,6 @@ function goToPage(page){
 		*/
 	}
 	//print_r($rmfv_map);exit;
-	// get meta fields of this collection
-	$meta_fields = $collection->meta_fields;
-	$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
-	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
-	$filters = [];
-	foreach($meta_fields as $m){
-		//if(in_array($m->label, $filter_labels)){
-		if($m->is_filter == 1){//SKK
-			$filters[] = $m;
-		}
-	}	
 
 	$search_query = Request::get('isa_search_parameter');
 
@@ -287,27 +302,31 @@ foreach($tags as $t){
 						getTree($children, $rmfv_map, $f->options, $f->id, true);
 						echo "</div>\n";
 					}
-					if($f->type == 'Numeric'){
+					else if($f->type == 'Numeric'){
+              				$extra_attributes = empty($f->extra_attributes)? null : json_decode($f->extra_attributes);
+              				$numeric_min_value = @$extra_attributes->numeric_min_value;
+              				$numeric_max_value = @$extra_attributes->numeric_max_value;
+
 						$meta_values = Request::get('meta_'.$f->id);
 						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
 						echo '<fieldset class="filter-range">';
 						echo '<div class="range-field">';
-						echo '<input type="range" id="year_lower_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
-							value="'.(!empty($meta_values[0])?$meta_values[0]:1950).'">';
-						echo '<input type="range" id="year_upper_slider" name="meta_'.$f->id.'[]" min="1950" max="2023" step="1" 
-							value="'.(!empty($meta_values[1])?$meta_values[1]:2023).'">';
+						echo '<input type="range" id="meta_'.$f->id.'_lower_slider" name="meta_'.$f->id.'[]" min="'.$numeric_min_value.'" max="'.$numeric_max_value.'" step="1" 
+							value="'.(!empty($meta_values[0])?$meta_values[0]:$numeric_min_value).'">';
+						echo '<input type="range" id="meta_'.$f->id.'_upper_slider" name="meta_'.$f->id.'[]" min="'.$numeric_min_value.'" max="'.$numeric_max_value.'" step="1" 
+							value="'.(!empty($meta_values[1])?$meta_values[1]:$numeric_max_value).'">';
 						echo '</div>';
 						@endphp	
 						<div class="range-wrap">
 		                  <div class="range-wrap-1">
-                    		<input id="start_year" class="lower">
-                    		<label for="start_year"></label>
+                    		<input id="start_meta_{{ $f->id }}" class="lower">
+                    		<label for="start_meta_{{ $f->id }}"></label>
                   		</div>
                   		<div class="range-wrap_line">-</div>
                   		<div class="range-wrap-2">
-                    		<input id="end_year" class="upper">
-                    		<label for="end_year"></label>
+                    		<input id="end_meta_{{ $f->id }}" class="upper">
+                    		<label for="end_meta_{{ $f->id }}"></label>
                   		</div>
                 		</div>
 						@php
@@ -315,7 +334,7 @@ foreach($tags as $t){
 						echo '</div>';
 
 					}
-					if($f->type == 'Select'){
+					else if($f->type == 'Select'){
 						$options = explode(",",$f->options); 
 						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
@@ -329,63 +348,69 @@ foreach($tags as $t){
 				}
 				@endphp
 <script>
-    var lowerSlider = document.getElementById('year_lower_slider');
-    var upperSlider = document.getElementById('year_upper_slider');
+ @foreach ($filters as $f)
+ @if ($f->type == 'Numeric')
+    var lowerSlider_meta_{{ $f->id }} = document.getElementById('meta_{{ $f->id }}_lower_slider');
+    var upperSlider_meta_{{ $f->id }} = document.getElementById('meta_{{ $f->id }}_upper_slider');
 
-	if(lowerSlider && upperSlider){
-    document.querySelector('#end_year').value = upperSlider.value;
-    document.querySelector('#start_year').value = lowerSlider.value;
+ if(lowerSlider_meta_{{ $f->id }} && upperSlider_meta_{{ $f->id }}){
+    //document.querySelector('#end_meta_{{ $f->id }}').value = upperSlider.value;
+    //document.querySelector('#start_meta_{{ $f->id }}').value = lowerSlider.value;
+    document.querySelector('#end_meta_{{ $f->id }}').value = upperSlider_meta_{{ $f->id }}.value;
+    document.querySelector('#start_meta_{{ $f->id }}').value = lowerSlider_meta_{{ $f->id }}.value;
 
-    var lowerVal = parseInt(lowerSlider.value);
-    var upperVal = parseInt(upperSlider.value);
+    var lowerVal_meta_{{ $f->id }} = parseInt(lowerSlider_meta_{{ $f->id }}.value);
+    var upperVal_meta_{{ $f->id }} = parseInt(upperSlider_meta_{{ $f->id }}.value);
 
-    upperSlider.oninput = function () {
-      lowerVal = parseInt(lowerSlider.value);
-      upperVal = parseInt(upperSlider.value);
+    upperSlider_meta_{{ $f->id }}.oninput = function () {
+      lowerVal_meta_{{ $f->id }} = parseInt(lowerSlider_meta_{{ $f->id }}.value);
+      upperVal_meta_{{ $f->id }} = parseInt(upperSlider_meta_{{ $f->id }}.value);
 
-      if (upperVal < lowerVal + 4) {
-        lowerSlider.value = upperVal - 4;
-        if (lowerVal == lowerSlider.min) {
-          upperSlider.value = 4;
+      if (upperVal_meta_{{ $f->id }} < lowerVal_meta_{{ $f->id }} + 4) {
+        lowerSlider_meta_{{ $f->id }}.value = upperVal_meta_{{ $f->id }} - 4;
+        if (lowerVal_meta_{{ $f->id }} == lowerSlider_meta_{{ $f->id }}.min) {
+          upperSlider_meta_{{ $f->id }}.value = 4;
         }
       }
-      document.querySelector('#end_year').value = this.value;
+      document.querySelector('#end_meta_{{ $f->id }}').value = this.value;
     };
 
-    upperSlider.onmouseup = function () {
+    upperSlider_meta_{{ $f->id }}.onmouseup = function () {
 	reloadSearchResults();
     };
 
-    upperSlider.ontouchend = function () {
+    upperSlider_meta_{{ $f->id }}.ontouchend = function () {
 	reloadSearchResults();
     };
 
-    lowerSlider.oninput = function () {
-      lowerVal = parseInt(lowerSlider.value);
-      upperVal = parseInt(upperSlider.value);
-      if (lowerVal > upperVal - 4) {
-        upperSlider.value = lowerVal + 4;
-        if (upperVal == upperSlider.max) {
-          lowerSlider.value = parseInt(upperSlider.max) - 4;
+    lowerSlider_meta_{{ $f->id }}.oninput = function () {
+      lowerVal_meta_{{ $f->id }} = parseInt(lowerSlider_meta_{{ $f->id }}.value);
+      upperVal_meta_{{ $f->id }} = parseInt(upperSlider_meta_{{ $f->id }}.value);
+      if (lowerVal_meta_{{ $f->id }} > upperVal_meta_{{ $f->id }} - 4) {
+        upperSlider_meta_{{ $f->id }}.value = lowerVal_meta_{{ $f->id }} + 4;
+        if (upperVal_meta_{{ $f->id }} == upperSlider_meta_{{ $f->id }}.max) {
+          lowerSlider_meta_{{ $f->id }}.value = parseInt(upperSlider_meta_{{ $f->id }}.max) - 4;
         }
       }
-      document.querySelector('#start_year').value = this.value;
+      document.querySelector('#start_meta_{{ $f->id }}').value = this.value;
     };
 
-    lowerSlider.onmouseup = function () {
+    lowerSlider_meta_{{ $f->id }}.onmouseup = function () {
 	reloadSearchResults();
     };
-    lowerSlider.ontouchend = function () {
+    lowerSlider_meta_{{ $f->id }}.ontouchend = function () {
 	reloadSearchResults();
     };
-	}//if lowerSlider and upperSlider
+ }//if lowerSlider and upperSlider
+ @endif
+ @endforeach
   </script>
 		<div class="form-check">
 		</div>
 
 		</div>
 	  </div><!-- col-lg-3 -->
-<div class="col-lg-9" id="search-results">
+<div class="col-lg-9" id="search-results" style="padding-left:3%;">
 	<!-- search results -->
 </div>
 

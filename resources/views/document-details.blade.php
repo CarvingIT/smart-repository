@@ -170,6 +170,8 @@ $(document).ready(function()
 							@php
 								$extra_attributes = empty($m->meta_field->extra_attributes) ? null : json_decode($m->meta_field->extra_attributes);
 								$w = empty($extra_attributes->width_on_info_page)? 12 : $extra_attributes->width_on_info_page;
+								$show_on_details_page = empty($extra_attributes->show_on_details_page)? '' : $extra_attributes->show_on_details_page;
+				if($show_on_details_page == 0) continue;
 							@endphp
                             <div class="col-md-{{ $w }}">
 
@@ -246,12 +248,16 @@ $(document).ready(function()
 
                   <div class="row">
                       <div class="col-md-12">
+						@if (Auth::user() && Auth::user()->canEditDocument($document->id))
                         <a href="/document/{{ $document->id }}/edit" class="btn btn-sm btn-primary" title="Edit">
                         <i class="material-icons">edit</i>
                         </a>
+						@endif
+						@if (Auth::user() && Auth::user()->canDeleteDocument($document->id))
                         <a href="javascript:return false;" onclick="showDeleteDialog();" class="btn btn-sm btn-primary" title="Delete">
                         <i class="material-icons">delete</i>
                         </a>
+						@endif
                       </div>
                   </div>
 						@if (!empty($col_config->show_word_cloud))

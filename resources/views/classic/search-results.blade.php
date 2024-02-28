@@ -55,16 +55,18 @@
 						$w = $extra_attributes->width_on_info_page;
 					@endphp
 					@if (!empty($document->meta_value($m->id)))
-					<div class="col-lg-{{ $w }}">
+					<!--div class="col-lg-{{ $w }}"-->
+					<div class="col-lg-12">
 						@if ($m->type == 'Textarea')
 						{{ $document->meta_value($m->id) }}
 						@else
-						<strong>{{ $document->meta_value($m->id) }}</strong>
+						<strong>{{ $m->label }}: {{ $document->meta_value($m->id) }}</strong>
 						@endif
 					</div>
 					@endif
 				@endif
 			@endforeach
+					<div>&nbsp;</div>
 		</div><!-- row -->
 
 		<div class="row">
