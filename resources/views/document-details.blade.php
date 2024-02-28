@@ -248,12 +248,16 @@ $(document).ready(function()
 
                   <div class="row">
                       <div class="col-md-12">
+						@if (Auth::user() && Auth::user()->canEditDocument($document->id))
                         <a href="/document/{{ $document->id }}/edit" class="btn btn-sm btn-primary" title="Edit">
                         <i class="material-icons">edit</i>
                         </a>
+						@endif
+						@if (Auth::user() && Auth::user()->canDeleteDocument($document->id))
                         <a href="javascript:return false;" onclick="showDeleteDialog();" class="btn btn-sm btn-primary" title="Delete">
                         <i class="material-icons">delete</i>
                         </a>
+						@endif
                       </div>
                   </div>
 						@if (!empty($col_config->show_word_cloud))
