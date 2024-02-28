@@ -1,5 +1,4 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'faq','titlePage'=>'FAQ'])
-
 @section('content')
 <div class="container">
 <div class="container-fluid">
