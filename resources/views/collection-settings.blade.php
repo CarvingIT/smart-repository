@@ -107,6 +107,21 @@ $(document).ready(function() {
 			@endforeach
 		</div>
 
+		<h4>{{__('Display of search results')}}</h4>
+		<div class="form-group row">
+           <div class="col-md-3">
+				Title replacement
+		   </div>
+           <div class="col-md-9">
+				<select class="form-control1" name="replace_title_with_meta">
+					<option value="">Don't replace with any meta value</option>
+				@foreach ($collection->meta_fields as $m)
+					<option value="{{ $m->id }}" @if ($column_config->replace_title_with_meta == $m->id) {{ 'selected' }} @endif >{{ $m->label }}</option>
+				@endforeach
+				</select>
+		   </div>
+		</div>
+
 		<h4>{{__('Document Approval Flow')}}</h4>
 		<div class="form-group row">
 			<select class="selectsequence" id="selectsequence" name="approved_by[]" multiple style="width:100%;">	

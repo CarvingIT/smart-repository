@@ -35,13 +35,16 @@
 			$highlight_keywords = $matches;	
 			$entered_keywords = explode(' ',$search_query);
 			$highlight_keywords = array_merge($highlight_keywords[0], $entered_keywords);
+
+			$collection_config = json_decode($document->collection->column_config);
+			$result_title = empty($collection_config->replace_title_with_meta) ? $document->title : $document->meta_value($collection_config->replace_title_with_meta);
 		@endphp
 		<div class="row">
 		<h4>
 		@if (@$result->type == 'url')
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{!! strip_tags($document->title) !!}</a>
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{!! strip_tags($result_title) !!}</a>
 		@else
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{!! strip_tags($document->title) !!}</a>
+		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{!! strip_tags($result_title) !!}</a>
 		@endif
 		</h4>
 		</div>
@@ -52,15 +55,16 @@
 				@else
 					@php
 						$extra_attributes = json_decode($m->extra_attributes);
-						$w = $extra_attributes->width_on_info_page;
+						$w = @$extra_attributes->width_on_info_page;
+						$classname = @$extra_attributes->results_classname;
 					@endphp
 					@if (!empty($document->meta_value($m->id)))
 					<!--div class="col-lg-{{ $w }}"-->
-					<div class="col-lg-12">
+					<div class="{{ $classname }}">
 						@if ($m->type == 'Textarea')
 						{{ $document->meta_value($m->id) }}
 						@else
-						<strong>{{ $m->label }}: {{ $document->meta_value($m->id) }}</strong>
+						<strong>{{ $document->meta_value($m->id) }}</strong>
 						@endif
 					</div>
 					@endif

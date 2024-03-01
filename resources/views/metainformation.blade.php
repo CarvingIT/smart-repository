@@ -182,7 +182,7 @@ function showMetaFieldForm(){
 
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Minimum Value</label> 
+                   <label class="col-md-12 col-form-label text-md-right">Minimum Value</label> 
                    </div>
                     <div class="col-md-8">
                     <input type="text" name="numeric_min_value" id="numeric_min_value" class="form-control" placeholder="A number" value="{{ $numeric_min_value}}" />
@@ -190,7 +190,7 @@ function showMetaFieldForm(){
                    </div>
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Maximum Value</label> 
+                   <label class="col-md-12 col-form-label text-md-right">Maximum Value</label> 
                    </div>
                     <div class="col-md-8">
                     <input type="text" name="numeric_max_value" id="numeric_max_value" class="form-control" placeholder="A number" value="{{ $numeric_max_value}}" />
@@ -202,7 +202,7 @@ function showMetaFieldForm(){
                    <label for="display_order" class="col-md-12 col-form-label text-md-right">Display Order</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="text" name="display_order" id="display_order" class="form-control" placeholder="A number" value="{{ $edit_field->display_order}}" required />
+                    <input type="number" name="display_order" id="display_order" class="form-control" placeholder="A number" value="{{ $edit_field->display_order}}" required />
                     </div>
                    </div>
 
@@ -211,19 +211,29 @@ function showMetaFieldForm(){
                    <label for="results_display_order" class="col-md-12 col-form-label text-md-right">Display Order in Search Results</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="text" name="results_display_order" id="results_display_order" class="form-control" placeholder="A number" value="{{ $edit_field->results_display_order}}" required />
+                    <input type="number" name="results_display_order" id="results_display_order" class="form-control" placeholder="A number" value="{{ $edit_field->results_display_order}}" />
+                    </div>
+                   </div>
+						@php
+							$extra_attributes = empty($edit_field->extra_attributes)? null : json_decode($edit_field->extra_attributes);
+							$width_on_info_page = @$extra_attributes->width_on_info_page;
+							$results_classname = @$extra_attributes->results_classname;
+						@endphp
+
+                   <div class="form-group row">
+		   			<div class="col-md-4">
+                   <label for="results_classname" class="col-md-12 col-form-label text-md-right">Classname in search result</label> 
+                   </div>
+                    <div class="col-md-8">
+                    <input type="text" name="results_classname" id="results_classname" class="form-control" placeholder="classname" value="{{ $results_classname}}" />
                     </div>
                    </div>
 
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Width on info page</label> 
+                   <label class="col-md-12 col-form-label text-md-right">Width on info page</label> 
                    </div>
                     <div class="col-md-8">
-						@php
-							$extra_attributes = empty($edit_field->extra_attributes)? null : json_decode($edit_field->extra_attributes);
-							$width_on_info_page = @$extra_attributes->width_on_info_page;
-						@endphp
 						<select name="width_on_info_page" class="form-control">
 							<option value="12">Full</option>
 							<option value="1" @if($width_on_info_page == '1') selected @endif>1/12</option>

@@ -369,14 +369,13 @@ $j++;
         $meta_field->is_required = $request->input('is_required');
         $meta_field->is_filter = $request->input('is_filter');
 		// extra attributes
-		if(!empty($request->input('width_on_info_page'))){
 			$extra_attributes = empty($meta_field->extra_attaibutes) ? [] :json_decode($meta_field->extra_attaibutes); 
 			$extra_attributes['width_on_info_page'] = $request->input('width_on_info_page');
 			$extra_attributes['numeric_min_value'] = $request->input('numeric_min_value');
 			$extra_attributes['numeric_max_value'] = $request->input('numeric_max_value');
 			$extra_attributes['show_on_details_page'] = $request->input('show_on_details_page');
+			$extra_attributes['results_classname'] = $request->input('results_classname');
 			$meta_field->extra_attributes = json_encode($extra_attributes);
-		}
 
         $meta_field->save();
         return $this->metaInformation($request->input('collection_id'));
