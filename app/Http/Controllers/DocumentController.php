@@ -696,6 +696,16 @@ public function approveDocument(Request $request){
 
 }
 
+public function titleSuggest(Request $request){
+	$term = $request->input('term');
+	$docs = Document::where('title','like','%'.$term.'%')->get();
+	$suggestions = [];
+	foreach($docs as $d){
+		$suggestions[] = ['id'=>$d->id,'title'=>$d->title];
+	}
+	return $suggestions;
+}
+
 
 ### End of class
 }

@@ -71,6 +71,7 @@ Route::post('/collection/{collection_id}/savecollectionurls', 'CollectionControl
 
 Route::get('autocomplete', 'UserController@autoComplete')->name('autocomplete');
 Route::get('autosuggest', 'CollectionController@autoSuggest')->name('autosuggest');
+Route::get('titlesuggest', 'DocumentController@titleSuggest')->name('titlesuggest');
 
 Route::get('/collection/{collection_id}/user/{user_id}', 'CollectionController@showCollectionUserForm');
 Route::post('/collection/{collection_id}/savecollectionuser', 'CollectionController@saveUser');
@@ -254,12 +255,5 @@ Route::view('/about', 'about-repository');
 
 Route::get('/collection/{collection_id}/search-results', 'CollectionController@searchResults');
 
-// Major Themes
-Route::view('/laws', 'laws-regulations');
-Route::view('/publications', 'publications');
-Route::view('/technical', 'technical-standards');
-
-// Terms of Service
-Route::view('/service', 'service');
-// Privacy policy
-Route::view('/policy', 'policy');
+// related documents
+Route::post('/collection/{collection_id}/document/{document_id}/add-related-document','RelatedDocumentController@addRelatedDocument')->middleware('maintainer');

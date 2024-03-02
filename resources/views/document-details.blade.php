@@ -40,6 +40,39 @@ function showDeleteDialog(){
         resizable: true
         });
 }
+$(document).ready(function() {
+        //alert("js is working");
+        src = "{{ route('titlesuggest') }}";
+        $( "#title-autocomplete" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+                    method: 'GET',
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+                        if(data.length > 0)
+                        	response($.map(data, function(item){
+								return {
+									label:item.title,
+									value:item.id
+								}
+							}
+						));
+                    },
+                });
+            },
+            select: function (event, ui){
+                $("#title-autocomplete").val(ui.item.label);
+                $("#related_document_id").val(ui.item.value);
+                return false;
+            },
+            minLength: 1,
+        });
+    });
+
 </script>
 @if (!empty($col_config->show_word_cloud))
 <script src="/js/jQWCloudv3.4.1.js"></script>
@@ -121,9 +154,13 @@ $(document).ready(function()
 
 				<div id="related_document_form">
 				<h4>Add a related document</h4>
+				<form method="post" action="/collection/{{ $document->collection->id }}/document/{{ $document->id }}/add-related-document">
+				@csrf
+				<input type="hidden" id="document_id" name="document_id" value="{{ $document->id }}" />
+				<input type="hidden" id="related_document_id" name="related_document_id" value="" />
 				<div class="row">
                     <div class="col-md-2">
-		   				<label for="title" class="col-md-12 col-form-label text-md-right">Search title</label>
+		   				<label for="title-autocomplete" class="col-md-12 col-form-label text-md-right">Search title</label>
 					</div>
                     <div class="col-md-8">
                     <input class="form-control" type="text" id="title-autocomplete" name="title-autocomplete"/> 
@@ -142,7 +179,7 @@ $(document).ready(function()
 		   				<label for="title_override" class="col-md-12 col-form-label text-md-right">Override title</label>
 					</div>
                     <div class="col-md-8">
-                    <input class="form-control" type="text" id="title_override" name="title_override"/> 
+                    <input class="form-control" type="text" id="title_override" name="title"/> 
 					</div>
 				</div>
 				<div class="row">
@@ -151,6 +188,7 @@ $(document).ready(function()
 						<input class="btn" type="button" value="Cancel" />
 					</div>
 				</div>
+				</form>
 				</div>
 
 
