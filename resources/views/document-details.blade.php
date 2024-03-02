@@ -96,7 +96,10 @@ $(document).ready(function()
 
                   <div class="row">
                       <div class="col-md-12 text-right">
-                        <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back">
+                        <a href="#" class="btn btn-sm btn-primary" title="Related Documents">
+                        <i class="material-icons">playlist_add</i>
+                        </a>
+                        <a href="/collection/{{ $c->id }}" class="btn btn-sm btn-primary" title="Back">
                         <i class="material-icons">arrow_back</i>
                         </a>
                       </div>
@@ -115,6 +118,40 @@ $(document).ready(function()
                         @endif
                     @endforeach
                     </div>
+
+				<div id="related_document_form">
+				<h4>Add a related document</h4>
+				<div class="row">
+                    <div class="col-md-2">
+		   				<label for="title" class="col-md-12 col-form-label text-md-right">Search title</label>
+					</div>
+                    <div class="col-md-8">
+                    <input class="form-control" type="text" id="title-autocomplete" name="title-autocomplete"/> 
+					</div>
+				</div>
+				<div class="row">
+                    <div class="col-md-2">
+		   				<label for="display_order" class="col-md-12 col-form-label text-md-right">Display order</label>
+					</div>
+                    <div class="col-md-8">
+                    <input class="form-control" type="number" id="display_order" name="display_order"/> 
+					</div>
+				</div>
+				<div class="row">
+                    <div class="col-md-2">
+		   				<label for="title_override" class="col-md-12 col-form-label text-md-right">Override title</label>
+					</div>
+                    <div class="col-md-8">
+                    <input class="form-control" type="text" id="title_override" name="title_override"/> 
+					</div>
+				</div>
+				<div class="row">
+                    <div class="col-md-12 text-center">
+						<input class="btn btn-primary" type="submit" value="Add" />
+						<input class="btn" type="button" value="Cancel" />
+					</div>
+				</div>
+				</div>
 
 
                   <div class="row">
