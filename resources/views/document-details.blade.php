@@ -129,7 +129,7 @@ $(document).ready(function()
 
                   <div class="row">
                       <div class="col-md-12 text-right">
-                        <a href="#" class="btn btn-sm btn-primary" title="Related Documents">
+                        <a href="#" onclick="$('#related_document_form').show(); return false;" class="btn btn-sm btn-primary" title="Related Documents">
                         <i class="material-icons">playlist_add</i>
                         </a>
                         <a href="/collection/{{ $c->id }}" class="btn btn-sm btn-primary" title="Back">
@@ -152,7 +152,7 @@ $(document).ready(function()
                     @endforeach
                     </div>
 
-				<div id="related_document_form">
+				<div id="related_document_form" style="display:none;">
 				<h4>Add a related document</h4>
 				<form method="post" action="/collection/{{ $document->collection->id }}/document/{{ $document->id }}/add-related-document">
 				@csrf
@@ -185,15 +185,16 @@ $(document).ready(function()
 				<div class="row">
                     <div class="col-md-12 text-center">
 						<input class="btn btn-primary" type="submit" value="Add" />
-						<input class="btn" type="button" value="Cancel" />
+						<input class="btn" type="button" value="Cancel" onclick="$('#related_document_form').hide();"/>
 					</div>
 				</div>
 				</form>
+				<br />
 				</div>
 
 
                   <div class="row">
-                    <div class="col-md-12" style="margin-bottom:5%;">
+                    <div class="col-md-12">
                         <span id="doc-title" class="col-md-12"><!--h4-->
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
@@ -232,7 +233,7 @@ $(document).ready(function()
 				<br />
 
 			@if($c->content_type == 'Uploaded documents')
-			<div class="col-md-12 row">
+			<div class="col-md-9 row">
 				@foreach($document->collection->meta_fields as $meta_field)
 
 			@php 
@@ -278,9 +279,9 @@ $(document).ready(function()
 					@if(!empty($document->approved_on))
 						<h4>Document is Approved</h4> 
 						<input id="approved_on" type="hidden" name="approved_on" value=""/>
-						<button type="submit" class="btn btn-primary">Disapprove Document</button>
+						<button type="submit" class="btn btn-primary">Reject Document</button>
 					@else
-						<h4>Document is Disapproved</h4> 
+						<h4>Document is unapproved</h4> 
 						<input id="approved_on" type="hidden" name="approved_on" value="1"/>
 						<button type="submit" class="btn btn-primary">Approve Document</button>
 					@endif
@@ -307,6 +308,15 @@ $(document).ready(function()
 				@endif {{-- display comments only for unapproved documents --}}
 			@endif {{-- display document status and comment section only for logged in user --}}
 
+				</div>
+				<div class="col-md-3">
+				<h5>Related Documents</h5>
+				<ul>
+				@foreach ($document->related_documents as $r_d)
+					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">{{ $r_d->title }}</a></li>
+				@endforeach
+				</ul>
+				</div>
 			</div><!-- row ends -->
 			@endif
 
