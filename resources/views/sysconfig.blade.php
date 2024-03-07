@@ -155,11 +155,12 @@
 
         tinymce.activeEditor.windowManager.openUrl({
           url : '/file-manager/tinymce5',
-          title : 'Laravel File manager',
+          title : 'File manager',
           width : x * 0.8,
           height : y * 0.8,
           onMessage: (api, message) => {
-            callback(message.content, { text: message.text })
+            //callback(message.content, { text: message.text })
+            callback('/media/i/'+message.text, { text: message.text })
           }
         })
       }, 
