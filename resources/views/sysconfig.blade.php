@@ -149,7 +149,6 @@
                                 force_br_newlines: true,
                                 force_p_newlines: false,
                 forced_root_block: '', // Needed for 3.x
-				/*
                   file_picker_callback (callback, value, meta) {
         let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth
         let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight
@@ -163,7 +162,7 @@
             callback(message.content, { text: message.text })
           }
         })
-      }, */
+      }, 
                             });</script>
 
 @endsection
