@@ -623,7 +623,7 @@ trait Search{
 	    }
 
 		if(env('ENABLE_INFO_PAGE') == 1){
-	    $action_icons .= '<a class="btn btn-primary btn-link" title="Information and more" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">info</i></a>';
+	    $action_icons .= '<a class="btn btn-primary btn-link" title="Information and more" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><i class="material-icons">forward</i></a>';
 		}
 	    if($content_type == 'Uploaded documents'){
             if(Auth::user()){

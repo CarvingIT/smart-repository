@@ -116,7 +116,7 @@ $(document).ready(function() {
 				<select class="form-control1" name="replace_title_with_meta">
 					<option value="">Don't replace with any meta value</option>
 				@foreach ($collection->meta_fields as $m)
-					<option value="{{ $m->id }}" @if ($column_config->replace_title_with_meta == $m->id) {{ 'selected' }} @endif >{{ $m->label }}</option>
+					<option value="{{ $m->id }}" @if (@$column_config->replace_title_with_meta == $m->id) {{ 'selected' }} @endif >{{ $m->label }}</option>
 				@endforeach
 				</select>
 		   </div>
