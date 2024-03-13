@@ -198,8 +198,13 @@ $(document).ready(function()
                         <span id="doc-title" class="col-md-12"><!--h4-->
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
+					@if(env('ENABLE_PDF_READER') == 1)
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
             				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_new">
+					@else
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
+            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_new">
+					@endif
 				@elseif($document->type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
@@ -247,11 +252,14 @@ $(document).ready(function()
 								$extra_attributes = empty($m->meta_field->extra_attributes) ? null : json_decode($m->meta_field->extra_attributes);
 								$w = empty($extra_attributes->width_on_info_page)? 12 : $extra_attributes->width_on_info_page;
 								$show_on_details_page = empty($extra_attributes->show_on_details_page)? '' : $extra_attributes->show_on_details_page;
+								$classname = @$extra_attributes->results_classname;
 				if($show_on_details_page == 0) continue;
 							@endphp
-                            <div class="col-md-{{ $w }}">
+			    <div class="col-md-{{ $w }}">
 
-                            <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $meta_labels[$m->meta_field_id] }}</label>
+			    <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">
+				<div class="{{ $classname }}">&nbsp;</div>
+				{{ $meta_labels[$m->meta_field_id] }}</label>
 							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
                             <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
 							@elseif ($m->meta_field->type ==  'TaxonomyTree')

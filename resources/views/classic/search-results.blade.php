@@ -59,8 +59,9 @@
 						$classname = @$extra_attributes->results_classname;
 					@endphp
 					@if (!empty($document->meta_value($m->id)))
-					<!--div class="col-lg-{{ $w }}"-->
-					<div class="{{ $classname }}">
+					{{-- $m->label--}}
+					<div class="col-lg-{{ $w }}">
+					<div class="{{ $classname }}">&nbsp;</div>
 						@if ($m->type == 'Textarea')
 						{{ $document->meta_value($m->id) }}
 						@else

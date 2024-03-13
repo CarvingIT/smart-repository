@@ -1045,7 +1045,7 @@ pre code {
   display: flex;
   flex-wrap: wrap;
   margin-right: -15px;
-  margin-left: -15px;
+  /*margin-left: -15px;*/ /*  commented on 13 March 2024 by SKK */
 }
 
 .no-gutters {
