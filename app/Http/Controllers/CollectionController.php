@@ -33,7 +33,7 @@ class CollectionController extends Controller
     }
 
     public function index(){
-        $collections = Collection::where('parent_id', null)->get();
+        $collections = Collection::all();
         return view('collectionmanagement', ['collections'=>$collections, 'activePage'=>'Collections','titlePage'=>'Collections']);
     }
 
