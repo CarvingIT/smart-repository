@@ -89,6 +89,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasPermission($collection_id, $permission_name){
         $user_permissions = $this->accessPermissions;
         $c = \App\Collection::find($collection_id);
+		// if this collection is a child collection, the permissions should be inherited from the parent
+		// go upward the parents till parent_id is null
+		while(!empty($c->parent_id)){
+			$c = \App\Collection::find($c->parent_id);	
+		}
+
         /*
         check VIEW access first
         If the collection is Public or if the user has any permission on the collection

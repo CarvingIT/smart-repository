@@ -158,10 +158,17 @@ function randomString(length) {
 			<div class="col-12">
             <p>{{ $collection->description }}</p>
 		<!-- children collections -->		
+			@if ($collection->parent_id) 
+			<div>
+				<a 	title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
+						<i class="material-icons">folder</i> . .
+				</a>
+			</div>
+			@endif
 			@if ($collection->children->count() > 0)
-			<div class="navbar-collapse justify-content-end">
+			<div>
 				@foreach ($collection->children as $child)
-				<a class="dropdown-item" href="/collection/{{ $child->id }}">
+				<a href="/collection/{{ $child->id }}">
 					<i class="material-icons">folder</i>
 					{{ $child->name }}
 				</a>
@@ -181,11 +188,6 @@ function randomString(length) {
 				</ul>
 				-->
 			</div>
-			@endif
-			@if ($collection->parent_id) 
-				<a class="btn btn-primary" title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
-						. . <i class="material-icons">arrow_upward</i>
-				</a>
 			@endif
 			</div><!-- col12 -->
 		</div><!-- row -->
