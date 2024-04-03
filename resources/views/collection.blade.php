@@ -155,17 +155,21 @@ function randomString(length) {
                   </div>
         </div>
 		<div class="row">
-			<div class="col-10">
+			<div class="col-12">
             <p>{{ $collection->description }}</p>
-			</div>
-			<div class="col-2 text-right">
 		<!-- children collections -->		
 			@if ($collection->children->count() > 0)
 			<div class="navbar-collapse justify-content-end">
+				@foreach ($collection->children as $child)
+				<a class="dropdown-item" href="/collection/{{ $child->id }}">
+					<i class="material-icons">folder</i>
+					{{ $child->name }}
+				</a>
+				@endforeach
+				<!--
 				<ul class="navbar-nav">
 			        <li class="nav-item dropdown">
           				<a class="btn btn-primary nav-link" title="{{ __('Sub-collections') }}" href="#" id="childrencollections" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-						<i class="material-icons">folder</i>
 						<i class="material-icons">subdirectory_arrow_right</i>
           				</a>
 					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="childrencollections">
@@ -174,7 +178,8 @@ function randomString(length) {
 						@endforeach
 					</div>
 					</li>
-				</ul><!-- navbar-nav -->
+				</ul>
+				-->
 			</div>
 			@endif
 			@if ($collection->parent_id) 
@@ -182,7 +187,7 @@ function randomString(length) {
 						. . <i class="material-icons">arrow_upward</i>
 				</a>
 			@endif
-			</div><!-- col2 -->
+			</div><!-- col12 -->
 		</div><!-- row -->
         @php
             $meta_fields = empty($collection->meta_fields)? array() : $collection->meta_fields;
