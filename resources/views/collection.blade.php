@@ -166,12 +166,13 @@ function randomString(length) {
 			</div>
 			@endif
 			@if ($collection->children->count() > 0)
-			<div>
 				@foreach ($collection->children as $child)
+				<div>
 				<a href="/collection/{{ $child->id }}">
 					<i class="material-icons">folder</i>
 					{{ $child->name }}
 				</a>
+				</div>
 				@endforeach
 				<!--
 				<ul class="navbar-nav">
@@ -187,7 +188,6 @@ function randomString(length) {
 					</li>
 				</ul>
 				-->
-			</div>
 			@endif
 			</div><!-- col12 -->
 		</div><!-- row -->
