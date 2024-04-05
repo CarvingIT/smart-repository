@@ -3,7 +3,7 @@
 <title>Smart Repository::Document Viewer</title>
 </head>
 <body>
-<iframe id="pdfreader" class="pdf" src="/js/ViewerJS/#../../collection/{{ $collection_id }}/document/{{ $document_id }}/file.pdf" 
+<iframe id="pdfreader" class="pdf" src="/js/ViewerJS/#../../collection/{{ $collection_id }}/document/{{ $document_id }}" 
             width="100%" height="100%">
 </iframe>
 

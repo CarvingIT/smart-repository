@@ -106,7 +106,6 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 Route::get('/media/i/{filename}', 'MediaController@loadImage');
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
-Route::get('/collection/{collection_id}/document/{document_id}/file.pdf', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
 
