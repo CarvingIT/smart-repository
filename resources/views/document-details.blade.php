@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="/css/jquery-ui.css">
 <script src="/js/jquery-ui.js"></script>
 <script>
+/*
  $( function() {
       $( "#accordion" ).accordion({
         'collapsible': true,
@@ -20,7 +21,7 @@
         'heightStyle': "content",
     });
   } );
-
+ */
 function randomString(length) {
    var result           = '';
    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -430,7 +431,10 @@ $(document).ready(function()
 						</div>
 						@endif
 
-						@if(Auth::user() && Auth::user()->hasPermission($document->collection->id, 'MAINTAINER'))
+						@php
+							$all_collections = \App\Collection::all();
+						@endphp
+						@if(Auth::user() && Auth::user()->hasRole('admin'))
 						@if ($document->collection->parent_id || $document->collection->children->count() > 0)
 							<div class="col-md-12" id="accordion">
 								<h3>Actions</h3>
@@ -441,12 +445,14 @@ $(document).ready(function()
 								<div class="col-md-9">
 									<select class="selectpicker" name="collection_id">
 										<option value="">Move to - </option>
-										@foreach ($document->collection->children as $c)
-										<option value="{{ $c->id }}">{{ $c->name }}</option>
-										@endforeach
-										@if ($document->collection->parent_id)
-										<option value="{{ $document->collection->parent_id }}">{{$document->collection->parent->name}}</option>
+										@foreach ($all_collections as $c)
+										<option value="{{ $c->id }}">
+										@if ($c->parent)
+										{{ $c->parent->name }} - 
 										@endif
+										{{ $c->name }}
+										</option>
+										@endforeach
 									</select>
 								</div>
 								<div class="col-md-3">
