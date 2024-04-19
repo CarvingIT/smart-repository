@@ -435,7 +435,6 @@ $(document).ready(function()
 							$all_collections = \App\Collection::all();
 						@endphp
 						@if(Auth::user() && Auth::user()->hasRole('admin'))
-						@if ($document->collection->parent_id || $document->collection->children->count() > 0)
 							<div class="col-md-12" id="accordion">
 								<h3>Actions</h3>
 								<form method="post" action="/collection/move_document">
@@ -461,7 +460,6 @@ $(document).ready(function()
 								</div>
 								</form>
 							</div>	
-						@endif
 						@endif
 
 
