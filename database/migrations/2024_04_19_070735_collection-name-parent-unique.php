@@ -13,7 +13,13 @@ class CollectionNameParentUnique extends Migration
      */
     public function up()
     {
+		/*
 		Schema::create('collections', function (Blueprint $table) {
+			$table->dropUnique('collections_name_unique');
+			//$table->unique(['name','parent_id']);
+		});
+		*/
+		Schema::table('collections', function (Blueprint $table) {
 			$table->dropUnique('collections_name_unique');
 			//$table->unique(['name','parent_id']);
 		});
@@ -26,7 +32,7 @@ class CollectionNameParentUnique extends Migration
      */
     public function down()
     {
-		Schema::create('collections', function (Blueprint $table) {
+		Schema::table('collections', function (Blueprint $table) {
 			$table->unique(['name']);
 		});
     }
