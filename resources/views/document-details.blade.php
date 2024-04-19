@@ -432,8 +432,19 @@ $(document).ready(function()
 						@endif
 
 						@php
-							$all_collections = \App\Collection::all();
+						$all_collections = \App\Collection::whereNull('parent_id')->get();
+						$level = '';
+						function listChildren($c,$level){
+							$level = $level.'- ';
+							foreach($c->children as $ch){
+								echo '<option value="'.$ch->id.'">'.$level.$ch->name.'</option>';
+								if($ch->children->count()){
+								listChildren($ch, $level);
+								}
+							}
+						}
 						@endphp
+
 						@if(Auth::user() && Auth::user()->hasRole('admin'))
 							<div class="col-md-12" id="accordion">
 								<h3>Actions</h3>
@@ -446,11 +457,13 @@ $(document).ready(function()
 										<option value="">Move to - </option>
 										@foreach ($all_collections as $c)
 										<option value="{{ $c->id }}">
-										@if ($c->parent)
-										{{ $c->parent->name }} - 
-										@endif
 										{{ $c->name }}
 										</option>
+										@php
+										if ($c->children->count()){
+										listChildren($c, $level);
+										}	
+										@endphp
 										@endforeach
 									</select>
 								</div>
