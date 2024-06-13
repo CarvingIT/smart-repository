@@ -615,7 +615,9 @@ trait Search{
 			//$action_icons .= '<a class="btn btn-primary btn-link" title="Play" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/media-player" target="_blank"><i class="material-icons">play_arrow</i></a>';
 		}
 		else{
+			if(!empty($d->path) && $d->path != 'N/A'){
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+			}
 		}
 	    }
   	    else if ($content_type == 'Web resources'){		
