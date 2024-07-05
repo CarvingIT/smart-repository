@@ -278,6 +278,23 @@ function randomString(length) {
 		   	<input type="hidden" name="operator[]" value="contains" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			</div>
+			@elseif($m->type == 'TaxonomyTree')
+			<div class="float-container">
+		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
+		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
+		            @php
+                		//$options = explode(",", $m->options);
+				$taxonomy_m = App\Taxonomy::find($m->options);
+				$children = $taxonomy_m->childs;
+            		    @endphp
+				@foreach($children as $c)
+				<option value="{{ $c->id }}">{{ $c->label }}</option>
+				@endforeach
+			</select>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+			</div>
 			@endif
 			</form>
 			@endif
