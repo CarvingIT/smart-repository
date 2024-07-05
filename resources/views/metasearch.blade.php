@@ -3,6 +3,7 @@
 @push('js')
 <script>
 var meta_options = new Array();
+var meta_option_vals = new Array();
 @php
 $meta_fields = $collection->meta_fields;
 $meta_labels = array();
@@ -10,6 +11,18 @@ foreach($meta_fields as $m){
     $meta_labels[$m->id] = $m->label;
     if($m->type == 'Select'){
         echo "meta_options[".$m->id."]='".$m->options."';";
+    }
+    else if($m->type == 'TaxonomyTree'){
+	$taxonomy = \App\Taxonomy::find($m->options);
+	$children = $taxonomy->childs;
+	$options_ar = [];
+	$option_vals = [];
+	foreach($children as $c){
+		$options_ar[] = $c->label;
+		$option_vals[] = $c->id;
+	}
+        echo "meta_options[".$m->id."]='".implode(",",$options_ar)."';";
+        echo "meta_option_vals[".$m->id."]='".implode(",",$option_vals)."';";
     }
 }
 $all_meta_filters = Session::get('meta_filters');
@@ -73,6 +86,24 @@ $(document).ready(function(){
             }
             meta_select.selectpicker("refresh");
         }
+        else if(field_type == 'TaxonomyTree'){
+            var o1 = new Option("contains", "contains");
+            $('#operator-select').find('option').remove();
+            $('#operator-select').append(o1);
+
+            $('#meta-val-cont').html('');
+            var meta_select = $("<select name=\"meta_value\" class=\"selectpicker\"></select>");
+            $('#meta-val-cont').append(meta_select);
+            var meta_field = 'field_'+field_id;
+            //alert(meta_options[field_id]);
+            var options = meta_options[field_id].split(",");
+            var option_vals = meta_option_vals[field_id].split(",");
+            for(var i=0; i<options.length; i++){
+                var o = new Option(options[i], option_vals[i]);
+                meta_select.append(o);
+            }
+            meta_select.selectpicker("refresh");
+        }
         else { //field_type == 'Text' || field_type == 'SelectCombo'). This is the default
             var o1 = new Option("matches", "=");
             var o2 = new Option("contains", "contains");
@@ -104,6 +135,14 @@ $(document).ready(function(){
         @if(count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]))
             <strong>Current Filters:</strong>
         @foreach( $all_meta_filters[$collection->id] as $m)
+                @php
+                        $m_field = \App\MetaField::find($m['field_id']);
+                        if($m_field->type == 'TaxonomyTree'){
+                                $taxonomy_model = App\Taxonomy::find($m['value']);
+                                $m['value'] = $taxonomy_model->label;
+                        }
+                @endphp
+
             <span class="filtertag">
 			@if (!empty($meta_labels[$m['field_id']]))
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>

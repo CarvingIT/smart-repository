@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Log;
 use App\Collection;
+use App\MetaField;
 
 trait Search{
     // wrapper function for search
@@ -120,12 +121,22 @@ trait Search{
                 );
             }
             else if($mf['operator'] == 'contains'){
-                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+		// find the type of meta field 
+		$m_field = MetaField::find($mf['field_id']);
+		if ($m_field->type == 'TaxonomyTree'){
+                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                        $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$mf['value'].'"%');
+                    	}
+                	);
+		}
+		else{
+                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                         $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
-                    }
-                );
+                    	}
+                	);
+            	}
             }
-        }
+	}
         return $documents;
     }
 

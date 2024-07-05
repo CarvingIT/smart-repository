@@ -306,7 +306,7 @@ function randomString(length) {
 		<!-- show filters -->
 		<div>
         <p>
-		@php
+	@php
             $meta_labels = array();
             foreach($meta_fields as $m){
 				if(!empty($meta_labels[$m->id]))
@@ -315,8 +315,8 @@ function randomString(length) {
                 $meta_labels[$m->id] = $m->label;
             }
             $all_meta_filters = Session::get('meta_filters');
-			$title_filter = Session::get('title_filter');
-			$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
+		$title_filter = Session::get('title_filter');
+		$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
         @endphp
 		@if(!empty($title_filter[$collection->id]))
 			<span class="filtertag">{{ __('Title contains')}} <i>{{ $title_filter[$collection->id]}}</i>
@@ -327,18 +327,25 @@ function randomString(length) {
 		@endif
 		@if($show_meta_filters)
         @foreach( $all_meta_filters[$collection->id] as $m)
+		@php
+			$m_field = \App\MetaField::find($m['field_id']);
+			if($m_field->type == 'TaxonomyTree'){
+				$taxonomy_model = App\Taxonomy::find($m['value']);
+				$m['value'] = $taxonomy_model->label;
+			}	
+		@endphp
             <span class="filtertag">
-			@if(empty($meta_labels[$m['field_id']]))
+	@if(empty($meta_labels[$m['field_id']]))
             {{ $m['field_id'] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
-			@else
+	@else
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
-			@endif
+	@endif
                 </span>
         @endforeach
         @endif
