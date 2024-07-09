@@ -84,7 +84,7 @@ $(document).ready(function() {
 function showDeleteDialog(document_id){
 	str = randomString(6);
 	$('#text_captcha').text(str);
-	$('#hidden_captcha').text(str);
+	$('#hidden_captcha').val(str);
 	$('#delete_doc_id').val(document_id);
         deldialog = $( "#deletedialog" ).dialog({
 		title: 'Are you sure ?',
