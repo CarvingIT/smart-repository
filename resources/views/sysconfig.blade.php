@@ -136,6 +136,7 @@
                         <script src="/js/tinymce/tinymce.min.js"></script>
                         <script>
                             tinymce.init({
+				relative_urls: false,
                                 selector: '.page_content',
                                 plugins: [
                                     "advlist autolink lists link image charmap print preview hr anchor pagebreak",
@@ -149,21 +150,29 @@
                                 force_br_newlines: true,
                                 force_p_newlines: false,
                 forced_root_block: '', // Needed for 3.x
-                  file_picker_callback (callback, value, meta) {
-        let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth
-        let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight
+	    file_picker_callback : function(callback, value, meta) {
+      var x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+      var y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
 
-        tinymce.activeEditor.windowManager.openUrl({
-          url : '/file-manager/tinymce5',
-          title : 'File manager',
-          width : x * 0.8,
-          height : y * 0.8,
-          onMessage: (api, message) => {
-            //callback(message.content, { text: message.text })
-            callback('/media/i/'+message.text, { text: message.text })
-          }
-        })
-      }, 
-                            });</script>
+      var cmsURL = '/laravel-filemanager?editor=' + meta.fieldname;
+      if (meta.filetype == 'image') {
+        cmsURL = cmsURL + "&type=Images";
+      } else {
+        cmsURL = cmsURL + "&type=Files";
+      }
+
+      tinyMCE.activeEditor.windowManager.openUrl({
+        url : cmsURL,
+        title : 'Filemanager',
+        width : x * 0.8,
+        height : y * 0.8,
+        resizable : "yes",
+        close_previous : "no",
+        onMessage: (api, message) => {
+          callback(message.content);
+        }
+      });
+    }
+     });</script>
 
 @endsection

@@ -29,7 +29,7 @@ class SecureHeaders
         $response->headers->set('Clear-Site-Data', "'cache', 'cookies', 'storage', 'executionContents'");
         $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         $response->headers->set('Access-Control-Allow-Origin', 'mozilla.github.io');
-        $response->headers->set('Content-Security-Policy', "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net code.jquery.com mozilla.github.io; style-src 'self' 'unsafe-inline' use.fontawesome.com cdn.jsdelivr.net fonts.googleapis.com code.jquery.com"); 
+        $response->headers->set('Content-Security-Policy', "script-src 'self' 'unsafe-inline' cdn.jsdelivr.net code.jquery.com mozilla.github.io; style-src 'self' 'unsafe-inline' use.fontawesome.com cdn.jsdelivr.net fonts.googleapis.com code.jquery.com maxcdn.bootstrapcdn.com"); 
 		foreach($this->unwantedHeaderList as $h){
 			$response->headers->remove($h);
 		}

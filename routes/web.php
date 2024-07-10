@@ -257,3 +257,9 @@ Route::get('/collection/{collection_id}/search-results', 'CollectionController@s
 
 // related documents
 Route::post('/collection/{collection_id}/document/{document_id}/add-related-document','RelatedDocumentController@addRelatedDocument')->middleware('maintainer');
+
+// laravel file manager
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function (){
+    \UniSharp\LaravelFilemanager\Lfm::routes();
+}
+);
