@@ -38,6 +38,13 @@ $collections = \App\Collection::all();
     </button>
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
+	@if (env('ENABLE_DASHBOARD_LINK_IN_NAVBAR') == '1')
+       <li class="nav-item{{ $activePage == 'dashboard' ? ' active' : '' }}">
+          <a href="/dashboard" class="nav-link">
+            <i class="material-icons">home</i> {{ __('Dashboard') }}
+          </a>
+        </li>
+	@endif
 
 	@if(env('ENABLE_COLLECTION_LIST') == 1)
         <li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
