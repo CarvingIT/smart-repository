@@ -29,8 +29,8 @@ class LoginController extends Controller
      * @var string
      */
     #protected $redirectTo = '/home';
-    #protected $redirectTo = '/collections';
-    protected $redirectTo = '/dashboard';
+    protected $redirectTo = '/collections';
+    #protected $redirectTo = '/dashboard';
     protected $providers = [ 
         'github','facebook','google','twitter'
     ];  

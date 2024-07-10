@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
                 'email'=>'ketan@carvingit.com',
                 'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
+		'email_verified_at'=>NOW(),
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
             ]
@@ -29,6 +30,7 @@ class UserSeeder extends Seeder
                 'email'=>'shraddha@carvingit.com',
                 'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
+		'email_verified_at'=>NOW(),
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
             ]);
@@ -38,6 +40,7 @@ class UserSeeder extends Seeder
                 'email'=>'rutuja@carvingit.com',
                 'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
+		'email_verified_at'=>NOW(),
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
             ]);
@@ -47,6 +50,7 @@ class UserSeeder extends Seeder
                 'email'=>'rupali@carvingit.com',
                 'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
+		'email_verified_at'=>NOW(),
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
             ]);
@@ -56,6 +60,7 @@ class UserSeeder extends Seeder
                 'email'=>'shweta@carvingit.com',
                 'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
+		'email_verified_at'=>NOW(),
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
             ]);
@@ -65,6 +70,7 @@ class UserSeeder extends Seeder
                 'email'=>'priyanka@carvingit.com',
                 'password'=>bcrypt('SmartPass!@#'),
                 'remember_token'=>0,
+		'email_verified_at'=>NOW(),
                 'created_at'=>NOW(),
                 'updated_at'=>NOW(),
             ]

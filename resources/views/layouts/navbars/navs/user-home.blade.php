@@ -38,11 +38,6 @@ $collections = \App\Collection::all();
     </button>
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
-	<li class="nav-item{{ $activePage == 'dashboard' ? ' active' : '' }}">
-          <a href="/dashboard" class="nav-link">
-            <i class="material-icons">home</i> {{ __('Dashboard') }}
-          </a>
-        </li>
 
 	@if(env('ENABLE_COLLECTION_LIST') == 1)
         <li class="nav-item{{ $activePage == 'collections' ? ' active' : '' }}">
@@ -110,6 +105,7 @@ $collections = \App\Collection::all();
 	  <span class="howdy" style="width:200px;"><a href="/dashboard" style="color:inherit !important;">Welcome @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
+            <a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>
@@ -120,9 +116,7 @@ $collections = \App\Collection::all();
  	         <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
 	         <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
             @endif
-	    <!--
             <div class="dropdown-divider"></div>
-	   -->
 			@if(empty(env('SAML2_SLS')))
             <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Log out') }}</a>
 			@else
