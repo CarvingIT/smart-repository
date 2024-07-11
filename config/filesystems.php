@@ -48,6 +48,7 @@ return [
             'root' => storage_path('app'),
         ],
 
+	/*
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
@@ -55,7 +56,6 @@ return [
             'visibility' => 'public',
         ],
 
-		/*
         'ketan_temp' => [
             'driver' => 'local',
             'root' => '/home/ketan/tmp',
