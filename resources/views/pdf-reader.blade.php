@@ -10,7 +10,6 @@
 <script>
 	var iframe = document.getElementById('pdfreader');
 	var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-	innerDoc.getElementById('download').style.display="none";
 </script>
 </body>
 </html>

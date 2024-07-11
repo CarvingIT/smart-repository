@@ -44,7 +44,8 @@ class AppServiceProvider extends ServiceProvider
 			foreach($config_details as $details){
                 		$sysconfig[$details['param']] = $details['value'];
         		}
-			config(['file-manager.diskList'=>[$sysconfig['media_storage_drive']]]);
+			//config(['file-manager.diskList'=>[$sysconfig['media_storage_drive']]]);
+			config(['lfm.disk'=>$sysconfig['media_storage_drive']]);
 		}
 		catch(\Exception $e){
 			// do nothing

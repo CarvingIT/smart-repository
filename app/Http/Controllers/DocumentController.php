@@ -181,7 +181,7 @@ class DocumentController extends Controller
 				->storeAs('smartarchive_assets/'.$request
 				->input('collection_id').'/'.\Auth::user()->id,$new_filename);
 
-			$filesize = $request->file('document')->getClientSize();
+			$filesize = $request->file('document')->getSize();
 			$mimetype = $request->file('document')->getMimeType();
 
            		if(!empty($request->input('title'))){
@@ -585,8 +585,8 @@ public function downloadFile($doc,$storage_drive){
 				$file_name = preg_replace('/\d*_\d*_/','',$file_name);
 				$file_name = preg_replace('/,/','',$file_name);
 
-                $mime = Storage::disk($storage_drive)->getDriver()->getMimetype($file_url);
-                $size = Storage::disk($storage_drive)->getDriver()->getSize($file_url);
+                $mime = Storage::disk($storage_drive)->mimeType($file_url);
+                $size = Storage::disk($storage_drive)->size($file_url);
 
                 $response =  [
                 'Content-Type' => $mime,
