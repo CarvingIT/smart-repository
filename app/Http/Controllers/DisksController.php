@@ -39,9 +39,9 @@ class DisksController extends Controller
 			$disk->driver = $request->driver;
 			
 			if($driver == 'ftp' || $driver == 'sftp'){
-				$config = ['driver'=>$driver, 'host'=>$request->host, 'port'=>$request->port,
+				$config = ['driver'=>$driver, 'host'=>$request->host, 'port'=>(int) $request->port,
 				'username'=>$request->username, 'password'=>$request->password,
-				'root'=>$request->root, 'timeout'=>$request->timeout];
+				'root'=>$request->root, 'timeout'=>(int) $request->timeout];
 			}
 			else if($driver == 's3'){
 				$config = ['driver'=>$driver,'key'=>$request->key,'secret'=>$request->secret,
