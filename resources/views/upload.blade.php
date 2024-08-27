@@ -220,7 +220,8 @@ tinymce.init({
 					if(empty($children['parent_'.$parent_id])) return;
 					foreach($children['parent_'.$parent_id] as $t){
 							$selected = '';
-							if(@in_array($t->id, json_decode($document->meta_value($f->id, true)))){
+							if(!empty($document->meta_value($f->id, true)) 
+							&& @in_array($t->id, json_decode($document->meta_value($f->id, true)))){
 								$selected='selected="selected"';
 							}
 							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 

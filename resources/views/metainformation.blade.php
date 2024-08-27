@@ -114,7 +114,7 @@ function showMetaFieldForm(){
 				$roles_array = [];
 				$roles_array = explode(",",$edit_field->available_to);
 				@endphp
-                        <select class="selectpicker" id="available_to" name="available_to[]" title="Permissions " multiple>
+                        <select class="selectpicker" id="available_to" name="available_to[]" title="Roles" multiple>
                                 <option value="100">All</option> 
 				@foreach($roles as $role)
                             	<option value="{{ $role->id }}" @if(!empty($edit_field->available_to) && in_array($role->id,$roles_array)) selected @endif>{{ $role->name }}</option> 
