@@ -154,12 +154,10 @@ tinymce.init({
 		$role_intersection = [];
 		if(!empty($f->available_to)){ 
 			$available_to = explode(",",$f->available_to);
-			//$permission_intersection = array_intersect($user_per,$available_to);
 			$role_intersection = array_intersect($user_rol,$available_to);
 		} 
 		@endphp
-	{{--@if(in_array('1',$user_per) || (in_array('2',$permission_intersection) && in_array('4',$permission_intersection)) || (!empty($f->available_to) && $f->available_to == '100'))--}}
-	@if(in_array('1',$user_rol) || !empty($role_intersection) || (!empty($f->available_to) && $f->available_to == '100'))
+	@if(!empty($role_intersection) || (!empty($f->available_to) && $f->available_to == '100'))
     <div class="form-group row">
 		   <div class="col-md-3">
     			<label for="meta_field_{{$f->id}}" class="col-md-12 col-form-label text-md-right">{{$f->label}}</label>
