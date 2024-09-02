@@ -89,14 +89,16 @@ class UserController extends Controller
 	if(!empty($request->user_role)){
 		$user_details = User::where('email',$request->email)->first();
 		$user_id = $user_details->id;
-		$role_id = $request->user_role;
-		$role_update = UserRole::where('user_id',$user_id)->first();
-		if(empty($role_update)){
-			$role_update = new UserRole();	
+		$role_ids = $request->user_role;
+		//remove all roles assigned to that user
+		UserRole::where('user_id',$user_id)->delete();
+		// Now add again
+		foreach($role_ids as $role_id){
+			$u_r = new UserRole();
+			$u_r->user_id = $user_id;
+			$u_r->role_id = $role_id;
+			$u_r->save();
 		}
-		$role_update->user_id = $user_id;
-		$role_update->role_id = $role_id;
-		$role_update->save();
 	}
         return redirect()->route('user.index')->withStatus(__('User successfully updated.'));
     }

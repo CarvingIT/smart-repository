@@ -1,5 +1,15 @@
 @extends('layouts.app', ['class'=> 'off-canvas-sidebar', 'activePage' => 'user-management', 'titlePage' => __('User Management')])
 
+@push('js')
+<link href="/css/select2.min.css" rel="stylesheet" />
+<script src="/js/select2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.selectsequence').select2();
+});
+</script>
+@endpush
+
 @section('content')
     <div class="container">
       <div class="row justify-content-center">
@@ -65,11 +75,17 @@
                   <label class="col-md-8 col-form-label text-md-right" for="input-password-confirmation">{{ __('Role') }}</label>
                   </div>
                   <div class="col-md-6">
-			@php $user_role_id = $user->userrole($user->id); @endphp
-                      <select class="form-control" name="user_role" id="input-user-role" />
+			@php 
+				$user_roles = $user->roles; 
+				$user_role_ids = [];
+				foreach($user_roles as $u_r){
+					$user_role_ids[] = $u_r->role_id;
+				}
+			@endphp
+                      <select class="form-control selectsequence" name="user_role[]" id="input-user-role" multiple />
 			<option value="">Select Role</option>
 			@foreach($roles as $role)
-				<option value="{{ $role->id }}" @if($role->id == $user_role_id) selected @endif>{{ ucfirst($role->name) }}</option>
+				<option value="{{ $role->id }}" @if(in_array($role->id,$user_role_ids)) selected @endif>{{ ucfirst($role->name) }}</option>
 			@endforeach
 			</select>
                   </div>

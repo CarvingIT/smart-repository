@@ -133,11 +133,14 @@ $(document).ready(function() {
 							@endif
 						@endforeach
 			        	@endforeach
-				@else
-					@foreach($roles as $role)
-						<option value="{{ $role->id }}">{{ $role->name }}</option>
-					@endforeach
 				@endif
+				@foreach($roles as $role)
+					@if (empty($column_config->approved_by) || 
+					(!empty($column_config->approved_by) 
+					&& !in_array($role->id, $column_config->approved_by)))
+					<option value="{{ $role->id }}">{{ $role->name }}</option>
+					@endif
+				@endforeach
 			</select>
 		</div>
 
