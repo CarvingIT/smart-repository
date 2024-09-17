@@ -487,6 +487,18 @@ class DocumentController extends Controller
             $m_f->document_id = $document_id;
             $m_f->meta_field_id = $m['field_id'];
 			if(is_array($m['field_value'])){
+                // check if the field is of type TaxonomyTree
+                $meta_field = \App\MetaField::find($m['field_id']);
+                $parent_taxo = [];
+                if($meta_field && $meta_field->type == 'TaxonomyTree'){
+                    foreach($m['field_value'] as $t_id){
+                        $tax_m = \App\Taxonomy::find($t_id);
+                        while(!empty($tax_m->parent_id) && $tax_m = $tax_m->parent){
+                            $parent_taxo[] = $tax_m->id;
+                        } 
+                    }
+                }
+                $m['field_value'] = array_unique(array_merge($m['field_value'], array_unique($parent_taxo)));
 				$field_value_str = json_encode(array_map('strval',$m['field_value']), JSON_UNESCAPED_UNICODE);
 			}
 			else{

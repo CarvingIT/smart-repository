@@ -221,7 +221,9 @@ tinymce.init({
 								$selected='selected="selected"';
 							}
 							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
-								echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
+                                // we need not show the parents for selection
+                                // they should be automatically pupulated/set in the controller 
+								//echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
 								$parents_tmp = $parents. $t->label .' - ';
 								getTree($children, $document, $f, $t->id, $parents_tmp);
 							}
