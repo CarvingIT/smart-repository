@@ -63,7 +63,7 @@ class Collection extends Model
 
     	public function routeNotificationForMail($notification){
 		$config = json_decode($this->column_config);
-        	return $config->notify_email;
+        	return explode(",", $config->notify_email);
     	}
 
     	public function getCollectionConfig(){
