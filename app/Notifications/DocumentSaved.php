@@ -32,8 +32,8 @@ class DocumentSaved extends Notification
      */
     public function via($notifiable)
     {
-        //return ['mail'];
-        return ['slack'];
+        // return two channels currently available in SR code
+        return ['mail','slack'];
     }
 
     /**
@@ -45,10 +45,20 @@ class DocumentSaved extends Notification
     public function toMail($notifiable)
     {
 		Log::debug('Sending notification by email');
+        if($this->document->wasRecentlyCreated){
         return (new MailMessage)
-                    ->line('Document - '. $this->document->title.' updated.')
-                    ->action('View', url('/collection/'.$this->document->collection->id.'/document/'.$this->document->id.'/details'))
-                    ->line(env('APP_NAME','Smart Repository').' Team');
+                    ->subject(env('APP_NAME','Smart Repository'). ': New document')
+                    ->line('Document - "'. $this->document->title.'" has been added.')
+                    ->action('View', url('/collection/'.$this->document->collection->id.'/document/'.$this->document->id.'/details'));
+                    //->line(env('APP_NAME','Smart Repository').' Team');
+        }
+        else{
+        return (new MailMessage)
+                    ->subject(env('APP_NAME','Smart Repository'). ': Document updated')
+                    ->line('Document - "'. $this->document->title.'" has been updated.')
+                    ->action('View', url('/collection/'.$this->document->collection->id.'/document/'.$this->document->id.'/details'));
+                    //->line(env('APP_NAME','Smart Repository').' Team');
+        }
     }
 
 	public function toSlack($notifiable){

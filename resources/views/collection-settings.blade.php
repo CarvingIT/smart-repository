@@ -190,6 +190,13 @@ $(document).ready(function() {
 			<div class="col-md-10">
 				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="Slack webhook url" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
 			</div>
+
+			<div class="col-md-2 text-right">
+				<label for="notify_email"><img src="/i/notify_email.png" class="icon"/>Send email to</label>
+			</div>
+			<div class="col-md-10">
+				<input type="text" class="form-control" name="notify_email" id="notify_email" placeholder="Notification email address" value="@if(!empty($column_config->notify_email)) {{ $column_config->notify_email }} @endif" />
+			</div>
 		</div>
 
 		<h4>{{ __('IMAP Settings (Map an email address to this collection)')}}</h4>

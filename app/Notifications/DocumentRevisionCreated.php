@@ -32,7 +32,7 @@ class DocumentRevisionCreated extends Notification
     public function via($notifiable)
     {
         //return ['mail'];
-        return ['slack'];
+        return ['mail', 'slack'];
     }
 
     /**
@@ -44,14 +44,14 @@ class DocumentRevisionCreated extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->line('A new revision of document - "'. $this->document_revision->document->title.'" has been created.')
+                    ->action('View', url('/collection/'.$this->document->collection->id.'/document/'.$this->document->id.'/details'));
+                    //->line(env('APP_NAME'). ' Team');
     }
 
    public function toSlack($notifiable){
         Log::debug('Sending document-revision notification by slack');
-            $content = 'Smart Repository: A new revisoin of document - "'. $this->document_revision->document->title.'" has been created.';
+            $content = 'Smart Repository: A new revision of document - "'. $this->document_revision->document->title.'" has been created.';
             return (new SlackMessage)
             ->error()
             ->content($content);

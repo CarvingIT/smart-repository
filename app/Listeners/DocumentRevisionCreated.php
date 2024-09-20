@@ -28,24 +28,17 @@ class DocumentRevisionCreated
      */
     public function handle($event)
     {
-        if(env('ENABLE_NOTIFICATIONS') == 1){
-            // if a slack URL is provided, notifiable = collection else users of the collection
-            $collection_config = json_decode($event->document_revision->document->collection->column_config);
-            if(!empty($collection_config->slack_webhook)){
-                $notifiable = $event->document_revision->document->collection;
-            }
-            else{
-                $notifiable = $event->document_revision->document->collection->getUsers();
-            }
-            //Log::debug($collection_users);
-            try{
-				if($event->document_revision->document->revisions->count() > 1){
-                	Notification::send($notifiable, new DocumentRevisionCreatedNotification($event->document_revision));
-				}
-            }
-            catch(\Exception $e){
-                Log::error($e->getMessage());
-            }
+        // if a slack URL is provided, notifiable = collection else users of the collection
+        $collection_config = json_decode($event->document_revision->document->collection->column_config);
+        $notifiable = $event->document_revision->document->collection;
+        //Log::debug($collection_users);
+        try{
+	    	if($event->document_revision->document->revisions->count() > 1){
+               	Notification::send($notifiable, new DocumentRevisionCreatedNotification($event->document_revision));
+			}
+        }
+        catch(\Exception $e){
+            Log::error($e->getMessage());
         }
     }
 }

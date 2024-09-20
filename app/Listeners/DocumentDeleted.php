@@ -29,15 +29,10 @@ class DocumentDeleted
      */
     public function handle($event)
     {
-       if(env('ENABLE_NOTIFICATIONS') == 1){
-            // if a slack URL is provided, notifiable = collection else users of the collection
-            $collection_config = json_decode($event->document->collection->column_config);
-            if(!empty($collection_config->slack_webhook)){
-                $notifiable = $event->document->collection;
-            }
-            else{
-                $notifiable = $event->document->collection->getUsers();
-            }
+        // if a slack URL is provided, notifiable = collection else users of the collection
+        $collection_config = json_decode($event->document->collection->column_config);
+        if(!empty($collection_config->slack_webhook) || !empty($collection_config->notify_email)){
+            $notifiable = $event->document->collection;
             //Log::debug($collection_users);
             try{
                 Notification::send($notifiable, new DocumentDeletedNotification($event->document));

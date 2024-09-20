@@ -32,7 +32,7 @@ class DocumentDeleted extends Notification
     public function via($notifiable)
     {
         //return ['mail'];
-        return ['slack'];
+        return ['mail','slack'];
     }
 
     /**
@@ -44,9 +44,10 @@ class DocumentDeleted extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject(env('APP_NAME').': Document deleted')
+                    ->line('Document - "'. $this->document->title.'" has been deleted.');
+                    //->action('Notification Action', url('/'))
+                    //->line(env('APP_NAME').' Team');
     }
 
     public function toSlack($notifiable){
