@@ -45,7 +45,7 @@ class DocumentDeleted extends Notification
     {
         return (new MailMessage)
                     ->subject(env('APP_NAME').': Document deleted')
-                    ->line('Document - "'. $this->document->title.'" has been deleted.');
+                    ->line('Document - "'. $this->document->title.'" from collection "'.$this->document->collection->name.'" has been deleted.');
                     //->action('Notification Action', url('/'))
                     //->line(env('APP_NAME').' Team');
     }
