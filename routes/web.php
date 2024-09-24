@@ -193,6 +193,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'ProfileController@password']);
+	Route::resource('template', 'SRTemplateController', ['except' => ['show']]);
 });
 
 Route::post('/user/regenerate-api-token', 'ApiTokenController@update')->middleware(['auth']);
@@ -223,6 +224,10 @@ Route::post('/admin/taxonomies/delete','TaxonomyController@destroy')->middleware
 Route::get('autocomplete', 'TaxonomyController@autoComplete')->name('autocomplete');
 Route::get('/taxonomies/{id}/add','TaxonomyController@add')->middleware('admin');
 Route::post('/taxonomies/{id}/addstore','TaxonomyController@addstore')->middleware('admin')->name('taxonomies.addstore');   
+
+// Templates Management
+Route::get('/admin/srtemplatemanagement', 'SRTemplateController@index')->middleware('admin');
+Route::post('/admin/template/delete','SRTemplateController@destroy')->middleware('admin');
 
 //Role routes
 Route::middleware('admin')->group(function () {

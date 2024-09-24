@@ -2,6 +2,8 @@
 
 namespace App;
 use Illuminate\Support\Facades\Log;
+use \App\Util;
+use \App\SRTemplate;
 
 class Util{
 	public static function createTextChunks($text, $length, $overlap){
@@ -140,4 +142,19 @@ class Util{
 		return htmlentities($text);
 		//return $text;
 	}
-}
+
+	
+	public static function replacePlaceHolder($display_meta, $html_code){
+		$processed = $html_code;
+		foreach($display_meta as $meta =>$value){
+			$match_meta = "__".$meta."__";
+			if($meta == 'about-document'){
+			$value = \Illuminate\Support\Str::limit($value, 50, $end='...');
+			}
+			$processed = str_replace($match_meta, $value, $processed);
+		}
+		return $processed;
+	}
+
+//
+}// class ends
