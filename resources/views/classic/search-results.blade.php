@@ -16,6 +16,15 @@
 	}
 </style>
 	@if (!empty($results))
+	@php
+	$template_code = \App\SRTemplate::
+		where('collection_id',$collection->id)
+		->where('template_name','Search Result')
+		->first();
+	if(!empty($template_code->html_code)){
+	$html_code = $template_code->html_code;
+	}		
+	@endphp
 	@foreach($results as $result)
 		@php 
 			$document = \App\Document::find($result->id);
@@ -49,7 +58,21 @@
 		</h4>
 		</div>
 		<div class="row">
-			@foreach ($meta_fields as $m)
+			@if(!empty($html_code))
+				@php $display_meta = [];@endphp
+			   @foreach ($meta_fields as $m)
+				@php 
+					$placeholder = strtolower($m->placeholder);
+					$meta_placeholder = preg_replace("/ /","-",$placeholder);
+					$display_meta[$meta_placeholder]=$document->meta_value($m->id);
+				@endphp
+			   @endforeach		
+				@php
+					$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code);	
+					echo $formatted_data;
+				@endphp
+			@else
+			   @foreach ($meta_fields as $m)
 				@if (empty($m->results_display_order)) 
 					@continue
 				@else
@@ -70,7 +93,8 @@
 					</div>
 					@endif
 				@endif
-			@endforeach
+			   @endforeach
+			@endif
 					<div>&nbsp;</div>
 		</div><!-- row -->
 

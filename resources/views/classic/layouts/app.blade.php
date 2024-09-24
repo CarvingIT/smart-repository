@@ -143,6 +143,7 @@
           <li class="mobile-only"><a href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
           <li class="mobile-only"><a href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomy') }}</a></li>
           <li class="mobile-only"><a href="/reports/search-queries">{{ __('Report of search queries') }}</a></li>
+          <li class="mobile-only"><a href="/admin/srtemplatemanagement">{{ __('Manage Templates') }}</a></li>
           @endif          
 	        <!-- <li><a class="get-a-quote" href="get-a-quote.html">Get a Quote</a></li> -->
           <li class="mega-menu">
@@ -174,6 +175,7 @@
                       <li><a class="dropdown-item" href="/admin/synonymsmanagement">{{ __('Manage Synonyms') }}</a></li>
                       <li><a class="dropdown-item" href="/admin/taxonomiesmanagement">{{ __('Manage Taxonomy') }}</a></li>
                       <li><a class="dropdown-item" href="/reports/search-queries">{{ __('Report of search queries') }}</a></li>
+			<li><a class="dropdown-item" href="/admin/srtemplatemanagement">{{ __('Manage Templates') }}</a></li>
                       
                       
                       @endif
