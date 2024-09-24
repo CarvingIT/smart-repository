@@ -240,10 +240,12 @@ $(document).ready(function()
 
 			@if($c->content_type == 'Uploaded documents')
 			@if ($document->related_documents->count() > 0)
+				{{--@if(!empty($document->related_documents) && !$document->related_documents->isEmpty())--}}
 			<div class="col-md-9 row">
 			@else
 			<div class="col-md-12 row">
 			@endif
+			
 				@foreach($document->collection->meta_fields as $meta_field)
 
 			@php 
@@ -322,12 +324,16 @@ $(document).ready(function()
 			@endif {{-- display document status and comment section only for logged in user --}}
 
 				</div>
+<<<<<<< HEAD
 				@if ($document->related_documents->count() > 0)
+=======
+				@if(!empty($document->related_documents) && !$document->related_documents->isEmpty())
+>>>>>>> 0b12f01b6b976c9ff69f87b9eae817e28b6cea06
 				<div class="col-md-3">
 				<h5>Related Documents</h5>
 				<ul>
 				@foreach ($document->related_documents as $r_d)
-					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">{{ $r_d->title }}</a></li>
+					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">{{ $r_d->related_document->title }}</a></li>
 				@endforeach
 				</ul>
 				</div>
