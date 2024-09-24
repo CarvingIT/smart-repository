@@ -324,11 +324,7 @@ $(document).ready(function()
 			@endif {{-- display document status and comment section only for logged in user --}}
 
 				</div>
-<<<<<<< HEAD
 				@if ($document->related_documents->count() > 0)
-=======
-				@if(!empty($document->related_documents) && !$document->related_documents->isEmpty())
->>>>>>> 0b12f01b6b976c9ff69f87b9eae817e28b6cea06
 				<div class="col-md-3">
 				<h5>Related Documents</h5>
 				<ul>
