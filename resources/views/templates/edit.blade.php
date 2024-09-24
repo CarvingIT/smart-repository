@@ -56,10 +56,7 @@
                   <label class="col-md-12 col-form-label text-md-right">{{ __('Html Code') }}</label>
                     </div>
                   <div class="col-md-8">
-                      <input class="form-control{{ $errors->has('html_code') ? ' is-invalid' : '' }}" name="html_code" id="input-email" type="text" placeholder="{{ __('Html Code') }}" value="{{ $template->html_code }}" required />
-                      @if ($errors->has('html_code'))
-                        <span id="email-error" class="error text-danger" for="input-field">{{ $errors->first('html_code') }}</span>
-                      @endif
+			<textarea class="form-control" rows='8' cols='10' name="html_code">{{ $template->html_code }}</textarea>
                   </div>
                 </div>
                 <div class="form-group row">
