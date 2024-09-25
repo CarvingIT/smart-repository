@@ -12,5 +12,8 @@ class RelatedDocument extends Model
 	public function related_document(){
 	return $this->belongsTo('App\Document', 'related_document_id');
 	}
+	public function related_to(){
+	return $this->belongsTo('App\Document', 'document_id');
+	}
 
 }

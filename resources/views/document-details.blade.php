@@ -239,7 +239,7 @@ $(document).ready(function()
 				<br />
 
 			@if($c->content_type == 'Uploaded documents')
-			@if ($document->related_documents->count() > 0)
+			@if ($document->related_documents->count() > 0 || $document->related_to->count() >0)
 				{{--@if(!empty($document->related_documents) && !$document->related_documents->isEmpty())--}}
 			<div class="col-md-9 row">
 			@else
@@ -324,12 +324,28 @@ $(document).ready(function()
 			@endif {{-- display document status and comment section only for logged in user --}}
 
 				</div>
-				@if ($document->related_documents->count() > 0)
+				@if ($document->related_documents->count() > 0 || $document->related_to->count() > 0)
 				<div class="col-md-3">
 				<h5>Related Documents</h5>
-				<ul>
+				@if ($document->related_documents->count() == 0)
+				None
+				@endif
+				<ul class="related-docs">
 				@foreach ($document->related_documents as $r_d)
-					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">{{ $r_d->related_document->title }}</a></li>
+					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">
+				{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}
+				</a></li>
+				@endforeach
+				</ul>
+				<h5>Referenced by</h5>
+				@if ($document->related_to->count() == 0)
+				None
+				@endif
+				<ul class="related-docs">
+				@foreach ($document->related_to as $r_d)
+					<li><a href="/collection/{{ $r_d->related_to->collection->id }}/document/{{ $r_d->related_to->id }}/details">
+				{{ $r_d->related_to->title }}
+				</a></li>
 				@endforeach
 				</ul>
 				</div>

@@ -275,6 +275,10 @@ strong{
 	font-weight:bold;
 }
 
+ul.related-docs{
+	list-style-type:disc;
+}
+
 @media (min-width: 1200px) {
   .container {
     width: 1140px;
