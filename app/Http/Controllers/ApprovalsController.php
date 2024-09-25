@@ -63,7 +63,7 @@ class ApprovalsController extends Controller
 		
 		$user_roles = [];
 		foreach(auth()->user()->roles as $r){
-			$user_roles[] = $r->id;
+			$user_roles[] = (int) $r->role_id;
 		}
 
 		if($approval_model->approvable_type == 'App\Document'){
@@ -75,7 +75,7 @@ class ApprovalsController extends Controller
 			$collection = Collection::find(1);
 			$collection_config = json_decode($collection->column_config);
 		}
-		$last_approver_role = end($collection_config->approved_by);
+		$last_approver_role =(int) end($collection_config->approved_by);
 		if(in_array($last_approver_role, $user_roles)){
 			// publish the approvable
 			$approval_model->approvable->publish();
