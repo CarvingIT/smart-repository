@@ -239,12 +239,12 @@ $(document).ready(function()
 				<br />
 
 			@if($c->content_type == 'Uploaded documents')
-			@if ($document->related_documents->count() > 0)
-			<div class="col-md-9 row">
-			@else
-			<div class="col-md-12 row">
-			@endif
 			
+				@if(!empty($document->related_documents) && !$document->related_documents->isEmpty())
+			<div class="col-md-9 row">
+				@else
+			<div class="col-md-12 row">
+				@endif
 				@foreach($document->collection->meta_fields as $meta_field)
 
 			@php 
@@ -323,7 +323,7 @@ $(document).ready(function()
 			@endif {{-- display document status and comment section only for logged in user --}}
 
 				</div>
-				@if ($document->related_documents->count() > 0)
+				@if(!empty($document->related_documents) && !$document->related_documents->isEmpty())
 				<div class="col-md-3">
 				<h5>Related Documents</h5>
 				<ul>
