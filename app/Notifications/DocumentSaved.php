@@ -48,7 +48,7 @@ class DocumentSaved extends Notification
         if($this->document->wasRecentlyCreated){
         return (new MailMessage)
                     ->subject(env('APP_NAME','Smart Repository'). ': New document')
-                    ->line('Document - "'. $this->document->title.'" has been added to collection - "'.$this->document->collection->name.'"')
+                    ->line('Document - "'. $this->document->title.'" has been added to collection - "'.$this->document->collection->name.'".')
                     ->action('View', url('/collection/'.$this->document->collection->id.'/document/'.$this->document->id.'/details'));
                     //->line(env('APP_NAME','Smart Repository').' Team');
         }
