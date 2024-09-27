@@ -244,6 +244,7 @@ $(document).ready(function()
 			@else
 			<div class="col-md-12 row">
 			@endif
+			
 				@foreach($document->collection->meta_fields as $meta_field)
 
 			@php 
@@ -327,7 +328,7 @@ $(document).ready(function()
 				<h5>Related Documents</h5>
 				<ul>
 				@foreach ($document->related_documents as $r_d)
-					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">{{ $r_d->title }}</a></li>
+					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">{{ $r_d->related_document->title }}</a></li>
 				@endforeach
 				</ul>
 				</div>
