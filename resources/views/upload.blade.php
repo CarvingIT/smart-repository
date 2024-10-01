@@ -8,6 +8,14 @@
 <script type="text/javascript">
 $(document).ready(function() {
     $('.selectsequence').select2();
+    
+    // validation for either document or external link
+    $(document).on('submit','form#upload-form', function(){
+        if(!$('#uploadfile').val() && !$('#externallink').val()){
+            alert('You have to select a file or input an external link.');
+            return false;
+        }
+    });
 });
 
 tinymce.init({
@@ -80,7 +88,7 @@ tinymce.init({
                     @endforeach
                     </div>
 
-<form name="document_upload_form" action="/collection/{{ $collection->id }}/upload" method="post" enctype="multipart/form-data">
+<form name="document_upload_form" id="upload-form" action="/collection/{{ $collection->id }}/upload" method="post" enctype="multipart/form-data">
 @csrf()
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />
 @if(!empty($document->id))
@@ -115,7 +123,7 @@ tinymce.init({
 				@if(empty($document->id))
 				Enter a link below only if there's no document to be uploaded. 
 				@endif
-    		   <input type="text" class="form-control-file" name="external_link" 
+    		   <input type="text" class="form-control-file" id="externallink" name="external_link" 
 					value="@if(!empty($document->id)){{ html_entity_decode($document->external_link) }}@endif" 
                     placeholder="https://..." maxlength="150" > 
     		   </div>
@@ -158,7 +166,11 @@ tinymce.init({
 	@if(!empty($role_intersection) || (!empty($f->available_to) && $f->available_to == '100'))
     <div class="form-group row">
 		   <div class="col-md-3">
-    			<label for="meta_field_{{$f->id}}" class="col-md-12 col-form-label text-md-right">{{$f->label}}</label>
+    			<label for="meta_field_{{$f->id}}" class="col-md-12 col-form-label text-md-right">{{$f->label}}
+                @if ($f->is_required)
+                    <span style="color:red;">*</span>
+                @endif
+                </label>
     		   </div>
         <div class="col-md-9">
         @if($f->type == 'Text')
