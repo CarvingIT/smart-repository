@@ -53,9 +53,10 @@ class DocumentSaved extends Notification
                     //->line(env('APP_NAME','Smart Repository').' Team');
         }
         else{
+        $updated = empty($this->document->approved_on)? 'updated': 'published';
         return (new MailMessage)
-                    ->subject(env('APP_NAME','Smart Repository'). ': Document updated')
-                    ->line('Document - "'. $this->document->title.'" from collection "'.$this->document->collection->name.'" has been updated.')
+                    ->subject(env('APP_NAME','Smart Repository'). ': Document '.$updated)
+                    ->line('Document - "'. $this->document->title.'" from collection "'.$this->document->collection->name.'" has been '.$updated.'.')
                     ->action('View', url('/collection/'.$this->document->collection->id.'/document/'.$this->document->id.'/details'));
                     //->line(env('APP_NAME','Smart Repository').' Team');
         }

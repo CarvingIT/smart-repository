@@ -81,8 +81,7 @@ class DocumentSaved
 		}
 
 		// add a record in the approvals table
-		if($event->document->collection->require_approval == 1
-			&& $event->document->approvals->count() == 0){
+		if($event->document->collection->require_approval == 1){
 			// get the first role id from approval workflow
 			$collection_config = $event->document->collection->column_config;	
 			$col_conf = json_decode($collection_config);

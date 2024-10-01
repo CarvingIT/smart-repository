@@ -246,7 +246,10 @@ class DocumentController extends Controller
        	}
 	 	else{// No external link was input 
              // and no document was uploaded
-            return ['status'=>'failure','errors'=>['You need to either upload a document or input an external link to it.']];
+             // and this is a new record
+            if(!$d->id){
+                return ['status'=>'failure','errors'=>['You need to either upload a document or input an external link to it.']];
+            }
          	$d->approved_by = NULL;
 			$d->approved_on = NULL;
 		}
