@@ -34,23 +34,23 @@ class DocumentController extends Controller
 
     public function loadDocument($collection_id,$document_id, Request $req){
         $doc = \App\Document::find($document_id);
-	if($doc->type == 'url'){
-		return redirect($doc->url);
-	}
-	$collection_id = $doc->collection_id;
-	$collection = \App\Collection::find($collection_id);
-	$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
+        if($doc->type == 'url'){
+		    return redirect($doc->external_link);
+        }
+        $collection_id = $doc->collection_id;
+        $collection = \App\Collection::find($collection_id);
+        $storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
 
         $this->recordHit($document_id);
-	$download_file = $this->downloadFile($doc,$storage_drive);
-	## New code
-	try{
+        $download_file = $this->downloadFile($doc,$storage_drive);
+        ## New code
+	    try{
         //$this->recordHit($document_id);
-	//$download_file = $this->downloadFile($doc,$storage_drive);
-	}
-	catch(\Exception $e){
-	}
-	return $download_file;
+	    //$download_file = $this->downloadFile($doc,$storage_drive);
+	    }
+	    catch(\Exception $e){
+	    }
+	    return $download_file;
     }
 
 	public function pdfReader($collection_id, $document_id){
@@ -240,12 +240,14 @@ class DocumentController extends Controller
 			$d->text_content = 'N/A';
 			$d->external_link = $request->input('external_link');
 		}
-        	else if(!empty($request->input('approved_on'))){
-           		$d->approved_by = \Auth::user()->id;
+        else if(!empty($request->input('approved_on'))){
+           	$d->approved_by = \Auth::user()->id;
 			$d->approved_on = now();
-       	 	}
-	 	else{
-           		$d->approved_by = NULL;
+       	}
+	 	else{// No external link was input 
+             // and no document was uploaded
+            return ['status'=>'failure','errors'=>['You need to either upload a document or input an external link to it.']];
+         	$d->approved_by = NULL;
 			$d->approved_on = NULL;
 		}
 
