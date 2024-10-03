@@ -9,6 +9,7 @@
 $(document).ready(function() {
     $('.selectsequence').select2();
     
+    @if(empty($document->id))
     // validation for either document or external link
     $(document).on('submit','form#upload-form', function(){
         if(!$('#uploadfile').val() && !$('#externallink').val()){
@@ -16,6 +17,7 @@ $(document).ready(function() {
             return false;
         }
     });
+    @endif
 });
 
 tinymce.init({
