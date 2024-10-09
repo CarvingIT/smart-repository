@@ -311,7 +311,20 @@ function showMetaFieldForm(){
                             <td>{{ $f->display_order }}</td>
                             <td>{{ $f->label }}</td>
                             <td>{{ $f->type }}</td>
-                            <td>{{ $f->options }}</td>
+                            <td>
+                                @if ($f->type == 'TaxonomyTree')
+                                    @php
+                                        $t_label = \App\Taxonomy::find($f->options);
+                                        echo 'Select from: '.@$t_label->label;
+                                    @endphp
+                                @else
+                                   @if (empty($f->options))
+                                    {{ __('N/A') }}
+                                   @else  
+                                    {{ $f->options }}
+                                   @endif
+                                @endif
+                            </td>
                             <td class="td-actions text-right">
                                 <a href="/collection/{{ $collection->id }}/meta/{{ $f->id }}" class="btn btn-success btn-link">
 				<i class="material-icons">edit</i>
