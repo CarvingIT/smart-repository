@@ -726,6 +726,39 @@ public function titleSuggest(Request $request){
 	return $suggestions;
 }
 
+public function deletedDocuments(Request $request){
+    //$docs = Document::onlyTrashed()->get();
+    return view('deleted_documents');
+}
+
+public function deletedDocumentsData(Request $request){
+    $docs = Document::onlyTrashed();
+    $records_total = $docs->count();
+    if(!empty($request->search['value'])){
+        $docs = $docs->where('title', 'like', '%'.$request->search['value'].'%');
+    }
+    $filtered_count = $docs->count();
+    $docs=$docs->orderBy('deleted_at','desc')->skip($request->start)->take($request->length)->get();
+    $result = [];
+    foreach($docs as $d){
+        $d_modified = [ 
+        'title'=> $d->title,
+        'collection'=> $d->collection->name,
+        'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
+        'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
+        'created_at' => array('display'=>date('Y-M-d', strtotime($d->created_at)), 'deleted_date'=>$d->created_at),
+        'deleted_at' => array('display'=>date('Y-M-d', strtotime($d->deleted_at)), 'deleted_date'=>$d->deleted_at),
+        'actions' => '<a href="/admin/recover/'.$d->id.'"><span class="btn btn-success btn-link" title="Restore document"><i class="material-icons">refresh</i></span></a>',
+        ];
+        $result[] = $d_modified;
+    }
+    return ['data'=>$result, 'recordsTotal'=>$records_total, 'recordsFiltered'=> $filtered_count]; 
+}
+
+public function recoverDocument($document_id){
+    Document::withTrashed()->find($document_id)->restore();
+    return redirect('/admin/deleted-documents');
+}
 
 ### End of class
 }

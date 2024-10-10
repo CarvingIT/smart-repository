@@ -149,6 +149,11 @@ Route::post('/admin/user/delete','UserController@destroy')->middleware('admin');
 Route::get('/admin/sysconfig','SysConfigController@index')->middleware('admin');
 Route::post('/admin/sysconfig','SysConfigController@save')->middleware('admin');
 
+// deleted documents
+Route::get('/admin/deleted-documents','DocumentController@deletedDocuments')->middleware('admin');
+Route::get('/admin/deleted-documents-data','DocumentController@deletedDocumentsData')->middleware('admin');
+Route::get('/admin/recover/{document_id}','DocumentController@recoverDocument')->middleware('admin');
+
 // storage/disk management
 Route::get('/admin/storagemanagement', 'DisksController@index')->middleware('admin');
 Route::get('/admin/disk-form/{disk_id}', 'DisksController@add_edit_disk')->middleware('admin');
