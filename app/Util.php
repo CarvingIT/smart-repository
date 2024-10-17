@@ -145,12 +145,10 @@ class Util{
 
 	
 	public static function replacePlaceHolder($display_meta, $html_code){
+		//print_r($display_meta); exit;
 		$processed = $html_code;
 		foreach($display_meta as $meta =>$value){
 			$match_meta = "__".$meta."__";
-			//if($meta == 'about-document'){
-			//$value = \Illuminate\Support\Str::limit($value, 50, $end='...');
-			//}
 			$processed = str_replace($match_meta, $value, $processed);
 		}
 		return $processed;

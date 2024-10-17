@@ -197,6 +197,16 @@ $(document).ready(function()
                   <div class="row">
                     <div class="col-md-12">
                         <span id="doc-title" class="col-md-12"><!--h4-->
+			@php
+        $template_code = \App\SRTemplate::
+                where('collection_id',$collection->id)
+                ->where('template_name','Document Details')
+                ->first();
+        if(!empty($template_code->html_code)){
+        $html_code = $template_code->html_code;
+        }
+        @endphp
+
 			@if($c->content_type == 'Uploaded documents')
 				@if($document->type == 'application/pdf')
 					@if(env('ENABLE_PDF_READER') == 1)
@@ -239,45 +249,61 @@ $(document).ready(function()
 				<br />
 
 			@if($c->content_type == 'Uploaded documents')
-			@if ($document->related_documents->count() > 0)
+				@if ($document->related_documents->count() > 0)
 				{{--@if(!empty($document->related_documents) && !$document->related_documents->isEmpty())--}}
-			<div class="col-md-9 row">
+				<div class="col-md-9 row">
 			@else
-			<div class="col-md-12 row">
+				<div class="col-md-12 row">
 			@endif
-			
-				@foreach($document->collection->meta_fields as $meta_field)
+				@if(!empty($html_code))
+					@php $display_meta = [];@endphp
+					@foreach($document->collection->meta_fields as $meta_field)
+						@php
+                                        		$placeholder = strtolower($meta_field->placeholder);
+                                        		$meta_placeholder = preg_replace("/ /","-",$placeholder);
+                                        		$display_meta[$meta_placeholder]=$document->meta_value($meta_field->id);
+                                		@endphp
 
-			@php 
-				$m = App\MetaFieldValue::where('document_id', $document->id)->where('meta_field_id', $meta_field->id)->first();
-				if(!$m) continue;
-				$meta_field_type = $meta_field->type;
-			 @endphp
-                        @if(!empty($meta_labels[$m->meta_field_id]))
+					@endforeach
+					@php
+                                        	$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code);
+                                        	echo $formatted_data;
+                                	@endphp
+
+				@else
+				   @foreach($document->collection->meta_fields as $meta_field)
+					@php 
+					$m = App\MetaFieldValue::where('document_id', $document->id)->where('meta_field_id', $meta_field->id)->first();
+					if(!$m) continue;
+					$meta_field_type = $meta_field->type;
+			 		@endphp
+                        		@if(!empty($meta_labels[$m->meta_field_id]))
 
 							@php
 								$extra_attributes = empty($m->meta_field->extra_attributes) ? null : json_decode($m->meta_field->extra_attributes);
 								$w = empty($extra_attributes->width_on_info_page)? 12 : $extra_attributes->width_on_info_page;
 								$show_on_details_page = empty($extra_attributes->show_on_details_page)? '' : $extra_attributes->show_on_details_page;
 								$classname = @$extra_attributes->results_classname;
-				if($show_on_details_page == 0) continue;
+								if($show_on_details_page == 0) continue;
 							@endphp
-			    <div class="col-md-{{ $w }}">
+			                   <div class="col-md-{{ $w }}">
 
-			    <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">
-				<div class="{{ $classname }}">&nbsp;</div>
-				{{ $meta_labels[$m->meta_field_id] }}</label>
+			                   <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">
+				           <div class="{{ $classname }}">&nbsp;</div>
+						{{ $meta_labels[$m->meta_field_id] }}</label>
 							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
-                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
+                            					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
 							@elseif ($m->meta_field->type ==  'TaxonomyTree')
-                            <span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $document->meta_value($m->meta_field_id) }}</span>
+                            					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $document->meta_value($m->meta_field_id) }}</span>
 							@else
-                            <div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! html_entity_decode($m->value) !!}</div>
+                            					<div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! html_entity_decode($m->value) !!}</div>
 							@endif
-                            </div>
+                            		</div>
 				<br />
-                        @endif
-                        @endforeach
+                        		@endif
+                        		@endforeach
+
+			@endif {{--else of html_code ends --}}
 
 			@if(\Auth::user() && ($c->require_approval == 1))
                   	<div class="col-md-12">
