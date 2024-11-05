@@ -144,7 +144,7 @@ class Util{
 	}
 
 	
-	public static function replacePlaceHolder($display_meta, $html_code, $result_title, $collection_id, $document_id, $document_type=null){
+	public static function replacePlaceHolder($display_meta, $html_code, $result_title=null, $collection_id=null, $document_id=null, $document_type=null){
 		//print_r($display_meta); exit;
 		$processed = $html_code;
 		if($document_type == 'url'){
