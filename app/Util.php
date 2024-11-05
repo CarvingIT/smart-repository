@@ -144,9 +144,15 @@ class Util{
 	}
 
 	
-	public static function replacePlaceHolder($display_meta, $html_code){
+	public static function replacePlaceHolder($display_meta, $html_code, $result_title, $collection_id, $document_id, $document_type=null){
 		//print_r($display_meta); exit;
 		$processed = $html_code;
+		if($document_type == 'url'){
+		$processed = str_replace("__title__","<a href='/collection/".$collection_id."/document/".$document_id."/details'>".$result_title."</a>",$processed);
+		}
+		else{
+		$processed = str_replace("__title__","<a href='/collection/".$collection_id."/document/".$document_id."/details'>".$result_title."</a>",$processed);
+		}
 		foreach($display_meta as $meta =>$value){
 			$match_meta = "__".$meta."__";
 			$processed = str_replace($match_meta, $value, $processed);
