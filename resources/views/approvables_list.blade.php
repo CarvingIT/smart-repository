@@ -6,8 +6,9 @@
 <script>
 $(document).ready(function() {
     $('#documents').DataTable({
+    "order":[[2,'desc']],
     "aoColumnDefs": [
-            { "bSortable": false, "aTargets": [2]},
+            { "bSortable": false, "aTargets": [3]},
 			{ "className": 'align-top', "aTargets": [0]},
      ]
     });
