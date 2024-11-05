@@ -301,6 +301,9 @@ class DocumentController extends Controller
     }
 
 	public function upload(Request $request){
+        // flash all values into session
+        $request->flash();
+
 		$upload_status = $this->uploadFile($request);
 		if(!empty($upload_status['messages'])){
 	        Session::flash('alert-success', implode(" ", $upload_status['messages']));

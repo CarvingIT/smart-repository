@@ -101,7 +101,7 @@ tinymce.init({
 		   <label for="title" class="col-md-12 col-form-label text-md-right">Title</label>
 		   </div>
                     <div class="col-md-9">
-                    <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ html_entity_decode($document->title) }}@endif" 
+                    <input class="form-control" type="text" id="title" name="title" size="40" value="{{ old('title',$document->title) }}" 
                     placeholder="If left blank, we shall guess!" maxlength="150" />
                     </div>
 		</div>
@@ -112,7 +112,7 @@ tinymce.init({
 		   </div>
     		   <div class="col-md-9">
 			   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
-    		   <input id="uploadfile" type="file" class="form-control-file" name="document" /> 
+    		   <input id="uploadfile" type="file" class="form-control-file" name="document"/> 
     		   </div>
 		</div>
 		@endif
@@ -126,7 +126,7 @@ tinymce.init({
 				Enter a link below only if there's no document to be uploaded. 
 				@endif
     		   <input type="text" class="form-control-file" id="externallink" name="external_link" 
-					value="@if(!empty($document->id)){{ html_entity_decode($document->external_link) }}@endif" 
+					value="{{ old('external_link', $document->external_link) }}" 
                     placeholder="https://..." maxlength="150" > 
     		   </div>
 		</div>
@@ -176,13 +176,13 @@ tinymce.init({
     		   </div>
         <div class="col-md-9">
         @if($f->type == 'Text')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
         @elseif ($f->type == 'Textarea')
-        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! $document->meta_value($f->id) !!}</textarea>
+        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! old('meta_field_'.$f->id, $document->meta_value($f->id)) !!}</textarea>
         @elseif ($f->type == 'Numeric')
-        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
         @elseif ($f->type == 'Date')
-        <input id="meta_field_{{$f->id}}" max="2999-12-31"  type="date" name="meta_field_{{$f->id}}" value="{{ html_entity_decode($document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        <input id="meta_field_{{$f->id}}" max="2999-12-31"  type="date" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 
         @elseif (in_array($f->type, array('Select', 'MultiSelect')))
         <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple @endif 
@@ -195,16 +195,14 @@ tinymce.init({
             @foreach($options as $o)
                 @php
                     $o = ltrim(rtrim($o));
+                    $old_vals = old('meta_field_'.$f->id, json_decode($document->meta_value($f->id)));
+                    $old_vals = is_array($old_vals) ? $old_vals : [];
                 @endphp
-				@if($f->type == 'MultiSelect' || $f->type == 'Select')
-            	<option value="{{$o}}" @if(@in_array($o, json_decode($document->meta_value($f->id)))) selected="selected" @endif >{{$o}}</option>
-				@else
-            	<option value="{{$o}}" @if($o == $document->meta_value($f->id)) selected="selected" @endif >{{$o}}</option>
-				@endif
+            	<option value="{{$o}}" @if(@in_array($o, $old_vals)) selected="selected" @endif >{{$o}}</option>
             @endforeach
         </select>
 		@elseif ($f->type == 'SelectCombo')
-		<input type="text" class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" value="{{ $document->meta_value($f->id) }}" autocomplete="off" list="optionvalues" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+		<input type="text" class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" autocomplete="off" list="optionvalues" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 		<label>You can select an option or type custom text above.</label>
 		<datalist id="optionvalues">
             @php
@@ -214,6 +212,8 @@ tinymce.init({
             @foreach($options as $o)
                 @php
                     $o = ltrim(rtrim($o));
+                    $old_vals = json_decode($document->meta_value($f->id));
+                    $old_vals = is_array($old_vals) ? $old_vals : [];
                 @endphp
             <option>{{$o}}</option>
             @endforeach
@@ -230,8 +230,9 @@ tinymce.init({
 					if(empty($children['parent_'.$parent_id])) return;
 					foreach($children['parent_'.$parent_id] as $t){
 							$selected = '';
-							if(!empty($document->meta_value($f->id, true)) 
-							&& @in_array($t->id, json_decode($document->meta_value($f->id, true)))){
+                            $old_vals = old('meta_field_'.$f->id, json_decode($document->meta_value($f->id, true)));
+                            $old_vals = is_array($old_vals) ? $old_vals : [];
+							if (@in_array($t->id, $old_vals)){
 								$selected='selected="selected"';
 							}
 							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
