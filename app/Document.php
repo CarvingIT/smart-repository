@@ -135,6 +135,10 @@ class Document extends Model implements Auditable
 	return $this->hasMany('App\RelatedDocument');
 	}
 
+    public function related_to(){
+	return $this->hasMany('App\RelatedDocument','related_document_id');
+    }
+
     public function approvals(){
 	return $this->morphMany('App\Approval', 'approvable');
     }
