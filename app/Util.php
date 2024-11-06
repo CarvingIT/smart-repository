@@ -148,7 +148,13 @@ class Util{
 		//print_r($display_meta); echo $display_meta['status']; exit;
 		$processed = $html_code;
 		if($document_type == 'url'){
-		$processed = str_replace("__title__","<a href='/collection/".$collection_id."/document/".$document_id."/details'>".$result_title."</a>",$processed);
+		//$processed = str_replace("__title__","<a href='/collection/".$collection_id."/document/".$document_id."/details'>".$result_title."</a>",$processed);
+			if(preg_match('/Draft/i',$display_meta['status'])){
+		$processed = str_replace("__title__","<a href='/collection/".$collection_id."/document/".$document_id."/details'><i class='fab fa-firstdraft'></i>&nbsp;".$result_title."</a>",$processed);
+			}
+			else{
+		$processed = str_replace("__title__","<a href='/collection/".$collection_id."/document/".$document_id."/details'><i class='fa fa-file-text' ></i>&nbsp;".$result_title."</a>",$processed);
+			}
 		}
 		else{
 		//$processed = str_replace("__title__","<a href='/collection/".$collection_id."/document/".$document_id."/details'>".$result_title."</a>",$processed);
