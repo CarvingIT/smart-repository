@@ -363,17 +363,7 @@ $(document).ready(function()
 				</a></li>
 				@endforeach
 				</ul>
-				<h5>Referenced by</h5>
-				@if ($document->related_to->count() == 0)
-				None
-				@endif
-				<ul class="related-docs">
-				@foreach ($document->related_to as $r_d)
-					<li><a href="/collection/{{ $r_d->related_to->collection->id }}/document/{{ $r_d->related_to->id }}/details">
-				{{ $r_d->related_to->title }}
-				</a></li>
-				@endforeach
-				</ul>
+				
 				</div>
 				@endif
 			</div><!-- row ends -->
