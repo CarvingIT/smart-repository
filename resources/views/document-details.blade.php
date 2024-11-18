@@ -363,6 +363,7 @@ $(document).ready(function()
 				</a></li>
 				@endforeach
 				</ul>
+				<!--
 				<h5>Referenced by</h5>
 				@if ($document->related_to->count() == 0)
 				None
@@ -376,6 +377,7 @@ $(document).ready(function()
 				</ul>
 				</div>
 				@endif
+				-->
 			</div><!-- row ends -->
 			@endif
 
