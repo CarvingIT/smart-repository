@@ -353,17 +353,19 @@ $(document).ready(function()
 				@if ($document->related_documents->count() > 0 || $document->related_to->count() > 0)
 				<div class="col-md-3">
 				<h5>Related Documents</h5>
+				{{--
 				@if ($document->related_documents->count() == 0)
 				None
 				@endif
+				--}}
 				<ul class="related-docs">
+				<li><a href="/collection/{{ $document->collection->id }}/document/{{ $document->id }}/details">{{ $document->title }}</a></li>
 				@foreach ($document->related_documents as $r_d)
 					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">
 				{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}
 				</a></li>
 				@endforeach
 				</ul>
-				
 				</div>
 				@endif
 			</div><!-- row ends -->
