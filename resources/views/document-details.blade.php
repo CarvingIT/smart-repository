@@ -161,11 +161,11 @@ $(document).ready(function()
 				<input type="hidden" id="related_document_id" name="related_document_id" value="" />
 				<div class="row">
                     <div class="col-md-2">
-		   				<label for="title-autocomplete" class="col-md-12 col-form-label text-md-right">Search title</label>
-					</div>
+				<label for="title-autocomplete" class="col-md-12 col-form-label text-md-right">Search title</label>
+		    </div>
                     <div class="col-md-8">
-                    <input class="form-control" type="text" id="title-autocomplete" name="title-autocomplete"/> 
-					</div>
+                    	<input class="form-control" type="text" id="title-autocomplete" name="title-autocomplete"/> 
+		    </div>
 				</div>
 				<div class="row">
                     <div class="col-md-2">
@@ -353,17 +353,20 @@ $(document).ready(function()
 				@if ($document->related_documents->count() > 0 || $document->related_to->count() > 0)
 				<div class="col-md-3">
 				<h5>Related Documents</h5>
-				{{--
-				@if ($document->related_documents->count() == 0)
-				None
-				@endif
-				--}}
+					{{ $document->title }}<br/>
+				@php
+					$child_id = $document->id;
+					$parent = App\RelatedDocument::where('related_document_id',$child_id)->get();
+					foreach($parent as $p){
+						$p_doc = App\Document::where('id', $p->document_id)->first();
+				@endphp
+					<a href="/collection/{{ $p_doc->collection->id }}/document/{{ $p_doc->id }}/details">{{ $p_doc->title }}</a><br/>
+				@php
+					}
+				@endphp
 				<ul class="related-docs">
-				<li><a href="/collection/{{ $document->collection->id }}/document/{{ $document->id }}/details">{{ $document->title }}</a></li>
 				@foreach ($document->related_documents as $r_d)
-					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">
-				{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}
-				</a></li>
+					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}</a></li>
 				@endforeach
 				</ul>
 				</div>
