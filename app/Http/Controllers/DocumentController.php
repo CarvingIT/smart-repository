@@ -10,13 +10,16 @@ use Illuminate\Support\Facades\Validator;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use NlpTools\Similarity\CosineSimilarity;
 use App\Curation;
-use Session;
+// use Session;
 use App\Collection;
 use Spatie\PdfToText\Pdf;
 use App\MetaFieldValue;
 use App\ReverseMetaFieldValue;
 use App\Sysconfig;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
+
+
 
 class DocumentController extends Controller
 {
@@ -54,14 +57,14 @@ class DocumentController extends Controller
     }
 
 	public function pdfReader($collection_id, $document_id){
-		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id]);	
+		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id]);
 	}
 
 	public function mediaPlayer($collection_id, $document_id){
 		$document = Document::find($document_id);
-		return view('media-player',['collection_id'=>$collection_id,'document'=>$document]);	
+		return view('media-player',['collection_id'=>$collection_id,'document'=>$document]);
 	}
-    
+
     public function recordHit($document_id){
         $hit = new \App\DocumentHit;
         $revision = \App\DocumentRevision::where('document_id','=', $document_id)
@@ -70,12 +73,12 @@ class DocumentController extends Controller
         $hit->revision_id = empty($revision->id)? 0 : $revision->id;
         $hit->user_id = empty(\Auth::user()->id)? null : \Auth::user()->id;
         $hit->added_on = NOW();
-        $hit->save(); 
+        $hit->save();
     }
 
 	public function showUploadForm($collection_id)
     {
-            $size_limit = ini_get("upload_max_filesize");	
+            $size_limit = ini_get("upload_max_filesize");
             $collection = \App\Collection::find($collection_id);
             $document = new \App\Document;
        		return view('upload', ['collection'=>$collection, 'document'=>$document,
@@ -84,22 +87,22 @@ class DocumentController extends Controller
    	}
 
 	public function sameMetaUpload(Request $request){
-        $size_limit = ini_get("upload_max_filesize");	
+        $size_limit = ini_get("upload_max_filesize");
         $collection = \App\Collection::find($request->collection_id);
-		return view('same-meta-upload',['collection'=> $collection, 
+		return view('same-meta-upload',['collection'=> $collection,
 			'size_limit'=>$size_limit, 'activePage'=>'Upload Document Form',
 			'master_document_id'=>$request->document_id]);
 	}
 
 	public function showEditForm($document_id)
     	{
-            $size_limit = ini_get("upload_max_filesize");	
+            $size_limit = ini_get("upload_max_filesize");
             $document = \App\Document::find($document_id);
             $collection = \App\Collection::find($document->collection_id);
 	    $has_approval=array();
 	    $has_approval = \App\Collection::where('id','=',$document->collection_id)->where('require_approval','=','1')->get();
 
-       		return view('upload', ['collection'=>$collection, 
+       		return view('upload', ['collection'=>$collection,
 			'document'=>$document,
 			'collection_has_approval'=>$has_approval,
 			'activePage'=>'Document Edit Form',
@@ -107,224 +110,421 @@ class DocumentController extends Controller
 			'size_limit'=>$size_limit]);
    	}
 
+    // Changes from here
 
-	public function uploadFile(Request $request){
-		$messages = array();
-		$errors = array();
-		$warnings = array();
-		$file_type='';
+       public function uploadFile(Request $request) {
 
-		//Filesize validation code starts
-		$size_limit = ini_get("upload_max_filesize");
-		$actual_size = $this->return_bytes($size_limit); ## Newly added line
-		$collection_id = $request->input('collection_id');
-        	$validator = Validator::make($request->all(), [
-	    		//'document' => 'file|max:'.$actual_size
-	    		'document' => 'file|max:'.$actual_size
-        		]);
-		if ($validator->fails()) {
-			return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
-        	}
-		// Filesize validation code ends
+        // First, validating the uploaded data
 
-		// Validation for upload file type.
-		$c = Sysconfig::all();
-        	if(!empty($c)){
-        	   foreach($c as $config){
-			//echo $config;
-			if($config->param == 'upload_file_types' && !empty($config->value)){
-				//echo $config->param; echo $config->value;
-				$file_type=$config->value;
-			}
-		    }
-		}
-		if(empty($file_type)){
-			$file_type = env('FILE_EXTENSIONS_TO_UPLOAD','ppt,pptx,doc,docx,jpg,png,pdf,txt'); 
-		}
-        	$validator = Validator::make($request->all(), [
-	    		'document' => 'file|mimes:'.$file_type
-        	]);
-		if ($validator->fails()) {
-			return ['status'=>'failure', 'errors'=>['File type must be one of '.$file_type]];
-        	}
-
-        	if(!empty($request->input('document_id'))){
-            		$d = Document::find($request->input('document_id'));
-        	}
-        	else{
-            		$d = new Document;
-        	}
-
-        	$collection = \App\Collection::find($collection_id);
-		$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
-
-	if($request->hasFile('document')){
-			$filename = $request->file('document')->getClientOriginalName();
-            		$new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
-	
-			// Saved on chosen collection storage drive.
-			// first make the required directory for Google Drive
-			$storages_needing_dir_creation = ['google'];
-			$driver = config("filesystems.disks.{$storage_drive}.driver");
-			if(in_array($driver, $storages_needing_dir_creation)){
-				$filepath = $request->file('document')
-                				->storeAs(null, $new_filename, $storage_drive);
-			}
-			else{
-				$filepath = $request->file('document')
-				->storeAs('smartarchive_assets/'.$request
-				->input('collection_id').'/'.\Auth::user()->id,$new_filename, $storage_drive);
-			}
-
-			//Saved locally for text extraction
-			$local_filepath = $request->file('document')
-				->storeAs('smartarchive_assets/'.$request
-				->input('collection_id').'/'.\Auth::user()->id,$new_filename);
-
-			$filesize = $request->file('document')->getSize();
-			$mimetype = $request->file('document')->getMimeType();
-
-           		if(!empty($request->input('title'))){
-               			$d->title = htmlentities($request->input('title'));
-           		}
-           		else{
-               			$d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
-           		}
-           		$d->collection_id = $request->input('collection_id');
-           		$d->created_by = \Auth::user()->id;
-
-			$d->size = $filesize;
-			$d->type = $mimetype;
-           		$d->path = $filepath;
-
-           		try{
-		    	$text_content = $this->extractText($local_filepath, $mimetype);
-			$current_encoding = mb_detect_encoding($text_content, 'auto');
-			$d->text_content = mb_convert_encoding($text_content, "UTF-8");
-		    	// Delete the file if the storage drive is other than local drive.
-		    	// Command to delete / unlink the file locally.
-		    	if($storage_drive != 'local'){
-		    		Storage::delete($local_filepath);
-		    	}
-           		}
-           		catch(\Exception $e){
-          		\Log::error($e->getMessage());
-               		$d->text_content = '';
-			$warnings[] = 'No text was indexed. '. $e->getMessage();
-           		}
-            		try{
-                	$d->save();
-			$messages[] = 'Document uploaded successfully!';
-            		}
-            		catch(\Exception $e){
-			return ['status'=>'failure', 'errors'=>[$e->getMessage()]];
-            		}
-
-            		// create revision
-            		$this->createDocumentRevision($d);
-	}
-	else{ // no document is uploaded
-		if(!empty($request->input('external_link'))){
-			//if(empty($request->input('document_id'))){
-			//	$d = new Document;
-			//}
-			//else{
-			//	$d = Document::find($request->input('document_id'));
-			//}
-           		$d->collection_id = $request->input('collection_id');
-           		$d->created_by = \Auth::user()->id;
-			$d->title = empty($request->input('title'))?'Link '.@$request->input('external_link'):$request->input('title');
-			$d->path = 'N/A';
-			$d->type = 'url';
-			$d->size = 0;
-			$d->text_content = 'N/A';
-			$d->external_link = $request->input('external_link');
-		}
-        else if(!empty($request->input('approved_on'))){
-           	$d->approved_by = \Auth::user()->id;
-			$d->approved_on = now();
-       	}
-	 	else{// No external link was input 
-             // and no document was uploaded
-             // and this is a new record
-            if(!$d->id){
-                return ['status'=>'failure','errors'=>['You need to either upload a document or input an external link to it.']];
-            }
-         	$d->approved_by = NULL;
-			$d->approved_on = NULL;
-		}
-
-	//	Code to edit title of document starts
-		if(!empty($request->title)){
-			$d->title = htmlentities($request->title);
-		}
-	// Code to edit title of document ends
-         try{
-                $d->save();
-				$messages[] = 'Document updated successfully!';
-            }
-            catch(\Exception $e){
-				//echo $e->getMessage(); exit;
-				$errors[] = $e->getMessage();
-            }
-	} // else ends (document not uploaded)
-
-		if(!$request->input('master_document_id')){
-        // extract meta
-        $meta = $this->getMetaDataFromRequest($request);
-        // put all meta values in a string
-		/*
-        $meta_string = '';
-        foreach($meta as $m){
-			if(is_array($m['field_value'])){
-            	$meta_string .= ' '.json_encode($m['field_value']).' ';
-			}
-			else{
-            	$meta_string .= ' '.$m['field_value'].' ';
-			}
+        $validation_result = $this->validateUploadedData($request);
+        if ($validation_result['status'] == 'failure') {
+            return $validation_result;
         }
-		*/
-        // save meta data
-        $this->saveMetaData($d->id, $meta);
-		}
-		else{
-			$this->duplicateDocumentMetadata($request->input('master_document_id'), $d->id);
-		}
-        // also update the text_content of the document
-        //$d->text_content = $d->text_content . $meta_string; // do we have to append meta with the document content?
-		
-		// more work needed below.
-		// if there are any errors above from the validator, an array of errors should be maintained
-		// if the array of errors is empty, then the status should be successful
-		return ['status'=>'successful', 'document_id'=>$d->id, 
-			'messages'=>$messages, 'warnings'=>$warnings];
+
+        $messages = [];
+        $errors = [];
+        $warnings = [];
+        // $file_type = '';
+
+        $collection_id = $request->input('collection_id');
+        if(!empty($request->input('document_id'))) {
+            $d = Document::find($request->input('document_id'));
+        } else {
+            $d = new Document;
+        }
+
+        $collection = \App\Collection::find($collection_id);
+        $storage_drive = empty($collection->storage_drive) ? 'local' : $collection->storage_drive;
+
+        // File upload logic starts
+        if ($request->hasFile('document')) {
+            $filename = $request->file('document')->getClientOriginalName();
+            $new_filename = \Auth::user()->id . '_' . time() . '_' . $filename;
+
+            // Saved on chosen collection storage drive.
+            $storages_needing_dir_creation = ['google'];
+            $driver = config("filesystems.disks.{$storage_drive}.driver");
+
+            if (in_array($driver, $storages_needing_dir_creation)) {
+                $filepath = $request->file('document')->storeAs(null, $new_filename, $storage_drive);
+            } else {
+                $filepath = $request->file('document')->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename, $storage_drive);
+            }
+
+            // Saved locally for text extraction
+            $local_filepath = $request->file('document')->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename);
+
+            $filesize = $request->file('document')->getSize();
+            $mimetype = $request->file('document')->getMimeType();
+
+            if (!empty($request->input('title'))) {
+                $d->title = htmlentities($request->input('title'));
+            } else {
+                $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
+            }
+            $d->collection_id = $request->input('collection_id');
+            $d->created_by = \Auth::user()->id;
+
+            $d->size = $filesize;
+            $d->type = $mimetype;
+            $d->path = $filepath;
+
+            try {
+                $text_content = $this->extractText($local_filepath, $mimetype);
+                $current_encoding = mb_detect_encoding($text_content, 'auto');
+                $d->text_content = mb_convert_encoding($text_content, "UTF-8");
+
+                // Delete the file if the storage drive is other than local drive.
+                if ($storage_drive != 'local') {
+                    Storage::delete($local_filepath);
+                }
+            } catch (\Exception $e) {
+                \Log::error($e->getMessage());
+                $d->text_content = '';
+                $warnings[] = 'No text was indexed. ' . $e->getMessage();
+            }
+
+            try {
+                $d->save();
+                $messages[] = 'Document uploaded successfully!';
+            } catch (\Exception $e) {
+                return ['status' => 'failure', 'errors' => [$e->getMessage()]];
+            }
+
+            // Create revision
+            $this->createDocumentRevision($d);
+
+        } else { // No document is uploaded
+            if (!empty($request->input('external_link'))) {
+                $d->collection_id = $request->input('collection_id');
+                $d->created_by = \Auth::user()->id;
+                $d->title = empty($request->input('title')) ? 'Link ' . @$request->input('external_link') : $request->input('title');
+                $d->path = 'N/A';
+                $d->type = 'url';
+                $d->size = 0;
+                $d->text_content = 'N/A';
+                $d->external_link = $request->input('external_link');
+            } else if (!empty($request->input('approved_on'))) {
+                $d->approved_by = \Auth::user()->id;
+                $d->approved_on = now();
+            } else {
+                if (!$d->id) {
+                    return ['status' => 'failure', 'errors' => ['You need to either upload a document or input an external link to it.']];
+                }
+                $d->approved_by = NULL;
+                $d->approved_on = NULL;
+            }
+
+            // Code to edit title of document starts
+            if (!empty($request->title)) {
+                $d->title = htmlentities($request->title);
+            }
+            // Code to edit title of document ends
+
+            try {
+                $d->save();
+                $messages[] = 'Document updated successfully!';
+            } catch (\Exception $e) {
+                $errors[] = $e->getMessage();
+            }
+        }
+
+        // If no master document ID, save meta data
+        if (!$request->input('master_document_id')) {
+            $meta = $this->getMetaDataFromRequest($request);
+            $this->saveMetaData($d->id, $meta);
+        } else {
+            $this->duplicateDocumentMetadata($request->input('master_document_id'), $d->id);
+        }
+
+        return ['status' => 'successful', 'document_id' => $d->id, 'messages' => $messages, 'warnings' => $warnings];
     }
 
-	public function upload(Request $request){
-        // flash all values into session
+    // Validation function: moved validation logic here
+    private function validateUploadedData(Request $request) {
+        // $messages = [];
+        // $errors = [];
+        $file_type = '';
+
+        // Filesize validation
+        $size_limit = ini_get("upload_max_filesize");
+        $actual_size = $this->return_bytes($size_limit); // Convert size limit to bytes
+        $validator = Validator::make($request->all(), [
+            'document' => 'file|max:' . $actual_size
+        ]);
+        if ($validator->fails()) {
+            return ['status' => 'failure', 'errors' => ['File size exceeded. The file size should not be more than ' . $size_limit . 'B.']];
+        }
+
+        // File type validation
+        $c = Sysconfig::all();
+        foreach ($c as $config) {
+            if ($config->param == 'upload_file_types' && !empty($config->value)) {
+                $file_type = $config->value;
+            }
+        }
+        if (empty($file_type)) {
+            $file_type = env('FILE_EXTENSIONS_TO_UPLOAD', 'ppt,pptx,doc,docx,jpg,png,pdf,txt');
+        }
+        $validator = Validator::make($request->all(), [
+            'document' => 'file|mimes:' . $file_type
+        ]);
+        if ($validator->fails()) {
+            return ['status' => 'failure', 'errors' => ['File type must be one of ' . $file_type]];
+        }
+
+        return ['status' => 'success'];
+    }
+
+    // Main upload function to handle redirection and status messaging
+    public function upload(Request $request) {
+        // Flash all values into session
         $request->flash();
 
-		$upload_status = $this->uploadFile($request);
-		if(!empty($upload_status['messages'])){
-	        Session::flash('alert-success', implode(" ", $upload_status['messages']));
-		}
-		if(!empty($upload_status['warnings'])){
-	        Session::flash('alert-warning', implode(" ", $upload_status['warnings']));
-		}
-		if(!empty($upload_status['errors'])){
-	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
-		}
-		if($upload_status['status'] == 'failure'){
-	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
-        	return redirect('/collection/'.$request->input('collection_id').'/upload'); 
-		}
-		if($request->input('same_meta_docs_upload')){
-        	return redirect('/collection/'.$request->input('collection_id').'/document/'.$upload_status['document_id'].'/same-meta-upload'); 
-		}
-		else{
-        	return redirect('/collection/'.$request->input('collection_id')); 
-		}
-	}
+        // Call the uploadFile method
+        $upload_status = $this->uploadFile($request);
+        if (!empty($upload_status['messages'])) {
+            Session::flash('alert-success', implode(" ", $upload_status['messages']));
+        }
+        if (!empty($upload_status['warnings'])) {
+            Session::flash('alert-warning', implode(" ", $upload_status['warnings']));
+        }
+        if (!empty($upload_status['errors'])) {
+            Session::flash('alert-danger', implode(" ", $upload_status['errors']));
+        }
+        if ($upload_status['status'] == 'failure') {
+            Session::flash('alert-danger', implode(" ", $upload_status['errors']));
+            return redirect('/collection/' . $request->input('collection_id') . '/upload');
+        }
+        if ($request->input('same_meta_docs_upload')) {
+            return redirect('/collection/' . $request->input('collection_id') . '/document/' . $upload_status['document_id'] . '/same-meta-upload');
+        } else {
+            return redirect('/collection/' . $request->input('collection_id'));
+        }
+    }
+
+
+// Previous code
+
+// 	public function uploadFile(Request $request){
+// 		$messages = array();
+// 		$errors = array();
+// 		$warnings = array();
+// 		$file_type='';
+
+// 		//Filesize validation code starts
+// 		$size_limit = ini_get("upload_max_filesize");
+// 		$actual_size = $this->return_bytes($size_limit); ## Newly added line
+// 		$collection_id = $request->input('collection_id');
+//         	$validator = Validator::make($request->all(), [
+// 	    		//'document' => 'file|max:'.$actual_size
+// 	    		'document' => 'file|max:'.$actual_size
+//         		]);
+// 		if ($validator->fails()) {
+// 			return ['status'=>'failure', 'errors'=>['File size exceeded. The file size should not be more than '.$size_limit.'B.']];
+//         	}
+// 		// Filesize validation code ends
+
+// 		// Validation for upload file type.
+// 		$c = Sysconfig::all();
+//         	if(!empty($c)){
+//         	   foreach($c as $config){
+// 			//echo $config;
+// 			if($config->param == 'upload_file_types' && !empty($config->value)){
+// 				//echo $config->param; echo $config->value;
+// 				$file_type=$config->value;
+// 			}
+// 		    }
+// 		}
+// 		if(empty($file_type)){
+// 			$file_type = env('FILE_EXTENSIONS_TO_UPLOAD','ppt,pptx,doc,docx,jpg,png,pdf,txt');
+// 		}
+//         	$validator = Validator::make($request->all(), [
+// 	    		'document' => 'file|mimes:'.$file_type
+//         	]);
+// 		if ($validator->fails()) {
+// 			return ['status'=>'failure', 'errors'=>['File type must be one of '.$file_type]];
+//         	}
+
+//         	if(!empty($request->input('document_id'))){
+//             		$d = Document::find($request->input('document_id'));
+//         	}
+//         	else{
+//             		$d = new Document;
+//         	}
+
+//         	$collection = \App\Collection::find($collection_id);
+// 		$storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
+
+// 	if($request->hasFile('document')){
+// 			$filename = $request->file('document')->getClientOriginalName();
+//             		$new_filename = \Auth::user()->id.'_'.time().'_'.$filename;
+
+// 			// Saved on chosen collection storage drive.
+// 			// first make the required directory for Google Drive
+// 			$storages_needing_dir_creation = ['google'];
+// 			$driver = config("filesystems.disks.{$storage_drive}.driver");
+// 			if(in_array($driver, $storages_needing_dir_creation)){
+// 				$filepath = $request->file('document')
+//                 				->storeAs(null, $new_filename, $storage_drive);
+// 			}
+// 			else{
+// 				$filepath = $request->file('document')
+// 				->storeAs('smartarchive_assets/'.$request
+// 				->input('collection_id').'/'.\Auth::user()->id,$new_filename, $storage_drive);
+// 			}
+
+// 			//Saved locally for text extraction
+// 			$local_filepath = $request->file('document')
+// 				->storeAs('smartarchive_assets/'.$request
+// 				->input('collection_id').'/'.\Auth::user()->id,$new_filename);
+
+// 			$filesize = $request->file('document')->getSize();
+// 			$mimetype = $request->file('document')->getMimeType();
+
+//            		if(!empty($request->input('title'))){
+//                			$d->title = htmlentities($request->input('title'));
+//            		}
+//            		else{
+//                			$d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
+//            		}
+//            		$d->collection_id = $request->input('collection_id');
+//            		$d->created_by = \Auth::user()->id;
+
+// 			$d->size = $filesize;
+// 			$d->type = $mimetype;
+//            		$d->path = $filepath;
+
+//            		try{
+// 		    	$text_content = $this->extractText($local_filepath, $mimetype);
+// 			$current_encoding = mb_detect_encoding($text_content, 'auto');
+// 			$d->text_content = mb_convert_encoding($text_content, "UTF-8");
+// 		    	// Delete the file if the storage drive is other than local drive.
+// 		    	// Command to delete / unlink the file locally.
+// 		    	if($storage_drive != 'local'){
+// 		    		Storage::delete($local_filepath);
+// 		    	}
+//            		}
+//            		catch(\Exception $e){
+//           		\Log::error($e->getMessage());
+//                		$d->text_content = '';
+// 			$warnings[] = 'No text was indexed. '. $e->getMessage();
+//            		}
+//             		try{
+//                 	$d->save();
+// 			$messages[] = 'Document uploaded successfully!';
+//             		}
+//             		catch(\Exception $e){
+// 			return ['status'=>'failure', 'errors'=>[$e->getMessage()]];
+//             		}
+
+//             		// create revision
+//             		$this->createDocumentRevision($d);
+// 	}
+// 	else{ // no document is uploaded
+// 		if(!empty($request->input('external_link'))){
+// 			//if(empty($request->input('document_id'))){
+// 			//	$d = new Document;
+// 			//}
+// 			//else{
+// 			//	$d = Document::find($request->input('document_id'));
+// 			//}
+//            		$d->collection_id = $request->input('collection_id');
+//            		$d->created_by = \Auth::user()->id;
+// 			$d->title = empty($request->input('title'))?'Link '.@$request->input('external_link'):$request->input('title');
+// 			$d->path = 'N/A';
+// 			$d->type = 'url';
+// 			$d->size = 0;
+// 			$d->text_content = 'N/A';
+// 			$d->external_link = $request->input('external_link');
+// 		}
+//         else if(!empty($request->input('approved_on'))){
+//            	$d->approved_by = \Auth::user()->id;
+// 			$d->approved_on = now();
+//        	}
+// 	 	else{// No external link was input
+//              // and no document was uploaded
+//              // and this is a new record
+//             if(!$d->id){
+//                 return ['status'=>'failure','errors'=>['You need to either upload a document or input an external link to it.']];
+//             }
+//          	$d->approved_by = NULL;
+// 			$d->approved_on = NULL;
+// 		}
+
+// 	//	Code to edit title of document starts
+// 		if(!empty($request->title)){
+// 			$d->title = htmlentities($request->title);
+// 		}
+// 	// Code to edit title of document ends
+//          try{
+//                 $d->save();
+// 				$messages[] = 'Document updated successfully!';
+//             }
+//             catch(\Exception $e){
+// 				//echo $e->getMessage(); exit;
+// 				$errors[] = $e->getMessage();
+//             }
+// 	} // else ends (document not uploaded)
+
+// 		if(!$request->input('master_document_id')){
+//         // extract meta
+//         $meta = $this->getMetaDataFromRequest($request);
+//         // put all meta values in a string
+// 		/*
+//         $meta_string = '';
+//         foreach($meta as $m){
+// 			if(is_array($m['field_value'])){
+//             	$meta_string .= ' '.json_encode($m['field_value']).' ';
+// 			}
+// 			else{
+//             	$meta_string .= ' '.$m['field_value'].' ';
+// 			}
+//         }
+// 		*/
+//         // save meta data
+//         $this->saveMetaData($d->id, $meta);
+// 		}
+// 		else{
+// 			$this->duplicateDocumentMetadata($request->input('master_document_id'), $d->id);
+// 		}
+//         // also update the text_content of the document
+//         //$d->text_content = $d->text_content . $meta_string; // do we have to append meta with the document content?
+
+// 		// more work needed below.
+// 		// if there are any errors above from the validator, an array of errors should be maintained
+// 		// if the array of errors is empty, then the status should be successful
+// 		return ['status'=>'successful', 'document_id'=>$d->id,
+// 			'messages'=>$messages, 'warnings'=>$warnings];
+//     }
+
+// 	public function upload(Request $request){
+//         // flash all values into session
+//         $request->flash();
+
+// 		$upload_status = $this->uploadFile($request);
+// 		if(!empty($upload_status['messages'])){
+// 	        Session::flash('alert-success', implode(" ", $upload_status['messages']));
+// 		}
+// 		if(!empty($upload_status['warnings'])){
+// 	        Session::flash('alert-warning', implode(" ", $upload_status['warnings']));
+// 		}
+// 		if(!empty($upload_status['errors'])){
+// 	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
+// 		}
+// 		if($upload_status['status'] == 'failure'){
+// 	        Session::flash('alert-danger', implode(" ", $upload_status['errors']));
+//         	return redirect('/collection/'.$request->input('collection_id').'/upload');
+// 		}
+// 		if($request->input('same_meta_docs_upload')){
+//         	return redirect('/collection/'.$request->input('collection_id').'/document/'.$upload_status['document_id'].'/same-meta-upload');
+// 		}
+// 		else{
+//         	return redirect('/collection/'.$request->input('collection_id'));
+// 		}
+// 	}
+
+//     Previous code end
 
     public static function importFile($collection_id, $path, $meta=[]){
         // get filename and create a new one
@@ -366,7 +566,7 @@ class DocumentController extends Controller
     }
 
     public function createDocumentRevision($d){
-        $revision = new \App\DocumentRevision; 
+        $revision = new \App\DocumentRevision;
         $revision->document_id = $d->id;
         $revision->created_by = $d->created_by;
         $revision->path = $d->path;
@@ -396,15 +596,15 @@ class DocumentController extends Controller
         $document_id = $request->document_id;
        	$d = \App\Document::find($document_id);
        	$collection_id = $d->collection_id;
-	if(!empty($request->delete_captcha) && 
+	if(!empty($request->delete_captcha) &&
 		$request->delete_captcha == $request->hidden_captcha){
         	$d->delete();
                 Session::flash('alert-success', 'Document deleted successfully.');
-        	return redirect('/collection/'.$collection_id); 
+        	return redirect('/collection/'.$collection_id);
 	}
 	else{
             Session::flash('alert-danger', 'Please fill Captcha');
-        	return redirect('/collection/'.$collection_id); 
+        	return redirect('/collection/'.$collection_id);
         }
 
     }
@@ -436,7 +636,7 @@ class DocumentController extends Controller
 		$ocr_langs = explode(",", env('OCR_langs'));
         if($mimetype == 'application/pdf'){
 	    	$text = \Spatie\PdfToText\Pdf::getText(storage_path('app/'.$filepath));
-			if(empty($text) && $enable_OCR==1){ // try OCR 
+			if(empty($text) && $enable_OCR==1){ // try OCR
 				/* this piece of code needs to be replaced with code that works with ocrmypdf
 				*/
 				$text = (new Pdf())
@@ -479,7 +679,7 @@ class DocumentController extends Controller
     }
 
     public function saveMetaData($document_id, $meta_data){
-		// reverse meta field values - first delete then add each 
+		// reverse meta field values - first delete then add each
 		// first delete if related this document any and then add
 		ReverseMetaFieldValue::where('document_id', $document_id)->delete();
 
@@ -503,7 +703,7 @@ class DocumentController extends Controller
                         $tax_m = \App\Taxonomy::find($t_id);
                         while(!empty($tax_m->parent_id) && $tax_m = $tax_m->parent){
                             $parent_taxo[] = $tax_m->id;
-                        } 
+                        }
                     }
                 }
                 $m['field_value'] = array_unique(array_merge($m['field_value'], array_unique($parent_taxo)));
@@ -537,7 +737,7 @@ class DocumentController extends Controller
 	else {
         	$d = Document::find($document_id);
 	}
-	
+
 	$comments = \App\DocumentComment::where('document_id',$document_id)->orderByDesc('created_at')->get();
         return view('document-details', ['document'=>$d, 'collection'=>$c, 'comments'=>$comments, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
     }
@@ -556,7 +756,7 @@ class DocumentController extends Controller
 	catch(\Exception $e){
 		// do nothing for now.
 	}
-        return view('revision-diff', 
+        return view('revision-diff',
             ['document'=>$d, 'rev1'=>$rev1, 'rev2'=>$rev2,
 	    'cosine_similarity' => round($cosine_similarity*100, 2),
             'activePage'=>'Diff in Revisions']);
@@ -656,7 +856,7 @@ public function proofRead($collection_id,$document_id){
 	$lang_issues = null;
 	try{
 	$response = $client->request('POST', env('LANG_TOOL_URL'),
-		[ 
+		[
 		   'form_params'=>[
 			'language'=>'en-US',
 			'text'=>$d->text_content,
@@ -686,7 +886,7 @@ public function move(Request $req){
 }
 
 public function duplicateDocumentMetadata($master_doc_id, $target_doc_id){
-	$master_meta_vals = MetaFieldValue::where('document_id', $master_doc_id)->get();	
+	$master_meta_vals = MetaFieldValue::where('document_id', $master_doc_id)->get();
 	foreach($master_meta_vals as $m_v){
 		$new_meta_val = new MetaFieldValue;
 		$new_meta_val->document_id = $target_doc_id;
@@ -744,7 +944,7 @@ public function deletedDocumentsData(Request $request){
     $docs=$docs->orderBy('deleted_at','desc')->skip($request->start)->take($request->length)->get();
     $result = [];
     foreach($docs as $d){
-        $d_modified = [ 
+        $d_modified = [
         'title'=> $d->title,
         'collection'=> $d->collection->name,
         'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
@@ -755,7 +955,7 @@ public function deletedDocumentsData(Request $request){
         ];
         $result[] = $d_modified;
     }
-    return ['data'=>$result, 'recordsTotal'=>$records_total, 'recordsFiltered'=> $filtered_count]; 
+    return ['data'=>$result, 'recordsTotal'=>$records_total, 'recordsFiltered'=> $filtered_count];
 }
 
 public function recoverDocument($document_id){
