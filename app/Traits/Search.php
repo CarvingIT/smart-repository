@@ -17,19 +17,19 @@ trait Search{
             $search_results = $this->searchElastic($request);
         }
         else{
-            $search_results = $this->searchDB($request); 
+            $search_results = $this->searchDB($request);
         }
 
         // log search query
 		$old_query = Session::get('search_query');
 
-		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
+		if(!empty($request->search['value']) && $old_query != $request->search['value']
 			&& !$request->is('api/*') && strlen($request->search['value'])>3){
 			Session::put('search_query', $request->search['value']);
 			$meta_query = json_encode($this->getMetaFilters($request));
-        	$search_log_data = array('collection_id'=> $request->collection_id, 
+        	$search_log_data = array('collection_id'=> $request->collection_id,
                 'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
-                'search_query'=> $request->search['value'], 
+                'search_query'=> $request->search['value'],
                 'meta_query'=> $meta_query,
 				'ip_address' => $request->ip(),
                 'results'=>$search_results['recordsFiltered']);
@@ -63,7 +63,7 @@ trait Search{
 				// default operator is '='
 				// find type of meta field
 				$meta_field = \App\MetaField::where('id', $matches[1])->first();
-				if($meta_field && $meta_field->type == 'Numeric' && is_array($v) && count($v)==2){ 
+				if($meta_field && $meta_field->type == 'Numeric' && is_array($v) && count($v)==2){
 					// this is for range filters (numeric values). This condition needs to be refined.
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>$v[1]);
@@ -86,14 +86,14 @@ trait Search{
 			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filteres like created_at, created_by
 				if($mf['field_id'] == 'created_at'){
 					$documents = $documents->where('created_at', $mf['operator'], $mf['value']);
-				}	
+				}
 			continue;// no need to proceed further
 			}
 
             if($mf['operator'] == '='){
 				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
-				if(is_array($mf['value'])){ 
-					// this is for array of values passed through the query string 
+				if(is_array($mf['value'])){
+					// this is for array of values passed through the query string
 					// e.g. &meta_10[]=somevalue&meta_10[]=someothervalue
 					//print_r($mf['value']);exit;
 					foreach($mf['value'] as $v){
@@ -121,7 +121,7 @@ trait Search{
                 );
             }
             else if($mf['operator'] == 'contains'){
-		// find the type of meta field 
+		// find the type of meta field
 		$m_field = MetaField::find($mf['field_id']);
 		if ($m_field->type == 'TaxonomyTree'){
                 	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
@@ -208,7 +208,7 @@ trait Search{
 
 	    		//$analyzer = 'standard';
 	    		$analyzer = 'synonyms_analyzer';
-	
+
 				$title_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>4, 'analyzer'=>$analyzer];
 				$title_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
 				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
@@ -292,11 +292,11 @@ trait Search{
 					]
 				];
 
-			// add must match clause 
+			// add must match clause
 			if(!empty($request->must_match) && count($request->must_match) > 0){
 				Log::debug('Adding must match clause.');
 				foreach($request->must_match as $must_keyword){
-					$params['body']['query']['bool']['must'][] = 
+					$params['body']['query']['bool']['must'][] =
 										['match' => [
 											'text_content' => $must_keyword
 										]];
@@ -321,7 +321,7 @@ trait Search{
 		catch(\Exception $e){
 			// some error; switch to db search
 			Log::debug($elastic_index);
-			Log::debug($e->getMessage());	
+			Log::debug($e->getMessage());
 			return $this->searchDB($request);
 		}
             $document_ids = array();
@@ -348,7 +348,14 @@ trait Search{
 
 	//Log::debug(json_encode($document_ids));
 	Log::debug('Count before wherein: '.$documents->count());
-	Log::debug(@count($document_ids));
+
+
+	// Log::debug(@count($document_ids));
+    $document_ids = $document_ids ?? [];
+    Log::debug('document_ids count: ' . count($document_ids));
+
+
+
 	//Log::debug(json_encode($document_ids));
 	if(isset($document_ids) && count($document_ids) > 0){
         	$documents = $documents->whereIn('id', $document_ids);
@@ -357,7 +364,7 @@ trait Search{
 	//Log::debug($query);
 	Log::debug('Count: '.$documents->count());
 
-	$filtered_count = $documents->count(); 
+	$filtered_count = $documents->count();
 
 	$sort_column = empty($columns[@$request->order[0]['column']])?'':$columns[@$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
@@ -378,7 +385,7 @@ trait Search{
 		foreach($documents as $d){
 			$doc_ids[] = $d->id;
 		}
-		Log::debug('Doc ids in result: '.implode(",", $doc_ids));	
+		Log::debug('Doc ids in result: '.implode(",", $doc_ids));
 		//exit;
 	}
 	else{
@@ -392,7 +399,7 @@ trait Search{
 		->where('require_approval','=','1')->get();
 
 		if($request->is('api/*') || $request->return_format == 'raw'){
-			return 
+			return
         	 array(
             	'data'=>$documents,
 		'highlights'=>$highlights,
@@ -461,7 +468,7 @@ trait Search{
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)->where('require_approval','=','1')->get();
 	//
         // total number of viewable records
-        $total_documents = $documents->count(); 
+        $total_documents = $documents->count();
 
         // get title filtered documents
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
@@ -477,18 +484,18 @@ trait Search{
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){
             $documents = $documents->search($request->search['value']);
         }
-	// get approval exception 
-	// the exceptions will be removed from the models with ->whereNotIn 
+	// get approval exception
+	// the exceptions will be removed from the models with ->whereNotIn
 	//$approval_exceptions = $this->getApprovalExceptions($request, $documents);
 	$documents = $this->approvalFilter($request->collection_id, $documents);
 	$filtered_count = $documents->count(); //- count($approval_exceptions);
 
-    if(!empty($request->embedded)){ 		
+    if(!empty($request->embedded)){
 		$documents = $documents
 		->limit($request->length)->offset($request->start)->get();
        	$results_data = $this->datatableFormatResultsEmbedded(
-		array('request'=>$request, 
-		'documents'=>$documents, 
+		array('request'=>$request,
+		'documents'=>$documents,
 		'has_approval'=>$has_approval));
 	}
 	else{
@@ -505,7 +512,7 @@ trait Search{
    	        ->limit($length)->offset($request->start)->get();
 		}
 		if($request->is('api/*') || $request->return_format == 'raw'){
-			return 
+			return
         		array(
             	    	'data'=>$documents,
             	    	'draw'=>(int) $request->draw,
@@ -516,12 +523,12 @@ trait Search{
 		}
 		else{
         	$results_data = $this->datatableFormatResults(
-				array('request'=>$request, 
-				'documents'=>$documents, 
+				array('request'=>$request,
+				'documents'=>$documents,
 				'has_approval'=>$has_approval));
 		}
 	}
-        
+
         $results= array(
             'data'=>$results_data,
             'draw'=>(int) $request->draw,
@@ -560,25 +567,25 @@ trait Search{
 			return $documents;
 		}
 		else if($collection->content_type == 'Uploaded documents'){
-			if($collection->require_approval == 1){ 
+			if($collection->require_approval == 1){
 				/*
 				if(Auth::user() && Auth::user()->hasPermission($collection->id, 'APPROVE')){ // return all
 					return $documents;
 				}
 				else{ // return only approvedSKK
 				*/
-					$documents = $documents->whereNotNull('approved_on');	
+					$documents = $documents->whereNotNull('approved_on');
 					return $documents;
 				//}
 			}
-			else{ 
+			else{
 				return $documents;
 			}
 		}
 		/*
 	    $doc_col = $documents->get();
 	    $filtered_docs = $doc_col->filter(function($d, $key){
-		    if($d->collection->require_approval == 1 && 
+		    if($d->collection->require_approval == 1 &&
 			    !Auth::user()->hasPermission($d->collection->id, 'APPROVE') &&
 		    	    empty($d->approved_on)){
 			    return true;
@@ -600,10 +607,10 @@ trait Search{
 		if(!empty($request->collection_id)){
 			$collection = \App\Collection::find($request->collection_id);
 			$content_type = $collection->content_type;
-			$column_config = json_decode($collection->column_config);	
+			$column_config = json_decode($collection->column_config);
 		}
 		else{
-			// default content type 
+			// default content type
 			$content_type = 'Uploaded documents';
 		}
 
@@ -631,7 +638,7 @@ trait Search{
 			}
 		}
 	    }
-  	    else if ($content_type == 'Web resources'){		
+  	    else if ($content_type == 'Web resources'){
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
 	    }
 
@@ -701,12 +708,12 @@ trait Search{
 		}
 		try{
         $search_log_entry = new \App\Searches;
-        $search_log_entry->collection_id = $data['collection_id']; 
-        $search_log_entry->meta_query = json_encode($meta_query); 
-        $search_log_entry->search_query = $data['search_query']; 
-        $search_log_entry->user_id = $data['user_id']; 
-        $search_log_entry->ip_address = $data['ip_address']; 
-        $search_log_entry->results = $data['results']; 
+        $search_log_entry->collection_id = $data['collection_id'];
+        $search_log_entry->meta_query = json_encode($meta_query);
+        $search_log_entry->search_query = $data['search_query'];
+        $search_log_entry->user_id = $data['user_id'];
+        $search_log_entry->ip_address = $data['ip_address'];
+        $search_log_entry->results = $data['results'];
         $search_log_entry->save();
 		}
 		catch(\Exception $e){
@@ -769,9 +776,9 @@ trait Search{
 
     public function userCollections($perms = ['VIEW', 'MAINTAINER']){
         /*
-         Get all public collections 
+         Get all public collections
          plus collections to which the current user has access.
-         Access to members-only collection is determined by db_table:user_permissions 
+         Access to members-only collection is determined by db_table:user_permissions
         */
         $user_collections = [];
         $user_permissions = empty(Auth::user()) ? [] : Auth::user()->accessPermissions;
@@ -819,7 +826,7 @@ trait Search{
 		//$analyzer = $request->analyzer;
 		$keywords = $request->isa_search_parameter;
 		$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
-		
+
 		$search_results = $this->search($request);
 		//print_r($search_results); exit;
 		$search_results = json_decode($search_results);
@@ -844,9 +851,9 @@ trait Search{
         }
 		$highlights = json_decode(json_encode(@$search_results->highlights, true), true);
 		//Log::debug($highlights);exit;
-		return view('search-results',['collection'=>$collection, 
+		return view('search-results',['collection'=>$collection,
 			'results'=>$search_results->data,
-			'highlights'=> $highlights,  
+			'highlights'=> $highlights,
 			'filtered_results_count'=>$filtered_results_count,
 			'total_results_count'=>$total_results_count,
 			'activePage'=>'Documents',
