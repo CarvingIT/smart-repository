@@ -128,6 +128,36 @@ class DocumentController extends Controller
     //changes from here
 
 
+    public function getFile($collectionId, $documentId, $filename)
+{
+    // Fetching the document by ID and collection ID
+    $document = Document::where('id', $documentId)
+                        ->where('collection_id', $collectionId)
+                        ->firstOrFail();
+
+    // Decode
+    $filePaths = json_decode($document->path);
+
+    // Ensuring the requested file exists in the decoded array
+    if (!in_array($filename, array_map('basename', $filePaths))) {
+        abort(404, 'File not found in the document.');
+    }
+
+    // Locating the file using the storage path
+    $userId = auth()->id(); // Retrieve the authenticated user ID
+    $filePath = storage_path('app/public/smartarchive_assets/' . $collectionId . '/' . $userId . '/' . $filename);
+
+    // Checking if the file exists
+    if (!file_exists($filePath)) {
+        abort(404, 'File does not exist on the server.');
+    }
+
+    // Return the file for inline viewing or downloading
+    return response()->file($filePath);
+}
+
+
+
 
     public function uploadFile(Request $request)
     {
@@ -501,18 +531,42 @@ class DocumentController extends Controller
         }
     }
 
-    public function showDetails($collection_id, $document_id)
-    {
-        $c = \App\Collection::find($collection_id);
-        if ($c->content_type == 'Web resources') {
-            $d = \App\Url::find($document_id);
-        } else {
-            $d = Document::find($document_id);
-        }
 
-        $comments = \App\DocumentComment::where('document_id', $document_id)->orderByDesc('created_at')->get();
-        return view('document-details', ['document' => $d, 'collection' => $c, 'comments' => $comments, 'word_weights' => \App\Curation::getWordWeights($d->text_content)]);
+
+    public function showDetails($collection_id, $document_id)
+{
+    $c = \App\Collection::find($collection_id);
+    $d = null;
+
+    if ($c->content_type == 'Web resources') {
+        $d = \App\Url::find($document_id);
+    } else {
+        $d = Document::find($document_id);
     }
+
+    // Initialize the file paths array
+    $filePaths = [];
+    if ($d && $d->type == 'array') {
+        // Decode the JSON array of file paths
+        $filePaths = json_decode($d->path, true);
+    } else if ($d) {
+        // Single file scenario
+        $filePaths[] = $d->path;
+    }
+
+    $comments = \App\DocumentComment::where('document_id', $document_id)->orderByDesc('created_at')->get();
+
+    return view('document-details', [
+        'document' => $d,
+        'collection' => $c,
+        'comments' => $comments,
+        'filePaths' => $filePaths, // Pass file paths to the view
+        'word_weights' => \App\Curation::getWordWeights($d->text_content),
+    ]);
+}
+
+
+
 
     public function showRevisionDiff($document_id, $rev1_id, $rev2_id)
     {
