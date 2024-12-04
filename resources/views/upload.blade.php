@@ -8,7 +8,7 @@
 <script type="text/javascript">
 $(document).ready(function() {
     $('.selectsequence').select2();
-    
+
     @if(empty($document->id))
     // validation for either document or external link
     $(document).on('submit','form#upload-form', function(){
@@ -38,7 +38,7 @@ tinymce.init({
 		            file_picker_callback : function(callback, value, meta) {
       var x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
       var y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
-      
+
       var cmsURL = '/laravel-filemanager?editor=' + meta.fieldname;
       if (meta.filetype == 'image') {
         cmsURL = cmsURL + "&type=Images";
@@ -58,7 +58,7 @@ tinymce.init({
         }
       });
     }
-	
+
    });
 
 
@@ -101,7 +101,7 @@ tinymce.init({
 		   <label for="title" class="col-md-12 col-form-label text-md-right">Title</label>
 		   </div>
                     <div class="col-md-9">
-                    <input class="form-control" type="text" id="title" name="title" size="40" value="{{ old('title',$document->title) }}" 
+                    <input class="form-control" type="text" id="title" name="title" size="40" value="{{ old('title',$document->title) }}"
                     placeholder="If left blank, we shall guess!" maxlength="150" />
                     </div>
 		</div>
@@ -112,7 +112,7 @@ tinymce.init({
 		   </div>
     		   <div class="col-md-9">
 			   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
-    		   <input id="uploadfile" type="file" class="form-control-file" name="document"/> 
+    		   <input id="uploadfile" type="file" class="form-control-file" name="document[]" multiple/>
     		   </div>
 		</div>
 		@endif
@@ -123,11 +123,11 @@ tinymce.init({
 		   </div>
     		   <div class="col-md-9">
 				@if(empty($document->id))
-				Enter a link below only if there's no document to be uploaded. 
+				Enter a link below only if there's no document to be uploaded.
 				@endif
-    		   <input type="text" class="form-control-file" id="externallink" name="external_link" 
-					value="{{ old('external_link', $document->external_link) }}" 
-                    placeholder="https://..." maxlength="150" > 
+    		   <input type="text" class="form-control-file" id="externallink" name="external_link"
+					value="{{ old('external_link', $document->external_link) }}"
+                    placeholder="https://..." maxlength="150" >
     		   </div>
 		</div>
 		@endif
@@ -155,15 +155,15 @@ tinymce.init({
 	foreach($user_roles as $u_r){
 		$user_rol[] = $u_r->role_id;
 	}
-	@endphp		
+	@endphp
     @foreach($collection->meta_fields as $f)
-	@php 
+	@php
 		//$permission_intersection = [];
 		$role_intersection = [];
-		if(!empty($f->available_to)){ 
+		if(!empty($f->available_to)){
 			$available_to = explode(",",$f->available_to);
 			$role_intersection = array_intersect($user_rol,$available_to);
-		} 
+		}
 		@endphp
 	@if(!empty($role_intersection) || (!empty($f->available_to) && $f->available_to == '100'))
     <div class="form-group row">
@@ -185,7 +185,7 @@ tinymce.init({
         <input id="meta_field_{{$f->id}}" max="2999-12-31"  type="date" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 
         @elseif (in_array($f->type, array('Select', 'MultiSelect')))
-        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple @endif 
+        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple @endif
 		@if($f->is_required == 1) {{ ' required' }} @endif >
             @php
                 $options = explode(",", $f->options);
@@ -235,9 +235,9 @@ tinymce.init({
 							if (@in_array($t->id, $old_vals)){
 								$selected='selected="selected"';
 							}
-							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
+							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
                                 // we need not show the parents for selection
-                                // they should be automatically pupulated/set in the controller 
+                                // they should be automatically pupulated/set in the controller
 								//echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
 								$parents_tmp = $parents. $t->label .' - ';
 								getTree($children, $document, $f, $t->id, $parents_tmp);
@@ -249,7 +249,7 @@ tinymce.init({
 				}
 				}
 			@endphp
-        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple 
+        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple
 		@if($f->is_required == 1) {{ ' required' }} @endif >
 			@php
 			getTree($children, $document, $f, $f->options);
@@ -266,7 +266,7 @@ tinymce.init({
     @endforeach
 	<div class="form-group row">
 	   <div class="col-md-3 text-right">
-   		   <input id="same_meta_docs" type="checkbox" name="same_meta_docs_upload" value="1" /> 
+   		   <input id="same_meta_docs" type="checkbox" name="same_meta_docs_upload" value="1" />
 	   </div>
    	   <div class="col-md-9">
 	   		<label for="same_meta_docs" class="col-md-12 col-form-label">Upload more documents of the same field values above</label>
