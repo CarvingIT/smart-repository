@@ -228,7 +228,7 @@ Route::get('/admin/taxonomiesmanagement', 'TaxonomyController@index')->middlewar
 Route::post('/admin/taxonomies/delete','TaxonomyController@destroy')->middleware('admin');
 Route::get('autocomplete', 'TaxonomyController@autoComplete')->name('autocomplete');
 Route::get('/taxonomies/{id}/add','TaxonomyController@add')->middleware('admin');
-Route::post('/taxonomies/{id}/addstore','TaxonomyController@addstore')->middleware('admin')->name('taxonomies.addstore');   
+Route::post('/taxonomies/{id}/addstore','TaxonomyController@addstore')->middleware('admin')->name('taxonomies.addstore');
 
 // Templates Management
 Route::get('/admin/srtemplatemanagement', 'SRTemplateController@index')->middleware('admin');
@@ -272,4 +272,8 @@ Route::post('/collection/{collection_id}/document/{document_id}/add-related-docu
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function (){
     \UniSharp\LaravelFilemanager\Lfm::routes();
 }
+
 );
+
+Route::get('/collection/{collectionId}/document/{documentId}/file/{filename}', [DocumentController::class, 'getFile'])->name('documents.getFile');
+
