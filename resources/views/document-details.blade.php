@@ -208,6 +208,7 @@ $(document).ready(function()
         @endphp
 
 			@if($c->content_type == 'Uploaded documents')
+				<h4>
 				@if($document->type == 'application/pdf')
 					@if(env('ENABLE_PDF_READER') == 1)
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
@@ -243,7 +244,7 @@ $(document).ready(function()
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
 			{!! strip_tags($document->title) !!}
-			</a>
+			</a></h4>
 			</span>{{-- don't need this span --}}
                         </div>
 				<br />
