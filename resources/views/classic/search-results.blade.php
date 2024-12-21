@@ -69,8 +69,8 @@
 			   @endforeach		
 				@php
 					$result_title = strip_tags($result_title);
-					//$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code, $result_title, $collection->id, $result->id, @$result->type);	
-					$formatted_data = \App\Util::renderBlade($html_code, $display_meta, $result_title, $collection->id, $result->id, @$result->type);	
+					$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code, $result_title, $collection->id, $result->id, @$result->type);	
+					//$formatted_data = \App\Util::renderBlade($html_code, $display_meta, $result_title, $collection->id, $result->id, @$result->type);	
 					echo $formatted_data;
 					//echo Blade::render($html_code);
 				@endphp

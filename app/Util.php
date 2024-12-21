@@ -150,7 +150,6 @@ class Util{
 	public static function replacePlaceHolder($display_meta, $html_code, $result_title=null, $collection_id=null, $document_id=null, $document_type=null){
 	
 		//print_r($display_meta); echo $display_meta['status']; exit;
-		/*
 		$processed = $html_code;
 
 		$processed = str_replace("__title__",$result_title,$processed);
@@ -162,12 +161,6 @@ class Util{
 			$processed = str_replace($match_meta, $value, $processed);
 		}
 		return $processed;
-		*/
-
-		$php = Blade::compileString($html_code);
-		return render($php, ['display_meta' => $display_meta]);
-		
-		
 	}
 
 	public static function render($__php, $__data)
