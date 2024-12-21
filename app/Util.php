@@ -5,6 +5,9 @@ use Illuminate\Support\Facades\Log;
 use \App\Util;
 use \App\SRTemplate;
 
+use Symfony\Component\Debug\Exception\FatalThrowableError;
+use Illuminate\Support\Facades\Blade;
+
 class Util{
 	public static function createTextChunks($text, $length, $overlap){
 		$chunks = [];
@@ -145,7 +148,9 @@ class Util{
 
 	
 	public static function replacePlaceHolder($display_meta, $html_code, $result_title=null, $collection_id=null, $document_id=null, $document_type=null){
+	
 		//print_r($display_meta); echo $display_meta['status']; exit;
+		/*
 		$processed = $html_code;
 
 		$processed = str_replace("__title__",$result_title,$processed);
@@ -157,7 +162,64 @@ class Util{
 			$processed = str_replace($match_meta, $value, $processed);
 		}
 		return $processed;
+		*/
+
+		$php = Blade::compileString($html_code);
+		return render($php, ['display_meta' => $display_meta]);
+		
+		
 	}
+
+	public static function render($__php, $__data)
+{
+    $obLevel = ob_get_level();
+    ob_start();
+    extract($__data, EXTR_SKIP);
+    try {
+        eval('?' . '>' . $__php);
+    } catch (Exception $e) {
+        while (ob_get_level() > $obLevel) ob_end_clean();
+        throw $e;
+    } catch (Throwable $e) {
+        while (ob_get_level() > $obLevel) ob_end_clean();
+        throw new FatalThrowableError($e);
+    }
+    return ob_get_clean();
+}
+
+	public static function renderBlade($string, $data = null)
+{
+
+    if (!$data) {
+        $data = [];
+    }
+
+    $data['__env'] = app(\Illuminate\View\Factory::class);
+
+    $php = Blade::compileString($string);
+
+    $obLevel = ob_get_level();
+    ob_start();
+    extract($data, EXTR_SKIP);
+
+    try {
+        eval('?' . '>' . $php);
+    } catch (Exception $e) {
+        while (ob_get_level() > $obLevel) {
+            ob_end_clean();
+        }
+
+        throw $e;
+    } catch (Throwable $e) {
+        while (ob_get_level() > $obLevel) {
+            ob_end_clean();
+        }
+
+        throw new FatalThrowableError($e);
+    }
+
+    return ob_get_clean();
+}
 
 //
 }// class ends
