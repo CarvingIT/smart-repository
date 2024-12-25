@@ -267,7 +267,7 @@ $(document).ready(function()
 
 					@endforeach
 					@php
-                                        	$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code);
+                                        	//$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code);
                                         	//echo $formatted_data;
                                 	@endphp
 					<ul>
