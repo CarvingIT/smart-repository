@@ -197,16 +197,6 @@ $(document).ready(function()
                   <div class="row">
                     <div class="col-md-12">
                         <span id="doc-title" class="col-md-12"><!--h4-->
-			@php
-        $template_code = \App\SRTemplate::
-                where('collection_id',$collection->id)
-                ->where('template_name','Document Details')
-                ->first();
-        if(!empty($template_code->html_code)){
-        $html_code = $template_code->html_code;
-        }
-        @endphp
-
 			@if($c->content_type == 'Uploaded documents')
 				<h4>
 				@if($document->type == 'application/pdf')
@@ -256,37 +246,36 @@ $(document).ready(function()
 			@else
 				<div class="col-md-12 row">
 			@endif
-				   @foreach($document->collection->meta_fields as $meta_field)
-					@php 
-					$m = App\MetaFieldValue::where('document_id', $document->id)->where('meta_field_id', $meta_field->id)->first();
-					if(!$m) continue;
-					$meta_field_type = $meta_field->type;
-			 		@endphp
-                        		@if(!empty($meta_labels[$m->meta_field_id]))
+					@php $display_meta = [];@endphp
+					@foreach($document->collection->meta_fields as $meta_field)
+						@php
+                                        		$placeholder = strtolower($meta_field->placeholder);
+                                        		$meta_placeholder = preg_replace("/ /","-",$placeholder);
+                                        		$display_meta[$meta_placeholder]=$document->meta_value($meta_field->id);
+                                		@endphp
 
-							@php
-								$extra_attributes = empty($m->meta_field->extra_attributes) ? null : json_decode($m->meta_field->extra_attributes);
-								$w = empty($extra_attributes->width_on_info_page)? 12 : $extra_attributes->width_on_info_page;
-								$show_on_details_page = empty($extra_attributes->show_on_details_page)? '' : $extra_attributes->show_on_details_page;
-								$classname = @$extra_attributes->results_classname;
-								if($show_on_details_page == 0) continue;
-							@endphp
-			                   <div class="col-md-{{ $w }}">
+					@endforeach
+					@php
+                                        	//$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code);
+                                        	//echo $formatted_data;
+                                	@endphp
+					<ul>
+					<li>{{ $display_meta['document-short-name'] }} ({{ $display_meta['id-as-per-document'] }})</li>
+					<li>By {{ $display_meta['issuing-authority'] }} on {{ $display_meta['date-of-issuance'] }}</li>
+					<li>{{ $display_meta['sector'] }} {{ $display_meta['type-of-document/-document-type-detail'] }}</li>
+					<li>Applicable 
+						@if(!empty($display_meta['start-year-of-consideration'])) 
+							from {{ $display_meta['start-year-of-consideration'] }} 
+						@endif
+						@if(!empty($display_meta['end-year-of-consideration']))
+							to {{ $display_meta['end-year-of-consideration'] }}
+						@endif
+					</li>
+					<li>{{ $display_meta['petitioner'] }}</li>
+					<li>{{ $display_meta['respondents'] }}</li>
+					<li>{{ $display_meta['additional-tags'] }}</li>
+					</ul>
 
-			                   <label for="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">
-				           <div class="{{ $classname }}">&nbsp;</div>
-						{{ $meta_labels[$m->meta_field_id] }}</label>
-							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
-                            					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
-							@elseif ($m->meta_field->type ==  'TaxonomyTree')
-                            					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $document->meta_value($m->meta_field_id) }}</span>
-							@else
-                            					<div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! html_entity_decode($m->value) !!}</div>
-							@endif
-                            		</div>
-				<br />
-                        		@endif
-                        		@endforeach
 
 			@if(\Auth::user() && ($c->require_approval == 1))
                   	<div class="col-md-12">
