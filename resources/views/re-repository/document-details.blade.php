@@ -10,6 +10,7 @@
 	$col_config = json_decode($c->column_config);
 @endphp
 @push('js')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <link rel="stylesheet" href="/css/jquery-ui.css">
 <script src="/js/jquery-ui.js"></script>
 <style>
@@ -209,12 +210,25 @@ $(document).ready(function()
 				<br />
 				</div>
 
+					@php $display_meta = [];@endphp
+					@foreach($document->collection->meta_fields as $meta_field)
+						@php
+                                        		$placeholder = strtolower($meta_field->placeholder);
+                                        		$meta_placeholder = preg_replace("/ /","-",$placeholder);
+                                        		$display_meta[$meta_placeholder]=$document->meta_value($meta_field->id);
+                                		@endphp
+
+					@endforeach
 
                   <div class="row">
                     <div class="col-md-12">
-                        <span id="doc-title" class="col-md-12"><!--h4-->
+                       <h4 class="d-flex justify-content-start align-items-center">
+                         <span class='{{ $display_meta['status'] }}' >
+                                                <i class="fa fa-file"></i>
+                                                </span>
+                        <!--span id="doc-title" class="col-md-12"-->
 			@if($c->content_type == 'Uploaded documents')
-				<h4>
+				<!--h4-->
 				@if($document->type == 'application/pdf')
 					@if(env('ENABLE_PDF_READER') == 1)
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
@@ -224,7 +238,8 @@ $(document).ready(function()
             				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_new">
 					@endif
 				@elseif($document->type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
-					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
+					<img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
 					<div style="text-align:center;">
                         		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}</h3>
@@ -251,7 +266,7 @@ $(document).ready(function()
 			@endif
 			{!! strip_tags($document->title) !!}
 			</a></h4>
-			</span>{{-- don't need this span --}}
+			<!--/span-->{{-- don't need this span --}}
                         </div>
 				<br />
 
@@ -262,15 +277,6 @@ $(document).ready(function()
 			@else
 				<div class="col-md-12 row">
 			@endif
-					@php $display_meta = [];@endphp
-					@foreach($document->collection->meta_fields as $meta_field)
-						@php
-                                        		$placeholder = strtolower($meta_field->placeholder);
-                                        		$meta_placeholder = preg_replace("/ /","-",$placeholder);
-                                        		$display_meta[$meta_placeholder]=$document->meta_value($meta_field->id);
-                                		@endphp
-
-					@endforeach
 					<ul>
 					<li>{{ $display_meta['document-short-name'] }} ({{ $display_meta['id-as-per-document'] }})</li>
 					<li>By {{ $display_meta['issuing-authority'] }} on {{ $display_meta['date-of-issuance'] }}</li>
