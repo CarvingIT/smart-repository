@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <div class="row gy-4 pricing-item" data-aos-delay="100">
 	<div class="col-lg-12 text-right">
 	</div>
@@ -14,17 +15,34 @@
 	.parent-tag{
 		background-color:#aaa;
 	}
+
+.Draft {
+  color: grey;
+  padding-right: 7px;
+}
+
+.Active {
+  color: green;
+  padding-right: 7px;
+}
+
+.Repealed {
+  color: red;
+  padding-right: 7px;
+}
+
+
+h4 {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+h4 a {
+  color: #3f819e;
+  text-decoration: none; 
+}
 </style>
 	@if (!empty($results))
-	@php
-	$template_code = \App\SRTemplate::
-		where('collection_id',$collection->id)
-		->where('template_name','Search Result')
-		->first();
-	if(!empty($template_code->html_code)){
-	$html_code = $template_code->html_code;
-	}		
-	@endphp
 	@foreach($results as $result)
 		@php 
 			$document = \App\Document::find($result->id);
@@ -58,7 +76,6 @@
 		</h4>
 		</div>
 		<div class="row">
-			@if(!empty($html_code))
 				@php $display_meta = [];@endphp
 			   @foreach ($meta_fields as $m)
 				@php 
@@ -69,37 +86,42 @@
 			   @endforeach		
 				@php
 					$result_title = strip_tags($result_title);
-					$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code, $result_title, $collection->id, $result->id, @$result->type);	
-					//$formatted_data = \App\Util::renderBlade($html_code, $display_meta, $result_title, $collection->id, $result->id, @$result->type);	
-					echo $formatted_data;
-					//echo Blade::render($html_code);
 				@endphp
+					<div class="row">
+					<div class="col-lg-12">
+						<h4 class="d-flex justify-content-start align-items-center">
+        					<span class='{{ $display_meta['status'] }}' >
+            					<i class="fa fa-file"></i>
+        					</span>
+        					<a href='/collection/{{ $collection->id }}/document/{{ $result->id }}/details'>{{ $result_title }}</a>
+						</h4>
+					</div>
+					</div>
 
-
-			@else
-			   @foreach ($meta_fields as $m)
-				@if (empty($m->results_display_order)) 
-					@continue
-				@else
-					@php
-						$extra_attributes = json_decode($m->extra_attributes);
-						$w = @$extra_attributes->width_on_info_page;
-						$classname = @$extra_attributes->results_classname;
-					@endphp
-					@if (!empty($document->meta_value($m->id)))
-					{{-- $m->label--}}
-					<div class="col-lg-{{ $w }}">
-					<div class="{{ $classname }}">&nbsp;</div>
-						@if ($m->type == 'Textarea')
-						{{ $document->meta_value($m->id) }}
-						@else
-						<strong>{{ $document->meta_value($m->id) }}</strong>
-						@endif
+					@if(!empty($display_meta['state-name']) || !empty($display_meta['issuing-authority']))
+					<div class="col-lg-4">
+						<i class="fa fa-globe" style="margin-right: 5px;"></i>{{ $display_meta['state-name'] }} ({{ $display_meta['issuing-authority'] }})
 					</div>
 					@endif
-				@endif
-			   @endforeach
-			@endif
+					@if(!empty($display_meta['date-of-issuance']))
+					<div class="col-lg-4">
+						<i class="fa fa-calendar" style="margin-right: 5px;"></i>{{ $display_meta['date-of-issuance'] }}
+					</div>
+					@endif
+					<div class="row">
+					@if(!empty($display_meta['sector']))
+					  <div class="col-lg-4">
+					    <i class="fa fa-tag" style="margin-right: 5px;"></i> {{ $display_meta['sector'] }}
+					  </div>
+					@endif
+					@if(!empty($display_meta['document-type']))
+					  <div class="col-lg-4">
+					    <i class="fa fa-tag" style="margin-right: 5px;"></i>{{ $display_meta['document-type'] }}
+					  </div>
+					</div>
+					@endif
+					<div class="row">&nbsp;</div>
+
 					<div>&nbsp;</div>
 		</div><!-- row -->
 

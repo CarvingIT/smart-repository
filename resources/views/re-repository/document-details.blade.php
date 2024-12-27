@@ -12,6 +12,20 @@
 @push('js')
 <link rel="stylesheet" href="/css/jquery-ui.css">
 <script src="/js/jquery-ui.js"></script>
+<style>
+.Draft {
+  color: grey;
+}
+
+.Active {
+  color: green;
+}
+
+.Repealed {
+  color: red;
+}
+</style>
+
 <script>
 /*
  $( function() {
@@ -118,6 +132,8 @@ $(document).ready(function()
 </script>
 @endif
 @endpush
+
+
 @section('content')
 <div class="container">
 <div class="container-fluid">
@@ -255,10 +271,6 @@ $(document).ready(function()
                                 		@endphp
 
 					@endforeach
-					@php
-                                        	//$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code);
-                                        	//echo $formatted_data;
-                                	@endphp
 					<ul>
 					<li>{{ $display_meta['document-short-name'] }} ({{ $display_meta['id-as-per-document'] }})</li>
 					<li>By {{ $display_meta['issuing-authority'] }} on {{ $display_meta['date-of-issuance'] }}</li>
