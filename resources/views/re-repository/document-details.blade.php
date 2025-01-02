@@ -28,7 +28,6 @@
 </style>
 
 <script>
-/*
  $( function() {
       $( "#accordion" ).accordion({
         'collapsible': true,
@@ -36,7 +35,7 @@
         'heightStyle': "content",
     });
   } );
- */
+
 function randomString(length) {
    var result           = '';
    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -223,9 +222,6 @@ $(document).ready(function()
                   <div class="row">
                     <div class="col-md-12">
                        <h4 class="d-flex justify-content-start align-items-center">
-                         <span class='{{ $display_meta['status'] }}' >
-                                                <i class="fa fa-file"></i>
-                                                </span>
                         <!--span id="doc-title" class="col-md-12"-->
 			@if($c->content_type == 'Uploaded documents')
 				<!--h4-->
@@ -265,6 +261,9 @@ $(document).ready(function()
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
 			{!! strip_tags($document->title) !!}
+                         <span class='{{ $display_meta['status'] }}' >
+                               <i class="fa fa-file"></i>
+                         </span>
 			</a></h4>
 			<!--/span-->{{-- don't need this span --}}
                         </div>
@@ -341,24 +340,24 @@ $(document).ready(function()
 
 				</div>
 				@if ($document->related_documents->count() > 0 || $document->related_to->count() > 0)
-				<div class="col-md-3">
-				<h5>Related Documents</h5>
-					{{ $document->title }}<br/>
-				@php
+				<div class="col-md-3" id="accordion">
+					<h5>Related Documents</h5>
+					<p style="background-color:#E6E9E3;border:none;">
+					{{ $document->title }}<br /><br />
+					@php
 					$child_id = $document->id;
 					$parent = App\RelatedDocument::where('related_document_id',$child_id)->get();
 					foreach($parent as $p){
 						$p_doc = App\Document::where('id', $p->document_id)->first();
-				@endphp
-					<a href="/collection/{{ $p_doc->collection->id }}/document/{{ $p_doc->id }}/details">{{ $p_doc->title }}</a><br/>
-				@php
+					        echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc->title.'</a><br /><br />';
 					}
-				@endphp
-				<ul class="related-docs">
-				@foreach ($document->related_documents as $r_d)
-					<li><a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details">{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}</a></li>
-				@endforeach
-				</ul>
+					@endphp
+					<!--ul class="related-docs"-->
+						@foreach ($document->related_documents as $r_d)
+							<a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}</a><br /><br />
+						@endforeach
+					<!--/ul-->
+					</p>
 				</div>
 				@endif
 			</div><!-- row ends -->
@@ -416,7 +415,7 @@ $(document).ready(function()
 						@if(count($all_audits) == 0)
 							<p>No changes have taken place to the meta information of this document.</p>
 						@else
-						<div class="col-md-12" id="accordion">
+						<div class="col-md-12">
 						@foreach($all_audits as $k=>$va)
 						<h3>{{ $k }}</h3>
 						<div>
@@ -475,7 +474,7 @@ $(document).ready(function()
 						@endphp
 
 						@if(Auth::user() && Auth::user()->hasRole('admin'))
-							<div class="col-md-12" id="accordion">
+							<div class="col-md-12">
 								<h3>Actions</h3>
 								<form method="post" action="/collection/move_document">
 								@csrf
