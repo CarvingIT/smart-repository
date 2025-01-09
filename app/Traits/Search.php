@@ -9,6 +9,7 @@ use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Log;
 use App\Collection;
 use App\MetaField;
+use Illuminate\Support\Carbon;
 
 trait Search{
     // wrapper function for search
@@ -32,7 +33,9 @@ trait Search{
                 'search_query'=> $request->search['value'],
                 'meta_query'=> $meta_query,
 				'ip_address' => $request->ip(),
-                'results'=>$search_results['recordsFiltered']);
+                'results'=>$search_results['recordsFiltered'],
+                'added_on' => Carbon::now()
+                );
 	    	if(!empty($request->collection_id)){
             	$this->logSearchQuery($search_log_data);
 	    	}
@@ -708,12 +711,13 @@ trait Search{
 		}
 		try{
         $search_log_entry = new \App\Searches;
-        $search_log_entry->collection_id = $data['collection_id'];
-        $search_log_entry->meta_query = json_encode($meta_query);
-        $search_log_entry->search_query = $data['search_query'];
-        $search_log_entry->user_id = $data['user_id'];
-        $search_log_entry->ip_address = $data['ip_address'];
-        $search_log_entry->results = $data['results'];
+        $search_log_entry->collection_id = $data['collection_id']; 
+        $search_log_entry->meta_query = json_encode($meta_query); 
+        $search_log_entry->search_query = $data['search_query']; 
+        $search_log_entry->user_id = $data['user_id']; 
+        $search_log_entry->ip_address = $data['ip_address']; 
+        $search_log_entry->results = $data['results']; 
+        $search_log_entry->added_on = $data['added_on']; 
         $search_log_entry->save();
 		}
 		catch(\Exception $e){
