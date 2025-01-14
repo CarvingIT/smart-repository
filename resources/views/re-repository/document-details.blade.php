@@ -261,9 +261,9 @@ $(document).ready(function()
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
 			{!! strip_tags($document->title) !!}
-                         <span class='{{ $display_meta['status'] }}' >
+                         <!--span class='{{ $display_meta['status'] }}' >
                                <i class="fa fa-file"></i>
-                         </span>
+                         </span-->
 			</a></h4>
 			<!--/span-->{{-- don't need this span --}}
                         </div>
@@ -277,10 +277,27 @@ $(document).ready(function()
 				<div class="col-md-12 row">
 			@endif
 					<ul>
-					<li>{{ $display_meta['document-short-name'] }} ({{ $display_meta['id-as-per-document'] }})</li>
-					<li>By {{ $display_meta['issuing-authority'] }} on {{ $display_meta['date-of-issuance'] }}</li>
+					<li>
+						@if(!empty($display_meta['document-short-name']))
+						{{ $display_meta['document-short-name'] }} 
+						@endif
+						@if(!empty($display_meta['id-as-per-document']))
+						({{ $display_meta['id-as-per-document'] }})
+						@endif
+					</li>
+					<li>
+						@if(!empty($display_meta['issuing-authority']))
+						By {{ $display_meta['issuing-authority'] }} 
+						@endif
+						@if(!empty($display_meta['date-of-issuance']))
+						on {{ $display_meta['date-of-issuance'] }}
+						@endif
+					</li>
 					<li>{{ $display_meta['sector'] }} {{ $display_meta['type-of-document/-document-type-detail'] }}</li>
-					<li>Applicable 
+					<li>
+						@if(!empty($display_meta['start-year-of-consideration']) || !empty($display_meta['end-year-of-consideration'])) 
+						Applicable 
+						@endif
 						@if(!empty($display_meta['start-year-of-consideration'])) 
 							from {{ $display_meta['start-year-of-consideration'] }} 
 						@endif
@@ -343,18 +360,33 @@ $(document).ready(function()
 				<div class="col-md-3" id="accordion">
 					<h5>Related Documents</h5>
 					<p style="background-color:#E6E9E3;border:none;">
-					{{ $document->title }}<br /><br />
+					{{ $display_meta['document-short-name'] }}<br /><br />
 					@php
 					$child_id = $document->id;
 					$parent = App\RelatedDocument::where('related_document_id',$child_id)->get();
 					foreach($parent as $p){
 						$p_doc = App\Document::where('id', $p->document_id)->first();
-					        echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc->title.'</a><br /><br />';
+						foreach($p_doc->collection->meta_fields as $meta_field){
+                                        		$p_doc_placeholder = strtolower($meta_field->placeholder);
+                                        		$p_doc_meta_placeholder = preg_replace("/ /","-",$p_doc_placeholder);
+							$p_doc_meta[$p_doc_meta_placeholder] = $p_doc->meta_value($meta_field->id);	
+						}
+					        echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc->title.$p_doc_meta['document-short-name'].'</a><br /><br />';
 					}
 					@endphp
 					<!--ul class="related-docs"-->
+						@php $r_d_doc= []; @endphp
 						@foreach ($document->related_documents as $r_d)
-							<a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}</a><br /><br />
+						@php 
+						$r_d_doc = App\Document::where('id',$r_d->related_document_id)->first();
+						foreach($r_d_doc->collection->meta_fields as $meta_field){
+                                        		$r_d_placeholder = strtolower($meta_field->placeholder);
+                                        		$r_d_meta_placeholder = preg_replace("/ /","-",$r_d_placeholder);
+							$r_d_meta[$r_d_meta_placeholder] = $r_d_doc->meta_value($meta_field->id);	
+						}
+						@endphp
+							<!--a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}</a><br /><br /-->
+							<a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ $r_d_meta['document-short-name'] }}</a><br /><br />
 						@endforeach
 					<!--/ul-->
 					</p>

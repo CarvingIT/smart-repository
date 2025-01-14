@@ -86,7 +86,7 @@ tinymce.init({
 		   </div>
                     <div class="col-md-9">
                     <input class="form-control" type="text" id="title" name="title" size="40" value="@if(!empty($document->id)){{ html_entity_decode($document->title) }}@endif" 
-                    placeholder="If left blank, we shall guess!" maxlength="150" />
+                    placeholder="If left blank, we shall guess!" maxlength="300" />
                     </div>
 		</div>
 		@if(empty($document->id) || $document->type != 'N/A')
