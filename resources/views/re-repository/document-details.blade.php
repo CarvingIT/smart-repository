@@ -261,9 +261,9 @@ $(document).ready(function()
 			<a href="{{ $document->url }}" target="_new" style="text-decoration:underline;">
 			@endif
 			{!! strip_tags($document->title) !!}
-                         <span class='{{ $display_meta['status'] }}' >
+                         <!--span class='{{ $display_meta['status'] }}' >
                                <i class="fa fa-file"></i>
-                         </span>
+                         </span-->
 			</a></h4>
 			<!--/span-->{{-- don't need this span --}}
                         </div>
