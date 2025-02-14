@@ -371,7 +371,7 @@ $(document).ready(function()
                                         		$p_doc_meta_placeholder = preg_replace("/ /","-",$p_doc_placeholder);
 							$p_doc_meta[$p_doc_meta_placeholder] = $p_doc->meta_value($meta_field->id);	
 						}
-					        echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc->title.$p_doc_meta['document-short-name'].'</a><br /><br />';
+					        echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc_meta['document-short-name'].'</a><br /><br />';
 					}
 					@endphp
 					<!--ul class="related-docs"-->
