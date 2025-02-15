@@ -184,7 +184,7 @@ function goToPage(page){
 				$checked = 'checked';
 				$display = '';
 	 		}
-        	if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
+        if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
 				if(empty($t->parent_id)){
 					echo "By ".$t->label."<br /><br />";
 				}
@@ -192,7 +192,13 @@ function goToPage(page){
 					$tid = $t->id;
 					// get compare with query string parameter to mark as checked
 					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
+			$meta_values_filter = \App\MetaField::find($meta_id);
+			if($meta_values_filter->type_of_filter == 'radio'){
+                	echo '<input class="ch-child-of-'.$parent_id.'" type="radio" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+			}
+			else{
                 	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+			}
 					echo '</div>';
 				}
           		getTree($children, $rmfv_map, $t->id, $meta_id);
@@ -209,7 +215,15 @@ function goToPage(page){
 				//echo '<div class="form-check ct-sub child-of-'.$parent_id.'" '.$display.'>';
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
-                echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+				//echo $meta_id;
+				$meta_values_filter = \App\MetaField::find($meta_id);
+				//echo $meta_values_filter->type_of_filter;
+			if($meta_values_filter->type_of_filter == 'radio'){
+                	echo '<input class="ch-child-of-'.$parent_id.'" type="radio" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+			}
+			else{
+                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+			}
 				echo '</div>';
              }
          } // foreach 
