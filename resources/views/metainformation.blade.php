@@ -251,6 +251,21 @@ function showMetaFieldForm(){
                     </div>
                    </div>
 
+		<!-- Type of filter -->
+                   <div class="form-group row">
+		   <div class="col-md-4">
+                   <label for="type" class="col-md-12 col-form-label text-md-right">Filter type</label> 
+                   </div>
+                    <div class="col-md-8">
+                   	<input type="radio" name="type_of_filter" id="type_of_filter" class="form-control1" value="radio" 
+					@if($edit_field->type_of_filter == 'radio') {{ 'checked' }} @endif
+					/> Radio Button
+                    	<input type="radio" name="type_of_filter" id="type_of_filter" class="form-control1" value="radio" 
+					@if($edit_field->type_of_filter == 'checkbox') {{ 'checked' }} @endif
+					/> Checkbox 
+                    </div>
+                   </div>
+
                    <div class="form-group row">
 				   <div class="col-md-4">
                    </div>
@@ -275,7 +290,7 @@ function showMetaFieldForm(){
                    </div>
 
                    <div class="form-group row" id="is_filter_div">
-				   <div class="col-md-4">
+		   <div class="col-md-4">
                    </div>
                     <div class="col-md-8">
                     <input type="checkbox" name="is_filter" id="is_filter" class="form-control1" value="1" 
@@ -284,6 +299,7 @@ function showMetaFieldForm(){
                     <label for="is_required">Is filter</label> 
                     </div>
                    </div>
+
 
                    <div class="form-group row mb-0"><div class="col-md-12 offset-md-4">
 								<button type="submit" class="btn btn-primary">
