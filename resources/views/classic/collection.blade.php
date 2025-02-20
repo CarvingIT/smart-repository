@@ -21,6 +21,16 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+.search-clear-btn {
+    position: absolute;
+    top: 50%;
+    right: 170px;
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-weight: bold;
+    color: #888;
+    font-size: 16px;
+  }
 </style>
 <script>
 $(document).ready(function() {
@@ -206,7 +216,8 @@ function goToPage(page){
 					$checked = "checked";
 					$display = '';
 				}
-				echo '<div class="form-check ct-sub child-of-'.$parent_id.'" '.$display.'>';
+				//echo '<div class="form-check ct-sub child-of-'.$parent_id.'" '.$display.'>';
+				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
                 echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 				echo '</div>';
@@ -264,6 +275,7 @@ function goToPage(page){
 			<!--
 			<label for="collection_search">{{ __('Search data') }}</label>
 			-->
+<span class="search-clear-btn" onclick="document.getElementById('collection_search').value = ''">×</span>
 		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" placeholder="Enter keywords and press SEARCH."/>
 		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
 			<input type="button" value="Search" name="isa_search" class="btn btn-sm btn-primary search" onclick="reloadSearchResults()">
