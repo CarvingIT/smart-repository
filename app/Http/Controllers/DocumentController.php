@@ -242,6 +242,10 @@ class DocumentController extends Controller
 
     // Validation function: moved validation logic here
     private function validateUploadedData(Request $request) {
+        //print_r($request->document);
+        //exit;
+
+        
         // $messages = [];
         // $errors = [];
         $file_type = '';
@@ -249,8 +253,13 @@ class DocumentController extends Controller
         // Filesize validation
         $size_limit = ini_get("upload_max_filesize");
         $actual_size = $this->return_bytes($size_limit); // Convert size limit to bytes
-        $validator = Validator::make($request->all(), [
-            'document' => 'file|max:' . $actual_size
+
+        foreach($request->document as $doc_upload){
+
+        //$validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->document, [
+            //'document' => 'file|max:' . $actual_size
+            $doc_upload => 'file|max:' . $actual_size
         ]);
         if ($validator->fails()) {
             return ['status' => 'failure', 'errors' => ['File size exceeded. The file size should not be more than ' . $size_limit . 'B.']];
@@ -267,14 +276,18 @@ class DocumentController extends Controller
             $file_type = env('FILE_EXTENSIONS_TO_UPLOAD', 'ppt,pptx,doc,docx,jpg,png,pdf,txt');
         }
         $validator = Validator::make($request->all(), [
-            'document' => 'file|mimes:' . $file_type
+            //'document' => 'file|mimes:' . $file_type
+            $doc_upload => 'file|mimes:' . $file_type
         ]);
         if ($validator->fails()) {
             return ['status' => 'failure', 'errors' => ['File type must be one of ' . $file_type]];
         }
 
+        } // foreach for $document i.e. $doc_upload ends
+
         return ['status' => 'success'];
     }
+
 
     // Main upload function to handle redirection and status messaging
     public function upload(Request $request) {
@@ -282,6 +295,7 @@ class DocumentController extends Controller
         $request->flash();
 
         // Call the uploadFile method
+
         $upload_status = $this->uploadFile($request);
         if (!empty($upload_status['messages'])) {
             Session::flash('alert-success', implode(" ", $upload_status['messages']));

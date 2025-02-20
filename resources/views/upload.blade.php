@@ -112,7 +112,7 @@ tinymce.init({
 		   </div>
     		   <div class="col-md-9">
 			   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
-    		   <input id="uploadfile" type="file" class="form-control-file" name="document"/> 
+    		   <input id="uploadfile" type="file" class="form-control-file" name="document[]" multiple/> 
     		   </div>
 		</div>
 		@endif
