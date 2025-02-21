@@ -360,21 +360,18 @@ $(document).ready(function()
 				<div class="col-md-3" id="accordion">
 					<h5>Related Documents</h5>
 					<p style="background-color:#E6E9E3;border:none;">
-					{{ $display_meta['document-short-name'] }}<br /><br />
+					{{-- $display_meta['document-short-name'] --}}
 					@php
-					$child_id = $document->id;
-					$parent = App\RelatedDocument::where('related_document_id',$child_id)->get();
-					foreach($parent as $p){
-						$p_doc = App\Document::where('id', $p->document_id)->first();
+						$display_docs = [];
+						$p_doc = App\Document::where('id', $document->id)->first();
 						foreach($p_doc->collection->meta_fields as $meta_field){
                                         		$p_doc_placeholder = strtolower($meta_field->placeholder);
                                         		$p_doc_meta_placeholder = preg_replace("/ /","-",$p_doc_placeholder);
 							$p_doc_meta[$p_doc_meta_placeholder] = $p_doc->meta_value($meta_field->id);	
 						}
-					        echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc_meta['document-short-name'].'</a><br /><br />';
-					}
+					        //echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc_meta['document-short-name'].'</a><br /><br />';
+						$display_docs[$p_doc_meta['document-heirarchy']][] = array('doc_short_name'=>$p_doc_meta['document-short-name'], 'collection_id'=>$p_doc->collection->id, 'doc_id'=>$p_doc->id) ;
 					@endphp
-					<!--ul class="related-docs"-->
 						@php $r_d_doc= []; @endphp
 						@foreach ($document->related_documents as $r_d)
 						@php 
@@ -384,11 +381,16 @@ $(document).ready(function()
                                         		$r_d_meta_placeholder = preg_replace("/ /","-",$r_d_placeholder);
 							$r_d_meta[$r_d_meta_placeholder] = $r_d_doc->meta_value($meta_field->id);	
 						}
+						$display_docs[$r_d_meta['document-heirarchy']][] = array('doc_short_name'=>$r_d_meta['document-short-name'], 'collection_id' => $r_d->related_document->collection->id, 'doc_id'=> $r_d->related_document->id);
 						@endphp
-							<!--a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ empty($r_d->title) ? $r_d->related_document->title: $r_d->title }}</a><br /><br /-->
-							<a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ $r_d_meta['document-short-name'] }}</a><br /><br />
+						<!--a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ $r_d_meta['document-short-name'] }}</a><br /><br /-->
 						@endforeach
-					<!--/ul-->
+					<br />
+					
+					<a href="/collection/{{ $display_docs['Parent'][0]['collection_id'] }}/document/{{ $display_docs['Parent'][0]['doc_id']  }}/details" style="color:#3f819e;">{{ $display_docs['Parent'][0]['doc_short_name'] }}</a><br /><br />
+					@foreach($display_docs['Child'] as $doc_details)
+					<a href="/collection/{{ $doc_details['collection_id'] }}/document/{{ $doc_details['doc_id']  }}/details" style="color:#3f819e;">{{ $doc_details['doc_short_name'] }}</a><br /><br />
+					@endforeach
 					</p>
 				</div>
 				@endif
