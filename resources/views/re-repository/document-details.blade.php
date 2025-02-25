@@ -357,23 +357,26 @@ $(document).ready(function()
 
 				</div>
 				@if ($document->related_documents->count() > 0 || $document->related_to->count() > 0)
-				<div class="col-md-3" id="accordion">
+				<!--div class="col-md-3" id="accordion"-->
+				<div class="col-md-3">
 					<h5>Related Documents</h5>
-					<p style="background-color:#E6E9E3;border:none;">
+					<!--p style="background-color:#E6E9E3;border:none;"-->
 					{{-- $display_meta['document-short-name'] --}}
 					@php
 						$display_docs = [];
-						$p_doc = App\Document::where('id', $document->id)->first();
+						//$parent = App\RelatedDocument::where('document_id', $document->id)->first();
+						$p_doc = App\Document::where('id',$document->id)->first();
 						foreach($p_doc->collection->meta_fields as $meta_field){
                                         		$p_doc_placeholder = strtolower($meta_field->placeholder);
                                         		$p_doc_meta_placeholder = preg_replace("/ /","-",$p_doc_placeholder);
 							$p_doc_meta[$p_doc_meta_placeholder] = $p_doc->meta_value($meta_field->id);	
 						}
-					        //echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc_meta['document-short-name'].'</a><br /><br />';
-						$display_docs[$p_doc_meta['document-heirarchy']][] = array('doc_short_name'=>$p_doc_meta['document-short-name'], 'collection_id'=>$p_doc->collection->id, 'doc_id'=>$p_doc->id) ;
+					        echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc_meta['document-short-name'].'</a><br /><br />';
 					@endphp
-						@php $r_d_doc= []; @endphp
-						@foreach ($document->related_documents as $r_d)
+						@php $r_d_doc= []; $display_doc = []; @endphp
+
+						@if(!$document->related_documents->isEmpty())
+						@foreach ($document->related_documents->sortBy('display_order') as $r_d)
 						@php 
 						$r_d_doc = App\Document::where('id',$r_d->related_document_id)->first();
 						foreach($r_d_doc->collection->meta_fields as $meta_field){
@@ -381,17 +384,39 @@ $(document).ready(function()
                                         		$r_d_meta_placeholder = preg_replace("/ /","-",$r_d_placeholder);
 							$r_d_meta[$r_d_meta_placeholder] = $r_d_doc->meta_value($meta_field->id);	
 						}
-						$display_docs[$r_d_meta['document-heirarchy']][] = array('doc_short_name'=>$r_d_meta['document-short-name'], 'collection_id' => $r_d->related_document->collection->id, 'doc_id'=> $r_d->related_document->id);
+						if(preg_match("/1st Amendment/i",$r_d->title)){
+							$display_doc['1st_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
+						if(preg_match("/2nd Amendment/i",$r_d->title)){
+							$display_doc['2nd_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
+						if(preg_match("/3rd Amendment/i",$r_d->title)){
+							$display_doc['3rd_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
+						if(preg_match("/4th Amendment/i",$r_d->title)){
+							$display_doc['4th_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
 						@endphp
-						<!--a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ $r_d_meta['document-short-name'] }}</a><br /><br /-->
 						@endforeach
-					<br />
-					
-					<a href="/collection/{{ $display_docs['Parent'][0]['collection_id'] }}/document/{{ $display_docs['Parent'][0]['doc_id']  }}/details" style="color:#3f819e;">{{ $display_docs['Parent'][0]['doc_short_name'] }}</a><br /><br />
-					@foreach($display_docs['Child'] as $doc_details)
-					<a href="/collection/{{ $doc_details['collection_id'] }}/document/{{ $doc_details['doc_id']  }}/details" style="color:#3f819e;">{{ $doc_details['doc_short_name'] }}</a><br /><br />
-					@endforeach
-					</p>
+						@endif 
+						@php 
+	//print_r($display_doc); exit;
+if(!empty($display_doc)){
+foreach($display_doc as $key => $value){
+echo "<strong>".preg_replace("/_/"," ",$key)."</strong>";
+	echo "<ul>";
+	foreach($value as $item){
+	$doc_item = preg_replace("/1st|2nd|3rd|4th|Amendment/i","",$item['title']);
+	echo "<li><a href='/collection/".$item['collection_id']."/document/".$item['doc_id']."/details'>".$doc_item."</a></li>";
+	}
+	echo "</ul>";
+}
+}
+@endphp
+{{--
+						<!--a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ $r_d->title }}</a><br /><br /-->
+--}}
+					<!--/p-->
 				</div>
 				@endif
 			</div><!-- row ends -->
