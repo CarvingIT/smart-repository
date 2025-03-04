@@ -36,6 +36,7 @@ class DocumentController extends Controller
 	}
 
     public function loadDocument($collection_id,$document_id, Request $req){
+        $path_count = $req->path_count; 
         $doc = \App\Document::find($document_id);
         if($doc->type == 'url'){
 		    return redirect($doc->external_link);
@@ -45,7 +46,12 @@ class DocumentController extends Controller
         $storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
 
         $this->recordHit($document_id);
+        if(!is_null($path_count)){
+        $download_file = $this->downloadFile($doc,$storage_drive,$path_count);
+        }
+        else{
         $download_file = $this->downloadFile($doc,$storage_drive);
+        }
         ## New code
 	    try{
         //$this->recordHit($document_id);
@@ -56,13 +62,15 @@ class DocumentController extends Controller
 	    return $download_file;
     }
 
-	public function pdfReader($collection_id, $document_id){
-		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id]);
+	public function pdfReader($collection_id, $document_id, Request $req){
+        $path_count = $req->path_count;
+		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id,'path_count'=>$path_count]);
 	}
 
-	public function mediaPlayer($collection_id, $document_id){
+	public function mediaPlayer($collection_id, $document_id, Request $req){
+        $path_count = $req->path_count;
 		$document = Document::find($document_id);
-		return view('media-player',['collection_id'=>$collection_id,'document'=>$document]);
+		return view('media-player',['collection_id'=>$collection_id,'document'=>$document, 'path_count'=>$path_count]);
 	}
 
     public function recordHit($document_id){
@@ -137,8 +145,17 @@ class DocumentController extends Controller
         $storage_drive = empty($collection->storage_drive) ? 'local' : $collection->storage_drive;
 
         // File upload logic starts
+            // Saved on chosen collection storage drive.
+            $storages_needing_dir_creation = ['google'];
+            $driver = config("filesystems.disks.{$storage_drive}.driver");
+
         if ($request->hasFile('document')) {
-            $filename = $request->file('document')->getClientOriginalName();
+            $filesize = 0; 
+            $text_content = '';
+
+        //echo count($request->file('document')); exit;
+        if(count($request->file('document')) == 1){
+            $filename = $request->file('document')[0]->getClientOriginalName();
             $new_filename = \Auth::user()->id . '_' . time() . '_' . $filename;
 
             // Saved on chosen collection storage drive.
@@ -146,21 +163,21 @@ class DocumentController extends Controller
             $driver = config("filesystems.disks.{$storage_drive}.driver");
 
             if (in_array($driver, $storages_needing_dir_creation)) {
-                $filepath = $request->file('document')->storeAs(null, $new_filename, $storage_drive);
+                $filepath = $request->file('document')[0]->storeAs(null, $new_filename, $storage_drive);
             } else {
-                $filepath = $request->file('document')->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename, $storage_drive);
+                $filepath = $request->file('document')[0]->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename, $storage_drive);
             }
 
             // Saved locally for text extraction
-            $local_filepath = $request->file('document')->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename);
+            $local_filepath = $request->file('document')[0]->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename);
 
-            $filesize = $request->file('document')->getSize();
-            $mimetype = $request->file('document')->getMimeType();
+            $filesize = $request->file('document')[0]->getSize();
+            $mimetype = $request->file('document')[0]->getMimeType();
 
             if (!empty($request->input('title'))) {
                 $d->title = htmlentities($request->input('title'));
             } else {
-                $d->title = $this->autoDocumentTitle($request->file('document')->getClientOriginalName());
+                $d->title = $this->autoDocumentTitle($request->file('document')[0]->getClientOriginalName());
             }
             $d->collection_id = $request->input('collection_id');
             $d->created_by = \Auth::user()->id;
@@ -168,12 +185,35 @@ class DocumentController extends Controller
             $d->size = $filesize;
             $d->type = $mimetype;
             $d->path = $filepath;
+        }
+        else{
+        // Multiple file upload starts
+        foreach($request->file('document') as $doc_upload){
+            //$filename = $request->file('document')->getClientOriginalName();
+            $filename = $doc_upload->getClientOriginalName();
+            $new_filename = \Auth::user()->id . '_' . time() . '_' . $filename;
+
+            // Saved on chosen collection storage drive.
+            if (in_array($driver, $storages_needing_dir_creation)) {
+                $filepath[] = $doc_upload->storeAs(null, $new_filename, $storage_drive);
+            } else {
+                $filepath[] = $doc_upload->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename, $storage_drive);
+            }
+
+            // Saved locally for text extraction
+            $local_filepath = $doc_upload->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename);
+
+            $filesize += $doc_upload->getSize();
+            $mimetype[] = $doc_upload->getMimeType();
+
+            if (!empty($request->input('title'))) {
+                $d->title = htmlentities($request->input('title'));
+            } else {
+                $d->title = $this->autoDocumentTitle($doc_upload->getClientOriginalName());
+            }
 
             try {
-                $text_content = $this->extractText($local_filepath, $mimetype);
-                $current_encoding = mb_detect_encoding($text_content, 'auto');
-                $d->text_content = mb_convert_encoding($text_content, "UTF-8");
-
+                $text_content .= $this->extractText($local_filepath, $doc_upload->getMimeType());
                 // Delete the file if the storage drive is other than local drive.
                 if ($storage_drive != 'local') {
                     Storage::delete($local_filepath);
@@ -183,8 +223,20 @@ class DocumentController extends Controller
                 $d->text_content = '';
                 $warnings[] = 'No text was indexed. ' . $e->getMessage();
             }
+        } ## foreach of multiple file upload ends
+
+            $d->type = json_encode($mimetype);
+            $d->path = json_encode($filepath);
+        }// end of multiple file upload foreach ends
+
+            // common to both single file upload and multiple file upload.
+            $d->size = $filesize;
+            $d->collection_id = $request->input('collection_id');
+            $d->created_by = \Auth::user()->id;
 
             try {
+                $current_encoding = mb_detect_encoding($text_content, 'auto');
+                $d->text_content = mb_convert_encoding($text_content, "UTF-8");
                 $d->save();
                 $messages[] = 'Document uploaded successfully!';
             } catch (\Exception $e) {
@@ -243,7 +295,6 @@ class DocumentController extends Controller
     // Validation function: moved validation logic here
     private function validateUploadedData(Request $request) {
         //print_r($request->document);
-        //exit;
 
         
         // $messages = [];
@@ -253,37 +304,34 @@ class DocumentController extends Controller
         // Filesize validation
         $size_limit = ini_get("upload_max_filesize");
         $actual_size = $this->return_bytes($size_limit); // Convert size limit to bytes
-
-        foreach($request->document as $doc_upload){
-
-        //$validator = Validator::make($request->all(), [
-        $validator = Validator::make($request->document, [
-            //'document' => 'file|max:' . $actual_size
-            $doc_upload => 'file|max:' . $actual_size
-        ]);
-        if ($validator->fails()) {
-            return ['status' => 'failure', 'errors' => ['File size exceeded. The file size should not be more than ' . $size_limit . 'B.']];
-        }
-
-        // File type validation
-        $c = Sysconfig::all();
-        foreach ($c as $config) {
-            if ($config->param == 'upload_file_types' && !empty($config->value)) {
-                $file_type = $config->value;
+        
+            //$validator = Validator::make($request->all(), [
+            $validator = Validator::make($request->document, [
+                'document' => 'file|max:' . $actual_size
+            ]);
+            if ($validator->fails()) {
+                return ['status' => 'failure', 
+                'errors' => ['File size exceeded. The file size should not be more than ' . $size_limit . 'B.']];
             }
-        }
-        if (empty($file_type)) {
-            $file_type = env('FILE_EXTENSIONS_TO_UPLOAD', 'ppt,pptx,doc,docx,jpg,png,pdf,txt');
-        }
-        $validator = Validator::make($request->all(), [
-            //'document' => 'file|mimes:' . $file_type
-            $doc_upload => 'file|mimes:' . $file_type
-        ]);
-        if ($validator->fails()) {
-            return ['status' => 'failure', 'errors' => ['File type must be one of ' . $file_type]];
-        }
 
-        } // foreach for $document i.e. $doc_upload ends
+            // File type validation
+            $c = Sysconfig::all();
+            foreach ($c as $config) {
+                if ($config->param == 'upload_file_types' && !empty($config->value)) {
+                    $file_type = $config->value;
+                }
+            }
+            if (empty($file_type)) {
+                $file_type = env('FILE_EXTENSIONS_TO_UPLOAD', 'ppt,pptx,doc,docx,jpg,png,pdf,txt');
+            }
+            //$validator = Validator::make($request->all(), [
+            $validator = Validator::make($request->document, [
+                'document' => 'file|mimes:' . $file_type
+            ]);
+            if ($validator->fails()) {
+                return ['status' => 'failure', 'errors' => ['File type must be one of ' . $file_type]];
+            }
+
 
         return ['status' => 'success'];
     }
@@ -579,7 +627,7 @@ class DocumentController extends Controller
     return isset($formulas[$to]) ? $formulas[$to] : 0;
 }
 
-public function downloadFile($doc,$storage_drive){
+public function downloadFile($doc,$storage_drive,$path_count=null){
 	//$exists = Storage::disk($storage_drive)->exists($doc->path);
 	$cloud_storages = ['google'];
 	$driver = config("filesystems.disks.{$storage_drive}.driver");
@@ -588,8 +636,16 @@ public function downloadFile($doc,$storage_drive){
 	}
 
         try{
+                if(!is_null($path_count)){
+                $path = json_decode($doc->path);
+                $file_url = $path[$path_count];
+                $file_path  = $path[$path_count];
+                }
+                else{
                 $file_url = $doc->path;
                 $file_path  = $doc->path;
+                }
+
 				// remove filename prefix
 				$path_parts = explode('/',$file_path);
 				$file_name = array_pop($path_parts);
@@ -609,7 +665,6 @@ public function downloadFile($doc,$storage_drive){
 				if($mime != 'application/pdf'){
 					$response['Content-Disposition'] = "attachment; filename={$file_name}";
 				}
-
                 ob_end_clean();
 
                 return \Response::make(Storage::disk($storage_drive)->get($file_url), 200, $response);

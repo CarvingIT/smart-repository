@@ -104,10 +104,17 @@ Route::get('/collection/{collection_id}/removetitlefilter', 'CollectionControlle
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllFilters');
 // media route; just like the document download route
 Route::get('/media/i/{filename}', 'MediaController@loadImage');
+
+
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
+
+//Multiple file upload routes
+Route::get('/collection/{collection_id}/document/{document_id}/details/{path_count}', 'DocumentController@loadDocument')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader/{path_count}', 'DocumentController@pdfReader')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/media-player/{path_count}', 'DocumentController@mediaPlayer')->middleware('auth');
 
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
@@ -119,6 +126,9 @@ Route::get('/collection/{collection_id}/document/{document_id}/same-meta-upload'
 // Document details (meta)
 Route::get('/collection/{collection_id}/document/{document_id}/details', 'DocumentController@showDetails')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/proofread', 'DocumentController@proofRead')->middleware('document_view');
+
+
+
 // See Diff in revisions
 Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'DocumentController@showRevisionDiff')->middleware('document_view');
 Route::get('/user/{user_id}/mydocs', 'DocumentController@listMyDocuments');
