@@ -12,5 +12,15 @@
 	var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
 	innerDoc.getElementById('download').style.display="none";
 </script>
+@php
+    $conf = \App\Sysconfig::all();
+    $settings = array();
+    foreach($conf as $c){
+        $settings[$c->param] = $c->value;
+    }
+@endphp
+@if(!empty($settings['footer']))
+	{!! $settings['footer'] !!}
+@endif
 </body>
 </html>
