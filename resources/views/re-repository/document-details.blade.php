@@ -396,6 +396,24 @@ $(document).ready(function()
 						if(preg_match("/4th Amendment/i",$r_d->title)){
 							$display_doc['4th_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
 						}
+						if(preg_match("/5th Amendment/i",$r_d->title)){
+							$display_doc['5th_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
+						if(preg_match("/6th Amendment/i",$r_d->title)){
+							$display_doc['6th_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
+						if(preg_match("/7th Amendment/i",$r_d->title)){
+							$display_doc['7th_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
+						if(preg_match("/8th Amendment/i",$r_d->title)){
+							$display_doc['8th_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
+						if(preg_match("/9th Amendment/i",$r_d->title)){
+							$display_doc['9th_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
+						if(preg_match("/10th Amendment/i",$r_d->title)){
+							$display_doc['10th_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
+						}
 						@endphp
 						@endforeach
 						@endif 
@@ -403,10 +421,15 @@ $(document).ready(function()
 	//print_r($display_doc); exit;
 if(!empty($display_doc)){
 foreach($display_doc as $key => $value){
+//print_r($value);	
+//echo $key. $value['collection_id']."<hr />";
+//exit;
+//echo $value[0]['collection_id']; 
 echo "<strong>".preg_replace("/_/"," ",$key)."</strong>";
+//echo "<strong><a href='/collection/".$value['collection_id']."/document/".$value['doc_id']."/details'>".preg_replace("/_/"," ",$key)."</a></strong>";
 	echo "<ul>";
 	foreach($value as $item){
-	$doc_item = preg_replace("/1st|2nd|3rd|4th|Amendment/i","",$item['title']);
+	$doc_item = preg_replace("/1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th Amendment/i","",$item['title']);
 	echo "<li><a href='/collection/".$item['collection_id']."/document/".$item['doc_id']."/details'>".$doc_item."</a></li>";
 	}
 	echo "</ul>";

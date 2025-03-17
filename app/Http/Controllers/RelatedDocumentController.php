@@ -20,6 +20,7 @@ class RelatedDocumentController extends Controller
 		}
 		catch(\Exception $e){
 			// do nothing
+			echo $e->getMessage();
 		}
 		$doc = Document::find($r_d->document_id);
 		return redirect('/collection/'.$doc->collection->id.'/document/'.$doc->id.'/details');
