@@ -42,6 +42,17 @@ h4 a {
   text-decoration: none; 
 }
 </style>
+
+@php
+	$back_30_days = Carbon\Carbon::today()->subDays(30); //date 30 days back
+
+	$documents_uploaded = \App\Document::where('created_at','>=',$back_30_days)
+				->get();
+	$docs_uploaded_30days_back = count($documents_uploaded); 
+
+@endphp
+
+	<div> {{ $docs_uploaded_30days_back }} Documents uploaded in last 30 days.</div>
 	@if (!empty($results))
 	@foreach($results as $result)
 		@php 

@@ -142,6 +142,11 @@ function goToPage(page){
 	return false;
 }
 
+function clearSearchBar(){
+     const searchText = document.getElementById('collection_search');
+     searchText.value = "";
+}
+
 </script>
 @endpush
 @section('content')
