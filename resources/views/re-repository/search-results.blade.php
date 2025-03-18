@@ -104,7 +104,7 @@ h4 a {
 					</div>
 					@endif
 					@if(!empty($display_meta['state-name']) || !empty($display_meta['issuing-authority']))
-					<div class="col-lg-4">
+					<div class="col-lg-8">
 						<i class="fa fa-globe" style="margin-right: 5px;"></i>{{ $display_meta['state-name'] }} ({{ $display_meta['issuing-authority'] }})
 					</div>
 					@endif

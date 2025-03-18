@@ -254,7 +254,8 @@ $(document).ready(function()
 				@if ($document->path != 'N/A')
 				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
 				@else
-				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;" /></a>
+				<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;" /></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_blank" style="text-decoration:underline;">
+
 				@endif
 				@endif
 			@else
