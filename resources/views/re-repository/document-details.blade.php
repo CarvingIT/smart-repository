@@ -358,10 +358,10 @@ $(document).ready(function()
 
 				</div>
 				@if ($document->related_documents->count() > 0 || $document->related_to->count() > 0)
-				<!--div class="col-md-3" id="accordion"-->
-				<div class="col-md-3">
+				<div class="col-md-3" id="accordion">
+				<!--div class="col-md-3"-->
 					<h5>Related Documents</h5>
-					<!--p style="background-color:#E6E9E3;border:none;"-->
+					<p style="background-color:#E6E9E3;border:none;">
 					{{-- $display_meta['document-short-name'] --}}
 					@php
 						$display_docs = [];
@@ -428,19 +428,20 @@ foreach($display_doc as $key => $value){
 //echo $value[0]['collection_id']; 
 echo "<strong>".preg_replace("/_/"," ",$key)."</strong>";
 //echo "<strong><a href='/collection/".$value['collection_id']."/document/".$value['doc_id']."/details'>".preg_replace("/_/"," ",$key)."</a></strong>";
-	echo "<ul>";
+	//echo "<ul>";
 	foreach($value as $item){
 	$doc_item = preg_replace("/1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th Amendment/i","",$item['title']);
-	echo "<li><a href='/collection/".$item['collection_id']."/document/".$item['doc_id']."/details'>".$doc_item."</a></li>";
+	echo "<a href='/collection/".$item['collection_id']."/document/".$item['doc_id']."/details' style='color: #3f819e;'>".$doc_item."</a><br />";
 	}
-	echo "</ul>";
+	//echo "</ul>";
+	echo "<br />";
 }
 }
 @endphp
 {{--
 						<!--a href="/collection/{{ $r_d->related_document->collection->id }}/document/{{ $r_d->related_document->id }}/details" style="color:#3f819e;">{{ $r_d->title }}</a><br /><br /-->
 --}}
-					<!--/p-->
+					</p>
 				</div>
 				@endif
 			</div><!-- row ends -->
