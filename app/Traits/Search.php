@@ -382,10 +382,32 @@ trait Search{
 		//exit;
 	}
 	else{
+		if(env('DEFAULT_META_SORT_FIELD','')){
+			$sort_direction = (env('DEFAULT_META_SORT_DIRECTION','') == 'desc') ? 'desc' : 'asc';
+			$mf = MetaField::where('label',env('DEFAULT_META_SORT_FIELD',''))->first();
+
+			$meta_values = MetaFieldValue::where('meta_field_id', $mf->id)
+				->orderBy('value', $sort_direction)
+				->orderBy('document_id', 'desc')
+				->get();	
+			$ordered_document_ids = [];
+			foreach($meta_values as $mv){
+				$ordered_document_ids[] = $mv->document_id;
+			}
+			$doc_id_str = implode(",", $ordered_document_ids);
+
+			$documents = $documents->whereIn('id', $ordered_document_ids);
+			$filtered_count = $documents->count();
+			$documents = $documents
+				->orderByRaw("FIELD(id, $doc_id_str)")
+        			->limit($length)->offset($request->start)->get();
+		}
+		else{
 		$sort_column = empty($sort_column)?'updated_at':$sort_column;
 		$documents = $documents
 			->orderby($sort_column,$sort_direction)
         	->limit($length)->offset($request->start)->get();
+		}
 	}
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
