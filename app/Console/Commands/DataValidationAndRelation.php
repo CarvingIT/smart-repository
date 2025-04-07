@@ -69,7 +69,6 @@ class DataValidationAndRelation extends Command
 		$shortname_id[$row[12]] = $document->id;
 		}
 		
-		/*
 		if(!empty($document)){
 		//echo $document->id.", ".$document->collection_id.", ".$document->path.", ".$document->type.", ".$document->size."\n"; 
 			// Check csv file values with database values
@@ -97,7 +96,6 @@ class DataValidationAndRelation extends Command
 				fwrite($fp_notin_sheet,$db_doc->meta_value(4)."\n"); //Document Short Name absent in sheet 
 			}
 		}
-		 */
         }
 
 	fclose($fp_data_discrip);
