@@ -9,6 +9,7 @@ use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Log;
 use App\Collection;
 use App\MetaField;
+use App\MetaFieldValue;
 
 trait Search{
     // wrapper function for search
