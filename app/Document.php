@@ -159,4 +159,8 @@ class Document extends Model implements Auditable
         $this->locked = 0;
         $this->save();
     }
+    
+    public function isLocked(){
+        return ($this->locked == 1) ? true: false;
+    }
 }
