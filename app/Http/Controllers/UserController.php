@@ -86,12 +86,14 @@ class UserController extends Controller
             $request->merge(['password' => Hash::make($request->get('password'))])
                 ->except([$hasPassword ? '' : 'password']
         ));
+
+    // assignment of roles to the user
+	//first, remove all roles assigned to that user
+	$user_details = User::where('email',$request->email)->first();
+	$user_id = $user_details->id;
+	UserRole::where('user_id',$user_id)->delete();
 	if(!empty($request->user_role)){
-		$user_details = User::where('email',$request->email)->first();
-		$user_id = $user_details->id;
 		$role_ids = $request->user_role;
-		//remove all roles assigned to that user
-		UserRole::where('user_id',$user_id)->delete();
 		// Now add again
 		foreach($role_ids as $role_id){
 			$u_r = new UserRole();

@@ -393,14 +393,31 @@ $(document).ready(function()
                   <div class="row">
                       <div class="col-md-12">
 						@if (Auth::user() && Auth::user()->canEditDocument($document->id))
-                        <a href="/document/{{ $document->id }}/edit" class="btn btn-sm btn-primary" title="Edit">
-                        <i class="material-icons">edit</i>
-                        </a>
+                            @if($document->locked == 1 && \Auth::user()->hasPermission($document->collection_id ,'MAINTAINER'))
+                                <form name="lock-unlock" method="post" action="/document/{{ $document->id }}/lock-unlock">
+				                @csrf
+                                <button type="submit" class="btn btn-sm btn-primary" title="Unlock">
+                                <i class="material-icons">lock_open</i>
+                                </button>
+                                </form>
+                            @else
+                                <a href="/document/{{ $document->id }}/edit" class="btn btn-sm btn-primary" title="Edit" style="float:left;">
+                                <i class="material-icons">edit</i>
+                                </a>
+						    @endif
 						@endif
 						@if (Auth::user() && Auth::user()->canDeleteDocument($document->id))
-                        <a href="javascript:return false;" onclick="showDeleteDialog();" class="btn btn-sm btn-primary" title="Delete">
-                        <i class="material-icons">delete</i>
-                        </a>
+                            @if($document->locked == 0 && \Auth::user()->hasPermission($document->collection_id ,'MAINTAINER'))
+                                <a href="javascript:return false;" onclick="showDeleteDialog();" class="btn btn-sm btn-primary" title="Delete" style="float:left;">
+                                <i class="material-icons">delete</i>
+                                </a>
+                                <form name="lock-unlock" method="post" action="/document/{{ $document->id }}/lock-unlock">
+				                @csrf
+                                <button type="submit" class="btn btn-sm btn-primary" title="Lock" style="float:left;">
+                                <i class="material-icons">lock</i>
+                                </button>
+                                </form>
+						@endif
 						@endif
                       </div>
                   </div>

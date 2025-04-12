@@ -90,6 +90,7 @@ tinymce.init({
                     @endforeach
                     </div>
 
+
 <form name="document_upload_form" id="upload-form" action="/collection/{{ $collection->id }}/upload" method="post" enctype="multipart/form-data">
 @csrf()
 <input type="hidden" name="collection_id" value="{{ $collection->id }}" />

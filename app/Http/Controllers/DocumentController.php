@@ -102,6 +102,10 @@ class DocumentController extends Controller
 	    $has_approval=array();
 	    $has_approval = \App\Collection::where('id','=',$document->collection_id)->where('require_approval','=','1')->get();
 
+            if($document->locked == 1){
+                abort(403, 'Forbidden');
+            }
+
        		return view('upload', ['collection'=>$collection,
 			'document'=>$document,
 			'collection_has_approval'=>$has_approval,
@@ -109,6 +113,27 @@ class DocumentController extends Controller
 			'titlePage'=>'Document Edit Form',
 			'size_limit'=>$size_limit]);
    	}
+
+    public function lockUnlockDocument($document_id)
+        {
+            $document = \App\Document::find($document_id);
+            $collection = \App\Collection::find($document->collection_id);
+            if($document->locked == 1){
+            $document->locked=0;
+            }else{
+            $document->locked=1;
+            }
+            try{
+                $document->save();
+                Session::flash('alert-success', 'Document unlocked successfully!');
+            }
+            catch(\Exception $e){
+                Session::flash('alert-danger', 'Error: '.$e->getMessage());
+            }
+            return redirect("/collection/".$collection->id."/document/".$document_id."/details");    
+        }
+
+
 
     // Changes from here
 

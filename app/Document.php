@@ -147,10 +147,10 @@ class Document extends Model implements Auditable
     public function publish(){
 	    $this->approved_by = auth()->user()->id;
 	    $this->approved_on = Carbon::now()->toDateTimeString();
+        $this->locked = 1; // lock after publishing
 	    $this->save();
-        // lock after publishing
-        $this->lock();
     }
+
     public function lock(){
         $this->locked = 1;
         $this->save();

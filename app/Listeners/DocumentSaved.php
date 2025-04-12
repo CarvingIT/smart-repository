@@ -30,6 +30,12 @@ class DocumentSaved
      */
     public function handle($event)
     {
+        $changes = $event->document->getChanges();
+        if(count($changes) == 2 && in_array('locked', array_keys($changes))){
+            // ignore; since only updated_at and locked status was changed
+            return 0;
+        }        
+
 		$notifiable = $event->document->collection;
         $collection_config = json_decode($event->document->collection->column_config);
         if(!empty($collection_config->slack_webhook) || !empty($collection_config->notify_email)){

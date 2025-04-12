@@ -110,6 +110,7 @@ Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'Doc
 Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
 
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');
+Route::post('/document/{document_id}/lock-unlock', 'DocumentController@lockUnlockDocument')->middleware('document_edit');
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
