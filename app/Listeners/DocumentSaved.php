@@ -30,6 +30,16 @@ class DocumentSaved
      */
     public function handle($event)
     {
+        $changes = $event->document->getChanges();
+        if(in_array('locked', array_keys($changes))){
+            /* 
+            this condition is met when
+            1. a document is published
+            2. a document is locked or unlocked
+            */
+            return 0;
+        }        
+
 		$notifiable = $event->document->collection;
         $collection_config = json_decode($event->document->collection->column_config);
         if(!empty($collection_config->slack_webhook) || !empty($collection_config->notify_email)){

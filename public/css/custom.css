@@ -298,6 +298,8 @@ strong{
     background: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)), url(/i/space-utilization.png) no-repeat;
     background-size:30px;
     background-position:center;
+ul.related-docs{
+	list-style-type:disc;
 }
 
 @media (min-width: 1200px) {

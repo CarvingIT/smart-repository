@@ -51,9 +51,9 @@
 		<div class="row">
 		<h4>
 		@if (@$result->type == 'url')
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{!! strip_tags($result_title) !!}</a>
+		<!--a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{!! strip_tags($result_title) !!}</a-->
 		@else
-		<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{!! strip_tags($result_title) !!}</a>
+		<!--a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{!! strip_tags($result_title) !!}</a-->
 		@endif
 		</h4>
 		</div>
@@ -68,7 +68,8 @@
 				@endphp
 			   @endforeach		
 				@php
-					$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code);	
+					$result_title = strip_tags($result_title);
+					$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code, $result_title, $collection->id, $result->id, @$result->type);	
 					echo $formatted_data;
 				@endphp
 			@else

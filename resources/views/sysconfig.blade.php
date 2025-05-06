@@ -106,6 +106,14 @@
                    </div>
                    <div class="form-group row">
                    <div class="col-md-3">
+                   <label for="footercode" class="col-md-12 col-form-label text-md-right">Footer</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <textarea name="footer" id="overridingcss">@if(!empty($sysconfig['footer'])) {{$sysconfig['footer'] }} @endif</textarea>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
                    <label for="bg_image" class="col-md-12 col-form-label text-md-right">Background Image</label> 
 		           </div>
                     <div class="col-md-9">

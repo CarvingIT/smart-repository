@@ -136,6 +136,10 @@ class Document extends Model implements Auditable
 	return $this->hasMany('App\RelatedDocument');
 	}
 
+    public function related_to(){
+	return $this->hasMany('App\RelatedDocument','related_document_id');
+    }
+
     public function approvals(){
 	return $this->morphMany('App\Approval', 'approvable');
     }
@@ -143,6 +147,20 @@ class Document extends Model implements Auditable
     public function publish(){
 	    $this->approved_by = auth()->user()->id;
 	    $this->approved_on = Carbon::now()->toDateTimeString();
+        $this->locked = 1; // lock after publishing
 	    $this->save();
+    }
+
+    public function lock(){
+        $this->locked = 1;
+        $this->save();
+    }
+    public function unlock(){
+        $this->locked = 0;
+        $this->save();
+    }
+    
+    public function isLocked(){
+        return ($this->locked == 1) ? true: false;
     }
 }
