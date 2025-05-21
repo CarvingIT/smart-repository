@@ -719,6 +719,7 @@ trait Search{
     }
 
     public function logSearchQuery($data){
+        if(env('LOG_SEARCH_QUERY')==1){
 		$meta_query = [];
 		foreach(json_decode($data['meta_query']) as $m){
 			unset($m->filter_id);
@@ -738,6 +739,7 @@ trait Search{
 			print $e->getMessage();
 			exit;
 		}
+        }// if
     }
 
 	public function autoSuggest(Request $request){
