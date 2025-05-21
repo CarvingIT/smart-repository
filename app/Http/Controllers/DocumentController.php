@@ -181,6 +181,7 @@ class DocumentController extends Controller
         //echo count($request->file('document')); exit;
         if(count($request->file('document')) == 1){
             $filename = $request->file('document')[0]->getClientOriginalName();
+            $original_filename = $filename;
             $new_filename = \Auth::user()->id . '_' . time() . '_' . $filename;
 
             // Saved on chosen collection storage drive.
@@ -210,12 +211,14 @@ class DocumentController extends Controller
             $d->size = $filesize;
             $d->type = $mimetype;
             $d->path = $filepath;
+            $d->ori_filename = $original_filename;
         }
         else{
         // Multiple file upload starts
         foreach($request->file('document') as $doc_upload){
             //$filename = $request->file('document')->getClientOriginalName();
             $filename = $doc_upload->getClientOriginalName();
+            $original_filename[] = $filename;
             $new_filename = \Auth::user()->id . '_' . time() . '_' . $filename;
 
             // Saved on chosen collection storage drive.
@@ -252,6 +255,7 @@ class DocumentController extends Controller
 
             $d->type = json_encode($mimetype);
             $d->path = json_encode($filepath);
+            $d->ori_filename = json_encode($original_filename);
         }// end of multiple file upload foreach ends
 
             // common to both single file upload and multiple file upload.

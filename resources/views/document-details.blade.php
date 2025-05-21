@@ -195,8 +195,10 @@ $(document).ready(function()
 
 
                   <div class="row">
+                    <!--
                     <div class="col-md-12">
-                        <span id="doc-title" class="col-md-12"><!--h4-->
+                        <span id="doc-title" class="col-md-12">
+                    -->
 			@php
         $template_code = \App\SRTemplate::
                 where('collection_id',$collection->id)
@@ -208,14 +210,9 @@ $(document).ready(function()
         @endphp
 
 			@if($c->content_type == 'Uploaded documents')
-@php
-//print_r( json_decode($document->path)); echo "SKK"; exit;
-//foreach(json_decode($document->path) as $item){
- //   echo $item;echo "<br />";
-//}
-//if(json_validate($document->path)){ echo "json"; } else{ echo $document->path; } exit;
-@endphp
                 @if(!json_validate($document->path))
+                    <div class="col-md-12">
+                        <span id="doc-title" class="col-md-12">
 				@if($document->type == 'application/pdf')
 					@if(env('ENABLE_PDF_READER') == 1)
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
@@ -249,20 +246,31 @@ $(document).ready(function()
 				@endif
 			{!! strip_tags($document->title) !!}
 			</a>
+            </div></span>
 
         @else {{-- document->path has multiple files --}}
-            @php $path_count = 0; @endphp
+            @php 
+                $path_count = 0; 
+                $document_names = json_decode($document->ori_filename); 
+                //echo $document_names[$path_count];
+            @endphp
             @foreach(json_decode($document->path) as $item)
+                    <div class="col-md-12">
+                        <span id="doc-title" class="col-md-12">
 			    @if(in_array('application/pdf',json_decode($document->type)))
 				    @if(env('ENABLE_PDF_READER') == 1)
-					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;
-            		        <a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new">
+                            <p>
+					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;margin-right:1%;"></a>
+            		        <a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new">{{ $document_names[$path_count] }}</a>
+                            </p>
 					@else
+                            <p>
 					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;
-            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_new">
+            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_new">{{ $document_names[$path_count] }}</a>
+                            </p>
 					@endif
 				@elseif(in_array('application/vnd.openxmlformats-officedocument.presentationml.presentation',json_decode($document->type)))
-					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">{{ $document_names[$path_count] }}</a>
 
 				@elseif(preg_grep('/^audio/',json_decode($document->type)) || preg_grep('/video/',json_decode($document->type)))
 					<div style="text-align:center;">
@@ -271,22 +279,22 @@ $(document).ready(function()
         				<source src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" type="video/mp4">
         				</video>
         				</div>
-            			<a title="See online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player/{{ $path_count }}" target="_blank">
+            			<a title="See online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
 				@elseif(in_array('image/jpeg',json_decode($document->type)) || in_array('image/png',json_decode($document->type)))
 					<div style="text-align:center;">
                         		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
-					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" style="width:50%">
+					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" style="width:50%"><br />
+            			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
 					</div>
-            			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">
 				@else
 				    @if ($item != 'N/A')
-				      <a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
+				      <a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document_names[$path_count] }}</a>
 				    @else
 				      <img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;" />
 				    @endif
 				@endif
-			{!! strip_tags($document->title) !!}
-			</a>
+		{{--	{!! strip_tags($document->title) !!} --}}
+			<!--/a-->
 			</span>{{-- don't need this span --}}
                         </div>
                 @php $path_count++; @endphp
