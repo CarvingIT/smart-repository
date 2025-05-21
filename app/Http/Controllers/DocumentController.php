@@ -331,6 +331,7 @@ class DocumentController extends Controller
         $actual_size = $this->return_bytes($size_limit); // Convert size limit to bytes
         
             //$validator = Validator::make($request->all(), [
+        if($request->document){
             $validator = Validator::make($request->document, [
                 'document' => 'file|max:' . $actual_size
             ]);
@@ -338,6 +339,7 @@ class DocumentController extends Controller
                 return ['status' => 'failure', 
                 'errors' => ['File size exceeded. The file size should not be more than ' . $size_limit . 'B.']];
             }
+        }
 
             // File type validation
             $c = Sysconfig::all();
@@ -350,11 +352,13 @@ class DocumentController extends Controller
                 $file_type = env('FILE_EXTENSIONS_TO_UPLOAD', 'ppt,pptx,doc,docx,jpg,png,pdf,txt');
             }
             //$validator = Validator::make($request->all(), [
+            if($request->document){
             $validator = Validator::make($request->document, [
                 'document' => 'file|mimes:' . $file_type
             ]);
             if ($validator->fails()) {
                 return ['status' => 'failure', 'errors' => ['File type must be one of ' . $file_type]];
+            }
             }
 
 
