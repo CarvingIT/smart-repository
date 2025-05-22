@@ -42,14 +42,17 @@ class DataValidationAndRelation extends Command
 	$file = $this->argument('data_csv_file');
         $handle = fopen($file, "r");
 	$csv_columns = [];
+	/*
 	$fp_data_discrip = fopen("RE_data_discripancies.txt","w");
 	$fp_notin_db = fopen("RE_data_absent_in_database.csv","w");
 	$fp_notin_sheet = fopen("RE_Repos_doc_shortname.csv","w");
+	*/
 	$heading_set = 0;
 	$shortname_id = [];
 
         while (($row = fgetcsv($handle)) !== FALSE) {
                 // do something with row values
+		/*
 		if(in_array('Document title',$row) && $heading_set == 0){
 			foreach($row as $column){
 				$col = strtolower($column);
@@ -62,13 +65,17 @@ class DataValidationAndRelation extends Command
 			$heading_set = 1;
 			//print_r($csv_columns); 
 		}
+		*/
 
 		$document = \App\Document::select('id','collection_id','path','type','size')
 					->where('title',$row[11])->first();
 		if(!empty($document)){
-		$shortname_id[$row[12]] = $document->id;
+		if($row[22] == 'RPO Targets'){
+		$shortname_id[ltrim(rtrim($row[12]))] = $document->id;
+		}
 		}
 		
+		/*
 		if(!empty($document)){
 		//echo $document->id.", ".$document->collection_id.", ".$document->path.", ".$document->type.", ".$document->size."\n"; 
 			// Check csv file values with database values
@@ -96,23 +103,29 @@ class DataValidationAndRelation extends Command
 				fwrite($fp_notin_sheet,$db_doc->meta_value(4)."\n"); //Document Short Name absent in sheet 
 			}
 		}
+		*/
         }
 
+	/*
 	fclose($fp_data_discrip);
 	fclose($fp_notin_db);
 	fclose($fp_notin_sheet);
         fclose($handle);
+	*/
 
 	//print_r($shortname_id);
 	// first remove all relations
 	RelatedDocument::truncate();
 	foreach($shortname_id as $s=>$id){
 		$parts = explode("-", $s);
-		if(in_array($parts[0], array_keys($shortname_id))){
-			if($id == $shortname_id[$parts[0]]) continue;
-			echo $shortname_id[$parts[0]].' - '.$id."\n";
+//print_r($parts);
+//echo $parts[0].' - '.$id."\n";
+//echo $shortname_id[$parts[0]."-Principal"].' - '.$id."\n";
+		if(in_array($parts[0]."-Principal", array_keys($shortname_id))){
+			if($id == $shortname_id[$parts[0]."-Principal"]) continue;
+			echo $shortname_id[$parts[0]."-Principal"].' - '.$id."\n";
 			$related_document = new RelatedDocument;
-			$related_document->document_id = $shortname_id[$parts[0]];
+			$related_document->document_id = $shortname_id[$parts[0]."-Principal"];
 			$related_document->related_document_id = $id;
 			$related_document->title = ucfirst(end($parts));
 			$related_document->display_order = $id;
@@ -120,4 +133,5 @@ class DataValidationAndRelation extends Command
 		}
 	}
     }
+//
 }
