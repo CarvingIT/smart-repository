@@ -50,6 +50,7 @@ class DataValidationAndRelation extends Command
 
         while (($row = fgetcsv($handle)) !== FALSE) {
                 // do something with row values
+		/*	
 		if(in_array('Document title',$row) && $heading_set == 0){
 			foreach($row as $column){
 				$col = strtolower($column);
@@ -57,67 +58,90 @@ class DataValidationAndRelation extends Command
 				$csv_columns[] = $col;
 			}
 			//$title_row = implode(",",$row);
-			fwrite($fp_notin_db,$row[13]."\n");
-			fwrite($fp_notin_sheet,$row[13]."\n");
+			#fwrite($fp_notin_db,$row[13]."\n");
+			#fwrite($fp_notin_sheet,$row[13]."\n");
 			$heading_set = 1;
-			//print_r($csv_columns); 
 		}
+		 */
+	 
 
 		$document = \App\Document::select('id','collection_id','path','type','size')
 					->where('title',$row[11])->first();
 		if(!empty($document)){
-		$shortname_id[$row[12]] = $document->id;
+		$shortname_id[ltrim(rtrim($row[12]))] = $document->id;
 		}
 		
+		
 		if(!empty($document)){
-		//echo $document->id.", ".$document->collection_id.", ".$document->path.", ".$document->type.", ".$document->size."\n"; 
 			// Check csv file values with database values
+			/*
 			foreach($document->collection->meta_fields as $meta_field){
 				if(is_null($document->meta_value($meta_field->id, $row))){
 				//write a text file with the data discripancies.
 					$data = ['Doc ID: '.$document->id, $meta_field->label];
 					$data_discrip = implode(",",$data);
-					fwrite($fp_data_discrip,$data_discrip."\n");
+					#fwrite($fp_data_discrip,$data_discrip."\n");
 				}
 			}
+			 */
 			//print_r($display_meta);
 		}	
 		else{
 		//the record present in the datasheet but not in the database.
 			//$data_csv = implode(",",$row);
-			fwrite($fp_notin_db,$row[13]."\n"); //List of Document Short Name, absent in database 
+			#fwrite($fp_notin_db,$row[13]."\n"); //List of Document Short Name, absent in database 
 		}
 		//exit;
-		$db_document = \App\Document::select('id','collection_id','path','type','size')
-				->get();
-		foreach($db_document as $db_doc){
-			if($db_doc->meta_value(4) != $row[13]){
+		#$db_document = \App\Document::select('id','collection_id','path','type','size')
+		#		->get();
+		#foreach($db_document as $db_doc){
+		#	if($db_doc->meta_value(4) != $row[13]){
 			//the record present in the db but not in the RE datasheet.
-				fwrite($fp_notin_sheet,$db_doc->meta_value(4)."\n"); //Document Short Name absent in sheet 
-			}
-		}
+				#fwrite($fp_notin_sheet,$db_doc->meta_value(4)."\n"); //Document Short Name absent in sheet 
+		#	}
+		#}
         }
+
 
 	fclose($fp_data_discrip);
 	fclose($fp_notin_db);
 	fclose($fp_notin_sheet);
         fclose($handle);
 
-	//print_r($shortname_id);
+	print_r($shortname_id);
+	echo count($shortname_id)."\n";
+	//exit;
 	// first remove all relations
 	RelatedDocument::truncate();
+	$r_count = 1;
 	foreach($shortname_id as $s=>$id){
-		$parts = explode("-", $s);
+		$parts = [];
+		$unique_parts = [];
+		if(preg_match("/Principal$/i",ltrim(rtrim($s)))){ 
+			$parts[0] = ltrim(rtrim($s));
+			$unique_parts = explode("-", $s);
+			//echo $parts[0]." => ".$shortname_id[$parts[0]]." => ".$id." \n";
+		}
+		else{
+			$parts = explode("-", $s);
+			//echo $parts[0]." => ".$shortname_id[$parts[0]]." => ".$id." \n";
+		}	
+		//echo $r_count."-".$parts[0]."=>".$shortname_id[$parts[0]]." => ".$id."\n";
+		//$r_count++;
+		//echo $shortname_id[$parts[0]]."\n";
 		if(in_array($parts[0], array_keys($shortname_id))){
-			if($id == $shortname_id[$parts[0]]) continue;
-			echo $shortname_id[$parts[0]].' - '.$id."\n";
+			//echo $s." ".$parts[0]."\n";
+			if($id == $shortname_id[$parts[0]]){ 
+				continue;
+			}
+			//echo $s."=".$parts[0]." => ".$shortname_id[$parts[0]].' - '.$id."\n";
 			$related_document = new RelatedDocument;
 			$related_document->document_id = $shortname_id[$parts[0]];
 			$related_document->related_document_id = $id;
 			$related_document->title = ucfirst(end($parts));
 			$related_document->display_order = $id;
 			$related_document->save();
-		}
+		//}
 	}
     }
 }

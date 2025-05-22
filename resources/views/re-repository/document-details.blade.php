@@ -365,8 +365,13 @@ $(document).ready(function()
 					{{-- $display_meta['document-short-name'] --}}
 					@php
 						$display_docs = [];
-						//$parent = App\RelatedDocument::where('document_id', $document->id)->first();
+						$parent = App\RelatedDocument::where('related_document_id', $document->id)->first();
+						if(empty($parent)){		
 						$p_doc = App\Document::where('id',$document->id)->first();
+						}		
+						else{
+						$p_doc = App\Document::where('id',$parent->document_id)->first();
+						}
 						foreach($p_doc->collection->meta_fields as $meta_field){
                                         		$p_doc_placeholder = strtolower($meta_field->placeholder);
                                         		$p_doc_meta_placeholder = preg_replace("/ /","-",$p_doc_placeholder);
@@ -384,6 +389,9 @@ $(document).ready(function()
                                         		$r_d_placeholder = strtolower($meta_field->placeholder);
                                         		$r_d_meta_placeholder = preg_replace("/ /","-",$r_d_placeholder);
 							$r_d_meta[$r_d_meta_placeholder] = $r_d_doc->meta_value($meta_field->id);	
+						}
+						if(preg_match("/Principal/i",$r_d->title)){
+							$display_doc['Principal'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
 						}
 						if(preg_match("/1st Amendment/i",$r_d->title)){
 							$display_doc['1st_Amendment'][] = array('title'=>$r_d->title,'collection_id'=>$r_d->related_document->collection->id,'doc_id'=>$r_d->related_document->id);
@@ -426,11 +434,11 @@ foreach($display_doc as $key => $value){
 //echo $key. $value['collection_id']."<hr />";
 //exit;
 //echo $value[0]['collection_id']; 
-echo "<strong>".preg_replace("/_/"," ",$key)."</strong>";
+echo "<strong>".preg_replace("/_/"," ",$key)."</strong><br />";
 //echo "<strong><a href='/collection/".$value['collection_id']."/document/".$value['doc_id']."/details'>".preg_replace("/_/"," ",$key)."</a></strong>";
 	//echo "<ul>";
 	foreach($value as $item){
-	$doc_item = preg_replace("/1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th Amendment/i","",$item['title']);
+	$doc_item = preg_replace("/Principal|1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th Amendment/i","",$item['title']);
 	echo "<a href='/collection/".$item['collection_id']."/document/".$item['doc_id']."/details' style='color: #3f819e;'>".$doc_item."</a><br />";
 	}
 	//echo "</ul>";
