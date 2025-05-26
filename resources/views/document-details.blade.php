@@ -211,6 +211,7 @@ $(document).ready(function()
 
 			@if($c->content_type == 'Uploaded documents')
                 @if(!json_validate($document->path))
+			<h3>{!! strip_tags($document->title) !!}</h3> 
                     <div class="col-md-12">
                         <span id="doc-title" class="col-md-12">
 				@if($document->type == 'application/pdf')
@@ -249,6 +250,9 @@ $(document).ready(function()
             </div></span>
 
         @else {{-- document->path has multiple files --}}
+			    @if(in_array('application/pdf',json_decode($document->type)))
+			    <h3>{!! strip_tags($document->title) !!}</h3> 
+                @endif
             @php 
                 $path_count = 0; 
                 $document_names = json_decode($document->ori_filename); 
@@ -257,7 +261,7 @@ $(document).ready(function()
             @foreach(json_decode($document->path) as $item)
                     <div class="col-md-12">
                         <span id="doc-title" class="col-md-12">
-			    @if(in_array('application/pdf',json_decode($document->type)))
+			    @if(in_array('application/pdf',json_decode($document->type)) && preg_match("/pdf/",$document_names[$path_count]))
 				    @if(env('ENABLE_PDF_READER') == 1)
                             <p>
 					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;margin-right:1%;"></a>
@@ -269,30 +273,35 @@ $(document).ready(function()
             				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_new">{{ $document_names[$path_count] }}</a>
                             </p>
 					@endif
-				@elseif(in_array('application/vnd.openxmlformats-officedocument.presentationml.presentation',json_decode($document->type)))
-					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">{{ $document_names[$path_count] }}</a>
+				@endif
+				@if(in_array('application/vnd.openxmlformats-officedocument.presentationml.presentation',json_decode($document->type)) || preg_match("/mp4|avi|mov|ogg|wmv|webm/",$document_names[$path_count]))
 
-				@elseif(preg_grep('/^audio/',json_decode($document->type)) || preg_grep('/video/',json_decode($document->type)))
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">{{ $document_names[$path_count] }}</a>
+                @endif
+
+				@if(preg_grep('/^audio/',json_decode($document->type)) || preg_grep('/video/',json_decode($document->type)) || preg_match("/mp3/",$document_names[$path_count]))
 					<div style="text-align:center;">
                         		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
         				<video controls width="200">
         				<source src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" type="video/mp4">
-        				</video>
-        				</div>
+        				</video><br />
             			<a title="See online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
-				@elseif(in_array('image/jpeg',json_decode($document->type)) || in_array('image/png',json_decode($document->type)))
+        				</div>
+                @endif
+				@if(in_array('image/jpeg',json_decode($document->type)) || in_array('image/png',json_decode($document->type)) && preg_match("/png|jpeg|jpg|JPG|JPEG|PNG|GIF/", $document_names[$path_count]))
 					<div style="text-align:center;">
-                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
+                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
 					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" style="width:50%"><br />
             			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
 					</div>
-				@else
+                @endif
+				@if(!in_array('application/pdf',json_decode($document->type)) && !in_array('application/vnd.openxmlformats-officedocument.presentationml.presentation',json_decode($document->type)) && !preg_grep('/^audio/',json_decode($document->type)) && preg_grep('/video/',json_decode($document->type)) && !in_array('image/jpeg',json_decode($document->type)) && !in_array('image/png',json_decode($document->type))) 
 				    @if ($item != 'N/A')
 				      <a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document_names[$path_count] }}</a>
 				    @else
 				      <img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;" />
 				    @endif
-				@endif
+                @endif
 		{{--	{!! strip_tags($document->title) !!} --}}
 			<!--/a-->
 			</span>{{-- don't need this span --}}
