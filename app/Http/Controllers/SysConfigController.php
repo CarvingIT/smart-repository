@@ -9,13 +9,13 @@ use Session;
 class SysConfigController extends Controller
 {
     public function index(){
-	$size_limit = ini_get("upload_max_filesize");
-	$config_details = Sysconfig::all();
-	$sysconfig = array();
-	$storage_disks =  config('filesystems.disks');
-	foreach($config_details as $details){
-        	$sysconfig[$details['param']] = $details['value'];
-	}
+        $size_limit = ini_get("upload_max_filesize");
+        $config_details = Sysconfig::all();
+        $sysconfig = array();
+        $storage_disks =  config('filesystems.disks');
+        foreach($config_details as $details){
+            $sysconfig[$details['param']] = $details['value'];
+        }
         return view('sysconfig',['sysconfig'=>$sysconfig,'size_limit'=>$size_limit,'storage_disks'=>$storage_disks]);
     }
 
