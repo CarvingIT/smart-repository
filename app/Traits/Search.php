@@ -255,7 +255,6 @@ trait Search{
 											'text_content' => $q_without_and
 										]
 									],
-									/*
 									[
 										'match' => [
 											'title.porter_stem' => $title_q_with_and_ps,
@@ -266,7 +265,6 @@ trait Search{
 											'text_content.porter_stem' => $text_q_with_and_ps,
 										]
 									],
-									 */
 									[
 										'match' => [
 											'title.porter_stem' => $q_without_and_ps,
@@ -315,15 +313,17 @@ trait Search{
         if(!empty($params)){
 	    $params['index'] = $elastic_index;
 	    $params['size'] = 1000;// set a max size returned by ES
+        Log::debug(json_encode($params));
 		try{
 			$client = $this->getElasticClient();
-            		$response = $client->search($params);
+           	$response = $client->search($params);
 		}
 		catch(\Exception $e){
 			// some error; switch to db search
+            Log::debug('Switching to DB search');
 			Log::debug($elastic_index);
 			Log::debug($e->getMessage());	
-			return $this->searchDB($request);
+			//return $this->searchDB($request);
 		}
             $document_ids = array();
             foreach($response['hits']['hits'] as $h){
@@ -331,7 +331,7 @@ trait Search{
 		$highlights[$h['_id']] = @$h['highlight'];
 		$scores[$h['_id']] = $h['_score'];
             }
-	//Log::debug(json_encode($response['hits']));
+	    //Log::debug(json_encode($response['hits']));
 	    $document_ids = array_keys($scores);
 	    $ordered_document_ids = implode(",", $document_ids);
         }
@@ -349,7 +349,9 @@ trait Search{
 
 	//Log::debug(json_encode($document_ids));
 	Log::debug('Count before wherein: '.$documents->count());
-	Log::debug(@count($document_ids));
+    if(!empty($document_ids)){
+	    Log::debug(@count($document_ids));
+    }
 	//Log::debug(json_encode($document_ids));
 	if(isset($document_ids) && count($document_ids) > 0){
         	$documents = $documents->whereIn('id', $document_ids);
@@ -427,6 +429,7 @@ trait Search{
         	);
 		}
 		else{
+            //Log::debug(count($documents));
         	$results_data = $this->datatableFormatResults(
                array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval)
        		);
@@ -436,6 +439,8 @@ trait Search{
             'draw'=>(int) $request->draw,
             'recordsTotal'=> $total_count,
             'recordsFiltered' => $filtered_count,
+		    'highlights'=>$highlights,
+		    'scores'=>$scores,
             'error'=> '',
         );
         //return json_encode($results, JSON_UNESCAPED_UNICODE);
