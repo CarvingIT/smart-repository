@@ -56,7 +56,10 @@ class DocumentSaved
 		// also attempt to remove this particular record from elastic index
        	$elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
        	$hosts = explode(",",$elastic_hosts);
-       	$client = ClientBuilder::create()->setHosts($hosts)->build();
+        $client = ClientBuilder::create()->setHosts($hosts)
+		        ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+		        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+                ->build();
 		if($event->document->collection->require_approval == 1 && 
 			empty($event->document->approved_on)){
 			// don't update the elastic index
