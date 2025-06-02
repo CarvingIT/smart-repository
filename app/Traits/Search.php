@@ -276,7 +276,7 @@ trait Search{
 										]
 									],
 								],
-								//'minimum_should_match' => 1
+								'minimum_should_match' => 1
 							],
 						],
 						'highlight' => [
@@ -314,23 +314,22 @@ trait Search{
 	    $params['index'] = $elastic_index;
 	    $params['size'] = 1000;// set a max size returned by ES
         Log::debug(json_encode($params));
+        $document_ids = array();
 		try{
 			$client = $this->getElasticClient();
            	$response = $client->search($params);
+            foreach($response['hits']['hits'] as $h){
+                //$document_ids[] = $h['_id'];
+		        $highlights[$h['_id']] = @$h['highlight'];
+		        $scores[$h['_id']] = $h['_score'];
+            }
 		}
 		catch(\Exception $e){
 			// some error; switch to db search
-            Log::debug('Switching to DB search');
-			Log::debug($elastic_index);
 			Log::debug($e->getMessage());	
-			//return $this->searchDB($request);
+            Log::debug('Switching to DB search');
+			return $this->searchDB($request);
 		}
-            $document_ids = array();
-            foreach($response['hits']['hits'] as $h){
-                //$document_ids[] = $h['_id'];
-		$highlights[$h['_id']] = @$h['highlight'];
-		$scores[$h['_id']] = $h['_score'];
-            }
 	    //Log::debug(json_encode($response['hits']));
 	    $document_ids = array_keys($scores);
 	    $ordered_document_ids = implode(",", $document_ids);
@@ -348,12 +347,12 @@ trait Search{
 	}
 
 	//Log::debug(json_encode($document_ids));
-	Log::debug('Count before wherein: '.$documents->count());
+	//Log::debug('Count before wherein: '.$documents->count());
     if(!empty($document_ids)){
 	    Log::debug(@count($document_ids));
     }
-	//Log::debug(json_encode($document_ids));
-	if(isset($document_ids) && count($document_ids) > 0){
+	//if(isset($document_ids) && count($document_ids) > 0){
+	if(isset($document_ids)){
         	$documents = $documents->whereIn('id', $document_ids);
 	}
 	//$query = $documents->toSql();
