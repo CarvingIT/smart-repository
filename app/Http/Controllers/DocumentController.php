@@ -215,6 +215,17 @@ class DocumentController extends Controller
             $d->type = $mimetype;
             $d->path = $filepath;
             $d->ori_filename = $original_filename;
+            try {
+                $text_content = $this->extractText($local_filepath, $mimetype);
+                // Delete the file if the storage drive is other than local drive.
+                if ($storage_drive != 'local') {
+                    Storage::delete($local_filepath);
+                }
+            } catch (\Exception $e) {
+                \Log::error($e->getMessage());
+                $d->text_content = '';
+                $warnings[] = 'No text was indexed. ' . $e->getMessage();
+            }
         }
         else{
         // Multiple file upload starts

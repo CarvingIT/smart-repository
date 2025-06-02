@@ -238,6 +238,9 @@ $(document).ready(function()
 					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}" style="width:50%">
 					</div>
             			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_blank">
+				@elseif($document->type == 'text/csv')
+                        		<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png"></a>{{ $document->title }}
+            			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_blank">
 				@else
 				    @if ($document->path != 'N/A')
 				      <a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">
@@ -294,6 +297,12 @@ $(document).ready(function()
 					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" style="width:50%"><br />
             			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
 					</div>
+                @endif
+				@if(in_array('text/csv',json_decode($document->type)))
+					<div style="text-align:center;">
+                     	<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
+            			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
+                    </div>
                 @endif
 				@if(!in_array('application/pdf',json_decode($document->type)) && !in_array('application/vnd.openxmlformats-officedocument.presentationml.presentation',json_decode($document->type)) && !preg_grep('/^audio/',json_decode($document->type)) && preg_grep('/video/',json_decode($document->type)) && !in_array('image/jpeg',json_decode($document->type)) && !in_array('image/png',json_decode($document->type))) 
 				    @if ($item != 'N/A')

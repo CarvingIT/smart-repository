@@ -59,7 +59,8 @@ class Document extends Model implements Auditable
             'mp3'=>'mp3',
             'mp4'=>'mp4',
 			'url'=>'url',
-	    'm4a'=>'m4a',
+	        'm4a'=>'m4a',
+            'csv'=>'csv',
         );
         $path = empty($path) ? $this->path : $path;
         //get extension
