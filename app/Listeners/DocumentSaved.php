@@ -79,6 +79,8 @@ class DocumentSaved
 		else{
             $body = $event->document->toArray();
             $body['collection_id'] = $event->document->collection->id;
+            $body['title'] = $d->title;
+            $body['text_content'] = $d->text_content;
             $params = [
                 'index' => 'sr_documents',
                 'id'    => $event->document->id,
