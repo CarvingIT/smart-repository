@@ -313,7 +313,7 @@ trait Search{
         if(!empty($params)){
 	    $params['index'] = $elastic_index;
 	    $params['size'] = 1000;// set a max size returned by ES
-        Log::debug(json_encode($params));
+        //Log::debug(json_encode($params));
         $document_ids = array();
 		try{
 			$client = $this->getElasticClient();
