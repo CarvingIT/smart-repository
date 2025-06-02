@@ -682,7 +682,9 @@ trait Search{
                     }
                 }
                 if(Auth::user()->canDeleteDocument($d->id)){
+                    if($d->locked != 1){
                 $action_icons .= '<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog('.$d->id.');" title="Delete document"><i class="material-icons">delete</i></span>';
+                    }
                 }
             }
 	    } // if collection's content-type == Uploaded documents
