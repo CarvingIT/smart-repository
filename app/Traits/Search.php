@@ -384,7 +384,7 @@ trait Search{
 		//exit;
 	}
 	else{
-		if(env('DEFAULT_META_SORT_FIELD','')){
+		if(!empty(env('DEFAULT_META_SORT_FIELD',''))){
 			$sort_direction = (env('DEFAULT_META_SORT_DIRECTION','') == 'desc') ? 'desc' : 'asc';
 			$mf = MetaField::where('label',env('DEFAULT_META_SORT_FIELD',''))->first();
 
