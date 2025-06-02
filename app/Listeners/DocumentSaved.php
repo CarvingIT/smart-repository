@@ -70,7 +70,7 @@ class DocumentSaved
         	];
         	try{
         	$response = $client->delete($params);
-        	Log::info('Removed document from Elastic index', $response);
+        	Log::info('Removed document {id} from Elastic index', ['id'=>$event->document->id]);
         	}
         	catch(\Exception $e){
             	Log::warning($e->getMessage());
@@ -86,7 +86,7 @@ class DocumentSaved
             ];
 	    	try{
             	$response = $client->index($params);
-	    		Log::info('Elastic index updated', $response);
+	    		Log::info('Elastic index updated for document {id}.', ['id'=>$event->document->id]);
 	    	}
 	    	catch(\Exception $e){
 	    		Log::warning($e->getMessage());
