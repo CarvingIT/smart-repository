@@ -12,10 +12,10 @@ class TaxonomyOption extends Component
      *
      * @return void
      */
-    public $indent;
-    public function __construct(public Taxonomy $taxonomy, $indent='')
+    public $level;
+    public function __construct(public Taxonomy $taxonomy, $level=0)
     {
-        $this->indent = $indent;
+        $this->level = $level+1;
     }
 
     /**
@@ -25,6 +25,6 @@ class TaxonomyOption extends Component
      */
     public function render()
     {
-        return view('components.taxonomy-option', ['indent'=>$this->indent]);
+        return view('components.taxonomy-option', ['level'=>$this->level]);
     }
 }

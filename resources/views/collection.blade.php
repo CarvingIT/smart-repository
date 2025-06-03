@@ -6,6 +6,10 @@
 <script src="/js/jquery-ui.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
+<link href="/css/select2.min.css" rel="stylesheet" />
+<link href="/css/select2totree.css" rel="stylesheet" />
+<script src="/js/select2.min.js"></script>
+<script src="/js/select2totree.js"></script>
 @php
 $column_config = json_decode($collection->column_config);
 list($hide_type, $hide_title, $hide_size, $hide_creation_time) = array(false, false, false, false);
@@ -80,6 +84,7 @@ $(document).ready(function() {
     });
 
 } );
+
 
 function showDeleteDialog(document_id){
 	str = randomString(6);
@@ -247,8 +252,7 @@ function randomString(length) {
 			@elseif($m->type == 'Select')
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
+		   	<select class="selectpickertree" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
@@ -264,8 +268,7 @@ function randomString(length) {
 			@elseif($m->type == 'MultiSelect')
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<!--select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();"-->
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" multiple onchange="this.form.submit();">
+		   	<select class="selectpickertree" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" multiple onchange="this.form.submit();">
 		            @php
                 		$options = explode(",", $m->options);
             		    @endphp
@@ -281,11 +284,12 @@ function randomString(length) {
 			@elseif($m->type == 'TaxonomyTree')
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
-		            @php
-                		//$options = explode(",", $m->options);
+		   	<select class="selectpickertree" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
+		        @php
+                //$options = explode(",", $m->options);
 				$taxonomy_m = App\Taxonomy::find($m->options);
-            		    @endphp
+            	@endphp
+                <option value="">{{ $taxonomy_m->label }}</option>
 				@foreach($taxonomy_m->childs as $t)
                     <x-taxonomy-option :taxonomy="$t" :indent="''" />
 				@endforeach
@@ -444,6 +448,7 @@ $(document).ready(function() {
 			},
             minLength: 1,
         });
+    $(".selectpickertree").select2ToTree();
     });
 		$('#collection_search').keyup(function(){
    			oTable.search($(this).val()).draw() ;
