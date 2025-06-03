@@ -41,9 +41,10 @@ class DocumentController extends Controller
         if($doc->type == 'url'){
 		    return redirect($doc->external_link);
         }
-        if(json_validate($doc->path)){
+
+        if(json_validate($doc->type) && count(json_decode($doc->type)) > 1 && !preg_match('/details/',$_SERVER['REQUEST_URI'])){
 		    return redirect('/collection/'.$collection_id.'/document/'.$document_id.'/details');
-        }    
+        }
         $collection_id = $doc->collection_id;
         $collection = \App\Collection::find($collection_id);
         $storage_drive = empty($collection->storage_drive)?'local':$collection->storage_drive;
