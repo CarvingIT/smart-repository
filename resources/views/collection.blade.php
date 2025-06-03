@@ -236,7 +236,7 @@ function randomString(length) {
 			@elseif($m->type == 'Date')
 			<div class="float-container">
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" placeholder="Selete date range and press enter"/>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" placeholder="Select date range and press enter"/>
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator[]" value="between" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
