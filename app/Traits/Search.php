@@ -248,11 +248,13 @@ trait Search{
 									[
 										'match' => [
 											'title' => $q_without_and,
+                                            'fuzziness' => 'AUTO',
 										]
 									],
 									[
 										'match' => [
-											'text_content' => $q_without_and
+											'text_content' => $q_without_and,
+                                            'fuzziness' => 'AUTO',
 										]
 									],
 									[
@@ -276,7 +278,7 @@ trait Search{
 										]
 									],
 								],
-								'minimum_should_match' => 1
+								//'minimum_should_match' => 1
 							],
 						],
 						'highlight' => [
