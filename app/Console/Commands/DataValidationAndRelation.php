@@ -69,9 +69,9 @@ class DataValidationAndRelation extends Command
 		$document = \App\Document::select('id','collection_id','path','type','size')
 					->where('title',$row[11])->first();
 		if(!empty($document)){
-		if($row[22] == 'RPO Targets'){
+		//if($row[22] == 'RPO Targets'){
 		$shortname_id[ltrim(rtrim($row[12]))] = $document->id;
-		}
+		//}
 		}
 		
 		if(!empty($document)){
