@@ -25,7 +25,8 @@ $(document).ready(function() {
 
 tinymce.init({
 				relative_urls: false,
-                                selector: 'textarea',
+                                selector: '#document_description',
+                                //selector: 'textarea',
                                 plugins: [
                                     "advlist autolink lists link image charmap print preview hr anchor pagebreak",
                                     "searchreplace wordcount visualblocks visualchars code fullscreen",
@@ -181,7 +182,7 @@ tinymce.init({
         @if($f->type == 'Text')
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
         @elseif ($f->type == 'Textarea')
-        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! old('meta_field_'.$f->id, $document->meta_value($f->id)) !!}</textarea>
+        <textarea @if($f->with_rich_text_editor == 1) id="document_description" @endif class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! old('meta_field_'.$f->id, $document->meta_value($f->id)) !!}</textarea>
         @elseif ($f->type == 'Numeric')
         <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
         @elseif ($f->type == 'Date')

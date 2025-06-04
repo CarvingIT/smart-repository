@@ -43,6 +43,13 @@ $( document ).ready(function() {
         $("#numeric_values_div").hide();
    }
 
+   if(val === 'Textarea'){
+	$("#rich_text_editor").show();
+   }
+   else{
+	$("#rich_text_editor").hide();
+   }
+
   });
 
 });
@@ -259,6 +266,17 @@ function showMetaFieldForm(){
 					@if($edit_field->is_required == 1) {{ 'checked' }} @endif
 					/>
                     <label for="is_required">Is required</label> 
+                    </div>
+                   </div>
+
+                   <div class="form-group row" id="rich_text_editor">
+				   <div class="col-md-4">
+                   </div>
+                    <div class="col-md-8">
+                    <input type="checkbox" name="with_rich_text_editor" id="with_rich_text_editor" class="form-control1" value="1" 
+					@if($edit_field->with_rich_text_editor == 1) {{ 'checked' }} @endif
+					/>
+                    <label for="with_rich_text_editor">With Rich Text Editor</label> 
                     </div>
                    </div>
 

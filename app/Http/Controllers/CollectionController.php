@@ -368,6 +368,7 @@ $j++;
         $meta_field->results_display_order = $request->input('results_display_order');
         $meta_field->is_required = $request->input('is_required');
         $meta_field->is_filter = $request->input('is_filter');
+        $meta_field->with_rich_text_editor = $request->input('with_rich_text_editor');
 		// extra attributes
 			$extra_attributes = empty($meta_field->extra_attaibutes) ? [] :json_decode($meta_field->extra_attaibutes); 
 			$extra_attributes['width_on_info_page'] = $request->input('width_on_info_page');
