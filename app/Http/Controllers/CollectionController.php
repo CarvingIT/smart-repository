@@ -376,6 +376,7 @@ $j++;
 			$extra_attributes['numeric_max_value'] = $request->input('numeric_max_value');
 			$extra_attributes['show_on_details_page'] = $request->input('show_on_details_page');
 			$extra_attributes['results_classname'] = $request->input('results_classname');
+			$extra_attributes['filter_width_on_collection_page'] = $request->input('filter_width_on_collection_page');
 			$meta_field->extra_attributes = json_encode($extra_attributes);
 
         $meta_field->save();

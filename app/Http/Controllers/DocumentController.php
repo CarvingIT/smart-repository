@@ -13,6 +13,7 @@ use App\Curation;
 // use Session;
 use App\Collection;
 use Spatie\PdfToText\Pdf;
+use mishagp\OCRmyPDF\OCRmyPDF;
 use App\MetaFieldValue;
 use App\ReverseMetaFieldValue;
 use App\Sysconfig;
@@ -520,19 +521,17 @@ class DocumentController extends Controller
     public function extractText($filepath, $mimetype){
         $text = '';
 	    $enable_OCR = env('ENABLE_OCR');
-		$ocr_langs = explode(",", env('OCR_langs'));
+		$ocr_langs = env('OCR_langs', 'eng');
         if($mimetype == 'application/pdf'){
 	    	$text = \Spatie\PdfToText\Pdf::getText(storage_path('app/'.$filepath));
 			if(empty($text) && $enable_OCR==1){ // try OCR
-				/* this piece of code needs to be replaced with code that works with ocrmypdf
+                /* ocrmypdf and tesseractOCR need to be installed
+                 * Also, various different language packages of tesseractOCR need to be installed.
 				*/
-				$text = (new Pdf())
-                ->setPdf(storage_path('app/'.$filepath))
-                ->setOptions(['layout'])
-                ->setScanOptions(['-l eng', '--skip-text'])
-                ->decrypt()
-                ->scan()
-                ->text();
+                $ocrred_path = OCRmyPDF::make(storage_path('app/'.$filepath))
+                ->setParam('-l', $ocr_langs)
+                ->run();
+                $text = \Spatie\PdfToText\Pdf::getText($ocrred_path);
 			}
         }
         else if(preg_match('/^image\//', $mimetype) && ($enable_OCR==1)){

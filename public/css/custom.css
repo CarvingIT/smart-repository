@@ -97,12 +97,8 @@ a.navbar-brand{
 
 .search-field{
 	margin-bottom:5px;
-	line-height:3;
 	padding-left:10px;
-}
-
-#collection_search{
-	width:90%;
+    width:100%;
 }
 
 a.nav-link{
@@ -122,7 +118,6 @@ a.nav-link{
 }
 
 .float-container {
-  padding: 0 8px;
   position: relative;
   display:inline-block;
 }

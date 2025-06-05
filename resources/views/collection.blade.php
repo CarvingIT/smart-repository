@@ -213,44 +213,52 @@ function randomString(length) {
                @endforeach
             </div>
 		<div class="card search-filters-card">
-		<div class="row text-center">
-		   <div class="col-12">
+		<div class="row">
 			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
+			<div class="float-container col-md-12">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
-			<div class="float-container">
 		   		<label for="title_search" class="search-label">{{ __('Title search') }}</label>
-		   		<input type="text" class="search-field" id="title_search" name="title_filter" placeholder="Add keywords and press enter"/>
-			</div>
+		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
 			</form>
+			</div>
 			@endif
 			@foreach($meta_fields as $m)
+                @php
+                    $extra_attributes = empty($m->extra_attributes) ? null : json_decode($m->extra_attributes);
+                    $w = empty($extra_attributes->filter_width_on_collection_page)? 12 : $extra_attributes->filter_width_on_collection_page;
+                @endphp
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
-			@csrf
 
 			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea' || $m->type == 'Select' || $m->type == 'MultiSelect')
-			<div class="float-container">
+			<div class="float-container col-md-{{ $w }}">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" placeholder="Add keywords and press enter"/>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" />
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 		   	<input type="hidden" name="operator[]" value="contains" />
-			<!--/form-->
+			</form>
 			</div>
 			@elseif($m->type == 'Date')
-			<div class="float-container">
+			<div class="float-container col-md-{{ $w }}">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" placeholder="Select date range and press enter"/>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" />
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator[]" value="between" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			<script>
 				$('#meta_{{ $m->id }}_search').dateRangePicker();
 			</script>
+			</form>
 			</div>
 			@elseif($m->type == 'TaxonomyTree')
-			<div class="float-container">
+			<div class="float-container col-md-{{ $w }}">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
 		   	<select class="selectpickertree" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
 		        @php
@@ -265,17 +273,16 @@ function randomString(length) {
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
 		   	<input type="hidden" name="operator[]" value="contains" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+			</form>
 			</div>
 			@endif
-			</form>
 			@endif
 			@endforeach
-			</div>
 		</div>
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Start typing minimum of 4 characters to initiate search within the document content') }}</label>
+			<label for="collection_search">{{ __('Type a few characters to initiate search within the document content') }}</label>
 		    <input type="text" class="search-field" id="collection_search" />
 			<style>
 			.dataTables_filter {
@@ -416,7 +423,7 @@ $(document).ready(function() {
 			},
             minLength: 1,
         });
-    $(".selectpickertree").select2ToTree();
+    $(".selectpickertree").select2ToTree({dropdownCssClass : 'full-width'});
     });
 		$('#collection_search').keyup(function(){
    			oTable.search($(this).val()).draw() ;

@@ -29,6 +29,7 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "league/flysystem-sftp-v3": "^3.28",
         "mailgun/mailgun-php": "^3.6",
+        "mishagp/ocrmypdf": "^0.4.0",
         "nlp-tools/nlp-tools": "^0.1.3",
         "nyholm/psr7": "^1.8",
         "owen-it/laravel-auditing": "^12.0",
