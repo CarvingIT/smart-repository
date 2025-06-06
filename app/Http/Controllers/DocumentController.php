@@ -269,7 +269,8 @@ class DocumentController extends Controller
             }
         } ## foreach of multiple file upload ends
 
-            $d->type = json_encode($mimetype);
+            //$d->type = json_encode($mimetype);
+            $d->type = "array";
             $d->path = json_encode($filepath);
             $d->ori_filename = json_encode($original_filename);
         }// end of multiple file upload foreach ends
