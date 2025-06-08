@@ -258,15 +258,13 @@ $(document).ready(function()
                 @endif
             @php 
                 $path_count = 0; 
-                $document_names = json_decode($document->ori_filename); 
-                $document_types = json_decode($document->type); 
+                $document_names = is_array(json_decode($document->ori_filename))?json_decode($document->ori_filename):json_decode($document->path);
                 //echo $document_names[$path_count];
             @endphp
             @foreach(json_decode($document->path) as $item)
-{{ $item }}
                     <div class="col-md-12">
                         <span id="doc-title" class="col-md-12">
-				@if(preg_match('/pdf/',$item))
+				@if(preg_match('/\.pdf$/',$item))
 				    @if(env('ENABLE_PDF_READER') == 1)
                             <p>
 					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;margin-right:1%;"></a>
@@ -278,19 +276,19 @@ $(document).ready(function()
             				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_new">{{ $document_names[$path_count] }}</a>
                             </p>
 					@endif
-				@elseif(preg_match('/ppt|pptx/i',$item))
+				@elseif(preg_match('/\.ppt$|\.pptx$/i',$item))
                     <p>
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}">{{ $document_names[$path_count] }}</a>
                     </p>
-				@elseif(preg_match('/doc|docx|docs/i',$item))
+				@elseif(preg_match('/\.doc$|\.docx$/i',$item))
                     <p>
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}">{{ $document_names[$path_count] }}</a>
                     </p>
-				@elseif(preg_match('/xlsx|xls/i', $item))
+				@elseif(preg_match('/\.xlsx$|\.xls$/i', $item))
                     <p>
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}">{{ $document_names[$path_count] }}</a>
                     </p>
-				@elseif(preg_match('/mp3/',$item) || preg_match('/mp4/',$item))
+				@elseif(preg_match('/\.mp3$/',$item) || preg_match('/\.mp4$/',$item))
 					<div style="text-align:center;">
                         		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
         				<video controls width="200">
@@ -298,13 +296,10 @@ $(document).ready(function()
         				</video><br />
             			<a title="See online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
         				</div>
-				@elseif(preg_match('/jpg|png|jpeg|gif/i',$item))
-					<div style="text-align:center;">
+				@elseif(preg_match('/\.jpg$|\.png$|\.jpeg$|\.gif$/i',$item))
                         		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
 					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" style="width:50%"><br />
-            			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
-					</div>
-				@elseif(preg_match('/csv/i',$item))
+				@elseif(preg_match('/\.csv$/i',$item))
 					<div style="text-align:center;">
                      	<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
             			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
