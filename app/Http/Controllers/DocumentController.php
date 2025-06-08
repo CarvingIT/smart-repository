@@ -224,9 +224,9 @@ class DocumentController extends Controller
                     Storage::delete($local_filepath);
                 }
             } catch (\Exception $e) {
-                \Log::error($e->getMessage());
+                Log::error($e->getMessage());
                 $d->text_content = '';
-                $warnings[] = 'No text was indexed. ' . $e->getMessage();
+                $warnings[] = 'No text was indexed. Text extraction and indexing will be attempted later.'; 
             }
         }
         else{
@@ -263,9 +263,9 @@ class DocumentController extends Controller
                     Storage::delete($local_filepath);
                 }
             } catch (\Exception $e) {
-                \Log::error($e->getMessage());
+                Log::error($e->getMessage());
                 $d->text_content = '';
-                $warnings[] = 'No text was indexed. ' . $e->getMessage();
+                $warnings[] = 'No text was indexed. Text extraction and indexing will be attempted later.';
             }
         } ## foreach of multiple file upload ends
 
@@ -523,14 +523,19 @@ class DocumentController extends Controller
         $text = '';
 	    $enable_OCR = env('ENABLE_OCR');
 		$ocr_langs = env('OCR_langs', 'eng');
+        $base_filename = basename($filepath);
         if($mimetype == 'application/pdf'){
 	    	$text = \Spatie\PdfToText\Pdf::getText(storage_path('app/'.$filepath));
 			if(empty($text) && $enable_OCR==1){ // try OCR
                 /* ocrmypdf and tesseractOCR need to be installed
                  * Also, various different language packages of tesseractOCR need to be installed.
 				*/
+                $output_path = dirname(storage_path('app/'.$filepath)).'/ocr_'.$base_filename;
                 $ocrred_path = OCRmyPDF::make(storage_path('app/'.$filepath))
+                //$text = OCRmyPDF::make(storage_path('app/'.$filepath))
                 ->setParam('-l', $ocr_langs)
+                ->setOutputPDFPath($output_path)
+                //->setOutputPDFPath(null)
                 ->run();
                 $text = \Spatie\PdfToText\Pdf::getText($ocrred_path);
 			}
@@ -539,7 +544,7 @@ class DocumentController extends Controller
             // try OCR
             $text = utf8_encode(
 				(new TesseractOCR(storage_path('app/'.$filepath)))
-				->lang(...$ocr_langs)
+				->lang(...explode(",",$ocr_langs))
 				->run()
 			);
         }

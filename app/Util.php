@@ -4,6 +4,8 @@ namespace App;
 use Illuminate\Support\Facades\Log;
 use \App\Util;
 use \App\SRTemplate;
+use mishagp\OCRmyPDF\OCRmyPDF;
+use thiagoalessio\TesseractOCR\TesseractOCR;
 
 class Util{
 	public static function createTextChunks($text, $length, $overlap){
@@ -178,6 +180,38 @@ class Util{
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) .' '. @$size[$factor];
     }
 
-
-//
+    public static function extractText($filepath){
+        $text = '';
+        $enable_OCR = env('ENABLE_OCR', 0);
+        $ocr_langs = env('OCR_langs', 'eng');
+        $mimetype = mime_content_type($filepath);
+        if($mimetype == 'application/pdf'){
+            $text = \Spatie\PdfToText\Pdf::getText($filepath);
+            if(empty($text) && $enable_OCR==1){ // try OCR
+                /* ocrmypdf and tesseractOCR need to be installed
+                 * Also, various different language packages of tesseractOCR need to be installed.
+                */
+                $ocrred_path = OCRmyPDF::make($filepath)
+                ->setParam('-l', $ocr_langs)
+                ->run();
+                $text = \Spatie\PdfToText\Pdf::getText($ocrred_path);
+            }
+        }
+        else if(preg_match('/^image\//', $mimetype) && ($enable_OCR==1)){
+            // try OCR
+            $text = utf8_encode(
+                (new TesseractOCR($filepath))
+                ->lang(...explode(",",$ocr_langs))
+                ->run()
+            );
+        }
+        else if(preg_match('/^text\//', $mimetype)){
+            $text = file_get_contents($filepath);
+        }
+        else{ // for doc, docx, ppt, pptx, xls, xlsx
+            $doc = new \App\DocXtract($filepath);
+            $text = $doc->convertToText();
+        }
+        return $text;
+    }
 }// class ends
