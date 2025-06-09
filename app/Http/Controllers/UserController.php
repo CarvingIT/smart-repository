@@ -81,11 +81,21 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User  $user)
     {
+        //echo $user->id; echo $user->email_verified_at; exit;
+        //print_r($request->get('user_role')); echo $request->make_email_verified; exit;
         $hasPassword = $request->get('password');
+        $make_email_verified = $request->make_email_verified;
+        $email_verified_at = time();
         $user->update(
             $request->merge(['password' => Hash::make($request->get('password'))])
-                ->except([$hasPassword ? '' : 'password']
-        ));
+                ->except([$hasPassword ? '' : 'password']),
+        );
+
+        if(isset($make_email_verified)){
+        $user->email_verified_at = time();
+        $user->save();
+        }
+
 
     // assignment of roles to the user
 	//first, remove all roles assigned to that user
