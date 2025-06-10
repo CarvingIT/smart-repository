@@ -232,23 +232,25 @@ function randomString(length) {
 
 			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
 			<div class="float-container col-md-{{ $w }}">
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters" onblur="this.form.submit();">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" />
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" onblur="this.form.submit();"/>
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 		   	<input type="hidden" name="operator[]" value="contains" />
 			</form>
 			</div>
             @elseif($m->type == 'Select' || $m->type == 'MultiSelect')
-            <div class="float-container">
+            <div class="float-container col-md-{{ $w }}">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
             <label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-            <select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
+            <select class="selectpickertree" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
                 @php
                     $options = explode(",", $m->options);
                 @endphp
-                    <!--option value="">{{ $m->label }}</option-->
+                    <option value="">{{ $m->label }}</option>
                     @foreach($options as $o)
                     <option>{{ $o }}</option>
                     @endforeach
@@ -256,6 +258,7 @@ function randomString(length) {
             <input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
             <input type="hidden" name="operator[]" value="contains" />
             <input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+			</form>
             </div>
 			@elseif($m->type == 'Date')
 			<div class="float-container col-md-{{ $w }}">
