@@ -244,8 +244,7 @@ function randomString(length) {
             @elseif($m->type == 'Select' || $m->type == 'MultiSelect')
             <div class="float-container">
             <label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-            <select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m-
->id }}][]" onchange="this.form.submit();">
+            <select class="selectpicker" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
                 @php
                     $options = explode(",", $m->options);
                 @endphp
