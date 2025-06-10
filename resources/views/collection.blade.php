@@ -245,8 +245,8 @@ function randomString(length) {
             <div class="float-container col-md-{{ $w }}">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
-            <label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-            <select class="selectpickertree" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
+            <!-- label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label -->
+            <select class="search-field" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
                 @php
                     $options = explode(",", $m->options);
                 @endphp
