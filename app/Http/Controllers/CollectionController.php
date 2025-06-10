@@ -235,12 +235,12 @@ foreach($request->meta_value as $key=>$value){
 exit;
 */
         // set filters in session and return to the collection view 
-        $meta_filters = Session::get('meta_filters');
+    $meta_filters = Session::get('meta_filters');
 	$new_meta_filters = array();
 	$multi_meta_field = $multi_meta_value = array();
 
         if(!empty($request->meta_value)){
-			if($meta_filters && is_array($meta_filters[$request->collection_id])){
+			if($meta_filters && is_array(@$meta_filters[$request->collection_id])){
 			foreach($meta_filters[$request->collection_id] as $m){
 				if($m['field_id'] != $request->meta_field){
 					$new_meta_filters[$request->collection_id][] = $m;
