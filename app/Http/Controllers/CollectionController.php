@@ -235,12 +235,12 @@ foreach($request->meta_value as $key=>$value){
 exit;
 */
         // set filters in session and return to the collection view 
-        $meta_filters = Session::get('meta_filters');
+    $meta_filters = Session::get('meta_filters');
 	$new_meta_filters = array();
 	$multi_meta_field = $multi_meta_value = array();
 
         if(!empty($request->meta_value)){
-			if($meta_filters && is_array($meta_filters[$request->collection_id])){
+			if($meta_filters && is_array(@$meta_filters[$request->collection_id])){
 			foreach($meta_filters[$request->collection_id] as $m){
 				if($m['field_id'] != $request->meta_field){
 					$new_meta_filters[$request->collection_id][] = $m;
@@ -368,6 +368,7 @@ $j++;
         $meta_field->results_display_order = $request->input('results_display_order');
         $meta_field->is_required = $request->input('is_required');
         $meta_field->is_filter = $request->input('is_filter');
+        $meta_field->with_rich_text_editor = $request->input('with_rich_text_editor');
 		// extra attributes
 			$extra_attributes = empty($meta_field->extra_attaibutes) ? [] :json_decode($meta_field->extra_attaibutes); 
 			$extra_attributes['width_on_info_page'] = $request->input('width_on_info_page');
@@ -375,6 +376,7 @@ $j++;
 			$extra_attributes['numeric_max_value'] = $request->input('numeric_max_value');
 			$extra_attributes['show_on_details_page'] = $request->input('show_on_details_page');
 			$extra_attributes['results_classname'] = $request->input('results_classname');
+			$extra_attributes['filter_width_on_collection_page'] = $request->input('filter_width_on_collection_page');
 			$meta_field->extra_attributes = json_encode($extra_attributes);
 
         $meta_field->save();

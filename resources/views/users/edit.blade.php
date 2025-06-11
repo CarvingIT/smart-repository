@@ -91,8 +91,19 @@ $(document).ready(function() {
                   </div>
                 </div>
               </div>
+
+                @if(is_null($user->email_verified_at))
+              <div class="form-group row">
+                  <div class="col-md-4">
+                  <label class="col-md-8 col-form-label text-md-right">{{ __('Make email verified') }}</label>
+                  </div>
+                  <div class="col-md-4">
+                      <input class="form-control" name="make_email_verified" type="checkbox" value="1" />
+                  </div>
+              </div>
+                @endif
               <div class="card-footer ml-auto mr-auto">
-                <button type="submit" class="btn btn-primary">{{ __('Add User') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Update User') }}</button>
               </div>
              </form>
             </div>

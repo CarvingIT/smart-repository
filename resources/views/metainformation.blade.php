@@ -43,6 +43,13 @@ $( document ).ready(function() {
         $("#numeric_values_div").hide();
    }
 
+   if(val === 'Textarea'){
+	$("#rich_text_editor").show();
+   }
+   else{
+	$("#rich_text_editor").hide();
+   }
+
   });
 
 });
@@ -114,8 +121,8 @@ function showMetaFieldForm(){
 				$roles_array = [];
 				$roles_array = explode(",",$edit_field->available_to);
 				@endphp
-                        <select class="selectpicker" id="available_to" name="available_to[]" title="Roles" multiple>
-                                <option value="100">All</option> 
+                        <select class="selectpicker" id="available_to" name="available_to[]" title="Roles" multiple required>
+                                <option value="100" @if(!empty($edit_field->available_to) && $edit_field->available_to == 100) selected @endif>All</option> 
 				@foreach($roles as $role)
                             	<option value="{{ $role->id }}" @if(!empty($edit_field->available_to) && in_array($role->id,$roles_array)) selected @endif>{{ $role->name }}</option> 
 				@endforeach
@@ -218,6 +225,7 @@ function showMetaFieldForm(){
 							$extra_attributes = empty($edit_field->extra_attributes)? null : json_decode($edit_field->extra_attributes);
 							$width_on_info_page = @$extra_attributes->width_on_info_page;
 							$results_classname = @$extra_attributes->results_classname;
+							$filter_width_on_collection_page = @$extra_attributes->filter_width_on_collection_page;
 						@endphp
 
                    <div class="form-group row">
@@ -252,6 +260,28 @@ function showMetaFieldForm(){
                    </div>
 
                    <div class="form-group row">
+		   			<div class="col-md-4">
+                   <label class="col-md-12 col-form-label text-md-right">Filter width on collection page</label> 
+                   </div>
+                    <div class="col-md-8">
+						<select name="filter_width_on_collection_page" class="form-control">
+							<option value="12">Full</option>
+							<option value="1" @if($filter_width_on_collection_page == '1') selected @endif>1/12</option>
+							<option value="2" @if($filter_width_on_collection_page == '2') selected @endif>1/6</option>
+							<option value="3" @if($filter_width_on_collection_page == '3') selected @endif>1/4</option>
+							<option value="4" @if($filter_width_on_collection_page == '4') selected @endif>1/3</option>
+							<option value="5" @if($filter_width_on_collection_page == '5') selected @endif>5/12</option>
+							<option value="6" @if($filter_width_on_collection_page == '6') selected @endif>1/2</option>
+							<option value="7" @if($filter_width_on_collection_page == '7') selected @endif>7/12</option>
+							<option value="8" @if($filter_width_on_collection_page == '8') selected @endif>2/3</option>
+							<option value="9" @if($filter_width_on_collection_page == '9') selected @endif>3/4</option>
+							<option value="10" @if($filter_width_on_collection_page == '10') selected @endif>5/6</option>
+							<option value="11" @if($filter_width_on_collection_page == '11') selected @endif>11/12</option>
+						</select>
+                    </div>
+                   </div>
+
+                   <div class="form-group row">
 				   <div class="col-md-4">
                    </div>
                     <div class="col-md-8">
@@ -259,6 +289,17 @@ function showMetaFieldForm(){
 					@if($edit_field->is_required == 1) {{ 'checked' }} @endif
 					/>
                     <label for="is_required">Is required</label> 
+                    </div>
+                   </div>
+
+                   <div class="form-group row" id="rich_text_editor"  style="display:none;">
+				   <div class="col-md-4">
+                   </div>
+                    <div class="col-md-8">
+                    <input type="checkbox" name="with_rich_text_editor" class="with_rich_text_editor form-control1" value="1" 
+					@if($edit_field->with_rich_text_editor == 1) {{ 'checked' }} @endif
+					/>
+                    <label for="with_rich_text_editor">With Rich Text Editor</label> 
                     </div>
                    </div>
 

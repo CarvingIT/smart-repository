@@ -258,14 +258,13 @@ $(document).ready(function()
                 @endif
             @php 
                 $path_count = 0; 
-                $document_names = json_decode($document->ori_filename); 
-                $document_types = json_decode($document->type); 
+                $document_names = is_array(json_decode($document->ori_filename))?json_decode($document->ori_filename):json_decode($document->path);
                 //echo $document_names[$path_count];
             @endphp
             @foreach(json_decode($document->path) as $item)
                     <div class="col-md-12">
                         <span id="doc-title" class="col-md-12">
-				@if($document_types[$path_count] == 'application/pdf')
+				@if(preg_match('/\.pdf$/',$item))
 				    @if(env('ENABLE_PDF_READER') == 1)
                             <p>
 					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;margin-right:1%;"></a>
@@ -277,44 +276,37 @@ $(document).ready(function()
             				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_new">{{ $document_names[$path_count] }}</a>
                             </p>
 					@endif
-				@endif
-				@if($document_types[$path_count] == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
-				{{-- @if(in_array('application/vnd.openxmlformats-officedocument.presentationml.presentation',json_decode($document->type)) && preg_match("/mp4|avi|mov|ogg|wmv|webm/",$document_names[$path_count])) --}}
-
-					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">{{ $document_names[$path_count] }}</a>
-                @endif
-
-				{{-- @if(preg_grep('/^audio/',json_decode($document->type)) || preg_grep('/video/',json_decode($document->type)) || preg_match("/mp3/",$document_names[$path_count])) --}}
-				@if(preg_match('/^audio/',$document_types[$path_count]) || preg_match('/^video/',$document_types[$path_count]))
-					<div style="text-align:center;">
-                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
+				@elseif(preg_match('/\.ppt$|\.pptx$/i',$item))
+                    <p>
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}">{{ $document_names[$path_count] }}</a>
+                    </p>
+				@elseif(preg_match('/\.doc$|\.docx$/i',$item))
+                    <p>
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}">{{ $document_names[$path_count] }}</a>
+                    </p>
+				@elseif(preg_match('/\.xlsx$|\.xls$/i', $item))
+                    <p>
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}">{{ $document_names[$path_count] }}</a>
+                    </p>
+				@elseif(preg_match('/\.mp3$/',$item) || preg_match('/\.mp4$/',$item))
         				<video controls width="200">
         				<source src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" type="video/mp4">
         				</video><br />
             			<a title="See online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/media-player/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
-        				</div>
-                @endif
-				{{-- @if(in_array('image/jpeg',json_decode($document->type)) || in_array('image/png',json_decode($document->type)) && preg_match("/png|jpeg|jpg|JPG|JPEG|PNG|GIF/", $document_names[$path_count])) --}}
-				@if($document_types[$path_count] == 'image/jpeg' || $document_types[$path_count] == 'image/png')
-					<div style="text-align:center;">
-                        		<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
-					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" style="width:50%"><br />
+				@elseif(preg_match('/\.jpg$|\.png$|\.jpeg$|\.gif$/i',$item))
+					<img src="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" style="max-width:100%"><br />
+				@elseif(preg_match('/\.csv$/i',$item))
+                    <p>
+                     	<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>
             			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
-					</div>
-                @endif
-				@if($document_types[$path_count] == 'text/csv')
-					<div style="text-align:center;">
-                     	<h3><a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png"></a>{{ $document->title }}</h3>
-            			<a title="View" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_blank">{{ $document_names[$path_count] }}</a>
-                    </div>
-                @endif
-				@if(!in_array('application/pdf',json_decode($document->type)) && !in_array('application/vnd.openxmlformats-officedocument.presentationml.presentation',json_decode($document->type)) && !preg_grep('/^audio/',json_decode($document->type)) && preg_grep('/video/',json_decode($document->type)) && !in_array('image/jpeg',json_decode($document->type)) && !in_array('image/png',json_decode($document->type)) && !in_array('text/csv',json_decode($document->type))) 
+                    </p>
+                @else
 				    @if ($item != 'N/A')
-				      <a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}" target="_new" style="text-decoration:underline;">{{ $document_names[$path_count] }}</a>
+				      <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{$c->id}}/document/{{$document->id}}/details/{{ $path_count }}" target="_new" style="text-decoration:underline;">{{ $document_names[$path_count] }}</a>
 				    @else
 				      <img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;" />
 				    @endif
-                @endif
+                @endif 
 		{{--	{!! strip_tags($document->title) !!} --}}
 			<!--/a-->
 			</span>{{-- don't need this span --}}

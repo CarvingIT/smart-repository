@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73acceff26bd72d29075bfea0269c0ba",
+    "content-hash": "30c0e094a7b6dac535cb7e8628004668",
     "packages": [
         {
             "name": "aacotroneo/laravel-saml2",
@@ -3935,6 +3935,59 @@
                 "source": "https://github.com/mailgun/mailgun-php/tree/v3.6.3"
             },
             "time": "2023-12-01T10:04:01+00:00"
+        },
+        {
+            "name": "mishagp/ocrmypdf",
+            "version": "v0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/mishagp/ocrmypdf-php.git",
+                "reference": "3b14628867dae1872e533a0ba05b41c2aef3e7d6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/mishagp/ocrmypdf-php/zipball/3b14628867dae1872e533a0ba05b41c2aef3e7d6",
+                "reference": "3b14628867dae1872e533a0ba05b41c2aef3e7d6",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.0"
+            },
+            "require-dev": {
+                "phpstan/extension-installer": "^1.4",
+                "phpstan/phpstan": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/php-code-coverage": "^11.0.0",
+                "phpunit/phpunit": "^11.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "mishagp\\OCRmyPDF\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "AGPL-3.0-only"
+            ],
+            "authors": [
+                {
+                    "name": "mishagp",
+                    "email": "misha@mishaprasolov.com"
+                }
+            ],
+            "description": "A simple PHP wrapper for OCRmyPDF",
+            "keywords": [
+                "OCR",
+                "ocrmypdf",
+                "php",
+                "wrapper"
+            ],
+            "support": {
+                "issues": "https://github.com/mishagp/ocrmypdf-php/issues",
+                "source": "https://github.com/mishagp/ocrmypdf-php"
+            },
+            "time": "2024-12-15T22:42:55+00:00"
         },
         {
             "name": "monolog/monolog",

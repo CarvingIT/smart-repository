@@ -4,10 +4,13 @@
 <script src="/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 <script src="/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
 <link href="/css/select2.min.css" rel="stylesheet" />
+<link href="/css/select2totree.css" rel="stylesheet" />
 <script src="/js/select2.min.js"></script>
+<script src="/js/select2totree.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     $('.selectsequence').select2();
+    $('.selectsequencetree').select2ToTree({placeholder:'Select one or more'});
     
     @if(empty($document->id))
     // validation for either document or external link
@@ -22,7 +25,8 @@ $(document).ready(function() {
 
 tinymce.init({
 				relative_urls: false,
-                                selector: 'textarea',
+                                selector: '.rich_text_editor',
+                                //selector: 'textarea',
                                 plugins: [
                                     "advlist autolink lists link image charmap print preview hr anchor pagebreak",
                                     "searchreplace wordcount visualblocks visualchars code fullscreen",
@@ -178,7 +182,7 @@ tinymce.init({
         @if($f->type == 'Text')
         <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
         @elseif ($f->type == 'Textarea')
-        <textarea id="document_description" class="form-control" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! old('meta_field_'.$f->id, $document->meta_value($f->id)) !!}</textarea>
+        <textarea id="document_description" class="form-control @if($f->with_rich_text_editor == 1) rich_text_editor @endif" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! old('meta_field_'.$f->id, $document->meta_value($f->id)) !!}</textarea>
         @elseif ($f->type == 'Numeric')
         <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $document->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
         @elseif ($f->type == 'Date')
@@ -225,8 +229,10 @@ tinymce.init({
 				foreach($tags as $t){
 					$children['parent_'.$t->parent_id][] = $t;
 				}
-				 if(!function_exists('getTree')){
-				function getTree($children, $document, $f, $parent_id = null, $parents = null){
+				if(!function_exists('getTree')){
+                
+				function getTree($children, $document, $f, $level, $parent_id = null, $parents = null){
+                    $level++;
 					if(empty($children['parent_'.$parent_id])) return;
 					foreach($children['parent_'.$parent_id] as $t){
 							$selected = '';
@@ -235,24 +241,23 @@ tinymce.init({
 							if (@in_array($t->id, $old_vals)){
 								$selected='selected="selected"';
 							}
+                            $data_pup = ($level > 1) ? 'data-pup="'.$t->parent_id.'"' : '';
 							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
-                                // we need not show the parents for selection
-                                // they should be automatically pupulated/set in the controller 
-								//echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
+								echo '<option '.$data_pup.' value="'.$t->id.'" '.$selected.' class="l'.$level.' non-leaf">'.$t->label.'</option>';
 								$parents_tmp = $parents. $t->label .' - ';
-								getTree($children, $document, $f, $t->id, $parents_tmp);
+								getTree($children, $document, $f, $level, $t->id, $parents_tmp);
 							}
 							else{
-								echo '<option value="'.$t->id.'" '.$selected.'>'.$parents.$t->label.'</option>';
+								echo '<option '.$data_pup.' class="l'.$level.'" value="'.$t->id.'" '.$selected.'>'.$t->label.'</option>';
 							}
 					}
 				}
 				}
 			@endphp
-        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple 
-		@if($f->is_required == 1) {{ ' required' }} @endif >
+        <select class="form-control selectsequencetree" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple 
+		@if($f->is_required == 1) {{ ' required' }} @endif>
 			@php
-			getTree($children, $document, $f, $f->options);
+			getTree($children, $document, $f, 0, $f->options);
 			@endphp
 		</select>
         <script>
