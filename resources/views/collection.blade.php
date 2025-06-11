@@ -286,7 +286,7 @@ function randomString(length) {
             	@endphp
                 <option value="">{{ $taxonomy_m->label }}</option>
 				@foreach($taxonomy_m->childs as $t)
-                    <x-taxonomy-option :taxonomy="$t" :indent="''" />
+                    <x-taxonomy-option :taxonomy="$t" :level="0" />
 				@endforeach
 			</select>
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
