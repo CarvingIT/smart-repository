@@ -36,7 +36,7 @@ class HomeController extends Controller
 	$documents = [];
 	foreach($collections as $collection){
 		$config = $collection->getCollectionConfig();
-		if(in_array($role_id, $config->approved_by)){	
+		if(!empty($config->approved_by) && in_array($role_id, $config->approved_by)){	
 			$documents[] = \App\Document::where('collection_id',$collection->id)->get();
 		}
 	}
@@ -68,7 +68,7 @@ class HomeController extends Controller
 		if(!$collections->isEmpty()){
                    foreach($collections as $collection){
 			$config = $collection->getCollectionConfig();
-			if(in_array($role_id, $config->approved_by)){	
+			if(!empty($config->approved_by) && in_array($role_id, $config->approved_by)){	
                 		$all_docs[$collection->id] = \App\Document::where('collection_id',$collection->id)->get();
 			}
                    }
