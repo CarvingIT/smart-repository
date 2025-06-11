@@ -173,32 +173,38 @@ trait Search{
 	else {
 		// search all documents
 		$collections = $this->userCollections();
-		$collection_ids = array();
+		$collection_ids = [];
+        $collections_requiring_approval = [];
+        $collections_without_approval = [];
 		foreach($collections as $c){
 			$collection_ids[] = $c->id;
+            if($c->require_approval == 1){
+                $collections_requiring_approval[] = $c->id;
+            }
+            else{
+                $collections_without_approval[] = $c->id;
+            }
 		}
+        Log::debug(json_encode($collection_ids));
 		$collection_type = $request->collection_type;
 		if($collection_type == 'Web resources'){
-        		$documents = \App\Url::whereIn('collection_id', $collection_ids);
-        		$elastic_index = 'sr_urls';
+        	$documents = \App\Url::whereIn('collection_id', $collection_swithout_approval);
+        	$elastic_index = 'sr_urls';
 		}
 		else{
-        		$documents = \App\Document::whereIn('collection_id', $collection_ids);
-			$documents = $documents->where(function($query){
-				if(\Auth::user() && \Auth::user()->id){
-					$query->whereNotNull('approved_on')
-	   					->orWhere('created_by', \Auth::user()->id);
-				}
-				else{
-					$query->whereNotNull('approved_on');
-				}
+            Log::debug('Not requiring approval'.json_encode($collections_without_approval));
+        	$documents = \App\Document::whereIn('collection_id', $collections_without_approval);
+            Log::debug('Requiring approval'.json_encode($collections_requiring_approval));
+			$documents = $documents->orWhere(function($query) use($collections_requiring_approval){
+                $query->whereIn('collection_id', $collections_requiring_approval)
+                    ->whereNotNull('approved_on');
 			});
-        		$elastic_index = 'sr_documents';
+      		$elastic_index = 'sr_documents';
 		}
 		//Log::debug($elastic_index.' - '.implode(",", $collection_ids));
 	}
         $total_count = $documents->count();
-	Log::debug('Count: '.$total_count);
+	Log::debug('Total Count: '.$total_count);
 
 		$highlights = [];
         if(!empty($request->search['value']) && strlen($request->search['value'])>1){
@@ -467,21 +473,32 @@ trait Search{
 	else {
 		// search all documents
 		$collections = $this->userCollections();
-		$collection_ids = array();
+		$collection_ids = [];
+        $collections_requiring_approval = [];
+        $collections_without_approval = [];
 		foreach($collections as $c){
 			$collection_ids[] = $c->id;
+            if($c->require_approval == 1){
+                $collections_requiring_approval[] = $c->id;
+            }
+            else{
+                $collections_without_approval[] = $c->id;
+            }
 		}
+        Log::debug(json_encode($collection_ids));
 		$collection_type = $request->collection_type;
 		if($collection_type == 'Web resources'){
         		$documents = \App\Url::whereIn('collection_id', $collection_ids);
         		$elastic_index = 'sr_urls';
 		}
 		else{
-        		$documents = \App\Document::whereIn('collection_id', $collection_ids);
-				if(!empty(\Auth::user()->id)){
-					$documents = $documents->orWhere('created_by', \Auth::user()->id);
-				}
-        		$elastic_index = 'sr_documents';
+            Log::debug('Not requiring approval'.json_encode($collections_without_approval));
+        	$documents = \App\Document::whereIn('collection_id', $collections_without_approval);
+            Log::debug('Requiring approval'.json_encode($collections_requiring_approval));
+			$documents = $documents->orWhere(function($query) use($collections_requiring_approval){
+                $query->whereIn('collection_id', $collections_requiring_approval)
+                    ->whereNotNull('approved_on');
+			});
 		}
 	}
         $columns = array('type', 'title', 'size', 'updated_at');
