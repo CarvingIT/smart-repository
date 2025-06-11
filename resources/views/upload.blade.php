@@ -10,7 +10,10 @@
 <script type="text/javascript">
 $(document).ready(function() {
     $('.selectsequence').select2();
-    $('.selectsequencetree').select2ToTree({placeholder:'Select one or more'});
+    $('.selectsequencetree').each(function(index,element){
+        $(this).select2ToTree({placeholder:'Select one or more'});
+    });
+
     
     @if(empty($document->id))
     // validation for either document or external link

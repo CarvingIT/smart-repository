@@ -442,8 +442,14 @@ $(document).ready(function() {
 			},
             minLength: 1,
         });
-    $(".selectpickertree").select2ToTree({dropdownCssClass : 'full-width'});
+    
+    $('.selectpickertree').each(function(index,element){
+        $(this).select2ToTree({dropdownCssClass : 'full-width'});
     });
+
+    });
+
+
 		$('#collection_search').keyup(function(){
    			oTable.search($(this).val()).draw() ;
 		})
