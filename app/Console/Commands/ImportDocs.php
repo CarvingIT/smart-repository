@@ -116,7 +116,7 @@ class ImportDocs extends Command
 								$t = Taxonomy::find($t_id);
 								if(!$t) continue;
 								$t_family = $t->createFamily(); 
-								$val_ar = explode(',',$values[$i]);
+								$val_ar = explode('|',$values[$i]);
 								$t_ids = [];
 								foreach($t_family as $tfm){
 									foreach($val_ar as $v){
