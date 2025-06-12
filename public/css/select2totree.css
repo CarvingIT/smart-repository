@@ -79,7 +79,7 @@
 	right: -0.35em;
 }
 .s2-to-tree li.select2-results__option.non-leaf.opened .expand-collapse:before {
-	content: "−";
+	content: "-";
 }
 
 .s2-to-tree .select2-results__option[aria-disabled="true"] .expand-collapse {

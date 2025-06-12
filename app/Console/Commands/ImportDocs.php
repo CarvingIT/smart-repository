@@ -42,6 +42,7 @@ class ImportDocs extends Command
      */
     public function handle()
     {
+        /*
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
 
@@ -68,6 +69,7 @@ class ImportDocs extends Command
 			echo "WARNING: ElasticSearch nodes are not available. When the service starts, re-indexing will have to be done.\n";
 			$es_on = false;
 		}
+        */
 
         $collection_id = $this->argument('collection_id');
         $dir = $this->option('dir');
@@ -154,6 +156,7 @@ class ImportDocs extends Command
 						$d->save();
 					}
                    	echo $dir.'/'.$f."\n";
+                    /*
 	    			// Update elastic index
 					if($es_on){
                     try{
@@ -173,6 +176,7 @@ class ImportDocs extends Command
                     	echo $e->getMessage()."\n";
                     }
 				  } // if ES is on
+                  */
                 }
             }
         }

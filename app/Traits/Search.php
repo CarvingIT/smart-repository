@@ -716,14 +716,23 @@ trait Search{
 	    } // if collection's content-type == Uploaded documents
 	    //$title = $d->title.': '. substr($d->text_content, 0, 100).' ...';
 	    $title = $d->title;
-	    $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
-	    //$title = $d->title;
+        $content_matches = [];
+        $record_highlights = array_shift($highlights);
+        if(!empty($record_highlights['title'][0])){
+            $title = $record_highlights['title'][0];
+        }
+        if(!empty($record_highlights['text_content'])){
+            foreach($record_highlights['text_content'] as $m){
+             $content_matches[] = $m; 
+            }
+        }
+	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.implode(' ... ', $content_matches).'</p>';
         $result = array(
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date('Y-M-d', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
-                'highlights'=>array_shift($highlights),
+                'highlights'=>$record_highlights,
                 'actions' => $action_icons
 			);
 		if(!empty($collection)){
