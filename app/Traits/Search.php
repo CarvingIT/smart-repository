@@ -221,7 +221,7 @@ trait Search{
 				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
 				$text_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
 				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
-				$q_without_and = ['query'=>$search_term, 'analyzer'=>$analyzer];
+				$q_without_and = ['query'=>$search_term, 'fuzziness'=>'AUTO', 'analyzer'=>$analyzer];
 				$q_without_and_ps = ['query'=>$search_term, 'analyzer'=>'porter_stem_analyzer'];
 				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
 
@@ -254,13 +254,11 @@ trait Search{
 									[
 										'match' => [
 											'title' => $q_without_and,
-                                            'fuzziness' => 'AUTO',
 										]
 									],
 									[
 										'match' => [
 											'text_content' => $q_without_and,
-                                            'fuzziness' => 'AUTO',
 										]
 									],
 									[
@@ -433,8 +431,8 @@ trait Search{
 			return 
         	 array(
             	'data'=>$documents,
-		'highlights'=>$highlights,
-		'scores'=>$scores,
+		        'highlights'=>$highlights,
+		        'scores'=>$scores,
             	'draw'=>(int) $request->draw,
             	'recordsTotal'=> $total_count,
             	'recordsFiltered' => $filtered_count,
@@ -444,7 +442,11 @@ trait Search{
 		else{
             //Log::debug(count($documents));
         	$results_data = $this->datatableFormatResults(
-               array('request'=>$request, 'documents'=>$documents, 'has_approval'=>$has_approval)
+                array('request'=>$request, 
+                'documents'=>$documents, 
+		        'highlights'=>$highlights,
+		        'scores'=>$scores,
+                'has_approval'=>$has_approval)
        		);
 		}
         $results= array(
@@ -452,8 +454,6 @@ trait Search{
             'draw'=>(int) $request->draw,
             'recordsTotal'=> $total_count,
             'recordsFiltered' => $filtered_count,
-		    'highlights'=>$highlights,
-		    'scores'=>$scores,
             'error'=> '',
         );
         //return json_encode($results, JSON_UNESCAPED_UNICODE);
@@ -648,6 +648,7 @@ trait Search{
         $documents = $data['documents'];
         $request = $data['request'];
         $has_approval = $data['has_approval'];
+        $highlights = empty($data['highlights'])?[]:$data['highlights'];
 
 		if(!empty($request->collection_id)){
 			$collection = \App\Collection::find($request->collection_id);
@@ -718,12 +719,11 @@ trait Search{
 	    $title = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
 	    //$title = $d->title;
         $result = array(
-                //'type' => array('display'=>'<a href="/collection/'.$d->collection_id.'/document/'.$d->id.'/details"><img class="file-icon" src="/i/file-types/'.$d->icon().'.png" /></a>', 'filetype'=>$d->icon()),
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
-                //'updated_at' => array('display'=>date('d-m-Y', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'updated_at' => array('display'=>date('Y-M-d', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                'highlights'=>array_shift($highlights),
                 'actions' => $action_icons
 			);
 		if(!empty($collection)){
