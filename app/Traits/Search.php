@@ -221,7 +221,12 @@ trait Search{
 				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
 				$text_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
 				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
-				$q_without_and = ['query'=>$search_term, 'fuzziness'=>'AUTO', 'analyzer'=>$analyzer];
+                if(env('ENABLE_FUZZY_SEARCH',0) == 1){
+				    $q_without_and = ['query'=>$search_term, 'fuzziness'=>'AUTO', 'analyzer'=>$analyzer];
+                }
+                else{
+				    $q_without_and = ['query'=>$search_term, 'analyzer'=>$analyzer];
+                }
 				$q_without_and_ps = ['query'=>$search_term, 'analyzer'=>'porter_stem_analyzer'];
 				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
 
