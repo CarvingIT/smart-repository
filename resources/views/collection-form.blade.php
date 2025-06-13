@@ -93,7 +93,7 @@ else{
                    <label for="content-type" class="col-md-12 col-form-label text-md-right">Content Type</label> 
                     </div>
                     <div class="col-md-8">
-			<select name="content_type" class="selectpicker" id="content_type" onchange="hideStorageDriveField();">
+			<select name="content_type" class="selectpicker" id="content_type" onchange="hideStorageDriveField();" @if(!empty($collection->content_type)) disabled @endif>
 			            <option value="Uploaded documents" @if($collection->content_type == 'Uploaded documents') selected @endif>Uploaded Documents</option>
 			            <option value="Web resources" @if($collection->content_type == 'Web resources') selected @endif>Web resources</option>
 			</select>
@@ -105,7 +105,7 @@ else{
                    	<label for="storage_disks" class="col-md-12 col-form-label text-md-right">Storage Drive</label> 
                     </div>
                     <div class="col-md-8">
-			<select name="storage_drive" class="selectpicker">
+			<select name="storage_drive" class="selectpicker" @if(!empty($collection->storage_drive)) disabled @endif>
 				@foreach($storage_disks as $disk => $type)
 					@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local') 
 						@continue

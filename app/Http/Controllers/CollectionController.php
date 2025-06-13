@@ -58,6 +58,8 @@ class CollectionController extends Controller
     public function save(Request $request){
          if(empty($request->input('collection_id'))){
             $c = new \App\Collection;
+            $c->storage_drive = $request->input('storage_drive');
+            $c->content_type = $request->input('content_type');
          }
          else{
             $c = \App\Collection::find($request->input('collection_id'));
@@ -65,8 +67,6 @@ class CollectionController extends Controller
          $c->name = $request->input('collection_name');
          $c->description = $request->input('description');
          $c->type = empty($request->input('collection_type'))?'Public':$request->input('collection_type');
-         $c->storage_drive = $request->input('storage_drive');
-         $c->content_type = $request->input('content_type');
          $c->require_approval = $request->input('require_approval');
          $c->user_id = Auth::user()->id;
          try{

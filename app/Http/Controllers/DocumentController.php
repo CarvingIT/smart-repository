@@ -627,7 +627,7 @@ class DocumentController extends Controller
 		$d = \App\Url::find($document_id);
 	}
 	else {
-        	$d = Document::find($document_id);
+       	$d = Document::find($document_id);
 	}
 
 	$comments = \App\DocumentComment::where('document_id',$document_id)->orderByDesc('created_at')->get();
