@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Session;
+use App\Role;
+use App\UserRole;
 
 
 
@@ -22,8 +24,10 @@ class UserController extends Controller
      public function index(User $model)
     {
         #return view('users.index', ['users' => $model->paginate(15),'activePage'=>'Users']);		## This page is as it is.
+	$roles = Role::all();
 
-        return view('usermanagement', ['users'=>$model->all(), 'activePage'=>'user-management', 'titlePage' => 'Users']);
+        return view('usermanagement', ['users'=>$model->all(), 'roles'=>$roles,
+					 'activePage'=>'user-management', 'titlePage' => 'Users']);
     }
 
     /**
@@ -33,6 +37,9 @@ class UserController extends Controller
      */
     public function create()
     {
+		if(!auth()->user()->hasRole('admin')){
+			return abort(403);
+		}
         return view('users.form');
     }
 
@@ -57,7 +64,12 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('users.edit', compact('user'));
+		if(!auth()->user()->hasRole('admin')){
+			return abort(403);
+		}
+	$roles = Role::all();
+        //return view('users.edit', compact('user'));
+        return view('users.edit', ['user'=>$user, 'roles'=>$roles]);
     }
 
     /**
@@ -69,12 +81,37 @@ class UserController extends Controller
      */
     public function update(UserRequest $request, User  $user)
     {
+        //echo $user->id; echo $user->email_verified_at; exit;
+        //print_r($request->get('user_role')); echo $request->make_email_verified; exit;
         $hasPassword = $request->get('password');
+        $make_email_verified = $request->make_email_verified;
+        $email_verified_at = time();
         $user->update(
             $request->merge(['password' => Hash::make($request->get('password'))])
-                ->except([$hasPassword ? '' : 'password']
-        ));
+                ->except([$hasPassword ? '' : 'password']),
+        );
 
+        if(isset($make_email_verified)){
+        $user->email_verified_at = time();
+        $user->save();
+        }
+
+
+    // assignment of roles to the user
+	//first, remove all roles assigned to that user
+	$user_details = User::where('email',$request->email)->first();
+	$user_id = $user_details->id;
+	UserRole::where('user_id',$user_id)->delete();
+	if(!empty($request->user_role)){
+		$role_ids = $request->user_role;
+		// Now add again
+		foreach($role_ids as $role_id){
+			$u_r = new UserRole();
+			$u_r->user_id = $user_id;
+			$u_r->role_id = $role_id;
+			$u_r->save();
+		}
+	}
         return redirect()->route('user.index')->withStatus(__('User successfully updated.'));
     }
 

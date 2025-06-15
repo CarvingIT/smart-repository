@@ -7,7 +7,7 @@ return $settings = array(
      * Separate routes will be automatically registered for each IDP specified with IDP name as prefix
      * Separate config file saml2/<idpName>_idp_settings.php should be added & configured accordingly
      */
-    'idpNames' => ['idplocal','test'],
+    'idpNames' => ['idplocal','test', 'KEP', 'RRR'],
 
     /**
      * If 'useRoutes' is set to true, the package defines five new routes for reach entry in idpNames:

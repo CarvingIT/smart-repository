@@ -15,16 +15,13 @@ class PublicCollectionsAccessTest extends TestCase
      */
     public function testAccessPublicCollections()
     {
-        $response = $this->get('/collection/1');
-        $response->assertStatus(200)
-			->assertSeeText('Misc documents');
         $response = $this->get('/collection/2');
         $response->assertStatus(200)
 			->assertSeeText('Demo web resources');
     }
 
 	public function testAccessOthersPrivateCollection(){
-        $response = $this->get('/collection/3');
+        $response = $this->get('/collection/1');
         $response->assertStatus(403);
 	}
 

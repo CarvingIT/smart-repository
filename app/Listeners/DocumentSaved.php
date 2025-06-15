@@ -5,7 +5,10 @@ namespace App\Listeners;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
-use Elasticsearch\ClientBuilder;
+use Elastic\Elasticsearch\ClientBuilder;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\DocumentSaved as DocumentSavedNotification;
+use App\Approval;
 
 class DocumentSaved
 {
@@ -27,24 +30,79 @@ class DocumentSaved
      */
     public function handle($event)
     {
-	    Log::info('Document saved: '.$event->document->id);
-	    // Update elasticsearch index
-	    $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
-	    $hosts = explode(",",$elastic_hosts);
-	    $client = ClientBuilder::create()->setHosts($hosts)->build();
+        $changes = $event->document->getChanges();
+        if(in_array('locked', array_keys($changes))){
+            /* 
+            this condition is met when
+            1. a document is published
+            2. a document is locked or unlocked
+            */
+            return 0;
+        }        
+
+		$notifiable = $event->document->collection;
+        $collection_config = json_decode($event->document->collection->column_config);
+        if(!empty($collection_config->slack_webhook) || !empty($collection_config->notify_email)){
+		    try{
+		    	Notification::send($notifiable, new DocumentSavedNotification($event->document));
+		    }
+		    catch(\Exception $e){
+		    	Log::error($e->getMessage());
+		    }
+        }
+
+	    // Update elasticsearch index 
+		// if collection requires approval and the document is not approved, don't update the elastic index
+		// also attempt to remove this particular record from elastic index
+       	$elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+       	$hosts = explode(",",$elastic_hosts);
+        $client = ClientBuilder::create()->setHosts($hosts)
+		        ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+		        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+                ->build();
+		if($event->document->collection->require_approval == 1 && 
+			empty($event->document->approved_on)){
+			// don't update the elastic index
+			// remove the record
+        	$params = [
+            	'index'=>'sr_documents',
+            	'id'=>$event->document->id
+        	];
+        	try{
+        	$response = $client->delete($params);
+        	Log::info('Removed document {id} from Elastic index', ['id'=>$event->document->id]);
+        	}
+        	catch(\Exception $e){
+            	Log::warning($e->getMessage());
+        	}
+		}
+		else{
             $body = $event->document->toArray();
             $body['collection_id'] = $event->document->collection->id;
+            $body['title'] = $event->document->title;
+            $body['text_content'] = $event->document->text_content;
             $params = [
                 'index' => 'sr_documents',
                 'id'    => $event->document->id,
                 'body'  => $body
             ];
-	    try{
-            $response = $client->index($params);
-	    	Log::info('Elastic index updated', $response);
-	    }
-	    catch(\Exception $e){
-	    	Log::warning($e->getMessage());
-	    }
+	    	try{
+            	$response = $client->index($params);
+	    		Log::info('Elastic index updated for document {id}.', ['id'=>$event->document->id]);
+	    	}
+	    	catch(\Exception $e){
+	    		Log::warning($e->getMessage());
+	    	}
+		}
+
+		// add a record in the approvals table
+		if($event->document->collection->require_approval == 1){
+			// get the first role id from approval workflow
+			$collection_config = $event->document->collection->column_config;	
+			$col_conf = json_decode($collection_config);
+			$approvers = $col_conf->approved_by;
+			$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
+			$event->document->approvals()->save($approval_record);
+		}
     }
 }

@@ -23,29 +23,63 @@
                         @endif
                     @endforeach
 
-                   <form method="post" action="/admin/sysconfig">
+                   <form method="post" action="/admin/sysconfig" enctype="multipart/form-data">
                     @csrf()
                    <div class="form-group row">
                     <div class="col-md-12">
                         <h4>Site Configuration</h4>
 		            </div>
                    </div>
+		  
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="logo_url" class="col-md-12 col-form-label text-md-right">Logo URL</label> 
 		           </div>
                     <div class="col-md-9">
-                    <input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" />
+                    <!--input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" /-->
+                   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
+                   <input id="logo_url" type="file" class="form-control-file" name="logo_url">
                     </div>
                    </div>
+
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="favicon_url" class="col-md-12 col-form-label text-md-right">Favicon URL</label> 
 		           </div>
                     <div class="col-md-9">
-                    <input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" />
+                    <!--input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" /-->
+                   <label for='filesize'><font color="red">File size must be less than 50KB.</font></label>
+                   <input id="favicon_url" type="file" class="form-control-file" name="favicon_url">
                     </div>
                    </div>
+
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="upload_file_types" class="col-md-12 col-form-label text-md-right">Upload File Types</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <input type="text" name="upload_file_types" id="upload_file_types" class="form-control" placeholder="pdf,ppt,pptx,doc,docx,jpg,png" value="@if(!empty($sysconfig['upload_file_types'])) {{$sysconfig['upload_file_types'] }} @endif" />
+                    </div>
+                   </div>
+
+		   <div class="form-group row">
+                    <div class="col-md-3">
+                   <label for="driver" class="col-md-12 col-form-label text-md-right">Media Disk Storage</label>
+                    </div>
+                    <div class="col-md-9">
+					<select name="media_storage_drive" class="selectpicker">
+							<option value="">Select</option>
+                       		@foreach($storage_disks as $disk => $type)
+                       			@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local')
+                             		@continue
+                           		@endif
+                           		<option value="{{ $disk }}" @if(@$sysconfig['media_storage_drive'] == $disk) selected @endif>{{ $disk }}</option>
+                       		@endforeach
+               		</select>
+                    </div>
+                   </div>
+
+
                    <div class="form-group row">
                    <div class="col-md-3">
                    <label for="home_page" class="col-md-12 col-form-label text-md-right">Home page info</label> 
@@ -68,6 +102,14 @@
 		           </div>
                     <div class="col-md-9">
                     <textarea name="overridingcss" id="overridingcss">@if(!empty($sysconfig['overridingcss'])) {{$sysconfig['overridingcss'] }} @endif</textarea>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="footercode" class="col-md-12 col-form-label text-md-right">Footer</label> 
+		           </div>
+                    <div class="col-md-9">
+                    <textarea name="footer" id="overridingcss">@if(!empty($sysconfig['footer'])) {{$sysconfig['footer'] }} @endif</textarea>
                     </div>
                    </div>
                    <div class="form-group row">
@@ -102,6 +144,7 @@
                         <script src="/js/tinymce/tinymce.min.js"></script>
                         <script>
                             tinymce.init({
+				relative_urls: false,
                                 selector: '.page_content',
                                 plugins: [
                                     "advlist autolink lists link image charmap print preview hr anchor pagebreak",
@@ -109,27 +152,35 @@
                                     "insertdatetime media table nonbreaking save contextmenu directionality paste"
                                 ],
                                 toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
-                                relative_urls: false,
+                                relative_urls: true,
                                 remove_script_host: false,
                                 convert_urls: true,
                                 force_br_newlines: true,
                                 force_p_newlines: false,
                 forced_root_block: '', // Needed for 3.x
-				/*
-                  file_picker_callback (callback, value, meta) {
-        let x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth
-        let y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight
+	    file_picker_callback : function(callback, value, meta) {
+      var x = window.innerWidth || document.documentElement.clientWidth || document.getElementsByTagName('body')[0].clientWidth;
+      var y = window.innerHeight|| document.documentElement.clientHeight|| document.getElementsByTagName('body')[0].clientHeight;
 
-        tinymce.activeEditor.windowManager.openUrl({
-          url : '/file-manager/tinymce5',
-          title : 'Laravel File manager',
-          width : x * 0.8,
-          height : y * 0.8,
-          onMessage: (api, message) => {
-            callback(message.content, { text: message.text })
-          }
-        })
-      }, */
-                            });</script>
+      var cmsURL = '/laravel-filemanager?editor=' + meta.fieldname;
+      if (meta.filetype == 'image') {
+        cmsURL = cmsURL + "&type=Images";
+      } else {
+        cmsURL = cmsURL + "&type=Files";
+      }
+
+      tinyMCE.activeEditor.windowManager.openUrl({
+        url : cmsURL,
+        title : 'Filemanager',
+        width : x * 0.8,
+        height : y * 0.8,
+        resizable : "yes",
+        close_previous : "no",
+        onMessage: (api, message) => {
+          callback(message.content);
+        }
+      });
+    }
+     });</script>
 
 @endsection

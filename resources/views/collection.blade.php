@@ -6,14 +6,18 @@
 <script src="/js/jquery-ui.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
+<link href="/css/select2.min.css" rel="stylesheet" />
+<link href="/css/select2totree.css" rel="stylesheet" />
+<script src="/js/select2.min.js"></script>
+<script src="/js/select2totree.js"></script>
 @php
 $column_config = json_decode($collection->column_config);
 list($hide_type, $hide_title, $hide_size, $hide_creation_time) = array(false, false, false, false);
 if(!empty($collection->column_config)){
-	if($column_config->type != 1) $hide_type = true;
-	if($column_config->title != 1) $hide_title = true;
-	if($column_config->size != 1) $hide_size = true;
-	if($column_config->creation_time != 1) $hide_creation_time = true;
+	if(@$column_config->type != 1) $hide_type = true;
+	if(@$column_config->title != 1) $hide_title = true;
+	if(@$column_config->size != 1) $hide_size = true;
+	if(@$column_config->creation_time != 1) $hide_creation_time = true;
 }
 @endphp
 <script>
@@ -31,7 +35,7 @@ $(document).ready(function() {
 			foreach($column_config_meta_fields as $m_id){
 				$m = \App\MetaField::find($m_id);
 				$visible = 'false';
-				if(in_array($m->id, $column_config_meta_fields)){
+				if(in_array(@$m->id, $column_config_meta_fields)){
 				$visible = 'true';
 			}
 			echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
@@ -41,7 +45,8 @@ $(document).ready(function() {
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
     "processing":true,
-    "order": [[ 3, "desc" ]],
+    //"order": [[ 3, "desc" ]],
+    "order": [], // initial ordering disabled. Good for sorting by relevance in ES.
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
     "language": 
@@ -72,7 +77,7 @@ $(document).ready(function() {
 			@php
 			$m = \App\MetaField::find($m_id);
 			@endphp
-		{data:"meta_{{$m->id}}"},
+		{data:"meta_{{@$m->id}}"},
 		@endforeach
         {data:"actions"},
     ],
@@ -80,10 +85,11 @@ $(document).ready(function() {
 
 } );
 
+
 function showDeleteDialog(document_id){
 	str = randomString(6);
 	$('#text_captcha').text(str);
-	$('#hidden_captcha').text(str);
+	$('#hidden_captcha').val(str);
 	$('#delete_doc_id').val(document_id);
         deldialog = $( "#deletedialog" ).dialog({
 		title: 'Are you sure ?',
@@ -102,6 +108,10 @@ function randomString(length) {
 }
 
 </script>
+
+<script src="/js/jquery.daterangepicker.min.js"></script>
+<link rel="stylesheet" href="/js/daterangepicker.css"/>
+
 @endpush
 	    <div id="deletedialog" style="display:none;">
 		<form name="deletedoc" method="post" action="/document/delete">
@@ -127,27 +137,69 @@ function randomString(length) {
 		<div class="row">
                   <div class="col-12 text-right">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a title="Manage Users of this collection" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
+                    <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
-                    <a title="Manage meta information fields of this collection" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+                    <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
                     <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
+                    @if(env('ENABLE_CHILD_COLLECTION_LINK') == 1)
+                    <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">create_new_folder</i></a>
+                    @endif
 		    @elseif($collection->content_type == 'Web resources')	
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
 		    @endif
 		  @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">add</i></a>
+                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
+                    @if(env('ENABLE_IMPORT_LINK') == 1)
                     <a title="Import via URL" href="/collection/{{ $collection->id }}/url-import" class="btn btn-sm btn-primary"><i class="material-icons">link</i></a>
+                    @endif
 		  @endif
-                  @if(count($collection->meta_fields)>0)
+                  @if(count($collection->meta_fields)>0 && env('ENABLE_FILTER_LINK') == 1)
                     <a href="/collection/{{ $collection->id }}/metafilters" title="Set Filters" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a href="/collection/{{ $collection->id }}/export" title="Export meta data" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
+                    <!--a href="/collection/{{ $collection->id }}/export" title="Export collection to CSV" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a-->
+                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="Export collection to XLSX" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
 				  @endif
                   </div>
         </div>
+		<div class="row">
+			<div class="col-12">
             <p>{{ $collection->description }}</p>
+		<!-- children collections -->		
+			@if ($collection->parent_id) 
+			<div>
+				<a 	title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
+						<i class="material-icons">folder</i> . .
+				</a>
+			</div>
+			@endif
+			@if ($collection->children->count() > 0)
+				@foreach ($collection->children as $child)
+				<div>
+				<a href="/collection/{{ $child->id }}">
+					<i class="material-icons">folder</i>
+					{{ $child->name }}
+				</a>
+				</div>
+				@endforeach
+				<!--
+				<ul class="navbar-nav">
+			        <li class="nav-item dropdown">
+          				<a class="btn btn-primary nav-link" title="{{ __('Sub-collections') }}" href="#" id="childrencollections" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<i class="material-icons">subdirectory_arrow_right</i>
+          				</a>
+					<div class="dropdown-menu dropdown-menu-right" aria-labelledby="childrencollections">
+						@foreach ($collection->children as $child)
+						<a class="dropdown-item" href="/collection/{{ $child->id }}">{{ $child->name }}</a>
+						@endforeach
+					</div>
+					</li>
+				</ul>
+				-->
+			@endif
+			</div><!-- col12 -->
+		</div><!-- row -->
         @php
             $meta_fields = empty($collection->meta_fields)? array() : $collection->meta_fields;
 		@endphp
@@ -165,67 +217,95 @@ function randomString(length) {
                @endforeach
             </div>
 		<div class="card search-filters-card">
-
-		<div class="row text-center">
-		   <div class="col-12">
+		<div class="row">
 			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
+			<div class="float-container col-md-12">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
-			<div class="float-container">
-		   		<label for="title_search" class="search-label">{{ __('Title') }}</label>
+		   		<label for="title_search" class="search-label">{{ __('Title search') }}</label>
 		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
-			</div>
 			</form>
+			</div>
 			@endif
 			@foreach($meta_fields as $m)
+                @php
+                    $extra_attributes = empty($m->extra_attributes) ? null : json_decode($m->extra_attributes);
+                    $w = empty($extra_attributes->filter_width_on_collection_page)? 12 : $extra_attributes->filter_width_on_collection_page;
+                @endphp
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
-			@if($m->type == 'Text')
-			<div class="float-container">
+
+			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
+			<div class="float-container col-md-{{ $w }}">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="contains" />
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" onblur="this.form.submit();"/>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
 			</form>
 			</div>
-			@elseif($m->type == 'Date' || $m->type == 'Numeric')
-			<div class="float-container">
+            @elseif($m->type == 'Select' || $m->type == 'MultiSelect')
+            <div class="float-container col-md-{{ $w }}">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
+            <!-- label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label -->
+            <select class="search-field" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
+                @php
+                    $options = explode(",", $m->options);
+                @endphp
+                    <option value="">{{ $m->label }}</option>
+                    @foreach($options as $o)
+                    <option>{{ $o }}</option>
+                    @endforeach
+            </select>
+            <input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+            <input type="hidden" name="operator[]" value="contains" />
+            <input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+			</form>
+            </div>
+			@elseif($m->type == 'Date')
+			<div class="float-container col-md-{{ $w }}">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value" />
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="=" />
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" />
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="between" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+			<script>
+				$('#meta_{{ $m->id }}_search').dateRangePicker();
+			</script>
 			</form>
 			</div>
-			@elseif($m->type == 'Select')
-			<div class="float-container">
+			@elseif($m->type == 'TaxonomyTree')
+			<div class="float-container col-md-{{ $w }}">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
 		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ $m->label }}</label>
-		   	<select class="selectpicker" id="meta_{{ $m->id }}_search" name="meta_value" onchange="this.form.submit();">
-		            @php
-                		$options = explode(",", $m->options);
-            		    @endphp
-				<option>{{ $m->label }}</option>
-				@foreach($options as $o)
-				<option>{{ $o }}</option>
+		   	<select class="selectpickertree" id="meta_{{ $m->id }}_search" title="{{ $m->label }}" name="meta_value[{{ $m->id }}][]" onchange="this.form.submit();">
+		        @php
+                //$options = explode(",", $m->options);
+				$taxonomy_m = App\Taxonomy::find($m->options);
+            	@endphp
+                <option value="">{{ $taxonomy_m->label }}</option>
+				@foreach($taxonomy_m->childs as $t)
+                    <x-taxonomy-option :taxonomy="$t" :level="0" />
 				@endforeach
 			</select>
-		   	<input type="hidden" name="meta_field" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator" value="=" />
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="operator[]" value="contains" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			</form>
 			</div>
 			@endif
 			@endif
 			@endforeach
-			</div>
 		</div>
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Full text search') }}</label>
+			<label for="collection_search">{{ __('Type a few characters to initiate search within the document content') }}</label>
 		    <input type="text" class="search-field" id="collection_search" />
 			<style>
 			.dataTables_filter {
@@ -233,24 +313,28 @@ function randomString(length) {
 			}
 			</style>
 		   </div>
-			{{ __('Start typing to initiate search') }}
 		   </div>
+			<!--
 		   <div class="col-12 text-center">
-           <!--<i class="material-icons">search</i>-->
+           <i class="material-icons">search</i>
 		   </div>
+			-->
 		</div>
 		</div><!-- search-filters-card -->
 		<!-- show filters -->
 		<div>
         <p>
-		@php
+	@php
             $meta_labels = array();
             foreach($meta_fields as $m){
+				if(!empty($meta_labels[$m->id]))
+				$meta_labels[$m->id] = $m->id;
+				else
                 $meta_labels[$m->id] = $m->label;
             }
             $all_meta_filters = Session::get('meta_filters');
-			$title_filter = Session::get('title_filter');
-			$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
+		$title_filter = Session::get('title_filter');
+		$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
         @endphp
 		@if(!empty($title_filter[$collection->id]))
 			<span class="filtertag">{{ __('Title contains')}} <i>{{ $title_filter[$collection->id]}}</i>
@@ -261,11 +345,25 @@ function randomString(length) {
 		@endif
 		@if($show_meta_filters)
         @foreach( $all_meta_filters[$collection->id] as $m)
+		@php
+			$m_field = \App\MetaField::find($m['field_id']);
+			if($m_field->type == 'TaxonomyTree'){
+				$taxonomy_model = App\Taxonomy::find($m['value']);
+				$m['value'] = $taxonomy_model->label;
+			}	
+		@endphp
             <span class="filtertag">
+	@if(empty($meta_labels[$m['field_id']]))
+            {{ $m['field_id'] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <i class="tinyicon material-icons">close</i>
+                </a>
+	@else
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
+	@endif
                 </span>
         @endforeach
         @endif
@@ -321,8 +419,43 @@ function randomString(length) {
 				@endforeach
 			@endif
 
-			$('#collection_search').keyup(function(){
-      			oTable.search($(this).val()).draw() ;
-			})
+$(document).ready(function() {
+        //alert("js is working");
+        src = "{{ route('autosuggest') }}";
+        $( "#collection_search" ).autocomplete({
+            source: function( request, response ) {
+                $.ajax({
+                    url: src,
+                    method: 'GET',
+                    dataType: "json",
+                    data: {
+                        term : request.term
+                    },
+                    success: function(data) {
+						if(data.length > 0)
+                        response(data);
+						else
+      					oTable.search(request.term).draw();
+                    },
+                });
+            },
+			select: function (event, ui){
+   				oTable.search(ui.item.value).draw();
+				$("#collection_search").val(ui.item.value);
+				return false;
+			},
+            minLength: 1,
+        });
+    
+    $('.selectpickertree').each(function(index,element){
+        $(this).select2ToTree({dropdownCssClass : 'full-width'});
+    });
+
+    });
+
+
+		$('#collection_search').keyup(function(){
+   			oTable.search($(this).val()).draw() ;
+		})
 		</script>
 @endsection

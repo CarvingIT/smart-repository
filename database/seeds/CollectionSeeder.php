@@ -17,7 +17,8 @@ class CollectionSeeder extends Seeder
                 'description'=>'Miscellaneous documents',
                 'type'=>'Public',
                 'user_id'=>1,
-		'content_type'=>'Uploaded documents'
+                'storage_drive'=>'local',
+		        'content_type'=>'Uploaded documents'
             ]
         );
 
@@ -27,7 +28,8 @@ class CollectionSeeder extends Seeder
                 'description'=>'External web pages and documents',
                 'type'=>'Public',
                 'user_id'=>1,
-		'content_type'=>'Web resources'
+                'storage_drive'=>'local',
+        		'content_type'=>'Web resources'
             ]
         );
 
@@ -37,7 +39,8 @@ class CollectionSeeder extends Seeder
                 'description'=>'Members only collection for testing',
                 'type'=>'Members Only',
                 'user_id'=>1,
-		'content_type'=>'Uploaded documents'
+                'storage_drive'=>'local',
+		        'content_type'=>'Uploaded documents'
             ]
         );
 

@@ -14,11 +14,14 @@ $collections = \App\Collection::all();
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
   <div class="container">
     <div class="navbar-wrapper">
-      <a class="navbar-brand" href="/">
+	@php
+		$logo_link = empty(env('SITE_HOME'))?'/':env('SITE_HOME');
+	@endphp
+      <a class="navbar-brand" href="{{ $logo_link }} ">
 	@if(!empty($sysconfig['logo_url']))
-	<img class="logo_img" src="{{ $sysconfig['logo_url'] }}">
+	<img class="logo_img" src="/storage/{{ $sysconfig['logo_url'] }}">
 	@else
-	{{$app_name}}
+	<img class="logo_img" src="/i/your-logo.png" />
 	@endif
       </a>
     </div>
@@ -42,15 +45,23 @@ $collections = \App\Collection::all();
           </a>
         </li>
 	@else
-		@foreach($collections as $c)
+	@foreach($collections as $c)
         <li class="nav-item">
           <a href="/collection/{{ $c->id }}" class="nav-link">
             <i class="material-icons">list</i>{{ $c->name }}
           </a>
         </li>
-		@endforeach
-
+	@endforeach
 	@endif
+
+	@if(env('ENABLE_BLOG') == 1)
+	<li class="nav-item{{ $activePage == 'Blog' ? ' active' : '' }}">
+          <a href="/en/blog" class="nav-link">
+            <i class="material-icons">rss_feed</i> {{ __('Blog') }}
+          </a>
+        </li>
+	@endif
+
 	@if(env('ENABLE_COMMON_SEARCH') == 1)
         <li class="nav-item{{ $activePage == 'documents' ? ' active' : '' }}">
           <a href="/documents" class="nav-link">
@@ -70,11 +81,13 @@ $collections = \App\Collection::all();
           </a>
         </li>
 	@endif
+	@if (env('ENABLE_CONTACT_PAGE', 1) == 1)
         <li class="nav-item{{ $activePage == 'contact' ? ' active' : '' }}">
           <a href="/contact" class="nav-link">
             <i class="material-icons">contacts</i> {{ __('Contact') }}
           </a>
         </li>
+	@endif
 	@if(env('ENABLE_REGISTRATION') == 1)
         <li class="nav-item{{ $activePage == 'register' ? ' active' : '' }}">
           <a href="{{ route('register') }}" class="nav-link">

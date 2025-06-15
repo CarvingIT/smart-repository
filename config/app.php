@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('TIMEZONE','UTC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -161,6 +161,8 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
+	UniSharp\LaravelFilemanager\LaravelFilemanagerServiceProvider::class,
+	Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -175,6 +177,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 		Aacotroneo\Saml2\Saml2ServiceProvider::class,
+		Creativeorange\Gravatar\GravatarServiceProvider::class,
+		App\Providers\GoogleDriveServiceProvider::class,
     ],
 
     /*
@@ -225,7 +229,9 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+	'Gravatar' => Creativeorange\Gravatar\Facades\Gravatar::class,
+	'FastExcel' => Rap2hpoutre\FastExcel\Facades\FastExcel::class,
+	'Image' => Intervention\Image\Facades\Image::class,
     ],
 
 ];

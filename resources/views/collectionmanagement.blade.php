@@ -42,7 +42,7 @@ function randomString(length) {
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">Collections</h4>
+                <h4 class="card-title">{{ __('Collections') }}</h4>
                     <!--div class="card-header-corner" style="margin-top:-4%;"><a href="/admin/collection-form/new"><img class="icon" src="/i/plus.png"/></a></div-->
               </div>		
 
@@ -71,6 +71,7 @@ function randomString(length) {
                             <tr>
                             <th>Name</th>
                             <th>Type</th>
+                            <th>Parent collection</th>
                             <th>Created</th>
                             <th class="text-right">Actions</th>
                             </tr>
@@ -80,6 +81,7 @@ function randomString(length) {
                         <tr>
                             <td>{{ $c->name }}</td>
                             <td>{{ $c->type }}</td>
+                            <td>{{ @$c->parent->name }}</td>
                             <td>{{ $c->created_at }}</td>
                             <td class="td-actions text-right">
                                 <a rel="tooltip" class="btn btn-success btn-link" href="/admin/collection-form/{{$c->id}}">

@@ -1,5 +1,15 @@
 @extends('layouts.app', ['class'=> 'off-canvas-sidebar', 'activePage' => 'user-management', 'titlePage' => __('User Management')])
 
+@push('js')
+<link href="/css/select2.min.css" rel="stylesheet" />
+<script src="/js/select2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $('.selectsequence').select2();
+});
+</script>
+@endpush
+
 @section('content')
     <div class="container">
       <div class="row justify-content-center">
@@ -46,7 +56,7 @@
                   <label class="col-md-8 col-form-label text-md-right" for="input-password">{{ __(' Password') }}</label>
                     </div>
                   <div class="col-md-6">
-                      <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" input type="password" name="password" id="input-password" placeholder="{{ __('Password') }}" value="" required />
+                      <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" input type="password" name="password" id="input-password" placeholder="{{ __('Password') }}" value="" @if(empty($user->password)) required @endif />
                       @if ($errors->has('password'))
                         <span id="name-error" class="error text-danger" for="input-name">{{ $errors->first('password') }}</span>
                       @endif
@@ -57,12 +67,43 @@
                   <label class="col-md-8 col-form-label text-md-right" for="input-password-confirmation">{{ __('Confirm Password') }}</label>
                   </div>
                   <div class="col-md-6">
-                      <input class="form-control" name="password_confirmation" id="input-password-confirmation" type="password" placeholder="{{ __('Confirm Password') }}" value="" required />
+                      <input class="form-control" name="password_confirmation" id="input-password-confirmation" type="password" placeholder="{{ __('Confirm Password') }}" value="" @if(empty($user->password)) required @endif/>
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-md-4">
+                  <label class="col-md-8 col-form-label text-md-right" for="input-password-confirmation">{{ __('Role') }}</label>
+                  </div>
+                  <div class="col-md-6">
+			@php 
+				$user_roles = $user->roles; 
+				$user_role_ids = [];
+				foreach($user_roles as $u_r){
+					$user_role_ids[] = $u_r->role_id;
+				}
+			@endphp
+                      <select class="form-control selectsequence" name="user_role[]" id="input-user-role" multiple />
+			<option value="">Select Role</option>
+			@foreach($roles as $role)
+				<option value="{{ $role->id }}" @if(in_array($role->id,$user_role_ids)) selected @endif>{{ ucfirst($role->name) }}</option>
+			@endforeach
+			</select>
                   </div>
                 </div>
               </div>
+
+                @if(is_null($user->email_verified_at))
+              <div class="form-group row">
+                  <div class="col-md-4">
+                  <label class="col-md-8 col-form-label text-md-right">{{ __('Make email verified') }}</label>
+                  </div>
+                  <div class="col-md-4">
+                      <input class="form-control" name="make_email_verified" type="checkbox" value="1" />
+                  </div>
+              </div>
+                @endif
               <div class="card-footer ml-auto mr-auto">
-                <button type="submit" class="btn btn-primary">{{ __('Add User') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Update User') }}</button>
               </div>
              </form>
             </div>

@@ -24,12 +24,21 @@ class EventServiceProvider extends ServiceProvider
 	'App\Events\DocumentDeleted'=>[
 		'App\Listeners\DocumentDeleted',
 	],
+	'App\Events\ApprovalSaved'=>[
+		'App\Listeners\ApprovalSaved',
+	],
+	'App\Events\DocumentRevisionCreated'=>[
+		'App\Listeners\DocumentRevisionCreated',
+	],
 
 	'Aacotroneo\Saml2\Events\Saml2LoginEvent'=>[
 		'App\Listeners\SAMLLogin',
 	],
 	'Aacotroneo\Saml2\Events\Saml2LogoutEvent'=>[
 		'App\Listeners\SAMLLogout',
+	],
+	'BinshopsBlog\Events\BlogPostAdded' => [
+		'App\Listeners\BinshopsPostSaved',
 	],
 
     ];

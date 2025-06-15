@@ -11,11 +11,14 @@ foreach($config_details as $details){
   <div class="container">
     <div class="navbar-wrapper">
       <!--a class="navbar-brand" href="#">{{$titlePage}}</a-->
-	<a class="navbar-brand" href="/">
+	@php
+		$logo_link = empty(env('SITE_HOME'))?'/':env('SITE_HOME');
+	@endphp
+	<a class="navbar-brand" href="{{ $logo_link }}">
 	@if(!empty($sysconfig['logo_url']))
-	<img src="{{ $sysconfig['logo_url'] }}">
+	<img src="/storage/{{ $sysconfig['logo_url'] }}">
 	@else
-	{{ $title }}
+	<img src="/i/your-logo.png" />
 	@endif
 	</a>
     </div>

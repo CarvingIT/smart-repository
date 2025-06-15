@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    RewriteCond %{HTTP_HOST} ^isa-rrr.idaminfra\.com [NC]
+    RewriteCond %{SERVER_PORT} 80
+    RewriteRule ^(.*)$ https://isa-rrr.idaminfra.com/$1 [R,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

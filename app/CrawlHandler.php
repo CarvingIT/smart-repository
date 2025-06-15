@@ -70,13 +70,13 @@ class CrawlHandler extends CrawlObserver{
             			];
 
             		$response = $this->elastic_client->index($params);
-            		print_r($response);
+            		//print_r($response);
 			}
 			catch(\Exception $e){
 				// log error to a log file instead of to the standard output
 				if(!in_array($e->getCode(), $this->indexing_errors)){
 					echo $e->getCode()." : ";
-					echo "WARNING: ".$e->getMessage()."\n"; 
+					//echo "WARNING: ".$e->getMessage()."\n"; 
 					$this->indexing_errors[] = $e->getCode();
 				}
 			}
@@ -84,7 +84,8 @@ class CrawlHandler extends CrawlObserver{
    }
 
    public function crawlFailed(UriInterface $url, RequestException $requestException, ?UriInterface $foundOnUrl = null){
-	 echo "Failed crawling $url\n";
+	 echo "Removing failed URL- $url\n";
+	 Url::where('collection_id', $this->collection_id)->where('url',(string) $url)->delete();
    }
 
    public function finishedCrawling() {
@@ -106,7 +107,11 @@ class CrawlHandler extends CrawlObserver{
    private function getText($mime_type, $content){
 	try{
 	if($mime_type == 'text/html'){
-		$html = new \Html2Text\Html2Text($content);
+		#$paragraph = $this->delete_all_between('<script type"text/javascript">', '</script>', $content);
+		$paragraph = preg_replace('#<script(.*?)>(.*?)</script>#is', '', $content);
+		//echo "getText".$mime_type; echo $paragraph; exit; //SKK;
+		$html = new \Html2Text\Html2Text($paragraph);
+		//$html = new \Html2Text\Html2Text($content);
 		return $html->getText();
 	}
 	else{
@@ -116,7 +121,12 @@ class CrawlHandler extends CrawlObserver{
 			$fh = fopen($tmp_path,'w+');
 			fwrite($fh, $content);
 			fclose($fh);
+			try{
 			$text = $this->extractText($tmp_path, $mime_type);
+			}
+			catch(\Exception $e){
+			echo $e->getMessage();
+			}
 			unlink($tmp_path);
 			return $text;
 		}
@@ -128,6 +138,18 @@ class CrawlHandler extends CrawlObserver{
 		echo "ERROR: ".$e->getMessage()."\n"; 
 	}
    }
+
+   private function delete_all_between($beginning, $end, $string) {
+        $beginningPos = strpos($string, $beginning);
+        $endPos = strpos($string, $end);
+        if (!$beginningPos || !$endPos) {
+            return $string;
+        }
+
+        $textToDelete = substr($string, $beginningPos, ($endPos + strlen($end)) - $beginningPos);
+
+        return str_replace($textToDelete, '', $string);
+    }
 
    private function getFileExtension($mime_type){
 	$extensions = array('image/jpeg' => 'jpg',
@@ -157,7 +179,10 @@ class CrawlHandler extends CrawlObserver{
         }
         else if(preg_match('/^image\//', $mime_type)){
             // try OCR
-            $text = utf8_encode((new TesseractOCR($path))->run());
+	//	echo "SKK"; echo $path; echo env('ENABLE_OCR'); exit;
+		if(env('ENABLE_OCR') == 1){
+            	$text = utf8_encode((new TesseractOCR($path))->run());
+		}
         }
         else if(preg_match('/^text\//', $mime_type)){
             $text = file_get_contents($path);

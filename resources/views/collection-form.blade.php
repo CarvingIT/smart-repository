@@ -48,7 +48,7 @@ else{
         <div class="col-md-9">
             <div class="card">
 		@if (empty($collection->id))
-                <div class="card-header card-header-primary"><h4 class="card-title">Add Collection</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Add Collection') }}</h4></div>
 		@else
                 <div class="card-header card-header-primary"><h4 class="card-title">Edit Collection</h4></div>
 		@endif
@@ -77,7 +77,7 @@ else{
                    <label for="collection_name" class="col-md-12 col-form-label text-md-right">Name</label> 
                     </div>
                     <div class="col-md-8">
-                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your collection a name" value="{{ $collection->name }}" required />
+                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your {{ __('collection') }} a name" value="{{ $collection->name }}" required />
                     </div>
                    </div>
                    <div class="form-group row">
@@ -93,7 +93,7 @@ else{
                    <label for="content-type" class="col-md-12 col-form-label text-md-right">Content Type</label> 
                     </div>
                     <div class="col-md-8">
-			<select name="content_type" class="selectpicker" id="content_type" onchange="hideStorageDriveField();">
+			<select name="content_type" class="selectpicker" id="content_type" onchange="hideStorageDriveField();" @if(!empty($collection->content_type)) disabled @endif>
 			            <option value="Uploaded documents" @if($collection->content_type == 'Uploaded documents') selected @endif>Uploaded Documents</option>
 			            <option value="Web resources" @if($collection->content_type == 'Web resources') selected @endif>Web resources</option>
 			</select>
@@ -105,8 +105,11 @@ else{
                    	<label for="storage_disks" class="col-md-12 col-form-label text-md-right">Storage Drive</label> 
                     </div>
                     <div class="col-md-8">
-			<select name="storage_drive" class="selectpicker">
+			<select name="storage_drive" class="selectpicker" @if(!empty($collection->storage_drive)) disabled @endif>
 				@foreach($storage_disks as $disk => $type)
+					@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local') 
+						@continue
+					@endif
 			            <option value="{{ $disk }}" @if($collection->storage_drive == $disk) selected @endif>{{ $disk }}</option>
 				@endforeach
 			</select>
