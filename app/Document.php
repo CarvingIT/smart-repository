@@ -90,13 +90,18 @@ class Document extends Model implements Auditable
         if($meta_value){
 			if(preg_match('/^\[.*\]$/',$meta_value->value)){
 				if($meta_field_type == 'TaxonomyTree'){
+                    $all_selections = empty($meta_value->value) ? [] : json_decode($meta_value->value);
 					$taxonomy_models = Taxonomy::whereIn('id', @json_decode($meta_value->value))->get();
 					$terms = [];
 					foreach($taxonomy_models as $t){
-                        // only show the last level of selected children
-                        //if(empty($t->parent_id) || $t->childs->count() > 0) continue;
                         // show all children
-                        if(empty($t->parent_id)) continue;
+                        //if(empty($t->parent_id)) continue;
+                        // only show the last level of selected children
+                        $children_ids = $t->childs->pluck('id')->toArray();
+                        if(empty($t->parent_id) || 
+                            ($t->childs->count() > 0 
+                            && count(array_intersect($all_selections, $children_ids))>0)
+                        ) continue;
 						if(strtolower($t->label) == 'all') return $t->label; // special value (ALL)
 						$terms[] = $t->label;
 					}
