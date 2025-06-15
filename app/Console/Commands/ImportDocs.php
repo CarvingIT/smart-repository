@@ -42,35 +42,6 @@ class ImportDocs extends Command
      */
     public function handle()
     {
-        /*
-        $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
-        $hosts = explode(",",$elastic_hosts);
-
-		// Is elastic search running ?
-		// get the indices and see if an error is returned
-		$params = [ 'index' => 'sr_documents', 
-					    'body'  => [
-    					    'query' => [
-            					'match' => [
-                					'testField' => 'abc'
-            					]
-        					]
-    					]
-				];
-		try{
-        $client = ClientBuilder::create()->setHosts($hosts)
-                ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
-                ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
-                ->build();
-			$es_on = true;
-			//$results = $client->search($params);
-		}
-		catch(\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e){
-			echo "WARNING: ElasticSearch nodes are not available. When the service starts, re-indexing will have to be done.\n";
-			$es_on = false;
-		}
-        */
-
         $collection_id = $this->argument('collection_id');
         $dir = $this->option('dir');
         $csv = $this->option('csv');
@@ -100,6 +71,7 @@ class ImportDocs extends Command
 						$field_models[] = $f_model;
 					}
 					else{
+                        echo "Cannot find a meta field for label - ". $f." in the header row.\n";
 						$field_models[] = null;
 					}
 				}
@@ -156,27 +128,6 @@ class ImportDocs extends Command
 						$d->save();
 					}
                    	echo $dir.'/'.$f."\n";
-                    /*
-	    			// Update elastic index
-					if($es_on){
-                    try{
-            	    	$body = $d->toArray();
-		   		    	$body['collection_id'] = $collection_id;
-            			$params = [
-                			'index' => 'sr_documents',
-                			'id'    => $d->id,
-                			'body'  => $body
-            			];
-
-            			$response = $client->index($params);
-            			print_r($response);
-                    }
-                    catch(\Exception $e){
-                    	echo "!! Error while importing $f\n";
-                    	echo $e->getMessage()."\n";
-                    }
-				  } // if ES is on
-                  */
                 }
             }
         }
