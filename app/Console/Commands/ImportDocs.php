@@ -17,7 +17,7 @@ class ImportDocs extends Command
      */
     protected $signature = 'SR:ImportDocs {collection_id : ID of the collection} 
                 {dir : Full path of the directory containing the documents to be imported}
-                {--no-dry-run}';
+                {--no-dry-run} {--show-meta-data}';
 
     /**
      * The console command description.
@@ -44,6 +44,7 @@ class ImportDocs extends Command
     public function handle()
     {
         $dry_run = ($this->option('no-dry-run')) ? false : true;
+        $show_meta_data = ($this->option('show-meta-data')) ? true : false;
 
         if($dry_run) {echo "This is a dry run.\n";}
         else{ echo "Not a dry run. Importing documents.\n"; }
@@ -67,7 +68,15 @@ class ImportDocs extends Command
 				// explode by \t char (tab separated values)	
 				$fields = explode("\t", $header_row);
 				$field_models = [];
+                $field_num = 0;
 				foreach ($fields as $f){
+                    $field_num++;
+                    // first column must be the filename.
+                    // field-model cannot be found for the values in there.
+                    if($field_num === 1){
+                        $field_models[] = null;
+                        continue; 
+                    }
 					$f_model = MetaField::where('label',$f)
 							->where('collection_id', $collection_id)
 							->first();	
@@ -113,8 +122,6 @@ class ImportDocs extends Command
 							}
 						}
 					}
-                    print_r(@$titles[$values[0]]);
-                    print_r(@$meta_values[$values[0]]);
 				}
 			}
 			#exit;
@@ -124,9 +131,12 @@ class ImportDocs extends Command
     	     // don't import meta.csv
 		     if ($f == 'meta.csv') continue;
              if(is_file('storage/app/import/'.$f)){
-               	echo $dir.'/'.$f."\n";
                 if($dry_run){
-				    print_r(@$meta_values[$f]);
+                    if($show_meta_data){
+               	        echo $dir.'/'.$f."\n";
+                        print_r(@$titles[$values[0]]);
+				        print_r(@$meta_values[$f]);
+                    }
                 }
                 if(!$dry_run){
                	    $d = DocumentController::importFile($collection_id, 'import/'.$f, @$meta_values[$f]);
