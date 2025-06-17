@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Elastic\Elasticsearch\ClientBuilder;
 use App\MetaField;
 use App\Taxonomy;
+use App\Http\Controllers\DocumentController;
 
 class ImportDocs extends Command
 {
@@ -15,8 +16,8 @@ class ImportDocs extends Command
      * @var string
      */
     protected $signature = 'SR:ImportDocs {collection_id : ID of the collection} 
-                {--dir= : Full path of the directory containing the documents to be imported}
-                {--csv= : Full path of the CSV file containing file paths and meta data }';
+                {dir : Full path of the directory containing the documents to be imported}
+                {--no-dry-run}';
 
     /**
      * The console command description.
@@ -42,12 +43,15 @@ class ImportDocs extends Command
      */
     public function handle()
     {
+        $dry_run = ($this->option('no-dry-run')) ? false : true;
+
+        if($dry_run) {echo "This is a dry run.\n";}
+        else{ echo "Not a dry run. Importing documents.\n"; }
+
         $collection_id = $this->argument('collection_id');
-        $dir = $this->option('dir');
-        $csv = $this->option('csv');
-        //echo "$collection_id  $dir  $csv\n";
+        $dir = $this->argument('dir');
         if(empty($dir)){
-            echo "Aborting. Option --dir must be specified.\n";
+            echo "Aborting. Argument {dir} must be specified.\n";
         }
         if($dir){
 	    // create a sym link storage/app/import pointing to this dir
@@ -109,27 +113,31 @@ class ImportDocs extends Command
 							}
 						}
 					}
+                    print_r(@$titles[$values[0]]);
+                    print_r(@$meta_values[$values[0]]);
 				}
-				print_r($meta_values);
 			}
 			#exit;
             //list the directory and take each file path in array
             $list = scandir('storage/app/import');
             foreach($list as $f){
-		// don't import meta.csv
-		if ($f == 'meta.csv') continue;
-
-                if(is_file('storage/app/import/'.$f)){
-					print_r(@$meta_values[$f]);
-                   	$d = \App\Http\Controllers\DocumentController::importFile($collection_id, 'import/'.$f, @$meta_values[$f]);
-					// update title
-					if(!empty($titles[$f])){
-						$d->title = $titles[$f];
-						$d->save();
-					}
-                   	echo $dir.'/'.$f."\n";
+    	     // don't import meta.csv
+		     if ($f == 'meta.csv') continue;
+             if(is_file('storage/app/import/'.$f)){
+               	echo $dir.'/'.$f."\n";
+                if($dry_run){
+				    print_r(@$meta_values[$f]);
                 }
-            }
+                if(!$dry_run){
+               	    $d = DocumentController::importFile($collection_id, 'import/'.$f, @$meta_values[$f]);
+				    // update title
+				    if(!empty($titles[$f])){
+					    $d->title = $titles[$f];
+					    $d->save();
+				    }
+                }
+             }
+           }
         }
     }
 }
