@@ -64,7 +64,7 @@ class ImportDocs extends Command
 			$titles = [];
 			if(is_file($meta_info_file)){
 				$meta_lines = file($meta_info_file);
-				$header_row = array_shift($meta_lines);
+				$header_row = ltrim(rtrim(array_shift($meta_lines)));
 				// explode by \t char (tab separated values)	
 				$fields = explode("\t", $header_row);
 				$field_models = [];
@@ -89,7 +89,7 @@ class ImportDocs extends Command
 					}
 				}
 				foreach($meta_lines as $l){
-					$values = explode("\t", $l);
+					$values = explode("\t", ltrim(rtrim($l)));
 					$row = [];
 					for($i=0; $i<count($fields); $i++){
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
@@ -103,7 +103,7 @@ class ImportDocs extends Command
 								$t = Taxonomy::find($t_id);
 								if(!$t) continue;
 								$t_family = $t->createFamily(); 
-								$val_ar = explode('|',$values[$i]);
+								$val_ar = explode('|',@$values[$i]);
 								$t_ids = [];
 								foreach($t_family as $tfm){
 									foreach($val_ar as $v){
@@ -117,7 +117,7 @@ class ImportDocs extends Command
 								$meta_values[$values[0]][] = $row;
 							}
 							else{ // text, textarea etc are all default
-								$row = ['field_id' => $key, 'field_value'=>$values[$i]];	
+								$row = ['field_id' => $key, 'field_value'=>@$values[$i]];	
 								$meta_values[$values[0]][] = $row;
 							}
 						}
