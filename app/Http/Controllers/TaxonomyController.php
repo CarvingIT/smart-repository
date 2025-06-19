@@ -14,7 +14,7 @@ class TaxonomyController extends Controller
      public function index(Taxonomy $taxonomy)
     {
   
-	return view('taxonomiesmanagement', ['taxonomies'=>$taxonomy->all(), 'activePage'=>'taxonomies-management', 'titlePage' => 'Taxonomies']);
+	return view('taxonomiesmanagement', ['taxonomies'=>$taxonomy->orderBy('display_order')->get(), 'activePage'=>'taxonomies-management', 'titlePage' => 'Taxonomies']);
     }
 
     public function create()
@@ -42,6 +42,7 @@ class TaxonomyController extends Controller
 	try{
 	$taxonomy_new = new Taxonomy();
     $taxonomy_new ->label = $request->label;
+    $taxonomy_new ->display_order = $request->display_order;
     $taxonomy_new->parent_id = $id;
 	$taxonomy_new ->save();
 		Session::flash('alert-success', 'Taxonomy successfully added.');
@@ -65,6 +66,7 @@ class TaxonomyController extends Controller
 	$taxonomies = Taxonomy::find($id);
     $taxonomies ->parent_id = $request->parent_id;
 	$taxonomies ->label = $request->label;
+	$taxonomies ->display_order = $request->display_order;
 	$taxonomies ->save();
 	Session::flash('alert-success', 'Taxonomy successfully updated.');
 	}

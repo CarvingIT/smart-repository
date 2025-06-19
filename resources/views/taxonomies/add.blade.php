@@ -51,6 +51,19 @@
                       @endif
                   </div>
                 </div>
+                <div class="form-group row bmd-form-group">
+		              <div class="col-md-4">
+                  <label class="col-md-12 col-form-label text-md-right">{{ __('Display order') }}</label>
+                  </div>
+
+                  <div class="col-md-8">
+                      <input class="form-control{{ $errors->has('display_order') ? ' is-invalid' : '' }}" name="display_order" id="input-display_order" type="number" placeholder="{{ __('Optional. Some integer here.') }}" value="{{ old('display_order') }}" step="1" />
+                      @if ($errors->has('display_order'))
+                        <span id="display_order-error" class="error text-danger" for="input-display_order">{{ $errors->first('display_order') }}</span>
+                      @endif
+                  </div>
+                </div>
+
               </div>
               <div class="card-footer ml-auto mr-auto">
                 <button type="submit" class="btn btn-primary">{{ __('Add') }}</button>

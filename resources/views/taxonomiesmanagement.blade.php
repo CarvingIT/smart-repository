@@ -96,7 +96,7 @@ for (i = 0; i < toggler.length; i++) {
 		    <h3>Taxonomy</h3>
 <ul>
 @php
-	$tags = App\Taxonomy::all();
+	$tags = App\Taxonomy::orderBy('display_order')->get();
 	$children = [];
 	foreach($tags as $t){
 		$children['parent_'.$t->parent_id][] = $t;

@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class Taxonomy extends Model
 {
     protected $table = "taxonomies";
-    protected $fillable = ['parent_id', 'label'];
+    protected $fillable = ['parent_id', 'label', 'display_order'];
 
     public function childs() {
-        return $this->hasMany('App\Taxonomy','parent_id','id') ;
+        return $this->hasMany('App\Taxonomy','parent_id','id')->orderBy('display_order');
     }
 
 	public function parent(){
