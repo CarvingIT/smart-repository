@@ -381,7 +381,11 @@ $(document).ready(function()
 					@endphp
 						@php $r_d_doc= []; $display_doc = []; @endphp
 
-						@if(!$document->related_documents->isEmpty())
+						@if($document->related_documents->isEmpty())  
+						@php // This below line displays the related documents on related documents page also. 
+						$document = App\Document::where('id',$parent->document_id)->first();
+						@endphp
+						@endif 
 						@foreach ($document->related_documents->sortBy('display_order') as $r_d)
 						@php 
 						$r_d_doc = App\Document::where('id',$r_d->related_document_id)->first();
@@ -425,23 +429,15 @@ $(document).ready(function()
 						}
 						@endphp
 						@endforeach
-						@endif 
-						@php 
-	//print_r($display_doc); exit;
+@php 
+//print_r($display_doc); exit;
 if(!empty($display_doc)){
 foreach($display_doc as $key => $value){
-//print_r($value);	
-//echo $key. $value['collection_id']."<hr />";
-//exit;
-//echo $value[0]['collection_id']; 
 echo "<strong>".preg_replace("/_/"," ",$key)."</strong><br />";
-//echo "<strong><a href='/collection/".$value['collection_id']."/document/".$value['doc_id']."/details'>".preg_replace("/_/"," ",$key)."</a></strong>";
-	//echo "<ul>";
 	foreach($value as $item){
 	$doc_item = preg_replace("/Principal|1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th Amendment/i","",$item['title']);
 	echo "<a href='/collection/".$item['collection_id']."/document/".$item['doc_id']."/details' style='color: #3f819e;'>".$doc_item."</a><br />";
 	}
-	//echo "</ul>";
 	echo "<br />";
 }
 }
