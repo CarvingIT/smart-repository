@@ -160,7 +160,10 @@ function clearSearchBar(){
 		})->get();
 	}
 	else{
-		$rmf_values = App\ReverseMetaFieldValue::all();
+		//$rmf_values = App\ReverseMetaFieldValue::all();
+		$rmf_values = App\ReverseMetaFieldValue::whereHas('document', function($q){
+			$q->whereNull('deleted_at');
+		})->get();
 	}
 	$rmfv_map = [];
 	foreach($rmf_values as $rmfv){
