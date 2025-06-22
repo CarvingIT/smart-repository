@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Collections;
 use Rap2hpoutre\FastExcel\FastExcel;
+use App\Duplicate;
 
 class ReportsController extends Controller
 {
@@ -90,6 +91,18 @@ class ReportsController extends Controller
 		}
 		return (new FastExcel($list))
     			->download('search_queries.xlsx');
+	}
+
+	public function duplicates(Request $request){
+		$duplicates = Duplicate::all();		
+        $list = [];
+        foreach($duplicates as $dup){
+            $doc = Document::find($dup->document_id);
+            $dupes_ar = json_decode($dup->duplicates);
+            $dupe_docs = Document::whereIn('id', $dupes_ar)->get();
+        }
+		return (new FastExcel($duplicates))
+    			->download('duplicates.xlsx');
 	}
 
 }

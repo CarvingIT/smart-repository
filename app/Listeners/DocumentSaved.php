@@ -31,12 +31,18 @@ class DocumentSaved
     public function handle($event)
     {
         $changes = $event->document->getChanges();
-        if(in_array('locked', array_keys($changes))){
+        if(count($changes) == 0){
+            //echo "Ignoring this update to document ".$event->document->id.". There are no changes.\n";
+            return 0;
+        }
+        else if(in_array('locked', array_keys($changes)) || in_array('hash',array_keys($changes))){
             /* 
             this condition is met when
             1. a document is published
             2. a document is locked or unlocked
+            3. a hash of the document is created
             */
+            echo "Ignoring this update to document ".$event->document->id."\n";
             return 0;
         }        
 
