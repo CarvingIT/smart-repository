@@ -226,7 +226,14 @@ function clearSearchBar(){
 					$display = '';
 				}
 				//echo '<div class="form-check ct-sub child-of-'.$parent_id.'" '.$display.'>';
+				$grand_parent_details = \App\Taxonomy::find($t->parent_id);
+				$g_p = $grand_parent_details->parent_id;
+				if(!empty($t->parent_id) && empty($children['parent_'.$t->id]) && isset($g_p)){
+				echo '<div class="form-check form-check002 child-of-'.$parent_id.'" '.$display.'>';
+				}
+				else{
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
+				}
 				$tid = $t->id;
 				//echo $meta_id;
 				$meta_values_filter = \App\MetaField::find($meta_id);

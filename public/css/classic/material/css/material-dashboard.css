@@ -2343,6 +2343,12 @@ select.form-control-lg:not([size]):not([multiple]),
   padding-left: 1.25rem;
 }
 
+.form-check002 {
+  position: relative;
+  display: block;
+  padding-left: 1.25rem !important;
+}
+
 .form-check-input {
   position: absolute;
   margin-top: 0.3rem;
