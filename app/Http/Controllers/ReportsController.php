@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Collections;
 use Rap2hpoutre\FastExcel\FastExcel;
 use App\Duplicate;
+use App\Document;
 
 class ReportsController extends Controller
 {
@@ -95,14 +96,16 @@ class ReportsController extends Controller
 
 	public function duplicates(Request $request){
 		$duplicates = Duplicate::all();		
-        $list = [];
-        foreach($duplicates as $dup){
-            $doc = Document::find($dup->document_id);
-            $dupes_ar = json_decode($dup->duplicates);
-            $dupe_docs = Document::whereIn('id', $dupes_ar)->get();
+        $dupes = [];
+        $last_run = null;
+        foreach($duplicates as $duplicate){
+           $doc_ids = [];
+           $doc_ids[] = $duplicate->document_id;
+           $last_run = $duplicate->created_at;
+           $doc_ids = array_merge($doc_ids, (array)json_decode($duplicate->duplicates));  
+           $dup_docs = Document::whereIn('id', $doc_ids)->get();
+           $dupes[$duplicate->document_id] = $dup_docs;
         }
-		return (new FastExcel($duplicates))
-    			->download('duplicates.xlsx');
+        return view('duplicate-documents',['duplicates'=>$dupes, 'last_run'=>$last_run]);
 	}
-
 }
