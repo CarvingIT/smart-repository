@@ -206,6 +206,7 @@ function clearSearchBar(){
 					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 			$meta_values_filter = \App\MetaField::find($meta_id);
 			if($meta_values_filter->type_of_filter == 'radio'){
+			// Check with the current parent_id if this has children.
                 	echo '<input class="ch-child-of-'.$parent_id.'" type="radio" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 			}
 			else{
