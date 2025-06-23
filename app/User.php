@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use App\UserRole;
 use App\Role;
+use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -108,7 +109,7 @@ class User extends Authenticatable implements MustVerifyEmail
             }
         }
         foreach($user_permissions as $u_p){
-            if($u_p->collection_id == $collection_id && 
+            if($u_p->collection_id == $c->id && 
                 (($u_p->permission)->name == $permission_name || ($u_p->permission)->name == 'MAINTAINER')){
                 return true;
             }
