@@ -311,6 +311,9 @@ function randomString(length) {
 			.dataTables_filter {
 			display: none;
 			}
+            table.dataTable tbody td {
+              vertical-align: top;
+            }
 			</style>
 		   </div>
 		   </div>
