@@ -383,10 +383,10 @@ $(document).ready(function()
 
 						@if($document->related_documents->isEmpty())  
 						@php // This below line displays the related documents on related documents page also. 
-						$document = App\Document::where('id',$parent->document_id)->first();
+						$r_document = App\Document::where('id',$parent->document_id)->first();
 						@endphp
 						@endif 
-						@foreach ($document->related_documents->sortBy('display_order') as $r_d)
+						@foreach ($r_document->related_documents->sortBy('display_order') as $r_d)
 						@php 
 						$r_d_doc = App\Document::where('id',$r_d->related_document_id)->first();
 						foreach($r_d_doc->collection->meta_fields as $meta_field){

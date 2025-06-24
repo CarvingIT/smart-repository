@@ -67,10 +67,11 @@ class DataValidationAndRelation extends Command
 		 */
 
 		$document = \App\Document::select('id','collection_id','path','type','size')
-					->where('title',$row[11])->first();
+					->where('title',$row[13])->first();
 		if(!empty($document)){
 		//if($row[22] == 'RPO Targets'){
-		$shortname_id[ltrim(rtrim($row[12]))] = $document->id;
+		#$shortname_id[ltrim(rtrim($row[12]))] = $document->id; // Changed by Saumendra column number for title.
+		$shortname_id[ltrim(rtrim($row[14]))] = $document->id;
 		//}
 		}
 		
