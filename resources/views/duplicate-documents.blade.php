@@ -28,7 +28,8 @@ table.dataTable tbody td {
 	        <div class="card-body">
 		<div class="card search-filters-card">
 		<div class="table-responsive">
-        <p>This report was run on {{ $last_run }}. Following list gets updated when the report runs. You can run the report manually or through crontab.</p>
+        <p>
+        @if($last_run) This report was run on {{ $last_run }}. @endif Following list gets updated when the duplicates-report runs. You can run the report either manually or through crontab.</p>
                     <table id="documents" class="table">
                         <thead class="text-primary">
                             <tr>
