@@ -379,13 +379,14 @@ $(document).ready(function()
 						}
 					        echo '<a href="/collection/'.$p_doc->collection->id.'/document/'.$p_doc->id.'/details" style="color:#3f819e;">'.$p_doc_meta['document-short-name'].'</a><br /><br />';
 					@endphp
-						@php $r_d_doc= []; $display_doc = []; @endphp
+						@php $r_d_doc= []; $display_doc = []; $r_document = [];@endphp
 
 						@if($document->related_documents->isEmpty())  
 						@php // This below line displays the related documents on related documents page also. 
 						$r_document = App\Document::where('id',$parent->document_id)->first();
 						@endphp
 						@endif 
+						@if(!empty($r_document))
 						@foreach ($r_document->related_documents->sortBy('display_order') as $r_d)
 						@php 
 						$r_d_doc = App\Document::where('id',$r_d->related_document_id)->first();
@@ -429,6 +430,7 @@ $(document).ready(function()
 						}
 						@endphp
 						@endforeach
+						@endif
 @php 
 //print_r($display_doc); exit;
 if(!empty($display_doc)){
