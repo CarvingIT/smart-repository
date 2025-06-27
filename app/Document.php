@@ -172,4 +172,9 @@ class Document extends Model implements Auditable
     public function isLocked(){
         return ($this->locked == 1) ? true: false;
     }
+
+    // accessor to return collection_name 
+    public function getCollectionNameAttribute(){
+        return $this->collection->name;
+    }
 }

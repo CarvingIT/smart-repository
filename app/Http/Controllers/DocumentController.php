@@ -834,21 +834,28 @@ public function deletedDocuments(Request $request){
 }
 
 public function deletedDocumentsData(Request $request){
-    $docs = Document::onlyTrashed();
+    $docs = Document::onlyTrashed()->with('collection');
     $records_total = $docs->count();
     if(!empty($request->search['value'])){
         $docs = $docs->where('title', 'like', '%'.$request->search['value'].'%');
     }
     $filtered_count = $docs->count();
-    $docs=$docs->orderBy('deleted_at','desc')->skip($request->start)->take($request->length)->get();
+    $sort_by = 'deleted_at';
+    $sort_direction = 'desc';
+    if(!empty($request->order[0]['column'])){
+        $columns_to_fields = ['type','title','collection_name','size','updated_at', 'deleted_at'];
+        $sort_by = $columns_to_fields[$request->order[0]['column']];
+        $sort_direction = $request->order[0]['dir'];
+    }
+    $docs=$docs->orderBy($sort_by, $sort_direction)->skip($request->start)->take($request->length)->get();
     $result = [];
     foreach($docs as $d){
         $d_modified = [
         'title'=> $d->title,
         'collection'=> $d->collection->name,
-        'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
+        'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->type),
         'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
-        'created_at' => array('display'=>date('Y-M-d', strtotime($d->created_at)), 'deleted_date'=>$d->created_at),
+        'updated_at' => array('display'=>date('Y-M-d', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
         'deleted_at' => array('display'=>date('Y-M-d', strtotime($d->deleted_at)), 'deleted_date'=>$d->deleted_at),
         'actions' => '<a href="/admin/recover/'.$d->id.'"><span class="btn btn-success btn-link" title="Restore document"><i class="material-icons">refresh</i></span></a>',
         ];

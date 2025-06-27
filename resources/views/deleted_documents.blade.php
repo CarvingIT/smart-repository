@@ -17,23 +17,26 @@ $(document).ready(function() {
 	},
     "columns":[
        {data:"type",
+          orderable:false,
           render:{
             '_':'display',
             'sort':'filetype'
           }
        },
        {data:"title"},
-       {data:"collection"},
+       {data:"collection",
+        "orderable":false,
+        },
        {data:"size",
            render:{
              '_': 'display',
              'sort': 'bytes'
             }
         },
-        {data:"created_at",
+        {data:"updated_at",
             render:{
                '_':'display',
-              'sort': 'created_date'
+              'sort': 'updated_date'
             }
         },
         {data:"deleted_at",
@@ -42,7 +45,9 @@ $(document).ready(function() {
               'sort': 'deleted_date'
             }
         },
-        {data:"actions"},
+        {data:"actions", 
+            orderable:false,
+        },
     ],
     });
 
@@ -87,7 +92,7 @@ $(document).ready(function() {
                             <th>{{__('Title')}}</th>
                             <th>{{__('Collection')}}</th>
                             <th>{{__('Size')}}</th>
-                            <th>{{__('Created')}}</th>
+                            <th>{{__('Last updated')}}</th>
                             <th>{{__('Deleted')}}</th>
                             <th class="text-right"><!--Actions--></th>
                             </tr>
