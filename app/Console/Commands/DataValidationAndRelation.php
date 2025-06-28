@@ -42,17 +42,14 @@ class DataValidationAndRelation extends Command
 	$file = $this->argument('data_csv_file');
         $handle = fopen($file, "r");
 	$csv_columns = [];
-	/*
 	$fp_data_discrip = fopen("RE_data_discripancies.txt","w");
 	$fp_notin_db = fopen("RE_data_absent_in_database.csv","w");
 	$fp_notin_sheet = fopen("RE_Repos_doc_shortname.csv","w");
-	*/
 	$heading_set = 0;
 	$shortname_id = [];
 
         while (($row = fgetcsv($handle)) !== FALSE) {
                 // do something with row values
-		/*	
 		if(in_array('Document title',$row) && $heading_set == 0){
 			foreach($row as $column){
 				$col = strtolower($column);
@@ -60,62 +57,59 @@ class DataValidationAndRelation extends Command
 				$csv_columns[] = $col;
 			}
 			//$title_row = implode(",",$row);
-			#fwrite($fp_notin_db,$row[13]."\n");
-			#fwrite($fp_notin_sheet,$row[13]."\n");
+			fwrite($fp_notin_db,$row[14]."\n"); //Shortnames
+			fwrite($fp_notin_sheet,$row[14]."\n"); //Shortnames
 			$heading_set = 1;
 		}
-		 */
 
 		$document = \App\Document::select('id','collection_id','path','type','size')
 					->where('title',$row[13])->first();
 		if(!empty($document)){
 		//if($row[22] == 'RPO Targets'){
-		#$shortname_id[ltrim(rtrim($row[12]))] = $document->id; // Changed by Saumendra column number for title.
 		$shortname_id[ltrim(rtrim($row[14]))] = $document->id;
 		//}
 		}
 		
 		if(!empty($document)){
 			// Check csv file values with database values
-			/*
 			foreach($document->collection->meta_fields as $meta_field){
 				if(is_null($document->meta_value($meta_field->id, $row))){
 				//write a text file with the data discripancies.
 					$data = ['Doc ID: '.$document->id, $meta_field->label];
 					$data_discrip = implode(",",$data);
-					#fwrite($fp_data_discrip,$data_discrip."\n");
+					fwrite($fp_data_discrip,$data_discrip."\n");
 				}
 			}
-			 */
 			//print_r($display_meta);
 		}	
 		else{
 		//the record present in the datasheet but not in the database.
 			//$data_csv = implode(",",$row);
-			#fwrite($fp_notin_db,$row[13]."\n"); //List of Document Short Name, absent in database 
+			fwrite($fp_notin_db,$row[14]."\n"); //List of Document Short Name, absent in database 
 		}
 		//exit;
-		#$db_document = \App\Document::select('id','collection_id','path','type','size')
-		#		->get();
-		#foreach($db_document as $db_doc){
-		#	if($db_doc->meta_value(4) != $row[13]){
+		$db_document = \App\Document::select('id','collection_id','path','type','size')
+				->get();
+		foreach($db_document as $db_doc){
+			if($db_doc->meta_value(4) != $row[14]){
 			//the record present in the db but not in the RE datasheet.
-				#fwrite($fp_notin_sheet,$db_doc->meta_value(4)."\n"); //Document Short Name absent in sheet 
-			#}
-		#}
+				fwrite($fp_notin_sheet,$db_doc->meta_value(4)."\n"); //Document Short Name absent in sheet 
+			}
+		}
         }
 
-	/*
+	
 	fclose($fp_data_discrip);
 	fclose($fp_notin_db);
 	fclose($fp_notin_sheet);
         fclose($handle);
-	*/
+	
 
 	//print_r($shortname_id);
 	//echo count($shortname_id)."\n";
 	//exit;
 	// first remove all relations
+	/*
 	RelatedDocument::truncate();
 	$r_count = 1;
 	foreach($shortname_id as $s=>$id){
@@ -131,6 +125,7 @@ class DataValidationAndRelation extends Command
 			$related_document->save();
 		}
 	}
+	*/
     }
 //
 }
