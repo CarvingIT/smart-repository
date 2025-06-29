@@ -48,7 +48,7 @@ $(document).ready(function() {
                         </td>
                         <td>
                         @foreach($perms as $p)
-                            {{ ($p->permission)->description }}<br/>
+                            {{ ($p->permission)->description }} @if(!empty($p->till_date)) till {{ $p->till_date }}@endif<br/>
                         @endforeach
                         </td>
                         <td class="td-actions text-right">

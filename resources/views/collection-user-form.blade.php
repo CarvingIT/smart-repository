@@ -67,26 +67,37 @@ $(document).ready(function() {
 			<div id="countryList"></div>
                     </div>
                    </div>
+                    <div class="form-group row">
+			        <div class="col-md-4"></div>
+			        <div class="col-md-4"><h5>Permission</h5></div>
+			        <div class="col-md-4"><h5>Forever or select a date</h5></div>
+                    </div>
                     @foreach(\App\Permission::all() as $p)
 			@if(count($collection_has_approval)==0 && $p->name == 'APPROVE')
 			@else
 				@if($p->name != "VIEW_OWN")
                    <div class="form-group row">
-                   <label for="permission" class="col-md-4 col-form-label text-md-right"></label> 
-                    <div class="col-md-6">
+                   <label class="col-md-4 col-form-label text-md-right"></label> 
+                    <div class="col-md-4">
                     <input type="checkbox"  name="permission[]" value="{{ $p->id }}" 
                     @if(!empty($user_permissions['p'.$p->id]))
                      checked 
                     @endif
                     />  {{ $p->description }}
                     </div>
+                    <div class="col-md-4">
+					<input type="date" name="p_{{ $p->id }}_till_date" value="{{ @$user_permissions['p'.$p->id][1] }}" />
+                    </div>
                    </div>
 				@else
                    <div class="form-group row">
-                   <label for="permission" class="col-md-4 col-form-label text-md-right"></label> 
-                    <div class="col-md-6">
+                   <label class="col-md-4 col-form-label text-md-right"></label> 
+                    <div class="col-md-4">
                     <input type="checkbox" disabled="disabled" checked="checked" name="permission[]" /> {{ __('Can view own documents')}} 
 					<input type="hidden" name="permission[]" value="{{ $p->id }}" />
+                    </div>
+                    <div class="col-md-4">
+					<input type="date" name="p_{{ $p->id }}_till_date" value="{{ @$user_permissions['p'.$p->id][1] }}" />
                     </div>
                    </div>
 				@endif

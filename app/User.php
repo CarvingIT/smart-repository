@@ -99,18 +99,13 @@ class User extends Authenticatable implements MustVerifyEmail
         check VIEW access first
         If the collection is Public or if the user has any permission on the collection
         */ 
-        if($permission_name == 'VIEW'){
-            if($c->type == 'Public') return true;
-            
-            foreach($user_permissions as $u_p){
-				if($u_p->permission->name == 'VIEW'
-                 && $u_p->collection_id == $collection_id) return true;
-            }
-        }
+        if($c->type == 'Public' && $permission_name == 'VIEW') return true;
+
         foreach($user_permissions as $u_p){
             if($u_p->collection_id == $c->id && 
                 (($u_p->permission)->name == $permission_name || ($u_p->permission)->name == 'MAINTAINER')){
-                return true;
+                if(empty($u_p->till_date)) return true;
+                else if(date('Y-m-d') <= $u_p->till_date) return true;
             }
         }
 		// code to check if the collection allows authenticated users with some default permissions

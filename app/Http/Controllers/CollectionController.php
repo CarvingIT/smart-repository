@@ -141,7 +141,7 @@ class CollectionController extends Controller
             $u_permissions = \App\UserPermission::where('user_id','=',$user_id)
                 ->where('collection_id','=',$collection_id)->get();
             foreach($u_permissions as $u_p){
-                $user_permissions['p'.$u_p->permission_id] = 1;
+                $user_permissions['p'.$u_p->permission_id] = [1, $u_p->till_date];
             }
         }
         return view('collection-user-form', ['collection'=>\App\Collection::find($collection_id), 
@@ -167,11 +167,14 @@ class CollectionController extends Controller
 	if($user){
 	    \App\UserPermission::where('collection_id','=',$request->collection_id)
             ->where('user_id','=',$user->id)->delete(); 
+        $i = 0;
           foreach($request->permission as $p){
+            $till_date = 'p_'.$p.'_till_date';
             $user_permission = new \App\UserPermission;
             $user_permission->user_id = $user->id;
             $user_permission->collection_id = $request->collection_id;
-            $user_permission->permission_id = $p; 
+            $user_permission->permission_id = $p;
+            $user_permission->till_date = $request->$till_date;
             $user_permission->save();
           }
 	}
