@@ -372,6 +372,7 @@ $(document).ready(function()
 						else{
 						$p_doc = App\Document::where('id',$parent->document_id)->first();
 						}
+#echo $document->collection_id; exit; 
 						foreach($p_doc->collection->meta_fields as $meta_field){
                                         		$p_doc_placeholder = strtolower($meta_field->placeholder);
                                         		$p_doc_meta_placeholder = preg_replace("/ /","-",$p_doc_placeholder);
