@@ -109,7 +109,6 @@ class DataValidationAndRelation extends Command
 	//echo count($shortname_id)."\n";
 	//exit;
 	// first remove all relations
-	/*
 	RelatedDocument::truncate();
 	$r_count = 1;
 	foreach($shortname_id as $s=>$id){
@@ -125,7 +124,6 @@ class DataValidationAndRelation extends Command
 			$related_document->save();
 		}
 	}
-	*/
     }
 //
 }
