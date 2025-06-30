@@ -386,6 +386,10 @@ $(document).ready(function()
 						@php // This below line displays the related documents on related documents page also. 
 						$r_document = App\Document::where('id',$parent->document_id)->first();
 						@endphp
+						@else
+						@php // This below line displays the related documents on principlae documents page also. 
+						$r_document = App\Document::where('id',$document->id)->first();
+						@endphp
 						@endif 
 						@if(!empty($r_document))
 						@foreach ($r_document->related_documents->sortBy('display_order') as $r_d)
