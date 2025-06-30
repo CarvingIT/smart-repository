@@ -44,7 +44,7 @@ class DataValidationAndRelation extends Command
 	$csv_columns = [];
 	$fp_data_discrip = fopen("RE_data_discripancies.txt","w");
 	$fp_notin_db = fopen("RE_data_absent_in_database.csv","w");
-	$fp_notin_sheet = fopen("RE_Repos_doc_shortname.csv","w");
+	$fp_notin_sheet = fopen("RE_data_presentindb_absentinsheet.csv","w");
 	$heading_set = 0;
 	$shortname_id = [];
 
@@ -63,7 +63,9 @@ class DataValidationAndRelation extends Command
 		}
 
 		$document = \App\Document::select('id','collection_id','path','type','size')
-					->where('title',$row[13])->first();
+			->where('title',$row[13])
+			->whereNull('deleted_at')
+			->first();
 		if(!empty($document)){
 		//if($row[22] == 'RPO Targets'){
 		$shortname_id[ltrim(rtrim($row[14]))] = $document->id;
