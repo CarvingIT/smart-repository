@@ -437,16 +437,25 @@ $(document).ready(function()
 						@endforeach
 						@endif
 @php 
-//print_r($display_doc); exit;
-if(!empty($display_doc)){
-foreach($display_doc as $key => $value){
-echo "<strong>".preg_replace("/_/"," ",$key)."</strong><br />";
-	foreach($value as $item){
-	$doc_item = preg_replace("/Principal|1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th Amendment/i","",$item['title']);
-	echo "<a href='/collection/".$item['collection_id']."/document/".$item['doc_id']."/details' style='color: #3f819e;'>".$doc_item."</a><br />";
-	}
-	echo "<br />";
+/*
+if(in_array('Principal',array_keys($display_doc))){
+ksort($display_doc,SORT_NUMERIC);
 }
+print_r($display_doc); exit;
+*/
+if(!empty($display_doc)){
+
+	if(in_array('Principal',array_keys($display_doc))){
+	ksort($display_doc,SORT_NUMERIC);
+	}
+	foreach($display_doc as $key => $value){
+		echo "<strong>".preg_replace("/_/"," ",$key)."</strong><br />";
+		foreach($value as $item){
+		$doc_item = preg_replace("/Principal|1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th Amendment/i","",$item['title']);
+		echo "<a href='/collection/".$item['collection_id']."/document/".$item['doc_id']."/details' style='color: #3f819e;'>".$doc_item."</a><br />";
+		}
+		echo "<br />";
+	}
 }
 @endphp
 {{--
