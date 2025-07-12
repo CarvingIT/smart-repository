@@ -469,10 +469,16 @@ trait Search{
     public function searchDB(Request $request){
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
+        $column_config = json_decode($collection->column_config);
 		if($collection->content_type == 'Uploaded documents'){
         	$documents = \App\Document::where('collection_id', $request->collection_id);
 			if($collection->require_approval){
+                if(!empty($column_config->display_unapproved_docs)){
+                    $documents = $documents;
+                }
+                else{    
         		$documents = $documents->whereNotNull('approved_on');
+                }
 			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
@@ -617,16 +623,15 @@ trait Search{
 			return $documents;
 		}
 		else if($collection->content_type == 'Uploaded documents'){
+            $column_config = json_decode($collection->column_config);
 			if($collection->require_approval == 1){ 
-				/*
-				if(Auth::user() && Auth::user()->hasPermission($collection->id, 'APPROVE')){ // return all
-					return $documents;
-				}
-				else{ // return only approvedSKK
-				*/
+                if(!empty($column_config->display_unapproved_docs) && $column_config->display_unapproved_docs == 1){
+                    return $documents;
+                }
+                else{
 					$documents = $documents->whereNotNull('approved_on');	
 					return $documents;
-				//}
+                }
 			}
 			else{ 
 				return $documents;
@@ -721,6 +726,7 @@ trait Search{
 	    } // if collection's content-type == Uploaded documents
 	    //$title = $d->title.': '. substr($d->text_content, 0, 100).' ...';
 	    $title = $d->title;
+        $approval_status = $d->document_approval_stage;
         $content_matches = [];
         $record_highlights = array_shift($highlights);
         if(!empty($record_highlights['title'][0])){
@@ -735,6 +741,7 @@ trait Search{
         $result = array(
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
+                'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date('Y-M-d', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'highlights'=>$record_highlights,

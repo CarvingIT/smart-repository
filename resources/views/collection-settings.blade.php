@@ -75,6 +75,10 @@ $(document).ready(function() {
 			@if(!empty($column_config->size) && $column_config->size == 1) checked="checked" @endif /> {{ __('Size') }}</div>
            <div class="col-md-3"><input name="creation_time" type="checkbox" value="1"
 			@if(!empty($column_config->creation_time) && $column_config->creation_time == 1) checked="checked" @endif /> {{ __('Creation time') }}</div>
+            @if(!empty($collection->require_approval) && $collection->require_approval == 1)
+			<div class="col-md-3"><input name="display_approval_status" type="checkbox" value="1"
+            @if(!empty($column_config->display_approval_status) && $column_config->display_approval_status == 1) checked="checked" @endif /> {{ __('Approval Status') }}</div>
+            @endif
 
 			@foreach($collection->meta_fields as $m)
 			@if($m->type == 'Textarea')
@@ -122,8 +126,18 @@ $(document).ready(function() {
 		   </div>
 		</div>
 
-		<h4>{{__('Document Approval Flow')}}</h4>
+		<h4>{{__('Document Approval')}}</h4>
 		<div class="form-group row">
+                  <div class="col-md-12"><input type="checkbox" id="display_unapproved_docs" name="display_unapproved_docs" value="1"
+                        @if(@$column_config->display_unapproved_docs == 1) checked @endif />Display Unapproved Documents
+                  </div>
+                    <br />
+                  <div class="col-md-12"><input type="checkbox" id="display_approval_log" name="display_approval_log" value="1"
+                        @if(@$column_config->display_approval_log == 1) checked @endif />Display Document Approval Log
+                  </div>
+                    <br />
+                    <div class="col-md-12">
+            <strong>Document Work Flow</strong>
 			<select class="selectsequence" id="selectsequence" name="approved_by[]" multiple style="width:100%;">	
 				@if(!empty($column_config->approved_by))
 					@foreach($column_config->approved_by as $approver)
@@ -142,6 +156,7 @@ $(document).ready(function() {
 					@endif
 				@endforeach
 			</select>
+            </div>
 		</div>
 
 		<h4>{{__('Info page')}}</h4>

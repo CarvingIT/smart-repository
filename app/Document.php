@@ -9,6 +9,7 @@ use App\Events\DocumentDeleted;
 use OwenIt\Auditing\Contracts\Auditable;
 use Carbon\Carbon;
 use App\Taxonomy;
+use App\Approval;
 
 class Document extends Model implements Auditable
 {
@@ -177,4 +178,17 @@ class Document extends Model implements Auditable
     public function getCollectionNameAttribute(){
         return $this->collection->name;
     }
+
+    public function getDocumentApprovalStageAttribute(){
+        if(!empty($this->approved_on)){
+            return "Approved";
+        }
+        else{    
+            $latest_stage = $this->approvals;
+            $latest_approval_record = $latest_stage->sortByDesc('id')->first();
+            $approved_by_role = @$latest_approval_record->approver_role->name;
+            return "Approval pending at ".ucfirst($approved_by_role);
+        }
+    }
+
 }

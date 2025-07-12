@@ -12,10 +12,11 @@
 <script src="/js/select2totree.js"></script>
 @php
 $column_config = json_decode($collection->column_config);
-list($hide_type, $hide_title, $hide_size, $hide_creation_time) = array(false, false, false, false);
+list($hide_type, $hide_title, $hide_approval_status, $hide_size, $hide_creation_time) = array(false, false, false, false, false);
 if(!empty($collection->column_config)){
 	if(@$column_config->type != 1) $hide_type = true;
 	if(@$column_config->title != 1) $hide_title = true;
+	if(@$column_config->display_approval_status != 1) $hide_approval_status = true;
 	if(@$column_config->size != 1) $hide_size = true;
 	if(@$column_config->creation_time != 1) $hide_creation_time = true;
 }
@@ -27,20 +28,21 @@ $(document).ready(function() {
     "columnDefs": [
 		{ "targets":[0], "className":'text-center', @if($hide_type)"visible":false @endif},
 		{ "targets":[1], "className":'text-left' @if($hide_title) ,"visible":false @endif},
-		{ "targets":[2], "className":'text-right dt-nowrap' @if($hide_size) ,"visible":false @endif},
-		{ "targets":[3], "className":'text-right dt-nowrap' @if($hide_creation_time) ,"visible":false @endif},
 		@php
-			$i = 4;
+			$i = 2;
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
 			foreach($column_config_meta_fields as $m_id){
 				$m = \App\MetaField::find($m_id);
 				$visible = 'false';
 				if(in_array(@$m->id, $column_config_meta_fields)){
 				$visible = 'true';
-			}
-			echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
-			$i++;
-		}
+			    }
+			    echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
+			    $i++;
+		    }
+		echo '{ "targets":['.$i++.'], "className":"text-left"'. (($hide_approval_status)?',"visible":false':'').'},';
+		echo '{ "targets":['.$i++.'], "className":"text-left"'.(($hide_size)?',"visible":false':"").'},';
+		echo '{ "targets":['.$i++.'], "className":"text-left"'.(($hide_creation_time)?',"visible":false':"").'},';
 		@endphp	
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
@@ -61,6 +63,13 @@ $(document).ready(function() {
           }
        },
        {data:"title"},
+		@foreach($column_config_meta_fields as $m_id)
+			@php
+			$m = \App\MetaField::find($m_id);
+			@endphp
+		{data:"meta_{{@$m->id}}"},
+		@endforeach
+       {data:"approval_status"},
        {data:"size",
            render:{
              '_': 'display',
@@ -73,12 +82,6 @@ $(document).ready(function() {
               'sort': 'updated_date'
             }
         },
-		@foreach($column_config_meta_fields as $m_id)
-			@php
-			$m = \App\MetaField::find($m_id);
-			@endphp
-		{data:"meta_{{@$m->id}}"},
-		@endforeach
         {data:"actions"},
     ],
     });
@@ -384,14 +387,15 @@ function randomString(length) {
                             <tr>
                             <th>{{ __('Type')}}</th>
                             <th>{{__('Title')}}</th>
-                            <th>{{__('Size')}}</th>
-                            <th>{{__('Created')}}</th>
 			<!-- meta fields -->
 				@foreach($collection->meta_fields as $m)
 				@if(in_array($m->id,$column_config_meta_fields))
 				<th>{{ __($m->label) }}</th>
 				@endif
 				@endforeach
+                            <th>{{__('Approval Status')}}</th>
+                            <th>{{__('Size')}}</th>
+                            <th>{{__('Created')}}</th>
                 <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
                 </tr>
                 </thead>

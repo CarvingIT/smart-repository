@@ -500,6 +500,37 @@ $(document).ready(function()
                         <div class="col-md-12"><div id="wordcloud"><img src='/i/processing.gif'></div></div>
 						@endif
 
+						@if (!empty($col_config->display_approval_log))
+						<div class="col-md-12">
+						<h3>Document Approval Log</h3>
+
+                        <div class="col-md-12">
+                                <table id="approvals" class="display" style="width:100%;">
+                                        <thead class="text-primary">
+                                            <tr>
+                                            <th>Timestamp</th>
+                                            <th>User</th>
+                                            <th>Approval Status</th>
+                                            <th>Comments</th>
+                                            </tr>
+                                        </thead> 
+                                        <tbody>
+                                        @php
+                                            $doc_approvals = $document->approvals->sortByDesc('created_at');
+                                        @endphp
+                                        @foreach ($doc_approvals as $d_a)
+                                 <tr>
+                                 <td>{{ $d_a->created_at }}</td>
+                                 <td>{{ @$d_a->approver->name }}</td>
+                                 <td>@if($d_a->approval_status == 1) {{ __('Approved') }} @elseif ($d_a->approval_status === 0) {{ __('Rejected') }} @else {{ 'Awaiting approval' }} @endif</td>
+                                 <td>{!! $d_a->comments !!}</td>
+                                 </tr>
+                                        @endforeach
+                                        </tbody>
+                                </table>
+                        </div>
+                        @endif
+
 						@if (!empty($col_config->show_audit_trail))
 						<div class="col-md-12">
 						<h3>Audit Trail</h3>

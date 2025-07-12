@@ -22,6 +22,7 @@
         "html2text/html2text": "^4.3",
         "kriswallsmith/buzz": "^1.2",
         "laravel/framework": "^9.0",
+        "laravel/sanctum": "^3.3",
         "laravel/slack-notification-channel": "^2.4",
         "laravel/socialite": "^5.2",
         "laravel/tinker": "^2.9",

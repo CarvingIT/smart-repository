@@ -30,6 +30,8 @@ class DocumentSaved
      */
     public function handle($event)
     {
+        $newly_created = $event->document->wasRecentlyCreated;
+        if($newly_created != 1){
         $changes = $event->document->getChanges();
         if(count($changes) == 0){
             //echo "Ignoring this update to document ".$event->document->id.". There are no changes.\n";
@@ -45,6 +47,7 @@ class DocumentSaved
             echo "Ignoring this update to document ".$event->document->id."\n";
             return 0;
         }        
+        }
 
 		$notifiable = $event->document->collection;
         $collection_config = json_decode($event->document->collection->column_config);

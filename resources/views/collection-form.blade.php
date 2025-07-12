@@ -140,11 +140,10 @@ else{
 			        </div>
                     <div class="col-md-8">
                     <input type="checkbox" id="require_approval" name="require_approval" value="1" 
-		@if($collection->require_approval == 1)
-                     checked
-                    @endif
+		                @if($collection->require_approval == 1)
+                                    checked
+                        @endif
                     /> <label>Document becomes available after approval</label>
-	
                     </div>
                    </div>
                 
