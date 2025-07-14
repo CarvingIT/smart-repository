@@ -91,6 +91,10 @@ class DocumentSaved
             $body['collection_id'] = $event->document->collection->id;
             $body['title'] = $event->document->title;
             $body['text_content'] = $event->document->text_content;
+
+            $body['created_by'] = $event->document->created_by;
+            $body['updated_at'] = $event->document->updated_at;
+            $body['approved_on'] = $event->document->approved_on;
             $params = [
                 'index' => 'sr_documents',
                 'id'    => $event->document->id,

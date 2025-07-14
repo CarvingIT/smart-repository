@@ -41,30 +41,46 @@ class RebuildElasticIndex extends Command
     public function handle()
     {
         $collection_id = $this->argument('collection_id');
-        $c = Collection::find($collection_id);
+        if($collection_id == 'all'){
+            $collections = Collection::all();
+            foreach($collections as $c){
+                $this->indexCollection($c);
+            }
+        }
+        else{
+            $c = Collection::find($collection_id);
+            $this->indexCollection($c);
+        }
+    }
+
+    public function indexCollection($c){
+        //$c = Collection::find($collection_id);
         echo "Rebuilding elastic index of ".$c->name."\n";
-	if($c->content_type == 'Uploaded documents'){
+	    if($c->content_type == 'Uploaded documents'){
 		$index = 'sr_documents';
         	$docs = $c->documents;
-	}
-	else if($c->content_type == 'Web resources'){
+	    }
+	    else if($c->content_type == 'Web resources'){
 		$index = 'sr_urls';
         	$docs = $c->urls;
-	}
+	    }
         
         $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
         $hosts = explode(",",$elastic_hosts);
-	$client = ClientBuilder::create()->setHosts($hosts)
+    	$client = ClientBuilder::create()->setHosts($hosts)
 		->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
 		->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
 		->build();
-	// first, clear the old index
-	//$client->indices()->delete(array('index'=>$index));
+	    // first, clear the old index
+	    //$client->indices()->delete(array('index'=>$index));
 
         foreach($docs as $d){
             $body = $d->toArray();
             $body['collection_id'] = $c->id;
             $body['title'] = $d->title;
+            $body['created_by'] = $d->created_by;
+            $body['updated_at'] = $d->updated_at;
+            $body['approved_on'] = $d->approved_on;
             $body['text_content'] = $d->text_content;
             $params = [
                 'index' => $index,
@@ -73,9 +89,13 @@ class RebuildElasticIndex extends Command
             ];
 
             $response = $client->index($params);
-            print_r($response);
+            //print_r($response);
+            echo "\t".$d->title."\n";
         }
 		$client->indices()->close(['index'=>'sr_documents']);
+		$client->indices()->open(['index'=>'sr_documents']);
+    }
+}
 		// add settings related to synonym analyzer
 		/*
 		$synonym_params = [
@@ -108,6 +128,3 @@ class RebuildElasticIndex extends Command
 		$response = $client->indices()->putSettings($synonym_params);
 		print_r($response);
 		*/
-		$client->indices()->open(['index'=>'sr_documents']);
-    }
-}

@@ -14,8 +14,8 @@ use App\MetaFieldValue;
 trait Search{
     // wrapper function for search
     public function search(Request $request){
-        if(!empty(env('SEARCH_MODE')) && env('SEARCH_MODE') == 'elastic' 
-            && !empty($request->search['value'])){
+        if(!empty(env('SEARCH_MODE')) && env('SEARCH_MODE') == 'elastic'){
+            //&& !empty($request->search['value'])){
             $search_results = $this->searchElastic($request);
         }
         else{
@@ -153,22 +153,30 @@ trait Search{
     // elastic search
     public function searchElastic($request){
     $params = array();
+    $must_query = [];
+    $must_not_query = [];
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
+        $must_query[] = [ 'match'=>[ 'collection_id' => $collection->id ] ];
+        $must_not_query = [];
 		if($collection->content_type == 'Uploaded documents'){
         	$elastic_index = 'sr_documents';
-        	$documents = \App\Document::where('collection_id', $request->collection_id);
-			if($collection->require_approval){
-				$documents = $documents->whereNotNull('approved_on');
+        	//$documents = \App\Document::where('collection_id', $request->collection_id);
+			$column_config = json_decode($collection->column_config);	
+			if($collection->require_approval && empty($column_config->display_unapproved_docs)){
+				//$documents = $documents->whereNotNull('approved_on');
+                $must_query[] = [ 'exists'=>[ 'field' => 'approved_on' ] ];
+                $must_not_query[] = [ 'term'=>['approved_on'=>''] ];
 			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
-				$documents = $documents->where('created_by', \Auth::user()->id);
+				//$documents = $documents->where('created_by', \Auth::user()->id);
+                $must_query[] = [ 'match'=>[ 'created_by' => \Auth::user()->id ] ];
 			}
 		}
 		else{
         	$elastic_index = 'sr_urls';
-        	$documents = \App\Url::where('collection_id', $request->collection_id);
+        	//$documents = \App\Url::where('collection_id', $request->collection_id);
 		}
 	}
 	else {
@@ -189,29 +197,51 @@ trait Search{
         Log::debug(json_encode($collection_ids));
 		$collection_type = $request->collection_type;
 		if($collection_type == 'Web resources'){
-        	$documents = \App\Url::whereIn('collection_id', $collection_swithout_approval);
+        	//$documents = \App\Url::whereIn('collection_id', $collection_swithout_approval);
         	$elastic_index = 'sr_urls';
 		}
 		else{
             Log::debug('Not requiring approval'.json_encode($collections_without_approval));
-        	$documents = \App\Document::whereIn('collection_id', $collections_without_approval);
+        	//$documents = \App\Document::whereIn('collection_id', $collections_without_approval);
             Log::debug('Requiring approval'.json_encode($collections_requiring_approval));
+            /*
 			$documents = $documents->orWhere(function($query) use($collections_requiring_approval){
                 $query->whereIn('collection_id', $collections_requiring_approval)
                     ->whereNotNull('approved_on');
 			});
+             */
       		$elastic_index = 'sr_documents';
 		}
 		//Log::debug($elastic_index.' - '.implode(",", $collection_ids));
 	}
-        $total_count = $documents->count();
-	Log::debug('Total Count: '.$total_count);
+    $params_cnt = [
+        'index'=>$elastic_index,
+        'body' => [
+            'query'=>[
+                'bool'=>[
+                    'must'=>$must_query,
+                    'must_not'=>$must_not_query
+                ]
+            ]
+        ]
+    ];
+    try{
+	$client = $this->getElasticClient();
+    $cnt_response = $client->count($params_cnt);
+    }
+    catch(\Exception $e){
+		Log::debug($e->getMessage());	
+        Log::debug('Switching to DB search');
+		return $this->searchDB($request);
+    }
+        //$total_count = $documents->count();
+        $total_count = $cnt_response->count;
+	    Log::debug('Total Count: '.$total_count);
 
 		$highlights = [];
-        if(!empty($request->search['value']) && strlen($request->search['value'])>1){
-            $search_term = $request->search['value'];
-	    Log::debug('Search term: '.$search_term);
-            $words = explode(' ',$search_term);
+        //if(!empty($request->search['value']) && strlen($request->search['value'])>1){
+            $search_term = @$request->search['value'];
+	        Log::debug('Search term: '.$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
 	    		//$analyzer = 'standard';
@@ -234,8 +264,12 @@ trait Search{
 				$params = [
 					'index' => 'sr_documents',
 					'body' => [
+                        'from' => $request->start,
+                        'size' => $request->length,
 						'query' => [
 							'bool' => [
+                                'must' => $must_query,
+                                'must_not' => $must_not_query,
 								'should' => [
 									[
 										'match_phrase' => [
@@ -318,7 +352,7 @@ trait Search{
 				// this is currently done at the db level
             	//$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
 			}
-        }
+        //}
         $columns = array('type', 'title', 'size', 'updated_at');
 	$ordered_document_ids = '';
         $scores = [];
@@ -326,27 +360,39 @@ trait Search{
 	    $params['index'] = $elastic_index;
 	    $params['size'] = 1000;// set a max size returned by ES
         //Log::debug(json_encode($params));
-        $document_ids = array();
+        $document_ids = [];
 		try{
-			$client = $this->getElasticClient();
+            if(empty($search_term)) {
+                $params_cnt['body']['from'] = $request->start;
+                $params_cnt['body']['size'] = $request->length;
+                $params = $params_cnt;
+            }
+	        //Log::debug(json_encode($params_cnt));
            	$response = $client->search($params);
             foreach($response['hits']['hits'] as $h){
-                //$document_ids[] = $h['_id'];
+                $document_ids[] = $h['_id'];
 		        $highlights[$h['_id']] = @$h['highlight'];
 		        $scores[$h['_id']] = $h['_score'];
             }
 		}
 		catch(\Exception $e){
 			// some error; switch to db search
-			Log::debug($e->getMessage());	
-            Log::debug('Switching to DB search');
-			return $this->searchDB($request);
 		}
 	    //Log::debug(json_encode($response['hits']));
-	    $document_ids = array_keys($scores);
+	    //$document_ids = array_keys($scores);
 	    $ordered_document_ids = implode(",", $document_ids);
         }
-	//Log::debug('Ordered IDs: '.$ordered_document_ids);
+    	//if(isset($document_ids) && count($document_ids) > 0){
+        $filtered_count = $total_count;
+	    if(isset($document_ids)){
+            Log::debug(json_encode($document_ids));        
+       	    //$documents = $documents->whereIn('id', $document_ids);
+            // There's no meta filtering of documents under common-search 
+            // since meta information can be different for different collections
+       	    $documents = \App\Document::whereIn('id', $document_ids);
+            if(!empty($search_term)) $filtered_count = $documents->count();
+	    }
+    	//Log::debug('Ordered IDs: '.$ordered_document_ids);
         // get title filtered documents
         /*
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
@@ -365,19 +411,8 @@ trait Search{
     if(!empty($document_ids)){
 	    Log::debug('Found: '.@count($document_ids));
     }
-	//if(isset($document_ids) && count($document_ids) > 0){
-	if(isset($document_ids)){
-        Log::debug(json_encode($document_ids));        
-       	//$documents = $documents->whereIn('id', $document_ids);
-        // There's no meta filtering of documents under common-search 
-        // since meta information can be different for different collections
-       	$documents = \App\Document::whereIn('id', $document_ids);
-	}
 	//$query = $documents->toSql();
 	//Log::debug($query);
-	Log::debug('Count: '.$documents->count());
-
-	$filtered_count = $documents->count(); 
 
 	$sort_column = empty($columns[@$request->order[0]['column']])?'':$columns[@$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
@@ -391,8 +426,8 @@ trait Search{
 	}
 	$documents = $documents
          ->with('meta')
-	     ->offset($start)
-	     ->limit($length)
+	     //->offset($start) // pagination is happening with ES now.
+	     //->limit($length)
 	     ->get();
 
 		$doc_ids = [];
