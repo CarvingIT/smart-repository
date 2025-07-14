@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->get('/collection/{collection_id}/search', 'Co
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware(['auth:sanctum','document_view']);
 
 Route::middleware('auth:api')->get('/collection/{collection_id}/meta-information', function ($collection_id, Request $request){
 	$collection = Collection::find($collection_id);

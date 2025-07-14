@@ -35,7 +35,8 @@ class DocumentSaved
         $changes = $event->document->getChanges();
         if(count($changes) == 0){
             //echo "Ignoring this update to document ".$event->document->id.". There are no changes.\n";
-            return 0;
+            // do not return here since the meta may have updates
+            //return 0;
         }
         else if(in_array('locked', array_keys($changes)) || in_array('hash',array_keys($changes))){
             /* 

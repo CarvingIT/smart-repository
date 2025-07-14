@@ -14,7 +14,8 @@ use App\MetaFieldValue;
 trait Search{
     // wrapper function for search
     public function search(Request $request){
-        if(!empty(env('SEARCH_MODE')) && env('SEARCH_MODE') == 'elastic'){
+        if(!empty(env('SEARCH_MODE')) && env('SEARCH_MODE') == 'elastic' 
+            && !empty($request->search['value'])){
             $search_results = $this->searchElastic($request);
         }
         else{
@@ -389,6 +390,7 @@ trait Search{
 		$documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
 	}
 	$documents = $documents
+         ->with('meta')
 	     ->offset($start)
 	     ->limit($length)
 	     ->get();
@@ -402,7 +404,7 @@ trait Search{
 	}
 	else{
 		if(env('DEFAULT_META_SORT_FIELD',false)){
-			$sort_direction = (env('DEFAULT_META_SORT_DIRECTION','') == 'desc') ? 'desc' : 'asc';
+			$sort_direction = env('DEFAULT_META_SORT_DIRECTION','desc');
 			$mf = MetaField::where('label',env('DEFAULT_META_SORT_FIELD',''))->first();
 
 			$meta_values = MetaFieldValue::where('meta_field_id', $mf->id)
@@ -418,12 +420,14 @@ trait Search{
 			$documents = $documents->whereIn('id', $ordered_document_ids);
 			$filtered_count = $documents->count();
 			$documents = $documents
+                ->with('meta')
 				->orderByRaw("FIELD(id, $doc_id_str)")
         			->limit($length)->offset($request->start)->get();
 		}
 		else{
 		$sort_column = empty($sort_column)?'updated_at':$sort_column;
 		$documents = $documents
+            ->with('meta')
 			->orderby($sort_column,$sort_direction)
         	->limit($length)->offset($request->start)->get();
 		}
@@ -555,16 +559,18 @@ trait Search{
 		'has_approval'=>$has_approval));
 	}
 	else{
-		$sort_column = @empty($columns[$request->order[0]['column']])?'':$columns[$request->order[0]['column']];
+		$sort_column = @empty($columns[$request->order[0]['column']])?'updated_at':$columns[$request->order[0]['column']];
 		$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 		$length = empty($request->length)?10:$request->length;
 		if(!empty($sort_column)){
 		$documents = $documents
+            ->with('meta')
 			->orderBy($sort_column,$sort_direction)
    	        ->limit($length)->offset($request->start)->get();
 		}
 		else{// initial sorting is by relevance (or whatever order the database returns)
 		$documents = $documents
+            ->with('meta')
    	        ->limit($length)->offset($request->start)->get();
 		}
 		if($request->is('api/*') || $request->return_format == 'raw'){
@@ -864,9 +870,10 @@ trait Search{
 			->where(function($q) use($user_collections){
 				$q->whereIn('id', $user_collections)
 				->orWhere('type','=','Public');
-			})
-			->get();
-	return $collections;
+            })
+            ->with('meta_fields')
+            ->get();
+	    return $collections;
     }
 	public function getMetaFilters($request){
 		// check if meta filters are present in the query
