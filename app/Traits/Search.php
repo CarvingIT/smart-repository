@@ -236,6 +236,10 @@ trait Search{
 	$sort_column = empty($columns[@$request->order[0]['column']])?'updated_at':$columns[@$request->order[0]['column']];
 	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 
+        // get title filtered documents
+		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
+            $documents = $this->getTitleFilteredDocuments($request, $documents);
+		}
         // get Meta filtered documents
         $total_count = $documents->count();
         $documents = $this->getMetaFilteredDocuments($request, $documents);
