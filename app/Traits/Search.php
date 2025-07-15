@@ -26,7 +26,7 @@ trait Search{
 		$old_query = Session::get('search_query');
 
 		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
-			&& !$request->is('api/*') && strlen($request->search['value'])>3){
+			&& !$request->is('api/*') && strlen($request->search['value'])>1){
 			Session::put('search_query', $request->search['value']);
 			$meta_query = json_encode($this->getMetaFilters($request));
         	$search_log_data = array('collection_id'=> $request->collection_id, 
@@ -161,16 +161,16 @@ trait Search{
         $must_not_query = [];
 		if($collection->content_type == 'Uploaded documents'){
         	$elastic_index = 'sr_documents';
-        	//$documents = \App\Document::where('collection_id', $request->collection_id);
+        	$documents = \App\Document::where('collection_id', $request->collection_id);
 			$column_config = json_decode($collection->column_config);	
 			if($collection->require_approval && empty($column_config->display_unapproved_docs)){
-				//$documents = $documents->whereNotNull('approved_on');
+				$documents = $documents->whereNotNull('approved_on');
                 $must_query[] = [ 'exists'=>[ 'field' => 'approved_on' ] ];
                 $must_not_query[] = [ 'term'=>['approved_on'=>''] ];
 			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
-				//$documents = $documents->where('created_by', \Auth::user()->id);
+				$documents = $documents->where('created_by', \Auth::user()->id);
                 $must_query[] = [ 'match'=>[ 'created_by' => \Auth::user()->id ] ];
 			}
 		}
@@ -197,19 +197,17 @@ trait Search{
         Log::debug(json_encode($collection_ids));
 		$collection_type = $request->collection_type;
 		if($collection_type == 'Web resources'){
-        	//$documents = \App\Url::whereIn('collection_id', $collection_swithout_approval);
+        	$documents = \App\Url::whereIn('collection_id', $collection_swithout_approval);
         	$elastic_index = 'sr_urls';
 		}
 		else{
             Log::debug('Not requiring approval'.json_encode($collections_without_approval));
-        	//$documents = \App\Document::whereIn('collection_id', $collections_without_approval);
+        	$documents = \App\Document::whereIn('collection_id', $collections_without_approval);
             Log::debug('Requiring approval'.json_encode($collections_requiring_approval));
-            /*
 			$documents = $documents->orWhere(function($query) use($collections_requiring_approval){
                 $query->whereIn('collection_id', $collections_requiring_approval)
                     ->whereNotNull('approved_on');
 			});
-             */
       		$elastic_index = 'sr_documents';
 		}
 		//Log::debug($elastic_index.' - '.implode(",", $collection_ids));
@@ -234,12 +232,34 @@ trait Search{
         Log::debug('Switching to DB search');
 		return $this->searchDB($request);
     }
-        //$total_count = $documents->count();
-        $total_count = $cnt_response->count;
+    // sorting related
+	$sort_column = empty($columns[@$request->order[0]['column']])?'updated_at':$columns[@$request->order[0]['column']];
+	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
+
+        // get Meta filtered documents
+        $total_count = $documents->count();
+        $documents = $this->getMetaFilteredDocuments($request, $documents);
+        //$total_count = $cnt_response->count;
 	    Log::debug('Total Count: '.$total_count);
+        // get the list of IDs to filter from
+
+        $filter_from_records = [];
+        $filtered_docs = $documents->get();
+        foreach($filtered_docs as $d){
+            $filter_from_records[] = $d->id;
+        }
+        Log::debug('Filter from :'.json_encode($filter_from_records));
+        /*
+       if($request->search_type == 'chatbot'){
+               $documents = $documents->where('type','<>','url');
+       }
+        */
+
+	    $length = empty($request->length)?10:$request->length;
+	    $start = empty($request->start)?0:$request->start;
 
 		$highlights = [];
-        //if(!empty($request->search['value']) && strlen($request->search['value'])>1){
+        if(!empty($request->search['value']) && strlen($request->search['value'])>1){
             $search_term = @$request->search['value'];
 	        Log::debug('Search term: '.$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
@@ -264,12 +284,13 @@ trait Search{
 				$params = [
 					'index' => 'sr_documents',
 					'body' => [
-                        'from' => $request->start,
-                        'size' => $request->length,
+                        //'from' => $start,
+                        //'size' => $length,
 						'query' => [
 							'bool' => [
-                                'must' => $must_query,
-                                'must_not' => $must_not_query,
+                                //'must' => $must_query,
+                                //'must_not' => $must_not_query,
+                                'filter'=> ['ids'=>['values'=>$filter_from_records]],
 								'should' => [
 									[
 										'match_phrase' => [
@@ -322,7 +343,7 @@ trait Search{
 										]
 									],
 								],
-								//'minimum_should_match' => 1
+								'minimum_should_match' => 1
 							],
 						],
 						'highlight' => [
@@ -348,86 +369,53 @@ trait Search{
 				}
 			}
 
-	    	if(!empty($request->collection_id)){
-				// this is currently done at the db level
-            	//$params['body']['query']['bool']['must']['term']['collection_id']=$request->collection_id;
-			}
-        //}
-        $columns = array('type', 'title', 'size', 'updated_at');
-	$ordered_document_ids = '';
-        $scores = [];
-        if(!empty($params)){
-	    $params['index'] = $elastic_index;
-	    $params['size'] = 1000;// set a max size returned by ES
-        //Log::debug(json_encode($params));
-        $document_ids = [];
-		try{
-            if(empty($search_term)) {
-                $params_cnt['body']['from'] = $request->start;
-                $params_cnt['body']['size'] = $request->length;
+	        $ordered_document_ids = '';
+            $scores = [];
+    	    $params['size'] = 1000;// set a max size returned by ES
+            //Log::debug(json_encode($params));
+        } // if search term is entered
+        else{
+                $params_cnt['body']['from'] = $start;
+                $params_cnt['body']['size'] = $length;
+                $params_cnt['body']['query']['bool']['filter'] = ['ids'=>['values'=>$filter_from_records]];
                 $params = $params_cnt;
-            }
-	        //Log::debug(json_encode($params_cnt));
-           	$response = $client->search($params);
-            foreach($response['hits']['hits'] as $h){
-                $document_ids[] = $h['_id'];
-		        $highlights[$h['_id']] = @$h['highlight'];
-		        $scores[$h['_id']] = $h['_score'];
-            }
-		}
-		catch(\Exception $e){
+        }// when there's no search
+            $document_ids = [];
+		    try{
+           	    $response = $client->search($params);
+                foreach($response['hits']['hits'] as $h){
+                    $document_ids[] = $h['_id'];
+		            $highlights[$h['_id']] = @$h['highlight'];
+		            $scores[$h['_id']] = $h['_score'];
+                }
+		    }
+		    catch(\Exception $e){
 			// some error; switch to db search
-		}
-	    //Log::debug(json_encode($response['hits']));
-	    //$document_ids = array_keys($scores);
-	    $ordered_document_ids = implode(",", $document_ids);
-        }
+		    }
+    	    //Log::debug(json_encode($response['hits']));
+	        //$document_ids = array_keys($scores);
+	        $ordered_document_ids = implode(",", $document_ids);
+
+        $columns = array('type', 'title', 'size', 'updated_at');
     	//if(isset($document_ids) && count($document_ids) > 0){
         $filtered_count = $total_count;
 	    if(isset($document_ids)){
-            Log::debug(json_encode($document_ids));        
-       	    //$documents = $documents->whereIn('id', $document_ids);
-            // There's no meta filtering of documents under common-search 
-            // since meta information can be different for different collections
+	        Log::debug('Found: '.@count($document_ids));
+            Log::debug('Listed IDs: '.json_encode($document_ids));        
        	    $documents = \App\Document::whereIn('id', $document_ids);
             if(!empty($search_term)) $filtered_count = $documents->count();
 	    }
-    	//Log::debug('Ordered IDs: '.$ordered_document_ids);
-        // get title filtered documents
-        /*
-		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
-            $documents = $this->getTitleFilteredDocuments($request, $documents);
-		}
-         */
-        // get Meta filtered documents
-        $documents = $this->getMetaFilteredDocuments($request, $documents);
 
-	if($request->search_type == 'chatbot'){
-		$documents = $documents->where('type','<>','url');
-	}
-
-	//Log::debug(json_encode($document_ids));
-	//Log::debug('Count before wherein: '.$documents->count());
-    if(!empty($document_ids)){
-	    Log::debug('Found: '.@count($document_ids));
-    }
-	//$query = $documents->toSql();
-	//Log::debug($query);
-
-	$sort_column = empty($columns[@$request->order[0]['column']])?'':$columns[@$request->order[0]['column']];
-	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
-	$length = empty($request->length)?10:$request->length;
-	$start = empty($request->start)?0:$request->start;
-	if(!empty($params) && !empty($ordered_document_ids) && empty($sort_column)){
-	// initial sorting is by relevance
-	Log::debug('Collection count: '.$documents->count().' -- Ordered array count: '.count($document_ids));
-	if(!empty($ordered_document_ids)){
-		$documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
-	}
-	$documents = $documents
+	if(!empty($search_term)){
+	    // initial sorting is by relevance
+	    Log::debug('Collection count: '.$documents->count().' -- Ordered array count: '.count($document_ids));
+	    if(!empty($ordered_document_ids)){
+		    $documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
+	    }
+	    $documents = $documents
          ->with('meta')
-	     //->offset($start) // pagination is happening with ES now.
-	     //->limit($length)
+	     ->offset($start) 
+	     ->limit($length)
 	     ->get();
 
 		$doc_ids = [];
@@ -439,6 +427,7 @@ trait Search{
 	}
 	else{
 		if(env('DEFAULT_META_SORT_FIELD',false)){
+            Log::debug('meta sort');
 			$sort_direction = env('DEFAULT_META_SORT_DIRECTION','desc');
 			$mf = MetaField::where('label',env('DEFAULT_META_SORT_FIELD',''))->first();
 
@@ -457,14 +446,17 @@ trait Search{
 			$documents = $documents
                 ->with('meta')
 				->orderByRaw("FIELD(id, $doc_id_str)")
-        			->limit($length)->offset($request->start)->get();
+                ->limit($length)->offset($start)
+                ->get();
 		}
 		else{
+            Log::debug('ELSE');
 		$sort_column = empty($sort_column)?'updated_at':$sort_column;
 		$documents = $documents
             ->with('meta')
 			->orderby($sort_column,$sort_direction)
-        	->limit($length)->offset($request->start)->get();
+            //->limit($length)->offset($start)
+            ->get();
 		}
 	}
 
@@ -489,7 +481,7 @@ trait Search{
                 array('request'=>$request, 
                 'documents'=>$documents, 
 		        'highlights'=>$highlights,
-		        'scores'=>$scores,
+		        'scores'=>@$scores,
                 'has_approval'=>$has_approval)
        		);
 		}
@@ -778,7 +770,7 @@ trait Search{
              $content_matches[] = $m; 
             }
         }
-	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.implode(' ... ', $content_matches).'</p>';
+	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.strip_tags(implode(' ... ', $content_matches), '<em>').'</p>';
         $result = array(
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
