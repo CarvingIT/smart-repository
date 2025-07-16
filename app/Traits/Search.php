@@ -402,7 +402,7 @@ trait Search{
 
         $columns = array('type', 'title', 'size', 'updated_at');
     	//if(isset($document_ids) && count($document_ids) > 0){
-        $filtered_count = $total_count;
+        $filtered_count = $documents->count();
 	    if(isset($document_ids)){
 	        Log::debug('Found: '.@count($document_ids));
             Log::debug('Listed IDs: '.json_encode($document_ids));        
