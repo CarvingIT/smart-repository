@@ -20,6 +20,10 @@ if(!empty($collection->column_config)){
 	if(@$column_config->size != 1) $hide_size = true;
 	if(@$column_config->creation_time != 1) $hide_creation_time = true;
 }
+
+// search scope and fuzzy search
+$fuzzy = Session::get('fuzzy');
+$full_text_scope = Session::get('full_text_scope');
 @endphp
 <script>
 var deldialog;
@@ -308,7 +312,7 @@ function randomString(length) {
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
-			<label for="collection_search">{{ __('Type a few characters to initiate search within the document content') }}</label>
+			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
 		    <input type="text" class="search-field" id="collection_search" />
 			<style>
 			.dataTables_filter {
@@ -321,16 +325,24 @@ function randomString(length) {
 		   </div>
            </div>
         </div>
+        @if(env('SEARCH_MODE') == 'elastic')
         <div class="row">
            <div class="col-6">
+            <form name="searchoptions" method="post" action="/collection/{{$collection->id}}/set-search-scope">
+            @csrf
             Scope of full-text search: 
-            <input type="radio" name="full_text_scope" value="body" checked> Title and Content</input>
-            <input type="radio" name="full_text_scope" value="title"> Title only</input>
+            <input type="radio" name="full_text_scope" value="title_n_content" onclick="this.form.submit();" @if($full_text_scope || $full_text_scope == 'title_n_content') checked @endif> Title and Content</input>
+            <input type="radio" name="full_text_scope" value="title" onclick="this.form.submit();" @if(Session::get('full_text_scope') == 'title') checked @endif> Title only</input>
+            </form>
             </div>
             <div class="col-6">
-            <input type="checkbox" name="fuzzy" value="1" /> Fuzzy search
+            <form name="searchoptions" method="post" action="/collection/{{$collection->id}}/set-fuzzy">
+            @csrf
+            <input type="checkbox" id="fuzzy-search" name="fuzzy" value="1" onclick="this.form.submit();" @if(Session::get('fuzzy')) checked @endif/> Fuzzy search
+            </form>
             </div>
 	   </div>
+        @endif
 			<!--
 		   <div class="col-12 text-center">
            <i class="material-icons">search</i>

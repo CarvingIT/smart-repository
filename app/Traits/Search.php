@@ -276,7 +276,8 @@ trait Search{
 				$text_q_with_and = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>$analyzer];
 				$text_q_with_and_ps = ['query'=>$search_term, 'operator'=>'and', 'boost'=>2, 'analyzer'=>'porter_stem_analyzer'];
 				$q_title_phrase = ['query'=>$search_term, 'boost'=>6, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
-                if(env('ENABLE_FUZZY_SEARCH',0) == 1){
+                $fuzzy = Session::get('fuzzy');
+                if($fuzzy === 1){
 				    $q_without_and = ['query'=>$search_term, 'fuzziness'=>'AUTO', 'analyzer'=>$analyzer];
                 }
                 else{
@@ -288,12 +289,8 @@ trait Search{
 				$params = [
 					'index' => 'sr_documents',
 					'body' => [
-                        //'from' => $start,
-                        //'size' => $length,
 						'query' => [
 							'bool' => [
-                                //'must' => $must_query,
-                                //'must_not' => $must_not_query,
                                 'filter'=> ['ids'=>['values'=>$filter_from_records]],
 								'should' => [
 									[
@@ -361,6 +358,13 @@ trait Search{
 						]
 					]
 				];
+
+                $full_text_scope = Session::get('full_text_scope');
+                if($full_text_scope == 'title'){
+                    // reduce the scope
+                    Log::debug('Query: '.json_encode($params));
+                    $params['body']['query']['bool']['should'] = [['match'=>[ 'title' => $title_q_with_and ]]];
+                }
 
 			// add must match clause 
 			if(!empty($request->must_match) && count($request->must_match) > 0){

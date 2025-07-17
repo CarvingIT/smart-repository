@@ -322,6 +322,17 @@ $j++;
         return redirect('/collection/'.$request->collection_id);
     }
 
+    public function setSearchScope(Request $request){
+        Session::put('full_text_scope', $request->input('full_text_scope'));
+        return redirect('/collection/'.$request->collection_id);
+    }
+
+    public function setFuzzySearch(Request $request){
+        $fuzzy = !empty($request->input('fuzzy'))? 1 : 0;
+        Session::put('fuzzy', $fuzzy);
+        return redirect('/collection/'.$request->collection_id);
+    }
+
 	public function replaceTitleFilter(Request $request){
 		$title_filter = Session::get('title_filter');
 		$title_filter[$request->collection_id] = $request->title_filter;
