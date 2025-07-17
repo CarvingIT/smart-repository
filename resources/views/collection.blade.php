@@ -225,7 +225,7 @@ function randomString(length) {
 			<div class="float-container col-md-12">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
-		   		<label for="title_search" class="search-label">{{ __('Title search') }}</label>
+		   		<label for="title_search" class="search-label">{{ __('Look for a phrase in the title of the documents.') }}</label>
 		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
 			</form>
 			</div>
@@ -319,13 +319,23 @@ function randomString(length) {
             }
 			</style>
 		   </div>
-		   </div>
+           </div>
+        </div>
+        <div class="row">
+           <div class="col-6">
+            Scope of full-text search: 
+            <input type="radio" name="full_text_scope" value="body" checked> Title and Content</input>
+            <input type="radio" name="full_text_scope" value="title"> Title only</input>
+            </div>
+            <div class="col-6">
+            <input type="checkbox" name="fuzzy" value="1" /> Fuzzy search
+            </div>
+	   </div>
 			<!--
 		   <div class="col-12 text-center">
            <i class="material-icons">search</i>
 		   </div>
 			-->
-		</div>
 		</div><!-- search-filters-card -->
 		<!-- show filters -->
 		<div>
