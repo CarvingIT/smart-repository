@@ -98,8 +98,8 @@ Route::post('/collection/{collection_id}/metafilters', 'CollectionController@add
 Route::post('/collection/{collection_id}/quickmetafilters', 'CollectionController@replaceMetaFilter');
 Route::post('/collection/{collection_id}/quicktitlefilter', 'CollectionController@replaceTitleFilter');
 //search options
-Route::post('/collection/{collection_id}/set-search-scope', 'CollectionController@setSearchScope');
-Route::post('/collection/{collection_id}/set-fuzzy', 'CollectionController@setFuzzySearch');
+Route::get('/collection/{collection_id}/set-search-scope', 'CollectionController@setSearchScope');
+Route::get('/collection/{collection_id}/set-fuzzy', 'CollectionController@setFuzzySearch');
 
 Route::get('/collection/{collection_id}/removefilter/{field_id}', 'CollectionController@removeMetaFilter');
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllMetaFilters');

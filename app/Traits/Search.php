@@ -24,10 +24,12 @@ trait Search{
 
         // log search query
 		$old_query = Session::get('search_query');
+        // put new query in session
+        Log::debug('Query: '.$request->search['value']);
+		Session::put('search_query', $request->search['value']);
 
 		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
 			&& !$request->is('api/*') && strlen($request->search['value'])>1){
-			Session::put('search_query', $request->search['value']);
 			$meta_query = json_encode($this->getMetaFilters($request));
         	$search_log_data = array('collection_id'=> $request->collection_id, 
                 'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
@@ -39,7 +41,6 @@ trait Search{
             	$this->logSearchQuery($search_log_data);
 	    	}
         }
-
         return json_encode($search_results, JSON_UNESCAPED_UNICODE);
     }
 
@@ -362,8 +363,8 @@ trait Search{
                 $full_text_scope = Session::get('full_text_scope');
                 if($full_text_scope == 'title'){
                     // reduce the scope
-                    Log::debug('Query: '.json_encode($params));
                     $params['body']['query']['bool']['should'] = [['match'=>[ 'title' => $title_q_with_and ]]];
+                    //Log::debug(json_encode($params));
                 }
 
 			// add must match clause 
@@ -389,6 +390,7 @@ trait Search{
                 $params = $params_cnt;
         }// when there's no search
             $document_ids = [];
+            //Log::debug(json_encode($params));
 		    try{
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
@@ -458,7 +460,7 @@ trait Search{
                 ->get();
 		}
 		else{
-            Log::debug('ELSE');
+            //Log::debug('ELSE');
 		$sort_column = empty($sort_column)?'updated_at':$sort_column;
 		$documents = $documents
             ->with('meta')
@@ -812,7 +814,7 @@ trait Search{
     }
 
     public function logSearchQuery($data){
-        if(env('LOG_SEARCH_QUERY')==1){
+        if(env('LOG_SEARCH_QUERY')===1){
 		$meta_query = [];
 		foreach(json_decode($data['meta_query']) as $m){
 			unset($m->filter_id);

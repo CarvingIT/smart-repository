@@ -303,6 +303,11 @@ ul.related-docs{
 	list-style-type:disc;
 }
 
+#collection_search{
+    height:3em;
+}
+
+
 @media (min-width: 1200px) {
   .container {
     width: 1140px;

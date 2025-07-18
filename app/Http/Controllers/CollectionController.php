@@ -323,14 +323,14 @@ $j++;
     }
 
     public function setSearchScope(Request $request){
-        Session::put('full_text_scope', $request->input('full_text_scope'));
-        return redirect('/collection/'.$request->collection_id);
+        Session::put('full_text_scope', $request->input('scope'));
+        //Log::debug('Scope: '.$request->input('scope'));
     }
 
     public function setFuzzySearch(Request $request){
-        $fuzzy = !empty($request->input('fuzzy'))? 1 : 0;
+        $fuzzy = ($request->input('fuzzy') == 'true') ? 1 : 0;
         Session::put('fuzzy', $fuzzy);
-        return redirect('/collection/'.$request->collection_id);
+        //Log::debug('Fuzzy: '.$fuzzy);
     }
 
 	public function replaceTitleFilter(Request $request){

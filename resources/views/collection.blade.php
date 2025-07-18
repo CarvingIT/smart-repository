@@ -24,6 +24,7 @@ if(!empty($collection->column_config)){
 // search scope and fuzzy search
 $fuzzy = Session::get('fuzzy');
 $full_text_scope = Session::get('full_text_scope');
+$old_search = Session::get('search_query');
 @endphp
 <script>
 var deldialog;
@@ -328,18 +329,12 @@ function randomString(length) {
         @if(env('SEARCH_MODE') == 'elastic')
         <div class="row">
            <div class="col-6">
-            <form name="searchoptions" method="post" action="/collection/{{$collection->id}}/set-search-scope">
-            @csrf
             Scope of full-text search: 
-            <input type="radio" name="full_text_scope" value="title_n_content" onclick="this.form.submit();" @if($full_text_scope || $full_text_scope == 'title_n_content') checked @endif> Title and Content</input>
-            <input type="radio" name="full_text_scope" value="title" onclick="this.form.submit();" @if(Session::get('full_text_scope') == 'title') checked @endif> Title only</input>
-            </form>
+            <input type="radio" class="full_text_scope" name="full_text_scope" value="title_n_content" @if(!$full_text_scope || $full_text_scope == 'title_n_content') checked @endif> Title and Content</input>
+            <input type="radio" class="full_text_scope" name="full_text_scope" value="title" @if($full_text_scope == 'title') checked @endif> Title only</input>
             </div>
             <div class="col-6">
-            <form name="searchoptions" method="post" action="/collection/{{$collection->id}}/set-fuzzy">
-            @csrf
-            <input type="checkbox" id="fuzzy-search" name="fuzzy" value="1" onclick="this.form.submit();" @if(Session::get('fuzzy')) checked @endif/> Fuzzy search
-            </form>
+            <input type="checkbox" id="fuzzy-search" name="fuzzy" value="1" /> Fuzzy search
             </div>
 	   </div>
         @endif
@@ -483,8 +478,36 @@ $(document).ready(function() {
     });
 
 
-		$('#collection_search').keyup(function(){
-   			oTable.search($(this).val()).draw() ;
-		})
-		</script>
+	$('#collection_search').keyup(function(){
+   		oTable.search($(this).val()).draw() ;
+	});
+
+    $(".full_text_scope").click(function(){
+        $.ajax({
+            url: '/collection/{{ $collection->id }}/set-search-scope',
+            method: 'GET',
+            data: {
+                scope : $('input[name="full_text_scope"]:checked').val(),
+            },
+            success: function(){
+                search_val = $('#collection_search').val();
+	            oTable.search(search_val).draw();
+            }
+        });
+    });
+    
+    $("#fuzzy-search").click(function(){
+        $.ajax({
+            url: '/collection/{{ $collection->id }}/set-fuzzy',
+            method: 'GET',
+            data: {
+                fuzzy : $("#fuzzy-search").prop('checked'),
+            },
+            success: function(){
+                search_val = $('#collection_search').val();
+	            oTable.search(search_val).draw();
+            }
+        });
+    });
+	</script>
 @endsection
