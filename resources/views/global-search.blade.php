@@ -206,7 +206,7 @@ function clearSearchBar(){
                 <div class="search-container">
                   <div class="upperDiv"></div>      
                     <div class="search-box">
-                        <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="Search all collections" value="{{ $search_term }}" /> 
+                        <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="Search all collections" value="{{ @$search_term }}" /> 
                         <div class="buttonSide">
                             <div class="tooltip">
                                 <i class="fa-solid fa-xmark closeIcon" onclick="clearSearchBar()"></i>
@@ -222,9 +222,11 @@ function clearSearchBar(){
           </form>
 
 <div class="col-lg-9" id="search-results">
+    @if(!empty($results->data))
     @foreach($results->data as $d)
         {{ $d->title }}<br />
     @endforeach
+    @endif
 </div>
 
 			</div>

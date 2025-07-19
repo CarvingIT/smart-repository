@@ -128,8 +128,8 @@ class CollectionController extends Controller
             $results = $this->search($request);
         }
         return view('global-search', 
-            ['results'=>json_decode($results),
-            'search_term' => $request->search['value'],
+            ['results'=>empty($request->search['value'])?[]:json_decode($results),
+            'search_term' => @$request->search['value'],
 			'titlePage'=>'Global search', 
 			'title'=>'Global search']);
     }
