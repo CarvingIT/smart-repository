@@ -119,6 +119,20 @@ class CollectionController extends Controller
 			'activePage'=>'collection','titlePage'=>'Collections', 
 			'title'=>'Smart Repository']);
     }
+    public function globalSearch(Request $request){
+		$length = empty($request->length)? 10 : $request->length;
+		$start = empty($request->start)? 0 : $request->start;
+        $results = [];
+        if(!empty($request->search['value'])){
+            $request->merge(['return_format'=>'raw']);
+            $results = $this->search($request);
+        }
+        return view('global-search', 
+            ['results'=>json_decode($results),
+            'search_term' => $request->search['value'],
+			'titlePage'=>'Global search', 
+			'title'=>'Global search']);
+    }
 
     public function collectionUsers($collection_id){
         $collection = Collection::find($collection_id);

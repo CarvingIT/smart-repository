@@ -937,8 +937,8 @@ trait Search{
 
 	//public function isaCollectionDocumentSearch(Request $request){
 	public function searchResults(Request $request){
-		$collection_id = $request->collection_id;
-		$collection = \App\Collection::find($collection_id);
+		//$collection_id = $request->collection_id;
+		//$collection = \App\Collection::find($collection_id);
 		//$analyzer = $request->analyzer;
 		$keywords = $request->isa_search_parameter;
 		$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
@@ -955,19 +955,20 @@ trait Search{
             Session::put('search_query', $request->isa_search_parameter);
             $meta_query = json_encode($this->getMetaFilters($request));
 			$user_id = empty(\Auth::user()->id)?null:\Auth::user()->id;
-            $search_log_data = array('collection_id'=> $request->collection_id,
+            $search_log_data = array(
                 'user_id'=> $user_id,
                 'search_query'=> $keywords,
                 'meta_query'=> $meta_query,
                 'ip_address' => $request->ip(),
                 'results'=>$total_results_count);
-            if(!empty($request->collection_id)){
-                $this->logSearchQuery($search_log_data);
-            }
+            //if(!empty($request->collection_id)){
+             //   $this->logSearchQuery($search_log_data);
+           // }
         }
 		$highlights = json_decode(json_encode(@$search_results->highlights, true), true);
 		//Log::debug($highlights);exit;
-		return view('search-results',['collection'=>$collection, 
+        return view('search-results',[
+            //'collection'=>$collection, 
 			'results'=>$search_results->data,
 			'highlights'=> $highlights,  
 			'filtered_results_count'=>$filtered_results_count,

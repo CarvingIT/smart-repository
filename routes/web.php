@@ -279,6 +279,8 @@ Route::get('/feedback-thank-you', function(){ return view('feedback-thank-you');
 Route::view('/about', 'about-repository');
 
 Route::get('/collection/{collection_id}/search-results', 'CollectionController@searchResults');
+Route::get('/collection/search-results', 'CollectionController@searchResults');
+Route::get('/global-search', 'CollectionController@globalSearch');
 
 // related documents
 Route::post('/collection/{collection_id}/document/{document_id}/add-related-document','RelatedDocumentController@addRelatedDocument')->middleware('maintainer');

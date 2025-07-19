@@ -1,15 +1,7 @@
 @extends('layouts.app', ['class' => 'off-canvas-sidebar','activePage' => 'home', 'title' => __('DEMO SITE'), 'titlePage' => 'Collections'])
 
 @section('content')
-@php
-	$conf = \App\Sysconfig::all();
-	$settings = array();
-	foreach($conf as $c){
-		$settings[$c->param] = $c->value;
-	}
 
-@endphp
-@push('js')
 <style>
 .search-container {
     text-align: center;
@@ -144,13 +136,49 @@ z-index:0;
 }
 </style>
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const allContentButton = document.getElementById('all-content');
+    const titleButton = document.getElementById('title');
+    const searchText = document.getElementById('collection_search');
+    const title_search = document.getElementById('title_search');
+
+    allContentButton.addEventListener('click', () => {
+        title_search.value = 0;
+        searchText.placeholder = "Search Data e.g. Debates, Ayurved, News etc.."
+        allContentButton.classList.add('active');
+        titleButton.classList.remove('active');
+    });
+
+    titleButton .addEventListener('click', () => {
+        title_search.value = 1;
+        searchText.placeholder = "Search Title"
+        titleButton.classList.add('active');
+        allContentButton.classList.remove('active');
+    });
+
+    // Function to get URL parameters
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        const results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
+
+    // Set the active tab based on the value of title_search URL parameter
+    const titleSearchParam = getUrlParameter('title_search');
+    if (titleSearchParam === '1') {
+        titleButton.click();
+    } else {
+        allContentButton.click();
+    }});
+
+
 function clearSearchBar(){
      const searchText = document.getElementById('collection_search');
      searchText.value = "";
    }
 
 </script>
-@endpush
 
 <div class="container">
 <div class="container-fluid">
@@ -170,11 +198,15 @@ function clearSearchBar(){
 			<div class="card-body">
                 <h4 class="text-center" data-aos="fade-up">Smart Repository for Document Search</h4>
                 <p class="text-center" data-aos="fade-up" data-aos-delay="100">A comprehensive data repository for all document types</p>
+
           <form action="/global-search" class="form-search d-flex align-items-stretch mb-4 aos-init aos-animate" data-aos="fade-up" data-aos-delay="200" method="get">
+                <input type="hidden" name="length" id="search-results-length" value="10" />
+                <input type="hidden" name="start" id="search-results-start" value="0" />
+
                 <div class="search-container">
                   <div class="upperDiv"></div>      
                     <div class="search-box">
-                        <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="Search all collections" /> 
+                        <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="Search all collections" value="{{ $search_term }}" /> 
                         <div class="buttonSide">
                             <div class="tooltip">
                                 <i class="fa-solid fa-xmark closeIcon" onclick="clearSearchBar()"></i>
@@ -183,15 +215,22 @@ function clearSearchBar(){
                             <div class="line">
                                 <p>line</p>
                             </div>
-                        <button type="submit" value="Search" name="collection_search" class="btn btn-primary search">Search</button>
+                        <button type="submit" value="Search" name="searchbutton" class="btn btn-primary search">Search</button>
                         </div>
                     </div><!-- search-box -->
                 </div><!-- search-container -->
           </form>
 
+<div class="col-lg-9" id="search-results">
+    @foreach($results->data as $d)
+        {{ $d->title }}<br />
+    @endforeach
+</div>
+
 			</div>
 		</div>
       </div>
+
 </div>
 </div>
 </div>
