@@ -15,7 +15,7 @@ use App\Util;
 trait Search{
     // wrapper function for search
     public function search(Request $request){
-        if(!empty(env('SEARCH_MODE')) && env('SEARCH_MODE') == 'elastic' && Util::elasticEnabled() ){
+        if(Util::elasticEnabled() ){
             //&& !empty($request->search['value'])){
             $search_results = $this->searchElastic($request);
         }

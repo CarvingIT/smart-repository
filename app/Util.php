@@ -181,16 +181,16 @@ class Util{
     }
 
     public static function elasticEnabled(){
-        $date = null;
+        $dt = null;
         $key = base64_decode(substr(env('APP_KEY'), 9, 14).'==');
         try{
-            $date = new \DateTime($key);
+            $dt = new \DateTime($key);
         }
         catch(\Exception $e){
             //do nothing
         }
-        $now = $now = new \DateTime();
-        if($date > $now){
+        $now = new \DateTime();
+        if(env('SEARCH_MODE','DB') == 'elastic' && $dt > $now){
             return true;
         }
         return false;
