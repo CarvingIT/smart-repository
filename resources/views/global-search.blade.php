@@ -221,13 +221,60 @@ function clearSearchBar(){
                 </div><!-- search-container -->
           </form>
 
-<div class="col-lg-9" id="search-results">
+<div class="row gy-4">
+    <div class="col-md-3">
+        @php
+            $collection_names = [];
+            $i = 0;
+            $highlights = $results->highlights;
+        @endphp
+
+        @foreach($results->data as $d)
+        @php //print_r($d); 
+            /*1977 10 04 INDIRA GANDHI YANNA ATAK*/
+            $document = \App\Document::find($d->id);
+            $collection_names[$d->collection_id][] = $document->collection->name;
+            $highlights = (array) $results->highlights;
+        @endphp
+        @endforeach
+        <ul>
+        @foreach($collection_names as $key => $value)
+            <li><a href="/collection/{{ $key }}?search_term={{ $search_term }}">{{ $value[0] }}</a> ({{ count($value) }})</li>
+        @endforeach
+        </ul>
+    </div>
+    <div class="col-md-9" id="search-results">
     @if(!empty($results->data))
     @foreach($results->data as $d)
-        {{ $d->title }}<br />
+        @php //print_r($d); 
+            $document = \App\Document::find($d->id);
+        @endphp
+        <div class="row">
+            <div class="col-md-11">
+                @php
+                $record_highlights = array_shift($highlights);
+                $title = empty($record_highlights->title)? $d->title: $record_highlights->title[0];
+                foreach($record_highlights->text_content as $m){
+                    $content_matches[] = $m;
+                }
+                @endphp
+                 <!--<img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;">-->
+                 <h5><a href="/collection/{{ $d->collection_id }}/document/{{ $d->id }}/details" target="_blank">{{ $title }}</a></h5>
+
+            <p style="text-align:justify;">
+                {!! implode('...',$content_matches) !!}
+            </p>
+           </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">{{ @$document->collection->name }}</div>
+            <div class="col-md-5 text-right">{{ @$document->updated_at }}</div>
+        </div>
+        <br />
     @endforeach
     @endif
-</div>
+    </div>
+</div><!-- row gy-4 -->
 
 			</div>
 		</div>

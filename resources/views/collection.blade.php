@@ -314,7 +314,9 @@ function randomString(length) {
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
 			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
-		    <input type="text" class="search-field" id="collection_search" />
+		    <input type="text" class="search-field" id="collection_search" 
+            value="@if(!empty(app('request')->input('search_term'))) {{ app('request')->input('search_term') }} @endif"
+            />
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -475,6 +477,10 @@ $(document).ready(function() {
         $(this).select2ToTree({dropdownCssClass : 'full-width'});
     });
 
+    @if(app('request')->input('search_term'))
+    oTable.search('{{ app('request')->input('search_term') }}').draw();
+    @endif
+    
     });
 
 
@@ -509,5 +515,6 @@ $(document).ready(function() {
             }
         });
     });
+
 	</script>
 @endsection

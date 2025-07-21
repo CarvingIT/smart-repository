@@ -509,7 +509,7 @@ $(document).ready(function()
                                         <thead class="text-primary">
                                             <tr>
                                             <th>Timestamp</th>
-                                            <th>User</th>
+                                            <th>Approver</th>
                                             <th>Approval Status</th>
                                             <th>Comments</th>
                                             </tr>
