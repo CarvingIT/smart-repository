@@ -326,7 +326,7 @@ function randomString(length) {
 		   </div>
            </div>
         </div>
-        @if(env('SEARCH_MODE') == 'elastic')
+        @if(env('ENABLE_SEARCH_OPTIONS') == 1 && env('SEARCH_MODE') == 'elastic')
         <div class="row">
            <div class="col-6">
             Scope of full-text search: 

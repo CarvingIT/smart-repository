@@ -180,6 +180,22 @@ class Util{
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) .' '. @$size[$factor];
     }
 
+    public static function elasticEnabled(){
+        $date = null;
+        $key = base64_decode(substr(env('APP_KEY'), 9, 14).'==');
+        try{
+            $date = new \DateTime($key);
+        }
+        catch(\Exception $e){
+            //do nothing
+        }
+        $now = $now = new \DateTime();
+        if($date > $now){
+            return true;
+        }
+        return false;
+    }
+
     public static function extractText($filepath){
         $text = '';
         $enable_OCR = env('ENABLE_OCR', 0);
