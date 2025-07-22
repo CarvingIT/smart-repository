@@ -197,12 +197,13 @@ function clearSearchBar(){
 				@endif
 			</div>
 			<div class="card-body">
-                <h4 class="text-center" data-aos="fade-up">Smart Repository for Document Search</h4>
-                <p class="text-center" data-aos="fade-up" data-aos-delay="100">A comprehensive data repository for all document types</p>
+                <h4 class="text-center" data-aos="fade-up">Search across collections</h4>
+                <!--<p class="text-center" data-aos="fade-up" data-aos-delay="100">A comprehensive data repository for all document types</p>-->
 
           <form action="/global-search" class="form-search d-flex align-items-stretch mb-4 aos-init aos-animate" data-aos="fade-up" data-aos-delay="200" method="get">
                 <input type="hidden" name="length" id="search-results-length" value="1000" />
                 <input type="hidden" name="start" id="search-results-start" value="0" />
+                <input type="hidden" name="full_text_scope" value="title_n_content" />
 
                 <div class="search-container">
                   <div class="upperDiv"></div>      
@@ -240,6 +241,9 @@ function clearSearchBar(){
         @endphp
         @endforeach
         <ul>
+        @if(count($collection_names) > 0)
+        <li><strong>Collections</strong></li>
+        @endif
         @foreach($collection_names as $key => $value)
             <li><a href="/collection/{{ $key }}?search_term={{ $search_term }}">{{ $value[0] }}</a> ({{ count($value) }})</li>
         @endforeach
@@ -270,8 +274,7 @@ function clearSearchBar(){
                     }
                 }
                 @endphp
-                 <!--<img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;">-->
-                 <h5><a href="/collection/{{ $d->collection_id }}/document/{{ $d->id }}/details" target="_blank">{!! $title !!}</a></h5>
+                 <h4><i class="material-icons">description</i><a href="/collection/{{ $d->collection_id }}/document/{{ $d->id }}/details" target="_blank">{!! $title !!}</a></h4>
 
             <p style="text-align:justify;">
                 {!! implode('...',$content_matches) !!}
@@ -281,8 +284,8 @@ function clearSearchBar(){
         <div class="row">
             <div class="col-md-4"><i class="material-icons">folder</i> {{ @$document->collection->name }}</div>
             <div class="col-md-8"><i class="material-icons">calendar_today</i>@php $date = strtotime(@$document->updated_at); echo date('F d, Y',$date); @endphp</div>
+            <br /><br />
         </div>
-        <br />
     @endforeach
 <div class="text-right"><h5><a href="#collection_links" title="Return to Top"><i class="material-icons">arrow_upward</i></a></h5></div>
     @endif

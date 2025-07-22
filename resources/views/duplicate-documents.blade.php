@@ -1,4 +1,4 @@
-@extends('layouts.app',['class'=> 'off-canvas-sidebar','activePage'=>'documents','titlePage'=>'Deleted Documents', 'title'=>'Smart Repository'])
+@extends('layouts.app',['class'=> 'off-canvas-sidebar','activePage'=>'documents','titlePage'=>'Duplicate Documents', 'title'=>'Duplicate Documents'])
 
 @section('content')
 @push('js')

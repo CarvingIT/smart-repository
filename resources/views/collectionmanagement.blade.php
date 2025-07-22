@@ -1,4 +1,4 @@
-@extends('layouts.app',['class'=> 'off-canvas-sidebar','title'=>'Smart Repository'])
+@extends('layouts.app',['class'=> 'off-canvas-sidebar','title'=>'Manage Collections'])
 
 @section('content')
 <!--

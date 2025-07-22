@@ -1,4 +1,4 @@
-@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
+@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Contact','activePage'=>'contact','titlePage'=>'Contact Us'])
 
 @section('content')
 @php

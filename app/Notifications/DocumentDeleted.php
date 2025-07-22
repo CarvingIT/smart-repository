@@ -52,7 +52,7 @@ class DocumentDeleted extends Notification
 
     public function toSlack($notifiable){
         Log::debug('Sending document-deleted notification by slack');
-            $content = 'Smart Repository: Document - "'. $this->document->title.'" has been deleted.';
+            $content = env('APP_NAME', 'Smart Repository').': Document - "'. $this->document->title.'" has been deleted.';
             return (new SlackMessage)
             ->error()
             ->content($content);

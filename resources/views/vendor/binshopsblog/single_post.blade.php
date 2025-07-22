@@ -1,4 +1,4 @@
-@extends("layouts.app",['title'=>$post->gen_seo_title(),'class'=>'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'Blog','titlePage'=>'Blog'])
+@extends("layouts.app",['title'=>$post->gen_seo_title(),'class'=>'off-canvas-sidebar','title'=>'Blog','activePage'=>'Blog','titlePage'=>'Blog'])
 
 @section('blog-custom-css')
     <link type="text/css" href="{{ asset('binshops-blog.css') }}" rel="stylesheet">

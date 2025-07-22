@@ -18,7 +18,7 @@ $collections = \App\Collection::all();
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
   <div class="container">
     <div class="navbar-wrapper">
-      <!--a class="navbar-brand" href="/">{{ __('Smart Repository') }}</a-->
+      <!--a class="navbar-brand" href="/">{{ __('SR') }}</a-->
 	@php
 		$logo_link = empty(env('SITE_HOME'))?'/':env('SITE_HOME');
 	@endphp

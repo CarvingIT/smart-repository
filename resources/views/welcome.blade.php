@@ -168,13 +168,14 @@ function clearSearchBar(){
 				@endif
 			</div>
 			<div class="card-body">
-                <h4 class="text-center" data-aos="fade-up">Smart Repository for Document Search</h4>
-                <p class="text-center" data-aos="fade-up" data-aos-delay="100">A comprehensive data repository for all document types</p>
+                <h4 class="text-center" data-aos="fade-up">Global Document Search</h4>
+                <p class="text-center" data-aos="fade-up" data-aos-delay="100">Search across collections for any document!</p>
           <form action="/global-search" class="form-search d-flex align-items-stretch mb-4 aos-init aos-animate" data-aos="fade-up" data-aos-delay="200" method="get">
                 <div class="search-container">
                   <div class="upperDiv"></div>      
                     <div class="search-box">
                         <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="Search all collections" /> 
+                        <input type="hidden" name="full_text_scope" value="title_n_content" />
                         <div class="buttonSide">
                             <div class="tooltip">
                                 <i class="fa-solid fa-xmark closeIcon" onclick="clearSearchBar()"></i>

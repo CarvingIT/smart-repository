@@ -12,7 +12,7 @@ foreach($config as $c){
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ __('Smart Repository - Knowledge management made easy') }}</title>
+    <title>{{ __(env('APP_NAME','Smart Repository')) }}</title>
 	@if(!empty($settings['favicon_url']))
     <link rel="icon" type="image/png" href="/storage/{{ $settings['favicon_url']}}">
     <link rel="apple-touch-icon" sizes="76x76" href="/storage/{{ $settings['favicon_url']}}">

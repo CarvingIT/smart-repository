@@ -1,4 +1,4 @@
-@extends("layouts.app",['title'=>"Saved comment",'class'=>'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'Blog','titlePage'=>'Blog'])
+@extends("layouts.app",['title'=>"Saved comment",'class'=>'off-canvas-sidebar','title'=>'Thanks!','activePage'=>'Blog','titlePage'=>'Blog'])
 @section("content")
 <div class="container">
 <div class="container-fluid">

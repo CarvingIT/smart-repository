@@ -1,4 +1,4 @@
-@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','titlePage'=>'ERROR', 'activePage'=>'Error'])
+@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'ERROR','titlePage'=>'ERROR', 'activePage'=>'Error'])
 
 @section('content')
 <div class="container">

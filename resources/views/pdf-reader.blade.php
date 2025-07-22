@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Smart Repository::Document Viewer</title>
+<title>{{ env('APP_NAME', 'Smart Repository') }}::Document Viewer</title>
 </head>
 <body>
 @php

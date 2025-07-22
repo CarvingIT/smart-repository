@@ -51,7 +51,7 @@ class DocumentRevisionCreated extends Notification
 
    public function toSlack($notifiable){
         Log::debug('Sending document-revision notification by slack');
-            $content = 'Smart Repository: A new revision of document - "'. $this->document_revision->document->title.'" has been created.';
+            $content = env('APP_NAME', 'Smart Repository').': A new revision of document - "'. $this->document_revision->document->title.'" has been created.';
             return (new SlackMessage)
             ->error()
             ->content($content);

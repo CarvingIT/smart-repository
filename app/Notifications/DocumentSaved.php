@@ -67,10 +67,10 @@ class DocumentSaved extends Notification
 		if($this->document->wasRecentlyCreated){
 			return (new SlackMessage)
 			->error()
-			->content('Smart Repository: A new document "'. $this->document->title.'" has been added.');
+			->content(env('APP_NAME', 'Smart Repository').': A new document "'. $this->document->title.'" has been added.');
 		}
 		else{
-			$content = 'Smart Repository: Document - "'. $this->document->title.'" has been updated.';
+			$content = env('APP_NAME', 'Smart Repository').': Document - "'. $this->document->title.'" has been updated.';
 			return (new SlackMessage)
 			->error()
 			->content($content);

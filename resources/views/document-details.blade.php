@@ -1,4 +1,4 @@
-@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'faq','titlePage'=>'FAQ'])
+@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Document Details','activePage'=>'faq','titlePage'=>'FAQ'])
 
 @php
     $c = \App\Collection::find($document->collection_id);

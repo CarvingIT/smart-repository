@@ -1,4 +1,4 @@
-@extends('layouts.app', ['class' => 'off-canvas-sidebar', 'activePage' => 'home', 'title' => __('Smart Repository'),'titlePage'=>'Email Verification'])
+@extends('layouts.app', ['class' => 'off-canvas-sidebar', 'activePage' => 'home', 'title' => __('Account Verification'),'titlePage'=>'Email Verification'])
 
 @section('content')
 <div class="container" style="height: auto;">

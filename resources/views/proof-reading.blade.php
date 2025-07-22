@@ -1,4 +1,4 @@
-@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'faq','titlePage'=>'FAQ'])
+@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Proof Reading','activePage'=>'faq','titlePage'=>'FAQ'])
 
 @push('js')
  <link rel="stylesheet" href="/css/jquery-ui.css">

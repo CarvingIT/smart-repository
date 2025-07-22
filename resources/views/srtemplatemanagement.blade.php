@@ -1,4 +1,4 @@
-@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'title'=>'Smart Repository'])
+@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'title'=>'Manage templates'])
 
 @section('content')
 <script src="/js/jquery.dataTables.min.js"></script>

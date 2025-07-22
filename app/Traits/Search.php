@@ -15,8 +15,10 @@ use App\Util;
 trait Search{
     // wrapper function for search
     public function search(Request $request){
+        if($request->input('full_text_scope')){
+            Session::put('full_text_scope', $request->input('full_text_scope'));
+        }
         if(Util::elasticEnabled() ){
-            //&& !empty($request->search['value'])){
             $search_results = $this->searchElastic($request);
         }
         else{
