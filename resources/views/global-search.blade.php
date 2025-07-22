@@ -283,7 +283,7 @@ function clearSearchBar(){
         </div>
         <div class="row">
             <div class="col-md-4"><i class="material-icons">folder</i> {{ @$document->collection->name }}</div>
-            <div class="col-md-8"><i class="material-icons">calendar_today</i>@php $date = strtotime(@$document->updated_at); echo date('F d, Y',$date); @endphp</div>
+            <!--<div class="col-md-8"><i class="material-icons">calendar_today</i>@php $date = strtotime(@$document->updated_at); echo date('F d, Y',$date); @endphp</div>-->
             <br /><br />
         </div>
     @endforeach
