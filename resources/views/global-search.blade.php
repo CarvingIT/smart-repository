@@ -181,6 +181,7 @@ function clearSearchBar(){
 </script>
 
 <div class="container">
+<h4 id="collection_links"></h4>
 <div class="container-fluid">
 <div class="row justify-content-center">
       <div class="col-md-12">
@@ -200,7 +201,7 @@ function clearSearchBar(){
                 <p class="text-center" data-aos="fade-up" data-aos-delay="100">A comprehensive data repository for all document types</p>
 
           <form action="/global-search" class="form-search d-flex align-items-stretch mb-4 aos-init aos-animate" data-aos="fade-up" data-aos-delay="200" method="get">
-                <input type="hidden" name="length" id="search-results-length" value="10" />
+                <input type="hidden" name="length" id="search-results-length" value="1000" />
                 <input type="hidden" name="start" id="search-results-start" value="0" />
 
                 <div class="search-container">
@@ -221,17 +222,18 @@ function clearSearchBar(){
                 </div><!-- search-container -->
           </form>
 
+
 <div class="row gy-4">
     <div class="col-md-3">
         @php
             $collection_names = [];
             $i = 0;
-            $highlights = $results->highlights;
+            //$highlights = $results->highlights;
         @endphp
 
+        @if(!empty($results->data))
         @foreach($results->data as $d)
         @php //print_r($d); 
-            /*1977 10 04 INDIRA GANDHI YANNA ATAK*/
             $document = \App\Document::find($d->id);
             $collection_names[$d->collection_id][] = $document->collection->name;
             $highlights = (array) $results->highlights;
@@ -242,6 +244,7 @@ function clearSearchBar(){
             <li><a href="/collection/{{ $key }}?search_term={{ $search_term }}">{{ $value[0] }}</a> ({{ count($value) }})</li>
         @endforeach
         </ul>
+        @endif
     </div>
     <div class="col-md-9" id="search-results">
     @if(!empty($results->data))
@@ -254,12 +257,16 @@ function clearSearchBar(){
                 @php
                 $record_highlights = array_shift($highlights);
                 $title = empty($record_highlights->title)? $d->title: $record_highlights->title[0];
-                foreach($record_highlights->text_content as $m){
-                    $content_matches[] = $m;
+                $record_highlights = (array) $record_highlights;
+                $content_matches=[];
+                foreach($record_highlights as $k=>$m){
+                    $m = array_map("strip_tags", $m);
+                    if(in_array($content_matches, $m)) continue;
+                    $content_matches = array_merge($content_matches, $m);
                 }
                 @endphp
                  <!--<img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;">-->
-                 <h5><a href="/collection/{{ $d->collection_id }}/document/{{ $d->id }}/details" target="_blank">{{ $title }}</a></h5>
+                 <h5><a href="/collection/{{ $d->collection_id }}/document/{{ $d->id }}/details" target="_blank">{!! $title !!}</a></h5>
 
             <p style="text-align:justify;">
                 {!! implode('...',$content_matches) !!}
@@ -267,12 +274,16 @@ function clearSearchBar(){
            </div>
         </div>
         <div class="row">
-            <div class="col-md-6">{{ @$document->collection->name }}</div>
-            <div class="col-md-5 text-right">{{ @$document->updated_at }}</div>
+            <div class="col-md-4"><i class="material-icons">folder</i> {{ @$document->collection->name }}</div>
+            <div class="col-md-8"><i class="material-icons">calendar_today</i>@php $date = strtotime(@$document->updated_at); echo date('F d, Y',$date); @endphp</div>
         </div>
         <br />
     @endforeach
+<div class="text-right"><h5><a href="#collection_links" title="Return to Top"><i class="material-icons">arrow_upward</i></a></h5></div>
     @endif
+@if(!empty($results->data) && count($results->data) > 100)
+<p>To narrow down your search, use links on the left.</p>
+@endif
     </div>
 </div><!-- row gy-4 -->
 
