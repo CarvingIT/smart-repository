@@ -260,9 +260,14 @@ function clearSearchBar(){
                 $record_highlights = (array) $record_highlights;
                 $content_matches=[];
                 foreach($record_highlights as $k=>$m){
-                    $m = array_map("strip_tags", $m);
-                    if(in_array($content_matches, $m)) continue;
-                    $content_matches = array_merge($content_matches, $m);
+                    $content_matches_temp = array_map(function($item){
+                            return strip_tags($item, '<em>');
+                        }, $m);
+                    foreach($content_matches_temp as $cm){
+                        if(!in_array($cm, $content_matches)){
+                            $content_matches[] = $cm;
+                        }
+                    }
                 }
                 @endphp
                  <!--<img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;">-->
