@@ -658,21 +658,26 @@ use App\UrlSuppression;
 		foreach($meta_fields as $m){
 			echo $m->label."\t";
 		}
+        echo "Related document IDs";
 		echo "\n";
-		$documents->chunk(10, function($documents){
+		$documents->chunk(100, function($documents){
 		foreach($documents as $d){
 			// remove tab spaces from the title, if present
 			echo $d->id."\t".preg_replace("/\t/", " ", $d->title)."\t";
 			$meta_fields = $d->collection->meta_fields;
 			foreach($meta_fields as $m){
 				if(!empty($d->meta_value($m->id))){
-					echo preg_replace("/\t/"," ", $d->meta_value($m->id));
+					echo preg_replace("/\s/"," ", $d->meta_value($m->id));
 				}
 				else{
 					echo " - ";
 				}
 				echo "\t";
 			}
+            // Related documents
+            $related_docs = $d->related_documents->pluck('related_document_id');
+            //echo implode("|", $related_docs->all());
+            echo "x";
 			echo "\n";
 		}
 		});// chunking ends
@@ -720,8 +725,8 @@ use App\UrlSuppression;
 		$meta_fields = $collection->meta_fields;
 		$new_list  = $new_meta_details = [];
 		
-		$documents->chunk(10, function($documents) use (&$new_list){ // chunking starts
-                foreach($documents as $d){
+		$documents->chunk(100, function($documents) use (&$new_list){ // chunking starts
+            foreach($documents as $d){
   			$list = ['ID'=>$d->id,'Title'=>$d->title];
 			$meta_fields = $d->collection->meta_fields;
 			foreach($meta_fields as $m){
@@ -736,10 +741,9 @@ use App\UrlSuppression;
 					$meta_details = [$m->label => html_entity_decode($d->meta_value($m->id))];
 				}
 				$list = array_merge($list,$meta_details);
+                $related_doc_ids = $d->related_documents->pluck('related_document_id');
+                $list['Related document IDs'] = implode("|", $related_doc_ids->all());
 			}
-			//print_r($list);
-			//echo "<hr />";
-			//exit;
 			$new_list[] = array_merge($list,$meta_details);
 		}
 		});// chunking ends
