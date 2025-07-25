@@ -335,7 +335,7 @@ class DocumentController extends Controller
             $this->duplicateDocumentMetadata($request->input('master_document_id'), $d->id);
         }
         // forcibly mark the document as updated
-        $d->touch();
+        //if(!$d->wasChanged()) $d->touch();
         return ['status' => 'successful', 'document_id' => $d->id, 'messages' => $messages, 'warnings' => $warnings];
     }
 

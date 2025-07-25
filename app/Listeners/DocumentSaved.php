@@ -30,9 +30,9 @@ class DocumentSaved
      */
     public function handle($event)
     {
-        $was_changed = $event->document->wasChanged();
+        //$was_changed = $event->document->wasChanged();
 
-        if(!$was_changed){
+        //if(!$was_changed){
 		$notifiable = $event->document->collection;
         $collection_config = json_decode($event->document->collection->column_config);
         if(!empty($collection_config->slack_webhook) || !empty($collection_config->notify_email)){
@@ -101,6 +101,6 @@ class DocumentSaved
 			$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
 			$event->document->approvals()->save($approval_record);
 		}
-      } // wasChanged
+      //} // wasChanged
     }
 }
