@@ -30,26 +30,9 @@ class DocumentSaved
      */
     public function handle($event)
     {
-        $newly_created = $event->document->wasRecentlyCreated;
-        if($newly_created != 1){
-        $changes = $event->document->getChanges();
-        if(count($changes) == 0){
-            //echo "Ignoring this update to document ".$event->document->id.". There are no changes.\n";
-            // do not return here since the meta may have updates
-            //return 0;
-        }
-        else if(in_array('locked', array_keys($changes)) || in_array('hash',array_keys($changes))){
-            /* 
-            this condition is met when
-            1. a document is published
-            2. a document is locked or unlocked
-            3. a hash of the document is created
-            */
-            echo "Ignoring this update to document ".$event->document->id."\n";
-            return 0;
-        }        
-        }
+        $was_changed = $event->document->wasChanged();
 
+        if(!$was_changed){
 		$notifiable = $event->document->collection;
         $collection_config = json_decode($event->document->collection->column_config);
         if(!empty($collection_config->slack_webhook) || !empty($collection_config->notify_email)){
@@ -118,5 +101,6 @@ class DocumentSaved
 			$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
 			$event->document->approvals()->save($approval_record);
 		}
+      } // wasChanged
     }
 }

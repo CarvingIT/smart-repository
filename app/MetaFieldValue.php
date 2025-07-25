@@ -13,7 +13,6 @@ class MetaFieldValue extends Model implements Auditable
 	protected $auditExclude = [
 		'document_id'
     ];
-    protected $touches = ['document'];
 
     public function document(){
         return $this->belongsTo('App\Document');
