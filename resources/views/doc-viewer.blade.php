@@ -27,6 +27,16 @@ else{
 
 <script>
 	var iframe = document.getElementById('pdfreader');
+
+    iframe.onload = function() {
+        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+        const cssLink = iframeDoc.createElement('link');
+        cssLink.href = '/c-{{ $collection_id }}/doc-viewer.css';
+        cssLink.rel = 'stylesheet';
+        cssLink.type = 'text/css';
+        iframeDoc.head.appendChild(cssLink);
+    };
+
 	var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
 </script>
 @php

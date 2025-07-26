@@ -111,12 +111,16 @@ Route::get('/media/i/{filename}', 'MediaController@loadImage');
 
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
-Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader', 'DocumentController@pdfReader')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/doc-viewer', 'DocumentController@docViewer')->middleware('document_view');
+Route::get('/c-{collection_id}/doc-viewer.css',function($collection_id){
+    return response(view('doc-viewer-style',['collection_id'=>$collection_id]))
+        ->header('Content-Type', 'text/css');
+});
 Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
 
 //Multiple file upload routes
 Route::get('/collection/{collection_id}/document/{document_id}/details/{path_count}', 'DocumentController@loadDocument')->middleware('document_view');
-Route::get('/collection/{collection_id}/document/{document_id}/pdf-reader/{path_count}', 'DocumentController@pdfReader')->middleware('document_view');
+Route::get('/collection/{collection_id}/document/{document_id}/doc-viewer/{path_count}', 'DocumentController@docViewer')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/media-player/{path_count}', 'DocumentController@mediaPlayer')->middleware('auth');
 
 Route::get('/document/{document_id}/edit', 'DocumentController@showEditForm')->middleware('document_edit');

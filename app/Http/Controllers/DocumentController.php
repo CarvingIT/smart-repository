@@ -67,9 +67,9 @@ class DocumentController extends Controller
 	    return $download_file;
     }
 
-	public function pdfReader($collection_id, $document_id, Request $req){
+	public function docViewer($collection_id, $document_id, Request $req){
         $path_count = $req->path_count;
-		return view('pdf-reader',['collection_id'=>$collection_id,'document_id'=>$document_id,'path_count'=>$path_count]);
+		return view('doc-viewer',['collection_id'=>$collection_id,'document_id'=>$document_id,'path_count'=>$path_count]);
 	}
 
 	public function mediaPlayer($collection_id, $document_id, Request $req){
