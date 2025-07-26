@@ -111,6 +111,14 @@ $(document).ready(function() {
 			@endforeach
 		</div>
 
+        <h4>{{ __('Document viewer settings')}}</h4>
+		<div class="form-group row">
+            <div class="col-md-12"><input name="document_viewer_download" type="checkbox" value="1"
+            @if(!empty($column_config->document_viewer_download))
+                checked="checked"
+            @endif /> Allow download of documents</div>
+        </div>
+
 		<h4>{{__('Display of search results')}}</h4>
 		<div class="form-group row">
            <div class="col-md-3">

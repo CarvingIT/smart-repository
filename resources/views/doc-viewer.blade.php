@@ -1,6 +1,7 @@
 <html>
 <head>
 <title>{{ env('APP_NAME', 'Smart Repository') }}::Document Viewer</title>
+<link rel="icon" type="image/png" href="/material/img/favicon.png">
 </head>
 <body>
 @php
