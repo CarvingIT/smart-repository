@@ -2,13 +2,11 @@
 
 @section('content')
 @push('js')
-<script src="/js/jquery-3.3.1.js"></script>
-<link rel="stylesheet"  href="/css/jquery-ui.css" type="text/css"> 
 <script src="/js/jquery-ui.js"></script>
+<link rel="stylesheet"  href="/css/jquery-ui.css" type="text/css"> 
 
 <script type="text/javascript">
 $(document).ready(function() {
-	//alert("js is working");
         src = "{{ route('autocomplete') }}";
         $( "#user_id" ).autocomplete({
             source: function( request, response ) {

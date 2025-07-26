@@ -35,13 +35,13 @@ foreach($config as $c){
         <script src="/js/jquery-3.5.1.js"></script>
         <!--   Core JS Files   -->
         <script src="{{ asset('material') }}/js/core/popper.min.js"></script>
-        <script src="{{ asset('material') }}/js/core/bootstrap-material-design.min.js"></script>
         <script src="{{ asset('material') }}/js/plugins/perfect-scrollbar.jquery.min.js"></script>
         <!-- Plugin for the momentJs  -->
         <script src="{{ asset('material') }}/js/plugins/moment.min.js"></script>
         <!-- Forms Validations Plugin -->
         <script src="{{ asset('material') }}/js/plugins/jquery.validate.min.js"></script>
         <!-- Plugin for the Wizard, full documentation here: https://github.com/VinceG/twitter-bootstrap-wizard -->
+        <script src="{{ asset('material') }}/js/core/bootstrap-material-design.min.js"></script>
         <!--script src="{{ asset('material') }}/js/plugins/jquery.bootstrap-wizard.js"></script-->
         <!--	Plugin for Select, full documentation here: http://silviomoreto.github.io/bootstrap-select -->
         <script src="{{ asset('material') }}/js/plugins/bootstrap-selectpicker.js"></script>

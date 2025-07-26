@@ -2,7 +2,6 @@
 
 @section('content')
 @push('js')
-<script src="/js/jquery-3.3.1.js"></script>
 <script src="/js/jquery.dataTables.min.js"></script>
 <script>
 $(document).ready(function() {
