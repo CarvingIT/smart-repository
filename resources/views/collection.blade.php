@@ -12,15 +12,14 @@
 <script src="/js/select2totree.js"></script>
 @php
 $column_config = json_decode($collection->column_config);
-list($hide_type, $hide_title, $hide_approval_status, $hide_size, $hide_creation_time) = array(false, false, false, false, false);
+list($hide_type, $hide_title, $hide_approval_status, $hide_size, $hide_creation_time) = array(false, false, true, false, false);
 if(!empty($collection->column_config)){
 	if(@$column_config->type != 1) $hide_type = true;
 	if(@$column_config->title != 1) $hide_title = true;
-	if(@$column_config->display_approval_status != 1) $hide_approval_status = true;
+	if(@$column_config->display_approval_status === 1) $hide_approval_status = false;
 	if(@$column_config->size != 1) $hide_size = true;
 	if(@$column_config->creation_time != 1) $hide_creation_time = true;
 }
-
 // search scope and fuzzy search
 $fuzzy = Session::get('fuzzy');
 $full_text_scope = Session::get('full_text_scope');
@@ -374,7 +373,7 @@ function randomString(length) {
 			$m_field = \App\MetaField::find($m['field_id']);
 			if($m_field->type == 'TaxonomyTree'){
 				$taxonomy_model = App\Taxonomy::find($m['value']);
-				$m['value'] = $taxonomy_model->label;
+				$m['value'] = (!empty($taxonomy_model->label))? $taxonomy_model->label:'';
 			}	
 		@endphp
             <span class="filtertag">

@@ -729,6 +729,7 @@ use App\UrlSuppression;
             foreach($documents as $d){
   			$list = ['ID'=>$d->id,'Title'=>$d->title];
 			$meta_fields = $d->collection->meta_fields;
+			$meta_details=[];
 			foreach($meta_fields as $m){
 				if($m->type=='MultiSelect' || $m->type == 'Select'){
 					$details_select = trim($d->meta_value($m->id),'[]');
@@ -743,7 +744,7 @@ use App\UrlSuppression;
 				$list = array_merge($list,$meta_details);
                 $related_doc_ids = $d->related_documents->pluck('related_document_id');
                 $list['Related document IDs'] = implode("|", $related_doc_ids->all());
-			}
+		}
 			$new_list[] = array_merge($list,$meta_details);
 		}
 		});// chunking ends
