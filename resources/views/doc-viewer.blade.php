@@ -9,7 +9,6 @@
   overflow:clip;
 }
 #meta-view {
-padding-left:1em;
 flex:40%;
 overflow-y:scroll;
 }
@@ -21,9 +20,26 @@ margin:0;
 font-family:"Roboto", "Helvetica", "Arial", sans-serif;
 font-size:1em;
 font-size:0.8em;
+background-color:#eee;
 }
 label{
 color:#666;
+}
+h4{
+    background-color:#9124a3;
+    color:#fff;
+    margin:0;
+    padding:9px;
+    font-family:sans-serif;
+    border-top:2px solid #999;
+    line-height:14px;
+    font-weight:normal;
+    font-size:15px;
+    color:#eee;
+    box-shadow:6px #666 0 0 1em 0;
+}
+#meta-data{
+    padding:1em;
 }
 </style>
 </head>
@@ -32,18 +48,6 @@ color:#666;
     $doc = \App\Document::find($document_id);
 @endphp
 <div class="row">
-<div id="meta-view">
-	<h4>Associated Information</h4>
-	@foreach($doc->meta as $m)
-        @if(!$m->meta_field) @continue @endif
-
-		@if(@$m->meta_field->type == 'Date')
-		<p><label>{{ @$m->meta_field->label }}</label><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
-		@else
-		<p><label>{{ @$m->meta_field->label }}</label><br />{!! $doc->meta_value($m->meta_field_id) !!}</p>
-		@endif
-	@endforeach
-</div>
 <div id="doc-view">
 @php
 if(!is_null($path_count)){
@@ -60,6 +64,20 @@ else{
 @php
 }
 @endphp
+</div>
+<div id="meta-view">
+	<h4>Associated Meta Information</h4>
+    <div id="meta-data">
+	@foreach($doc->meta as $m)
+        @if(!$m->meta_field) @continue @endif
+
+		@if(@$m->meta_field->type == 'Date')
+		<p><label>{{ @$m->meta_field->label }}</label><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
+		@else
+		<p><label>{{ @$m->meta_field->label }}</label><br />{!! $doc->meta_value($m->meta_field_id) !!}</p>
+		@endif
+	@endforeach
+    </div>
 </div>
 </div>
 <script>
