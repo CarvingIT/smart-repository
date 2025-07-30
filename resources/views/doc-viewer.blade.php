@@ -26,6 +26,7 @@ label{
 color:#666;
 }
 h4{
+    display:block;
     position:sticky;
     top:0;
     background-color:#9124a3;
@@ -38,7 +39,7 @@ h4{
     font-weight:normal;
     font-size:15px;
     color:#eee;
-    box-shadow:6px #666 0 0 1em 0;
+    box-shadow:2px 2px 3px #666;
 }
 #meta-data{
     padding:1em;
