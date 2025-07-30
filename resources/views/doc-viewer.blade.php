@@ -28,6 +28,8 @@ margin:0;
 <div id="meta-view">
 	<h4>Associated Information</h4>
 	@foreach($doc->meta as $m)
+        @if(!$m->meta_field) @continue @endif
+
 		@if(@$m->meta_field->type == 'Date')
 		<p><strong>{{ @$m->meta_field->label }}</strong><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
 		@else
