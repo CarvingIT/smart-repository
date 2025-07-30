@@ -18,6 +18,12 @@ overflow-y:scroll;
 }
 body{
 margin:0;
+font-family:"Roboto", "Helvetica", "Arial", sans-serif;
+font-size:1em;
+font-size:0.8em;
+}
+label{
+color:#666;
 }
 </style>
 </head>
@@ -32,9 +38,9 @@ margin:0;
         @if(!$m->meta_field) @continue @endif
 
 		@if(@$m->meta_field->type == 'Date')
-		<p><strong>{{ @$m->meta_field->label }}</strong><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
+		<p><label>{{ @$m->meta_field->label }}</label><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
 		@else
-		<p><strong>{{ @$m->meta_field->label }}</strong><br />{!! $doc->meta_value($m->meta_field_id) !!}</p>
+		<p><label>{{ @$m->meta_field->label }}</label><br />{!! $doc->meta_value($m->meta_field_id) !!}</p>
 		@endif
 	@endforeach
 </div>
