@@ -11,6 +11,7 @@
 #meta-view {
 padding-left:1em;
 flex:40%;
+overflow-y:scroll;
 }
 #doc-view {
   flex:60%;
