@@ -58,12 +58,12 @@ if(!is_null($path_count)){
     $file_url = $path[$path_count];
     $file_path  = $path[$path_count];
 @endphp
-<iframe id="pdfreAder" class="pdf" src="/js/ViewerJS/?title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}/details/{{ $path_count }}" width="100%" height="100%"></iframe> 
+<iframe id="pdfreAder" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}/details/{{ $path_count }}" width="100%" height="100%"></iframe> 
 @php
 }
 else{
 @endphp
-<iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}" width="100%" height="100%"></iframe>
+<iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}" width="100%" height="100%"></iframe>
 @php
 }
 @endphp
