@@ -22,7 +22,7 @@ class DocumentView
 
         if($document->collection->type != 'Public' 
             && !($user && $user->hasPermission($document->collection->id, 'VIEW'))
-			&& $document->created_by != $user->id
+			&& $document->created_by != @$user->id
 		){
 	    abort(403, 'Forbidden');
         }
