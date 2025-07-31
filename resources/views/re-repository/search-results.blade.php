@@ -112,7 +112,7 @@ h4 a {
 					<div class="row">
 					<div class="col-lg-4">
 					@if(!empty($display_meta['date-of-issuance']))
-						<i class="fa fa-calendar" style="margin-right: 5px;"></i>@php $date = strtotime($display_meta['date-of-issuance']); echo date('d-m-Y', $date); @endphp
+						<i class="fa fa-calendar" style="margin-right: 5px;"></i>&nbsp;@php $date = strtotime($display_meta['date-of-issuance']); echo date('d-m-Y', $date); @endphp
 					@endif
 					</div>
 					<div class="col-lg-8">
