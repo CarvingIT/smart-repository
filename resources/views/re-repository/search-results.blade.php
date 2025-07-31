@@ -109,28 +109,31 @@ h4 a {
 					</div>
 					</div>
 
-					@if(!empty($display_meta['date-of-issuance']))
-					<div class="col-lg-4">
-						<i class="fa fa-calendar" style="margin-right: 5px;"></i>{{ $display_meta['date-of-issuance'] }}
-					</div>
-					@endif
-					@if(!empty($display_meta['state-name']) || !empty($display_meta['issuing-authority']))
-					<div class="col-lg-8">
-						<i class="fa fa-globe" style="margin-right: 5px;"></i>{{ $display_meta['state-name'] }} ({{ $display_meta['issuing-authority'] }})
-					</div>
-					@endif
 					<div class="row">
-					@if(!empty($display_meta['sector']))
-					  <div class="col-lg-4">
-					    <i class="fa fa-tag" style="margin-right: 5px;"></i> {{ $display_meta['sector'] }}
-					  </div>
+					<div class="col-lg-4">
+					@if(!empty($display_meta['date-of-issuance']))
+						<i class="fa fa-calendar" style="margin-right: 5px;"></i>@php $date = strtotime($display_meta['date-of-issuance']); echo date('d-m-Y', $date); @endphp
 					@endif
-					@if(!empty($display_meta['document-type']))
+					</div>
+					<div class="col-lg-8">
+					@if(!empty($display_meta['state-name']) || !empty($display_meta['issuing-authority']))
+						<i class="fa fa-globe" style="margin-right: 5px;"></i>{{ $display_meta['state-name'] }} ({{ $display_meta['issuing-authority'] }})
+					@endif
+					</div>
+					</div>
+
+					<div class="row">
 					  <div class="col-lg-4">
+					@if(!empty($display_meta['sector']))
+					    <i class="fa fa-tag" style="margin-right: 5px;"></i> {{ $display_meta['sector'] }}
+					@endif
+					  </div>
+					  <div class="col-lg-4">
+					@if(!empty($display_meta['document-type']))
 					    <i class="fa fa-tag" style="margin-right: 5px;"></i>{{ $display_meta['document-type'] }}
+					@endif
 					  </div>
 					</div>
-					@endif
 					<div class="row">&nbsp;</div>
 
 					<div>&nbsp;</div>
