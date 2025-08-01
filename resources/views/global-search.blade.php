@@ -237,7 +237,7 @@ function clearSearchBar(){
         @php //print_r($d); 
             $document = \App\Document::find($d->id);
             $collection_names[$d->collection_id][] = $document->collection->name;
-            $highlights = (array) $results->highlights;
+            $highlights = (array) @$results->highlights;
         @endphp
         @endforeach
         <ul>

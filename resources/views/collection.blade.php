@@ -312,9 +312,18 @@ function randomString(length) {
 		<div class="row text-center">
 		   <div class="col-12">
 			<div class="float-container" style="width:100%;">
+            @php
+                $old_search_query = !empty(app('request')->input('search_term'))? app('request')->input('search_term') : ''; 
+                $session_search_query = Session::get('search_query');
+                $referer = request()->headers->get('referer');
+                if($referer && $referer === Request::url() 
+                    && empty($old_search_query) && !empty($session_search_query)){
+                    $old_search_query = $session_search_query;
+                } 
+            @endphp
 			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
 		    <input type="text" class="search-field" id="collection_search" 
-            value="@if(!empty(app('request')->input('search_term'))) {{ app('request')->input('search_term') }} @endif"
+            value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
             />
 			<style>
 			.dataTables_filter {
@@ -476,9 +485,7 @@ $(document).ready(function() {
         $(this).select2ToTree({dropdownCssClass : 'full-width'});
     });
 
-    @if(app('request')->input('search_term'))
-    oTable.search('{{ app('request')->input('search_term') }}').draw();
-    @endif
+    oTable.search($('#collection_search').val()).draw();
     
     });
 
