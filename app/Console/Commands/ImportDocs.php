@@ -90,6 +90,9 @@ class ImportDocs extends Command
 				}
 				foreach($meta_lines as $l){
 					$values = explode("\t", ltrim(rtrim($l)));
+                    if(!is_file('storage/app/import/'.$values[0])){
+                        echo "WARNING: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
+                    }
 					$row = [];
 					for($i=0; $i<count($fields); $i++){
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
@@ -134,8 +137,8 @@ class ImportDocs extends Command
                 if($dry_run){
                     if($show_meta_data){
                	        echo $dir.'/'.$f."\n";
-                        print_r(@$titles[$values[0]]);
-				        print_r(@$meta_values[$f]);
+                        echo @$titles[$values[0]]."\n";
+				        print_r(@$meta_values[$f])."\n";
                     }
                 }
                 if(!$dry_run){
