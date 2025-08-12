@@ -80,8 +80,12 @@ class RebuildElasticIndex extends Command
             $body['title'] = $d->title;
             $body['created_by'] = $d->created_by;
             $body['updated_at'] = $d->updated_at;
-            $body['approved_on'] = $d->approved_on;
+            if(!empty($d->approved_on)) $body['approved_on'] = $d->approved_on;
             $body['text_content'] = $d->text_content;
+            foreach($d->meta as $mv){
+                if(!empty($mv->value))
+                $body['meta_'.$mv->meta_field_id] = $d->meta_value($mv->meta_field_id);
+            }
             $params = [
                 'index' => $index,
                 'id'    => $d->id,

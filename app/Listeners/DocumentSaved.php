@@ -78,6 +78,9 @@ class DocumentSaved
             $body['created_by'] = $event->document->created_by;
             $body['updated_at'] = $event->document->updated_at;
             $body['approved_on'] = $event->document->approved_on;
+            foreach($event->document->meta as $mv){
+                $body['meta_'.$mv->meta_field_id] = $event->document->meta_value($mv->meta_field_id);
+            }
             $params = [
                 'index' => 'sr_documents',
                 'id'    => $event->document->id,

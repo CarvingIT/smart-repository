@@ -320,11 +320,13 @@ function randomString(length) {
                 }
                 $session_search_query = Session::get('search_query');
                 $parsed_referer = parse_url(request()->headers->get('referer'));
-                $referer = $parsed_referer['scheme'] . '://' . $parsed_referer['host'] . (isset($parsed_referer['port']) ? ':' . $parsed_referer['port'] : '') . $parsed_referer['path'];
-                if($referer && $referer === Request::url() 
-                    && empty($old_search_query) && !empty($session_search_query)){
-                    $old_search_query = $session_search_query;
-                } 
+                if(!empty($parsed_referer['path'])){
+                    $referer = $parsed_referer['scheme'] . '://' . $parsed_referer['host'] . (isset($parsed_referer['port']) ? ':' . $parsed_referer['port'] : '') . $parsed_referer['path'];
+                    if($referer && $referer === Request::url() 
+                        && empty($old_search_query) && !empty($session_search_query)){
+                        $old_search_query = $session_search_query;
+                    } 
+                }
             @endphp
 			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
 		    <input type="text" class="search-field" id="collection_search" 

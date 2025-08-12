@@ -28,8 +28,10 @@ trait Search{
         // log search query
 		$old_query = Session::get('search_query');
         // put new query in session
-        Log::debug('Query: '.$request->search['value']);
-		Session::put('search_query', $request->search['value']);
+        if(!empty($request->search['value'])){
+            Log::debug('Query: '.$request->search['value']);
+		    Session::put('search_query', $request->search['value']);
+        }
 
 		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
 			&& !$request->is('api/*') && strlen($request->search['value'])>1){
@@ -242,21 +244,31 @@ trait Search{
 
         $total_count = $documents->count();
         // get title filtered documents
-		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
-            $documents = $this->getTitleFilteredDocuments($request, $documents);
-		}
+        $title_query = '';
+        if(!empty($request->title_filter)){
+            $title_query = $request->title_filter;
+        }
+        else{
+            //Log::debug('Collection ID: '.$request->collection_id);
+            if(!empty(Session::get('title_filter')[$request->collection_id])){
+                $title_query = Session::get('title_filter')[$request->collection_id];
+            }
+        }
+        Log::debug('Title filter query: '. $title_query);
         // get Meta filtered documents
         $documents = $this->getMetaFilteredDocuments($request, $documents);
         //$total_count = $cnt_response->count;
 	    Log::debug('Total Count: '.$total_count);
         // get the list of IDs to filter from
 
+        /*
         $filter_from_records = [];
         $filtered_docs = $documents->get();
         foreach($filtered_docs as $d){
             $filter_from_records[] = $d->id;
         }
         Log::debug('Filter from :'.json_encode($filter_from_records));
+        */
         /*
        if($request->search_type == 'chatbot'){
                $documents = $documents->where('type','<>','url');
@@ -267,7 +279,7 @@ trait Search{
 	    $start = empty($request->start)?0:$request->start;
 
 		$highlights = [];
-        if(!empty($request->search['value']) && strlen($request->search['value'])>1){
+        //if((!empty($request->search['value']) && strlen($request->search['value'])>1)){
             $search_term = @$request->search['value'];
 	        Log::debug('Search term: '.$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
@@ -290,12 +302,13 @@ trait Search{
 				$q_without_and_ps = ['query'=>$search_term, 'analyzer'=>'porter_stem_analyzer'];
 				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
 
+                if(!empty($request->search['value']) && strlen($request->search['value'])>1){
 				$params = [
 					'index' => 'sr_documents',
 					'body' => [
 						'query' => [
 							'bool' => [
-                                'filter'=> ['ids'=>['values'=>$filter_from_records]],
+                                //'filter'=> ['ids'=>['values'=>$filter_from_records]],
 								'should' => [
 									[
 										'match_phrase' => [
@@ -362,6 +375,10 @@ trait Search{
 						]
 					]
 				];
+                }
+                else{
+                    $params = $params_cnt;
+                }
 
                 $full_text_scope = Session::get('full_text_scope');
                 if($full_text_scope == 'title'){
@@ -371,29 +388,33 @@ trait Search{
                 }
 
 			// add must match clause 
+            /*
 			if(!empty($request->must_match) && count($request->must_match) > 0){
-				Log::debug('Adding must match clause.');
 				foreach($request->must_match as $must_keyword){
 					$params['body']['query']['bool']['must'][] = 
 										['match' => [
 											'text_content' => $must_keyword
 										]];
 				}
+            }
+            */
+            // following must queries are used for filtering
+		    if(!empty($title_query)){
+				Log::debug('Adding must match clause for title. Query is - '. json_encode($title_query));
+				$params['body']['query']['bool']['must'][] = 
+						['match' => [
+							'title' => $title_query 
+						]];
+				Log::debug('Adding must to title. Param array is - '. json_encode($params));
 			}
 
 	        $ordered_document_ids = '';
             $scores = [];
     	    $params['size'] = 1000;// set a max size returned by ES
             //Log::debug(json_encode($params));
-        } // if search term is entered
-        else{
-                $params_cnt['body']['from'] = $start;
-                $params_cnt['body']['size'] = $length;
-                $params_cnt['body']['query']['bool']['filter'] = ['ids'=>['values'=>$filter_from_records]];
-                $params = $params_cnt;
-        }// when there's no search
+        //} // if search term is entered
             $document_ids = [];
-            //Log::debug(json_encode($params));
+            Log::debug(json_encode($params));
 		    try{
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
@@ -403,10 +424,10 @@ trait Search{
                 }
 		    }
 		    catch(\Exception $e){
-			// some error; switch to db search
+                Log::debug($e->getMessage());
 		    }
     	    //Log::debug(json_encode($response['hits']));
-	        //$document_ids = array_keys($scores);
+	        $document_ids = array_keys($scores);
 	        $ordered_document_ids = implode(",", $document_ids);
 
         $columns = array('type', 'title', 'size', 'updated_at');
