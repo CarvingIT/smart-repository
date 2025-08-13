@@ -76,6 +76,7 @@ class RebuildElasticIndex extends Command
 
         foreach($docs as $d){
             $body = $d->toArray();
+            $body['text_content'] = $d->text_content;
             foreach($d->meta as $mv){
                 if(!empty($mv->value))
                 $body['meta_'.$mv->meta_field_id] = $d->meta_value($mv->meta_field_id);

@@ -161,6 +161,7 @@ trait Search{
     $params = array();
     $must_query = [];
     $filter_query = [];
+    $should_query=[];
     $must_not_query = [];
 	if(!empty($request->collection_id)){
 		$collection = \App\Collection::find($request->collection_id);
@@ -171,19 +172,15 @@ trait Search{
         	//$documents = \App\Document::where('collection_id', $request->collection_id);
 			$column_config = json_decode($collection->column_config);	
 			if($collection->require_approval && empty($column_config->display_unapproved_docs)){
-				//$documents = $documents->whereNotNull('approved_on');
                 $must_query[] = [ 'exists'=>[ 'field' => 'approved_on' ] ];
-                $must_not_query[] = [ 'term'=>['approved_on'=>''] ];
 			}
 			if(\Auth::user() && !\Auth::user()->hasPermission($request->collection_id, 'VIEW')){
 				// user can not view any document; just their own
-				//$documents = $documents->where('created_by', \Auth::user()->id);
                 $must_query[] = [ 'match'=>[ 'created_by' => \Auth::user()->id ] ];
 			}
 		}
 		else{
         	$elastic_index = 'sr_urls';
-        	//$documents = \App\Url::where('collection_id', $request->collection_id);
 		}
 	}
 	else {
@@ -211,12 +208,18 @@ trait Search{
             $filter_query[] = ['terms'=>['collection_id' => 
                 array_merge($collections_without_approval, $collections_requiring_approval)]];
 
-            $must_query[] = ['should' => 
+            $must_query[] = [
                                 ['bool'=>
-                                    ['must'=>['match'=>['collection_id'=>$collections_without_approval]]]
+                                    ['should'=>
+                                        ['match'=>
+                                            ['terms' =>
+                                                ['collection_id'=>$collections_without_approval]
+                                            ]
+                                        ]
+                                    ]
                                 ],
                                 ['bool'=>
-                                    ['must'=>['match'=>['collection_id'=>$collections_requiring_approval],
+                                    ['should'=>['match'=>['terms'=>['collection_id'=>$collections_requiring_approval]],
                                             'exists'=>['field'=>'approved_on']]
                                     ]
                                 ]
@@ -224,6 +227,9 @@ trait Search{
 		}
 		//Log::debug($elastic_index.' - '.implode(",", $collection_ids));
 	}
+    foreach($must_query as $m_q){
+        $params['body']['query']['bool']['must'][] = $m_q;
+    }
     $params_cnt = [
         'index'=>$elastic_index,
         'body' => [
@@ -234,24 +240,18 @@ trait Search{
             ]
         ]
     ];
-    if(!empty($must_query)) $params_cnt['body']['query']['bool']['must'] = $must_query;
-    if(!empty($must_not_query)) $params_cnt['body']['query']['bool']['must_not'] = $must_not_query;
 
     try{
 	$client = $this->getElasticClient();
     $cnt_response = $client->count($params_cnt);
     }
     catch(\Exception $e){
-		Log::debug('Count error:'. $e->getMessage());	
+	    //Log::debug('Count error:'. $e->getMessage());	
         Log::debug('Switching to DB search');
 		return $this->searchDB($request);
     }
-    // sorting related
-	$sort_column = empty($columns[@$request->order[0]['column']])?'updated_at':$columns[@$request->order[0]['column']];
-	$sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
 
         $total_count = $cnt_response['count'];
-        //$total_count = $documents->count();
 
         Log::info('Elastic count: '.$cnt_response['count']);
         // get title filtered documents
@@ -299,25 +299,10 @@ trait Search{
 				$q_without_and_ps = ['query'=>$search_term, 'analyzer'=>'porter_stem_analyzer'];
 				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
 
+                $params = $params_cnt;
                 if(!empty($request->search['value']) && strlen($request->search['value'])>1){
-				$params = [
-					'index' => 'sr_documents',
-					'body' => [
-						'query' => [
-							'bool' => [
-                                'filter'=> $filter_query, 
-                                'must'=> $must_query,
-								'should' => [
-									[
-										'match_phrase' => [
-											'title' => $q_title_phrase,
-										]
-									],
-									[
-										'match' => [
-											'title' => $title_q_with_and,
-										]
-									],
+				$params['body']['query']['bool']['should'] =
+								[
 									[
 										'match' => [
 											'text_content' => $text_q_with_and,
@@ -330,17 +315,7 @@ trait Search{
 									],
 									[
 										'match' => [
-											'title' => $q_without_and,
-										]
-									],
-									[
-										'match' => [
 											'text_content' => $q_without_and,
-										]
-									],
-									[
-										'match' => [
-											'title.porter_stem' => $title_q_with_and_ps,
 										]
 									],
 									[
@@ -350,19 +325,38 @@ trait Search{
 									],
 									[
 										'match' => [
+											'text_content.porter_stem' => $q_without_and_ps
+										]
+									],
+									[
+										'match_phrase' => [
+											'title' => $q_title_phrase,
+										]
+									],
+									[
+										'match' => [
+											'title' => $title_q_with_and,
+										]
+									],
+									[
+										'match' => [
+											'title' => $q_without_and,
+										]
+									],
+									[
+										'match' => [
 											'title.porter_stem' => $q_without_and_ps,
 										]
 									],
 									[
 										'match' => [
-											'text_content.porter_stem' => $q_without_and_ps
+											'title.porter_stem' => $title_q_with_and_ps,
 										]
 									],
-								],
-								'minimum_should_match' => 1
-							],
-						],
-						'highlight' => [
+								];
+
+				    $params['body']['query']['bool']['minimum_should_match'] = 1;
+					$params['body']['highlight'] = [
 							'fields' => [
 								'text_content' => [ 'type' => 'unified'],
 								'text_content.porter_stem' => [ 'type' => 'unified'],
@@ -370,12 +364,7 @@ trait Search{
 								'title.porter_stem' => [ 'type' => 'unified']
 							],
 							'max_analyzed_offset'=>100000
-						]
-					]
-				];
-                }
-                else{
-                    $params = $params_cnt;
+						];
                 }
 
                 $full_text_scope = Session::get('full_text_scope');
@@ -405,6 +394,13 @@ trait Search{
 						]];
 				Log::debug('Adding must to title. Param array is - '. json_encode($params));
 			}
+            // default sorting if no search is performed
+            if(empty($request->search['value'])){
+                $columns = array('size', 'updated_at');
+	            $sort_column = empty($columns[@$request->order[0]['column']])?'updated_at':$columns[@$request->order[0]['column']];
+	            $sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
+                //$params['body']['sort'] = [$sort_column => [ 'order' => $sort_direction]];
+            }
 
 	        $ordered_document_ids = '';
             $scores = [];
@@ -412,7 +408,6 @@ trait Search{
             //Log::debug(json_encode($params));
         //} // if search term is entered
             $document_ids = [];
-            Log::debug(json_encode($params));
 		    try{
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
@@ -423,6 +418,7 @@ trait Search{
 		    }
 		    catch(\Exception $e){
                 Log::debug($e->getMessage());
+                Log::debug(json_encode($params));
 		    }
     	    //Log::debug(json_encode($response['hits']));
 	        $document_ids = array_keys($scores);

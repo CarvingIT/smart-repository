@@ -63,6 +63,7 @@ class DocumentSaved
 		        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
                 ->build();
             $body = $event->document->toArray();
+            $body['text_content'] = $event->document->text_content;
             foreach($event->document->meta as $mv){
                 if(empty($mv->value)) continue;
                 $body['meta_'.$mv->meta_field_id] = $event->document->meta_value($mv->meta_field_id);

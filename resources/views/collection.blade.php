@@ -30,8 +30,8 @@ var deldialog;
 $(document).ready(function() {
     oTable = $('#documents').DataTable({
     "columnDefs": [
-		{ "targets":[0], "className":'text-center', @if($hide_type)"visible":false @endif},
-		{ "targets":[1], "className":'text-left' @if($hide_title) ,"visible":false @endif},
+		{ "targets":[0], "className":'text-center', "sortable":false, @if($hide_type)"visible":false @endif},
+		{ "targets":[1], "className":'text-left',"sortable":false, @if($hide_title) ,"visible":false @endif},
 		@php
 			$i = 2;
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
@@ -225,6 +225,7 @@ function randomString(length) {
             </div>
 		<div class="card search-filters-card">
 		<div class="row">
+            {{--
 			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
 			<div class="float-container col-md-12">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
@@ -234,6 +235,7 @@ function randomString(length) {
 			</form>
 			</div>
 			@endif
+            --}}
 			@foreach($meta_fields as $m)
                 @php
                     $extra_attributes = empty($m->extra_attributes) ? null : json_decode($m->extra_attributes);
