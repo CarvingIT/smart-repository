@@ -66,7 +66,7 @@ class DocumentSaved
             $body['text_content'] = $event->document->text_content;
             foreach($event->document->meta as $mv){
                 if(empty($mv->value)) continue;
-                $body['meta_'.$mv->meta_field_id] = $event->document->meta_value($mv->meta_field_id);
+                $body['meta_'.$mv->meta_field_id] = $mv->value;
             }
             $params = [
                 'index' => 'sr_documents',
