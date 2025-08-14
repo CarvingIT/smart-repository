@@ -27,11 +27,8 @@ trait Search{
 
         // log search query
 		$old_query = Session::get('search_query');
-        // put new query in session
-        if(!empty($request->search['value'])){
-            Log::debug('Query: '.$request->search['value']);
-		    Session::put('search_query', $request->search['value']);
-        }
+        // put new query in session even if it is null
+	    Session::put('search_query', $request->search['value']);
 
 		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
 			&& !$request->is('api/*') && strlen($request->search['value'])>1){
@@ -61,10 +58,10 @@ trait Search{
 		return $documents;
 	}
 
-    public function getMetaFilteredDocuments($request, $documents){
+    public function getMetaFiltersFromRequest($request){
 		// check if meta filters are present in the query
 		$query_params = $request->query();
-		$meta_filters_query = array();
+		$meta_filters_query = [];
 		foreach($query_params as $p=>$v){
 			if(preg_match('/^meta_(\d*)/', $p, $matches)){
 				// currently, no support for operator in the query string parameters
@@ -81,7 +78,7 @@ trait Search{
 				}
 			}
 		}
-		$meta_filters = array();
+		$meta_filters = [];
 		if(count($meta_filters_query)>0){
 			$meta_filters = $meta_filters_query;
 		}
@@ -90,6 +87,37 @@ trait Search{
         	$all_meta_filters = Session::get('meta_filters');
         	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
 		}
+        return $meta_filters;
+    }
+
+    public function getMustQueriesFromMetaFilters($meta_filters){
+        $must_queries = [];
+        foreach($meta_filters as $mf){
+            if(in_array($mf['operator'], ['=','contains'])){
+                $must_queries[] = ['match'=>
+                            ['meta_'.$mf['field_id'] => $mf['value'] ]
+                        ];
+            }
+            else if($mf['operator'] == '<='){
+                $must_queries[] = ['range'=>
+                            ['meta_'.$mf['field_id'] => [
+                                'lte' => $mf['value']
+                            ]]
+                        ];
+            }
+            else if($mf['operator'] == '>='){
+                $must_queries[] = ['range'=>
+                            ['meta_'.$mf['field_id'] => [
+                                'gte' => $mf['value']
+                            ]]
+                        ];
+            }
+        }
+        return $must_queries;
+    }
+
+    public function getMetaFilteredDocuments($request, $documents){
+        $meta_filters = $this->getMetaFiltersFromRequest($request);
         foreach($meta_filters as $mf){
 			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filteres like created_at, created_by
 				if($mf['field_id'] == 'created_at'){
@@ -169,7 +197,6 @@ trait Search{
         $must_not_query = [];
 		if($collection->content_type == 'Uploaded documents'){
         	$elastic_index = 'sr_documents';
-        	//$documents = \App\Document::where('collection_id', $request->collection_id);
 			$column_config = json_decode($collection->column_config);	
 			if($collection->require_approval && empty($column_config->display_unapproved_docs)){
                 $must_query[] = [ 'exists'=>[ 'field' => 'approved_on' ] ];
@@ -227,9 +254,6 @@ trait Search{
 		}
 		//Log::debug($elastic_index.' - '.implode(",", $collection_ids));
 	}
-    foreach($must_query as $m_q){
-        $params['body']['query']['bool']['must'][] = $m_q;
-    }
     $params_cnt = [
         'index'=>$elastic_index,
         'body' => [
@@ -265,11 +289,8 @@ trait Search{
                 $title_query = Session::get('title_filter')[$request->collection_id];
             }
         }
-        Log::debug('Title filter query: '. $title_query);
-        // get Meta filtered documents
-        //$documents = $this->getMetaFilteredDocuments($request, $documents);
-        //$total_count = $cnt_response->count;
 	    Log::debug('Total Count: '.$total_count);
+        //$total_count = $cnt_response->count;
         // get the list of IDs to filter from
 
 	    $length = empty($request->length)?10:$request->length;
@@ -300,7 +321,16 @@ trait Search{
 				$q_text_phrase = ['query'=>$search_term, 'boost'=>3, 'analyzer'=>$analyzer];// just standard analyzer should be enough here
 
                 $params = $params_cnt;
-                if(!empty($request->search['value']) && strlen($request->search['value'])>1){
+                // get Meta filtered documents
+                $meta_filters = $this->getMetaFiltersFromRequest($request);
+                $meta_queries = $this->getMustQueriesFromMetaFilters($meta_filters);
+                $must_query = array_merge($must_query, $meta_queries);
+                foreach($must_query as $m_q){
+                    Log::info('Must Q: '.json_encode($m_q));
+                    $params['body']['query']['bool']['must'][] = $m_q;
+                }
+
+                if(!empty($search_term) && strlen($search_term)>1){
 				$params['body']['query']['bool']['should'] =
 								[
 									[
@@ -368,24 +398,12 @@ trait Search{
                 }
 
                 $full_text_scope = Session::get('full_text_scope');
-                if($full_text_scope == 'title'){
+                if(!empty($search_term) && $full_text_scope == 'title'){
                     // reduce the scope
                     $params['body']['query']['bool']['should'] = [['match'=>[ 'title' => $title_q_with_and ]]];
-                    //Log::debug(json_encode($params));
                 }
 
-			// add must match clause 
-            /*
-			if(!empty($request->must_match) && count($request->must_match) > 0){
-				foreach($request->must_match as $must_keyword){
-					$params['body']['query']['bool']['must'][] = 
-										['match' => [
-											'text_content' => $must_keyword
-										]];
-				}
-            }
-            */
-            // following must queries are used for filtering
+            // following must query is used for title-filtering
 		    if(!empty($title_query)){
 				Log::debug('Adding must match clause for title. Query is - '. json_encode($title_query));
 				$params['body']['query']['bool']['must'][] = 
@@ -409,6 +427,7 @@ trait Search{
         //} // if search term is entered
             $document_ids = [];
 		    try{
+                Log::debug(json_encode($params));
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
                     $document_ids[] = $h['_id'];
@@ -591,10 +610,7 @@ trait Search{
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
         // get Meta filtered documents
-        //$all_meta_filters = Session::get('meta_filters');
-        //if(!empty($all_meta_filters[$request->collection_id])){
-            $documents = $this->getMetaFilteredDocuments($request, $documents);
-        //}
+        $documents = $this->getMetaFilteredDocuments($request, $documents);
 
         // content search
         if(!empty($request->search['value']) && strlen($request->search['value'])>3){

@@ -494,7 +494,8 @@ $(document).ready(function() {
         $(this).select2ToTree({dropdownCssClass : 'full-width'});
     });
 
-    oTable.search($('#collection_search').val()).draw();
+    // why is this call needed?
+    //oTable.search($('#collection_search').val()).draw();
     
     });
 
