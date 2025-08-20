@@ -35,29 +35,46 @@ class ImportUserDetails extends Command
         $line_count = 0;
         foreach($user_details as $u){
             $u_d = explode(",",$u);
-            print_r($u_d); echo "\n";
+            //print_r($u_d); echo "\n";
             if($line_count == 0){
                 $headings = $u_d;                
             }             
             else{
-                $u_t = \App\User::where('email',$u_d[2])->first();
-                if(!empty($u_t->email) && $u_t->email == $u_d[2]){ continue; }
-                $u_t = new \App\User;
-                $u_t->name = $u_d[1];
-                $u_t->organization = 'Swadhaa Waldorf School';
-                $u_t->email = $u_d[2];
-                $u_t->password = $this->randomPassword();
-                $u_t->occupation = $u_d[3];
-                $extra_attributes['Area'] = $u_d[0];
-                $extra_attributes['Class Email ID'] = $u_d[4];
-                $extra_attributes['Contact No'] = $u_d[5];
-                $extra_attributes['Personal email id'] = $u_d[6];
-                $u_t->extra_attributes = json_encode($extra_attributes);
-                $u_t->save();
+                $rows[] = $u_d;
             }
         $line_count++;
         }
 
+        foreach($rows as $row){
+            for($i=0;$i<count($headings);$i++){
+                $header_column = preg_replace("/ /","_",rtrim(strtolower($headings[$i])));
+                if($header_column == 'official_email_id'){
+                    $header_column = 'email';
+                }
+                if($header_column == 'designation'){
+                    $header_column = 'occupation';
+                }
+                $data[$header_column]= $row[$i];
+                }
+                $data_new[] = $data;
+        }
+
+        foreach($data_new as $u_data){
+                $u_t = \App\User::where('email',$u_data['email'])->first();
+                if(!empty($u_t->email) && $u_t->email == $u_data['email']){ continue; }
+                $u_t = new \App\User;
+                $u_t->name = $u_data['name'];
+                $u_t->organization = 'Swadhaa Waldorf School';
+                $u_t->email = $u_data['email'];
+                $u_t->password = $this->randomPassword();
+                $u_t->occupation = $u_data['occupation'];
+                $extra_attributes['Area'] = $u_data['area'];
+                $extra_attributes['Class Email ID'] = $u_data['class_email_id'];
+                $extra_attributes['Contact No'] = $u_data['contact_no'];
+                $extra_attributes['Personal email id'] = $u_data['personal_email_id'];
+                $u_t->extra_attributes = json_encode($extra_attributes);
+                $u_t->save();
+        }
 
         return Command::SUCCESS;
     }
