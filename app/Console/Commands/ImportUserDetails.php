@@ -52,11 +52,12 @@ class ImportUserDetails extends Command
                 $extra_attributes['Class Email ID'] = $u_d[4];
                 $extra_attributes['Contact No'] = $u_d[5];
                 $extra_attributes['Personal email id'] = $u_d[6];
-                $u_t->extra_attributes = json_encode($extra_attributes);;
+                $u_t->extra_attributes = json_encode($extra_attributes);
                 $u_t->save();
             }
         $line_count++;
         }
+
 
         return Command::SUCCESS;
     }
