@@ -48,12 +48,6 @@ class ImportUserDetails extends Command
         foreach($rows as $row){
             for($i=0;$i<count($headings);$i++){
                 $header_column = preg_replace("/ /","_",rtrim(strtolower($headings[$i])));
-                if($header_column == 'official_email_id'){
-                    $header_column = 'email';
-                }
-                if($header_column == 'designation'){
-                    $header_column = 'occupation';
-                }
                 $data[$header_column]= $row[$i];
                 }
                 $data_new[] = $data;
