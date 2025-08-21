@@ -72,7 +72,7 @@ else{
 	<h4>Associated Meta Information</h4>
     <div id="meta-data">
 	@foreach($doc->meta as $m)
-        @if(!$m->meta_field || empty(strip_tags($m->value))) @continue @endif
+        @if(!$m->meta_field || empty(strip_tags($m->value)) || preg_match('/<video/i', $m->value)) @continue @endif
 
 		@if(@$m->meta_field->type == 'Date')
 		<p><label>{{ @$m->meta_field->label }}</label><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
