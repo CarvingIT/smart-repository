@@ -32,4 +32,14 @@ class Taxonomy extends Model
 		}
 		return $family;
 	}
+
+    public function parentLine(){
+        $parents = [$this->label];
+        $me = $this;
+        while($me = $me->parent){
+            if($me->parent) $parents[] = $me->label;
+        }
+        $parents = array_reverse($parents);
+        return implode(" &raquo; ", $parents);
+    }
 }
