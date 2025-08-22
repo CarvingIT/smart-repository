@@ -68,14 +68,19 @@ class DocumentSaved
                 if(empty($mv->value)) continue;
                 $body['meta_'.$mv->meta_field_id] = $mv->value;
             }
+            $del_params = [
+                'index' => 'sr_documents',
+                'id'    => $event->document->id
+            ];
             $params = [
                 'index' => 'sr_documents',
                 'id'    => $event->document->id,
                 'body'  => $body
             ];
 	    	try{
+                $del_response = $client->delete($del_params);
             	$response = $client->index($params);
-	    		Log::info('Elastic index updated for document {id}.', ['id'=>$event->document->id]);
+	    		Log::info('Elastic index updated for document '. $event->document->id.'.');
 	    	}
 	    	catch(\Exception $e){
 	    		Log::warning($e->getMessage());
