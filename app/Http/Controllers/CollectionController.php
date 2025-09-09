@@ -739,8 +739,14 @@ use App\UrlSuppression;
 					$meta_details = [$m->label => $details_select];
 				}
 				else{
-					//$meta_details = [$m->label => $d->meta_value($m->id)];
-					$meta_details = [$m->label => html_entity_decode($d->meta_value($m->id))];
+                    $extra_attributes = json_decode($m->extra_attributes);
+                    $show_parents = empty($extra_attributes->show_parents)?false:true;
+                    if($m->type == 'TaxonomyTree' && $show_parents){
+					    $meta_details = [$m->label => html_entity_decode($d->meta_value($m->id, false, $show_parents))];
+                    }
+                    else{
+					    $meta_details = [$m->label => html_entity_decode($d->meta_value($m->id))];
+                    }
 				}
 				$list = array_merge($list,$meta_details);
                 $related_doc_ids = $d->related_documents->pluck('related_document_id');
