@@ -85,8 +85,8 @@ class UpdateMeta extends Command
 				if($meta_field->type == 'TaxonomyTree'){
 					// find relevant parent (category) in the taxonomies
 					$taxo_parent = $meta_field->options;
-					// there can be more than one comma separated values
-					$val_ar = explode(",", $values[$i]);
+					// there can be more than one values separated by pipes "|"
+					$val_ar = explode("|", $values[$i]);
 					$t_models = Taxonomy::where('parent', $taxo_parent)
 						->whereIn('label', $val_ar)->get();
 					$t_ids = [];
