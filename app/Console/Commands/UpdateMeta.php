@@ -53,11 +53,11 @@ class UpdateMeta extends Command
 			die("Error: Meta data file does not exist.\n");
 		}
 	
-		$header_row = array_shift($meta_lines);
+		$header_row = ltrim(rtrim(array_shift($meta_lines)));
 		$fields = explode("\t", $header_row);
 
 		foreach($meta_lines as $l){
-			$values = explode("\t", $l);			
+			$values = explode("\t", ltrim(rtrim($l)));			
 			if(empty($values[0])) continue;
 			$doc = Document::find($values[0]);
 			if(!$doc){
