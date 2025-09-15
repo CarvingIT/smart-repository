@@ -60,13 +60,13 @@ class ImportDocs extends Command
 	    symlink($dir, 'storage/app/import');
 			//meta info file exists ?
 			$meta_info_file = 'storage/app/import/meta.csv';
+            $handle = fopen($meta_info_file, "r");
+
 			$meta_values = [];
 			$titles = [];
 			if(is_file($meta_info_file)){
-				$meta_lines = file($meta_info_file);
-				$header_row = ltrim(rtrim(array_shift($meta_lines)));
-				// explode by \t char (tab separated values)	
-				$fields = explode("\t", $header_row);
+                $fields = fgetcsv($handle, null, "\t");
+
 				$field_models = [];
                 $field_num = 0;
 				foreach ($fields as $f){
@@ -88,8 +88,8 @@ class ImportDocs extends Command
 						$field_models[] = null;
 					}
 				}
-				foreach($meta_lines as $l){
-					$values = explode("\t", ltrim(rtrim($l)));
+
+				while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
                     if(!is_file('storage/app/import/'.$values[0])){
                         echo "WARNING: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
                     }
