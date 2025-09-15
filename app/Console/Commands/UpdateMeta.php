@@ -46,18 +46,14 @@ class UpdateMeta extends Command
         $meta_data_file = $this->argument('meta_data_file');
 		echo $meta_data_file."\n";
 
-		if(file_exists($meta_data_file)){
-			$meta_lines = file($meta_data_file);
-		}
-		else{
+		if(!file_exists($meta_data_file)){
 			die("Error: Meta data file does not exist.\n");
 		}
-	
-		$header_row = ltrim(rtrim(array_shift($meta_lines)));
-		$fields = explode("\t", $header_row);
 
-		foreach($meta_lines as $l){
-			$values = explode("\t", ltrim(rtrim($l)));			
+        $handle = fopen($meta_data_file, "r");
+        $fields = fgetcsv($handle, null, "\t");
+
+        while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
 			if(empty($values[0])) continue;
 			$doc = Document::find($values[0]);
 			if(!$doc){
