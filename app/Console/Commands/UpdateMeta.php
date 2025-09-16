@@ -83,7 +83,12 @@ class UpdateMeta extends Command
 					// there can be more than one values separated by pipes "|"
 					$val_ar = explode("|", $values[$i]);
                     $val_ar = array_map('trim', $val_ar);
-					$t_models = Taxonomy::where('parent_id', $taxo_parent)
+
+                    $t_category_model = Taxonomy::where('parent_id', $taxo_parent)->first();
+                    $t_family = $t_category_model->createFamily();
+                    $family_ids = $t_family->pluck('id');
+
+					$t_models = Taxonomy::whereIn('parent_id', $family_ids)
 						->whereIn('label', $val_ar)->get();
 					$t_ids = [];
 					foreach($t_models as $t){
