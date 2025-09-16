@@ -86,7 +86,10 @@ class UpdateMeta extends Command
 
                     $t_category_model = Taxonomy::where('parent_id', $taxo_parent)->first();
                     $t_family = $t_category_model->createFamily();
-                    $family_ids = $t_family->pluck('id');
+                    $family_ids = [];
+                    foreach($t_family as $t_f){
+                        $family_ids[] = $t_f->id;
+                    }
 
 					$t_models = Taxonomy::whereIn('parent_id', $family_ids)
 						->whereIn('label', $val_ar)->get();
