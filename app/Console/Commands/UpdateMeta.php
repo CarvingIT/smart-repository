@@ -84,7 +84,8 @@ class UpdateMeta extends Command
 					$val_ar = explode("|", $values[$i]);
                     $val_ar = array_map('trim', $val_ar);
 
-                    $t_category_model = Taxonomy::where('parent_id', $taxo_parent)->first();
+                    $t_category_model = Taxonomy::where('id', $taxo_parent)->first();
+                    //echo 'Category: '. $t_category_model->label."\n";
                     $t_family = $t_category_model->createFamily();
                     $family_ids = [];
                     foreach($t_family as $t_f){
@@ -98,6 +99,7 @@ class UpdateMeta extends Command
 						$t_ids[] = $t->id;
 					}
 					$field_val_model->value = '['.implode(",", $t_ids).']';
+                    //echo $field_val_model->value."\n";
 				}
 				else if($meta_field->type == "Select" || $meta_field->type == "MultiSelect"){
 					$field_val_model->value = '['.$values[$i].']';
