@@ -62,9 +62,8 @@ class UpdateMeta extends Command
 			}
 			echo $doc->title."\n";
 			for($i=1; $i<count($fields); $i++){
-				//echo ltrim(rtrim($fields[$i])).": ".$values[$i]."\n";
 				$meta_field = MetaField::where('collection_id', $doc->collection->id)
-					->where('label', $fields[$i])->first();
+					->where('label', ltrim(rtrim($fields[$i])))->first();
 				if(!$meta_field){
 					echo "Could not find meta field - ". $fields[$i]."\n";
 					continue;
