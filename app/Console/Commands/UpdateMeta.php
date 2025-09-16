@@ -83,7 +83,7 @@ class UpdateMeta extends Command
 					$taxo_parent = $meta_field->options;
 					// there can be more than one values separated by pipes "|"
 					$val_ar = explode("|", $values[$i]);
-					$t_models = Taxonomy::where('parent', $taxo_parent)
+					$t_models = Taxonomy::where('parent_id', $taxo_parent)
 						->whereIn('label', $val_ar)->get();
 					$t_ids = [];
 					foreach($t_models as $t){
