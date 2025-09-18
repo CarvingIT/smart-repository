@@ -94,11 +94,20 @@ class UpdateMeta extends Command
 
 					$t_models = Taxonomy::whereIn('parent_id', $family_ids)
 						->whereIn('label', $val_ar)->get();
+                    $duplicates_present = (count($t_models) > count($val_ar));
 					$t_ids = [];
+                    $t_ids_strict = [];
+                    $label_cnt = [];
 					foreach($t_models as $t){
 						$t_ids[] = $t->id;
+                        $label_cnt[$t->label] = empty($label_cnt[$t->label])?1:++$label_cnt[$t->label];
 					}
-					$field_val_model->value = '['.implode(",", $t_ids).']';
+					foreach($t_models as $t){
+                        if(in_array($t->parent->label, $val_ar) || $t->parent->id == $taxo_parent){
+                            $t_ids_strict[] = $t->id;
+                        }
+                    } 
+					$field_val_model->value = '['.implode(",", $t_ids_strict).']';
                     //echo $field_val_model->value."\n";
 				}
 				else if($meta_field->type == "Select" || $meta_field->type == "MultiSelect"){
@@ -108,6 +117,7 @@ class UpdateMeta extends Command
 					$field_val_model->value = $values[$i];
 				}
 				// save the meta value
+                //continue;
 				$field_val_model->save();
 			}
 		}
