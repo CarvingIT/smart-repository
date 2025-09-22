@@ -375,7 +375,7 @@ $(document).ready(function()
                                 @if(is_array($field_val))
                                 {{ @implode(", ",$field_val) }}
                                 @else
-                                {{ $field_val }}
+                                {{ $m->value }}
                                 @endif
                                 </span>
 							@elseif ($m->meta_field->type ==  'TaxonomyTree')
