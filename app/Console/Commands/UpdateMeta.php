@@ -104,7 +104,7 @@ class UpdateMeta extends Command
 					}
 					foreach($t_models as $t){
                         if(in_array($t->parent->label, $val_ar) || $t->parent->id == $taxo_parent){
-                            $t_ids_strict[] = $t->id; 
+                            $t_ids_strict[] = ''.$t->id; 
                         }
                     } 
 					$field_val_model->value = json_encode($t_ids_strict);
