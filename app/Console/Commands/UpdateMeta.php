@@ -104,14 +104,14 @@ class UpdateMeta extends Command
 					}
 					foreach($t_models as $t){
                         if(in_array($t->parent->label, $val_ar) || $t->parent->id == $taxo_parent){
-                            $t_ids_strict[] = ''.$t->id; // should be stored as an array of strings ?
+                            $t_ids_strict[] = $t->id; 
                         }
                     } 
-					$field_val_model->value = '['.implode(",", $t_ids_strict).']';
+					$field_val_model->value = json_encode($t_ids_strict);
                     //echo $field_val_model->value."\n";
 				}
 				else if($meta_field->type == "Select" || $meta_field->type == "MultiSelect"){
-					$field_val_model->value = '['.$values[$i].']';
+					$field_val_model->value = json_encode($values[$i]);
 				}
 				else{ // default handling for type = Text|TextArea|Date|Numeric 
 					$field_val_model->value = $values[$i];
