@@ -116,7 +116,8 @@ class ImportDocs extends Command
 										}
 									}
 								}
-								$row = ['field_id' => $key, 'field_value' => array_unique($t_ids)];
+								//$row = ['field_id' => $key, 'field_value' => array_unique($t_ids)];
+								$row = ['field_id' => $key, 'field_value' => array_map('strval', array_unique($t_ids))];
 								$meta_values[$values[0]][] = $row;
 							}
 							else{ // text, textarea etc are all default
