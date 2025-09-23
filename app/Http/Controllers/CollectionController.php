@@ -728,7 +728,7 @@ use App\UrlSuppression;
 		
 		$documents->chunk(100, function($documents) use (&$new_list){ // chunking starts
             foreach($documents as $d){
-  			$list = ['ID'=>$d->id,'Title'=>$d->title];
+  			$list = ['ID'=>$d->id,'Title'=>$d->title,'Path'=>$d->path];
 			$meta_fields = $d->collection->meta_fields;
 			$meta_details=[];
 			foreach($meta_fields as $m){

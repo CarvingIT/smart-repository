@@ -368,7 +368,16 @@ $(document).ready(function()
 				           <div class="{{ $classname }}">&nbsp;</div>
 						{{ $meta_labels[$m->meta_field_id] }}</label>
 							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
-                            					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
+               					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">
+                                @php
+                                $field_val = json_decode($m->value);
+                                @endphp
+                                @if(is_array($field_val))
+                                {{ @implode(", ",$field_val) }}
+                                @else
+                                {{ $m->value }}
+                                @endif
+                                </span>
 							@elseif ($m->meta_field->type ==  'TaxonomyTree')
                             					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $document->meta_value($m->meta_field_id, false, $show_parents) !!}</span>
 							@else

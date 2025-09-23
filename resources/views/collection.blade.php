@@ -283,7 +283,13 @@ function randomString(length) {
 		   	<input type="hidden" name="operator[]" value="between" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			<script>
-				$('#meta_{{ $m->id }}_search').dateRangePicker();
+				$('#meta_{{ $m->id }}_search').dateRangePicker({
+                  monthSelect: true,
+                  yearSelect: [1900, moment().get('year')]
+                })
+                .bind('datepicker-change', function(event, obj){
+                    this.form.submit();
+                }); 
 			</script>
 			</form>
 			</div>
