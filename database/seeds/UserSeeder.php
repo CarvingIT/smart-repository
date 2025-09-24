@@ -76,6 +76,8 @@ class UserSeeder extends Seeder
             ]
         );
 
+        
+
 
         // make first user admin
         DB::table('user_roles')->insert(
