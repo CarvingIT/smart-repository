@@ -158,7 +158,6 @@ else{
 <!-- Lines from the upload form starts here-->
     
 	@foreach($doc->meta as $m)
-        @if(!$m->meta_field || empty(strip_tags($m->value))) @continue @endif
 
     	<p><label>{{$m->meta_field->label}}</label><br />
         @if($m->meta_field->type == 'Text')
