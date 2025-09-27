@@ -144,66 +144,58 @@ else{
         <input type="hidden" name="document_id" value="{{ $document_id }}" />
         @endif
     {{--
-	@foreach($doc->meta as $m)
-        @if(!$m->meta_field || empty(strip_tags($m->value))) @continue @endif
-
-		@if(@$m->meta_field->type == 'Date')
-		<p><label>{{ @$m->meta_field->label }}</label><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
-		@else
-		<p><label>{{ @$m->meta_field->label }} skk {{ $m->meta_field->id }}</label><br /><input type="text" name="meta_field_{{ $m->meta_field->id }}" value="{!! html_entity_decode($doc->meta_value($m->meta_field_id)) !!}"></p>
-		@endif
-	@endforeach
     --}}
 
 <!-- Lines from the upload form starts here-->
     
-	@foreach($doc->meta as $m)
+	{{--@foreach($doc->meta as $m)--}}
+    @foreach($collection->meta_fields as $f)
 
-    	<p><label>{{$m->meta_field->label}}</label><br />
-        @if($m->meta_field->type == 'Text')
-        <input class="form-control" id="meta_field_{{$m->meta_field->id}}" type="text" name="meta_field_{{$m->meta_field->id}}" value="{{ old('meta_field_'.$m->meta_field->id, $doc->meta_value($m->meta_field->id)) }}" placeholder="{{ $m->meta_field->placeholder }}" @if($m->meta_field->is_required == 1) {{ ' required' }} @endif />
-        @elseif ($m->meta_field->type == 'Textarea')
-        <textarea id="document_description" class="form-control @if($m->meta_field->with_rich_text_editor == 1)rich_text_editor @endif" rows="5" id="meta_field_{{$m->meta_field->id}}" name="meta_field_{{$m->meta_field->id}}" placeholder="{{ $m->meta_field->placeholder }}" @if($m->meta_field->is_required == 1) {{ ' required' }} @endif >{!! old('meta_field_'.$m->meta_field->id, $doc->meta_value($m->meta_field->id)) !!}</textarea>
-        @elseif ($m->meta_field->type == 'Numeric')
-        <input class="form-control" id="meta_field_{{$m->meta_field->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$m->meta_field->id}}" value="{{ old('meta_field_'.$m->meta_field->id, $doc->meta_value($m->meta_field->id)) }}" placeholder="{{ $m->meta_field->placeholder }}" @if($m->meta_field->is_required == 1) {{ ' required' }} @endif />
-        @elseif ($m->meta_field->type == 'Date')
-        <input id="meta_field_{{$m->meta_field->id}}" max="2999-12-31"  type="date" name="meta_field_{{$m->meta_field->id}}" value="{{ old('meta_field_'.$m->meta_field->id, $doc->meta_value($m->meta_field->id)) }}" placeholder="{{ $m->meta_field->placeholder }}" @if($m->meta_field->is_required == 1) {{ ' required' }} @endif />
+    	<p><label>{{$f->label}}</label><br />
+        @if($f->type == 'Text')
+        <input class="form-control" id="meta_field_{{$f->id}}" type="text" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $doc->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        @elseif ($f->type == 'Textarea')
+        <textarea id="document_description" class="form-control @if($f->with_rich_text_editor == 1)rich_text_editor @endif" rows="5" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif >{!! old('meta_field_'.$f->id, $doc->meta_value($f->id)) !!}</textarea>
+        @elseif ($f->type == 'Numeric')
+        <input class="form-control" id="meta_field_{{$f->id}}" type="number" step="0.01" min="-9999999999.99" max="9999999999.99" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $doc->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
+        @elseif ($f->type == 'Date')
+        <input id="meta_field_{{$f->id}}" max="2999-12-31"  type="date" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $doc->meta_value($f->id)) }}" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 
-        @elseif (in_array($m->meta_field->type, array('Select', 'MultiSelect')))
-        <select class="form-control selectsequence" id="meta_field_{{$m->meta_field->id}}" name="meta_field_{{$m->meta_field->id}}[]" @if($m->meta_field->type == 'MultiSelect') multiple @endif 
-		@if($m->meta_field->is_required == 1) {{ ' required' }} @endif >
+        @elseif (in_array($f->type, array('Select', 'MultiSelect')))
+        <select class="form-control selectsequence" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" @if($f->type == 'MultiSelect') multiple @endif 
+		@if($f->is_required == 1) {{ ' required' }} @endif >
             @php
-                $options = explode(",", $m->meta_field->options);
+                $options = explode(",", $f->options);
 				sort($options);
             @endphp
-            <option value="">{{ $m->meta_field->placeholder }}</option>
+            <option value="">{{ $f->placeholder }}</option>
             @foreach($options as $o)
                 @php
                     $o = ltrim(rtrim($o));
-                    $old_vals = old('meta_field_'.$m->meta_field->id, json_decode($doc->meta_value($m->meta_field->id)));
+                    $old_vals = old('meta_field_'.$f->id, json_decode($doc->meta_value($f->id)));
                     $old_vals = is_array($old_vals) ? $old_vals : [];
                 @endphp
             	<option value="{{$o}}" @if(@in_array($o, $old_vals)) selected="selected" @endif >{{$o}}</option>
             @endforeach
         </select>
-		@elseif ($m->meta_field->type == 'SelectCombo')
-		<input type="text" class="form-control" id="meta_field_{{$m->meta_field->id}}" name="meta_field_{{$m->meta_field->id}}" value="{{ old('meta_field_'.$m->meta_field->id, $doc->meta_value($m->meta_field->id)) }}" autocomplete="off" list="optionvalues" placeholder="{{ $m->meta_field->placeholder }}" @if($m->meta_field->is_required == 1) {{ ' required' }} @endif />
+		@elseif ($f->type == 'SelectCombo')
+		<input type="text" class="form-control" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}" value="{{ old('meta_field_'.$f->id, $doc->meta_value($f->id)) }}" autocomplete="off" list="optionvalues" placeholder="{{ $f->placeholder }}" @if($f->is_required == 1) {{ ' required' }} @endif />
 		<label>You can select an option or type custom text above.</label>
 		<datalist id="optionvalues">
             @php
-                $options = explode(",", $m->meta_field->options);
+                $options = explode(",", $f->options);
 				sort($options);
             @endphp
             @foreach($options as $o)
                 @php
                     $o = ltrim(rtrim($o));
-                    $old_vals = json_decode($doc->meta_value($m->meta_field->id));
+                    $old_vals = json_decode($doc->meta_value($f->id));
                     $old_vals = is_array($old_vals) ? $old_vals : [];
                 @endphp
             <option>{{$o}}</option>
             @endforeach
 		</datalist>
-		@elseif ($m->meta_field->type == 'TaxonomyTree')
+		@elseif ($f->type == 'TaxonomyTree')
 			@php
 				$tags = App\Taxonomy::all();
 				$children = [];
@@ -211,13 +203,12 @@ else{
 					$children['parent_'.$t->parent_id][] = $t;
 				}
 				if(!function_exists('getTree')){
-                $doc_meta_field = $m->meta_field; 
-				function getTree($children, $doc, $doc_meta_field, $level, $parent_id = null, $parents = null){
+				function getTree($children, $doc, $f, $level, $parent_id = null, $parents = null){
                     $level++;
 					if(empty($children['parent_'.$parent_id])) return;
 					foreach($children['parent_'.$parent_id] as $t){
 							$selected = '';
-                            $old_vals = old('meta_field_'.$doc_meta_field->id, json_decode($doc->meta_value($doc_meta_field->id, true)));
+                            $old_vals = old('meta_field_'.$f->id, json_decode($doc->meta_value($f->id, true)));
                             $old_vals = is_array($old_vals) ? $old_vals : [];
 							if (@in_array($t->id, $old_vals)){
 								$selected='selected="selected"';
@@ -226,7 +217,7 @@ else{
 							if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){ 
 								echo '<option '.$data_pup.' value="'.$t->id.'" '.$selected.' class="l'.$level.' non-leaf">'.$t->label.'</option>';
 								$parents_tmp = $parents. $t->label .' - ';
-								getTree($children, $doc, $m->meta_field, $level, $t->id, $parents_tmp);
+								getTree($children, $doc, $f, $level, $t->id, $parents_tmp);
 							}
 							else{
 								echo '<option '.$data_pup.' class="l'.$level.'" value="'.$t->id.'" '.$selected.'>'.$t->label.'</option>';
@@ -235,14 +226,13 @@ else{
 				}
 				}
 			@endphp
-        <select class="form-control selectsequencetree" id="meta_field_{{$m->meta_field->id}}" name="meta_field_{{$m->meta_field->id}}[]" multiple 
-		@if($m->meta_field->is_required == 1) {{ ' required' }} @endif>
+        <select class="form-control selectsequencetree" id="meta_field_{{$f->id}}" name="meta_field_{{$f->id}}[]" multiple @if($f->is_required == 1) {{ ' required' }} @endif>
 			@php
-			getTree($children, $doc, $m->meta_field, 0, $m->meta_field->options);
+			getTree($children, $doc, $f, 0, $f->options);
 			@endphp
 		</select>
         <script>
-             $('#meta_field_{{$m->meta_field->id}}').val({{ preg_replace('/"/','',$doc->meta_value($m->meta_field->id, true)) }});
+             $('#meta_field_{{$f->id}}').val({{ preg_replace('/"/','',$doc->meta_value($f->id, true)) }});
         </script>
 
         @endif
