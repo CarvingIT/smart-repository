@@ -727,6 +727,17 @@ trait Search{
                		$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
                 	$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
             	}
+                
+            // Add favourite button
+            if(Auth::user()){
+                $isFavourited = $d->isFavouritedBy(Auth::id());
+                if($isFavourited){
+                    $action_icons .= '<span class="btn btn-warning btn-link favourite-btn" onclick="toggleFavourite('.$d->id.')" data-document-id="'.$d->id.'" title="Remove from favourites"><i class="material-icons">star</i></span>';
+                } else {
+                    $action_icons .= '<span class="btn btn-primary btn-link favourite-btn" onclick="toggleFavourite('.$d->id.')" data-document-id="'.$d->id.'" title="Add to favourites"><i class="material-icons">star_border</i></span>';
+                }
+            }
+                
 		if(in_array($d->type, ['application/pdf'])){
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/doc-viewer" target="_blank"><i class="material-icons">open_in_browser</i></a>';
 		}

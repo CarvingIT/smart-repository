@@ -289,6 +289,12 @@ Route::get('/global-search', 'CollectionController@globalSearch');
 // related documents
 Route::post('/collection/{collection_id}/document/{document_id}/add-related-document','RelatedDocumentController@addRelatedDocument')->middleware('maintainer');
 
+// Favourite Documents routes
+Route::get('/favourite-documents', 'FavouriteController@index')->middleware('auth');
+Route::post('/favourite/add', 'FavouriteController@addFavourite')->middleware('auth');
+Route::post('/favourite/remove', 'FavouriteController@removeFavourite')->middleware('auth');
+Route::get('/favourites', 'FavouriteController@getFavourites')->middleware('auth');
+
 // laravel file manager
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function (){
     \UniSharp\LaravelFilemanager\Lfm::routes();

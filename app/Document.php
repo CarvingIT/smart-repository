@@ -191,4 +191,28 @@ class Document extends Model implements Auditable
         }
     }
 
+    /**
+     * Get favourite documents relationship
+     */
+    public function favourites()
+    {
+        return $this->hasMany(FavouriteDocument::class);
+    }
+
+    /**
+     * Check if document is favourited by a specific user
+     */
+    public function isFavouritedBy($user_id)
+    {
+        return $this->favourites()->where('user_id', $user_id)->exists();
+    }
+
+    /**
+     * Get favourite count for this document
+     */
+    public function getFavouriteCountAttribute()
+    {
+        return $this->favourites()->count();
+    }
+
 }

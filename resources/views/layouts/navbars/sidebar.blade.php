@@ -25,10 +25,16 @@
                 <p>{{ __('Dashboard') }} </p>
        </a>
       </li>
-      <li class="nav-item{{ $activePage == 'collection' ? ' active' : '' }}">
+            <li class="nav-item{{ $activePage == 'collection' ? ' active' : '' }}">
         <a class="nav-link" href="/collections">
           <i class="material-icons">library_books</i>
             <p>{{ __('Collections') }}</p>
+        </a>
+      </li>
+      <!-- Favourite Documents Menu Item -->
+      <li class="nav-item{{ $activePage == 'favourite-documents' ? ' active' : '' }}">
+        <a class="nav-link" href="/favourite-documents">
+            <p>{{ __('Favourite Documents') }}</p>
         </a>
       </li>
 @if(Auth::check() && Auth::user()->hasRole('admin'))
