@@ -69,7 +69,7 @@ else{
 @endphp
 </div>
 <div id="meta-view">
-	<h4>Associated Meta Information</h4>
+	<h4>Associated Meta Information<span class="text-right" style="float:right"><a href="/collection/{{ $collection_id }}/document/{{ $document_id }}/doc-edit-viewer" style="color:#eee;">Edit</a></span></h4>
     <div id="meta-data">
 	@foreach($doc->meta as $m)
         @if(!$m->meta_field || empty(strip_tags($m->value))) @continue @endif

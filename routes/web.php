@@ -118,6 +118,9 @@ Route::get('/c-{collection_id}/doc-viewer.css',function($collection_id){
 });
 Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
 
+// Document pdf viewer edit routes
+Route::get('/collection/{collection_id}/document/{document_id}/doc-edit-viewer', 'DocumentController@docEditViewer')->middleware('document_view');
+
 //Multiple file upload routes
 Route::get('/collection/{collection_id}/document/{document_id}/details/{path_count}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/doc-viewer/{path_count}', 'DocumentController@docViewer')->middleware('document_view');
