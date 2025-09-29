@@ -71,7 +71,7 @@ tinymce.init({
 #meta-view {
 flex:40%;
 overflow-y:scroll;
-height:618px;
+height:auto;
 }
 #doc-view {
   flex:60%;
