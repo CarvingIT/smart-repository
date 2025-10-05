@@ -174,5 +174,14 @@ class User extends Authenticatable implements MustVerifyEmail
         return false;
     }
 
+    public function favoriteDocuments(){
+        return $this->belongsToMany(Document::class, "user_favourite", "user_id", "document_id")
+                    ->withTimestamps();
+    }
+
+    public function hasFavorited($documentId){
+        return $this->favoriteDocuments()->where('document_id', $documentId)->exists();
+    }
+
 ///// 
 } // End of the class

@@ -756,24 +756,39 @@ trait Search{
             $action_icons = '';
 
 	    if($content_type == 'Uploaded documents'){
-            	$revisions = $d->revisions;
-            	$r_count = count($revisions);
-            	if($r_count > 1){
-               		$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
-                	$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
-            	}
-		if(in_array($d->type, ['application/pdf'])){
-			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/doc-viewer" target="_blank"><i class="material-icons">open_in_browser</i></a>';
-		}
-		else if(preg_match('/^audio/',$d->type) || preg_match('/^video/',$d->type)){
-			// commented the line below since the video/audio can be played on the details page.
-			//$action_icons .= '<a class="btn btn-primary btn-link" title="Play" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/media-player" target="_blank"><i class="material-icons">play_arrow</i></a>';
-		}
-		else{
-			if(!empty($d->path) && $d->path != 'N/A'){
-			$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+			$revisions = $d->revisions;
+			$r_count = count($revisions);
+			if($r_count > 1){
+				$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
+				$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
 			}
-		}
+
+			// Check if current user has favorited this document
+			$isFavorited = false;
+			if(Auth::check()){
+				$isFavorited = \App\UserFavorite::isFavorited(Auth::id(), $d->id);
+			}
+
+			$favIcon = $isFavorited ? 'favorite' : 'favorite_border';
+			$favTitle = $isFavorited ? 'Remove from favourites' : 'Add to favourites';
+			$favPressed = $isFavorited ? 'true' : 'false';
+
+			$action_icons .= '<button type="button" class="btn btn-primary btn-link js-fav-toggle-ui" data-doc-id="'.$d->id.'" aria-pressed="'.$favPressed.'" title="'.$favTitle.'">';
+			$action_icons .= '<i class="material-icons fav-icon">'.$favIcon.'</i>';
+			$action_icons .= '</button>';
+
+			if(in_array($d->type, ['application/pdf'])){
+				$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/doc-viewer" target="_blank"><i class="material-icons">open_in_browser</i></a>';
+			}
+			else if(preg_match('/^audio/',$d->type) || preg_match('/^video/',$d->type)){
+				// commented the line below since the video/audio can be played on the details page.
+				//$action_icons .= '<a class="btn btn-primary btn-link" title="Play" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/media-player" target="_blank"><i class="material-icons">play_arrow</i></a>';
+			}
+			else{
+				if(!empty($d->path) && $d->path != 'N/A'){
+				$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+				}
+			}
 	    }
   	    else if ($content_type == 'Web resources'){		
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
@@ -825,7 +840,7 @@ trait Search{
                 'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date(env('DATE_FORMAT','Y-M-d'), strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
-                'highlights'=>$record_highlights,
+                'highlights' => $record_highlights,
                 'actions' => $action_icons
 			);
 		if(!empty($collection)){
