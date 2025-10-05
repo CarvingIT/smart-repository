@@ -282,7 +282,7 @@ Route::get('/feedback-thank-you', function(){ return view('feedback-thank-you');
 // About Repository
 Route::view('/about', 'about-repository');
 
-Route::get('/collection/{collection_id}/search-results', 'CollectionController@searchResults');
+Route::get('/collection/{collection_id}/search-results', 'CollectionContr=oller@searchResults');
 Route::get('/collection/search-results', 'CollectionController@searchResults');
 Route::get('/global-search', 'CollectionController@globalSearch');
 
@@ -292,5 +292,11 @@ Route::post('/collection/{collection_id}/document/{document_id}/add-related-docu
 // laravel file manager
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function (){
     \UniSharp\LaravelFilemanager\Lfm::routes();
-}
-);
+});
+
+// User favorites
+Route::group(["middleware" => ["auth"]], function() {
+	Route::get('/favorites', 'FavoritesController@index')->name('favorites.index');
+	Route::get("/favorites/data", "FavoritesController@data")->name("favorites.data");
+	Route::post('/favorites/toggle/{document}', 'FavoritesController@toggle')->name('favorites.toggle');
+});

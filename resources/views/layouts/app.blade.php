@@ -50,6 +50,8 @@ foreach($config as $c){
         <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
         <script src="{{ asset('material') }}/js/material-dashboard.js?v=2.1.1" type="text/javascript"></script>
         <script src="{{ asset('material') }}/js/settings.js"></script>
+        <!-- Favorites functionality -->
+        <script src="{{ asset('js/favorites.js') }}"></script>
 	@stack('js')
     <link href="/css/custom.css" rel="stylesheet" />
 	<!-- overriding css -->
