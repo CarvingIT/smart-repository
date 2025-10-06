@@ -111,7 +111,8 @@ class UpdateMeta extends Command
                     //echo $field_val_model->value."\n";
 				}
 				else if($meta_field->type == "Select" || $meta_field->type == "MultiSelect"){
-					$field_val_model->value = json_encode($values[$i]);
+					//$field_val_model->value = json_encode($values[$i]);
+                    $field_val_model->value = '['.$values[$i].']';
 				}
 				else{ // default handling for type = Text|TextArea|Date|Numeric 
 					$field_val_model->value = $values[$i];
