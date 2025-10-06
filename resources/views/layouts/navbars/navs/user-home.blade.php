@@ -113,6 +113,7 @@ $collections = \App\Collection::all();
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             <a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a>
+            <a class="dropdown-item" href="{{ route('shared-links.index') }}">{{ __('Shared Links') }}</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>

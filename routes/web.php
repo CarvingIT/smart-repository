@@ -292,6 +292,16 @@ Route::get('/global-search', 'CollectionController@globalSearch');
 // related documents
 Route::post('/collection/{collection_id}/document/{document_id}/add-related-document','RelatedDocumentController@addRelatedDocument')->middleware('maintainer');
 
+Route::group(['middleware' => ['auth', 'verified']], function () {
+    Route::resource('shared-links', 'SharedLinkController')->except(['show', 'create']);
+    Route::get('/document/{document}/share', 'SharedLinkController@create')->name('shared-links.create');
+});
+
+Route::get('/shared/{token}', 'SharedLinkController@publicView')->name('shared-links.public-view');
+Route::post('/shared/{token}/verify', 'SharedLinkController@verifyPassword')->name('shared-links.verify-password');
+Route::get('/shared/{token}/download', 'SharedLinkController@download')->name('shared-links.download');
+Route::post('/shared/{token}/password', 'SharedLinkController@submitPassword')->name('shared-links.password');
+
 // laravel file manager
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function (){
     \UniSharp\LaravelFilemanager\Lfm::routes();
