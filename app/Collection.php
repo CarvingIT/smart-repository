@@ -37,7 +37,7 @@ class Collection extends Model
     }
 
 	public function children(){
-		return $this->hasMany('App\Collection','parent_id');
+		return $this->hasMany('App\Collection','parent_id')->orderBy('name');
 	}
 
 	public function parent(){
