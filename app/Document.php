@@ -79,7 +79,7 @@ class Document extends Model implements Auditable
         return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) .' '. @$size[$factor];
     }
 
-    public function meta_value($meta_field_id, $raw=false, $show_taxo_parents=false){
+    public function meta_value($meta_field_id, $raw=false){
         $meta_value = \App\MetaFieldValue::where('document_id','=', $this->id)
             ->where('meta_field_id','=',$meta_field_id)->first();
 		if(!$meta_value) return null;
@@ -104,12 +104,7 @@ class Document extends Model implements Auditable
                             && count(array_intersect($all_selections, $children_ids))>0)
                         ) continue;
 						if(strtolower($t->label) == 'all') return $t->label; // special value (ALL)
-                        if($show_taxo_parents){
-                            $terms[] = $t->parentLine();
-                        }
-                        else{
-					        $terms[] = $t->label;
-                        }
+						$terms[] = $t->label;
 					}
 					return implode(', ',$terms);
 				}
@@ -194,6 +189,30 @@ class Document extends Model implements Auditable
             $approved_by_role = @$latest_approval_record->approver_role->name;
             return "Approval pending at ".ucfirst($approved_by_role);
         }
+    }
+
+    /**
+     * Get favourite documents relationship
+     */
+    public function favourites()
+    {
+        return $this->hasMany(FavouriteDocument::class);
+    }
+
+    /**
+     * Check if document is favourited by a specific user
+     */
+    public function isFavouritedBy($user_id)
+    {
+        return $this->favourites()->where('user_id', $user_id)->exists();
+    }
+
+    /**
+     * Get favourite count for this document
+     */
+    public function getFavouriteCountAttribute()
+    {
+        return $this->favourites()->count();
     }
 
 }

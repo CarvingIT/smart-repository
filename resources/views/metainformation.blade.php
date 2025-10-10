@@ -23,11 +23,9 @@ $( document ).ready(function() {
 
    if(val === 'TaxonomyTree'){
 	$("#taxonomy-tree-selection").show();
-	$("#show-parents").show();
    }
    else{
 	$("#taxonomy-tree-selection").hide();
-	$("#show-parents").hide();
    }
 
     if(val === "Select" || val === "SelectCombo" || val === "MultiSelect" || val === 'Numeric' || val === 'TaxonomyTree') {
@@ -308,10 +306,7 @@ function showMetaFieldForm(){
 		   <div class="col-md-4">
                    </div>
                    <div class="col-md-8">
-			@php 
-                $show_on_details_page = @$extra_attributes->show_on_details_page;
-                $show_parents = @$extra_attributes->show_parents; 
-            @endphp
+			@php $show_on_details_page = @$extra_attributes->show_on_details_page @endphp
                    <input type="checkbox" name="show_on_details_page" id="show_on_details_page" class="form-control1" value="1" 
 				@if($show_on_details_page == 1) {{ 'checked' }} @endif
 				/>
@@ -319,18 +314,14 @@ function showMetaFieldForm(){
                     </div>
                    </div>
 
-                @if($edit_field->type == 'TaxonomyTree')
-                   <div class="form-group row" id="show-parents">
-                @else
-                   <div class="form-group row" id="show-parents" style="display:none;">
-                @endif
+                   <div class="form-group row" id="is_filter_div">
 				   <div class="col-md-4">
                    </div>
                     <div class="col-md-8">
-                    <input type="checkbox" name="show_parents" class="form-control1" value="1" 
-					@if($show_parents == 1) {{ 'checked' }} @endif
+                    <input type="checkbox" name="is_filter" id="is_filter" class="form-control1" value="1" 
+					@if($edit_field->is_filter == 1) {{ 'checked' }} @endif
 					/>
-                    <label>Show parents in the list and details view</label> 
+                    <label for="is_required">Is filter</label> 
                     </div>
                    </div>
 

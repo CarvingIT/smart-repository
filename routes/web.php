@@ -118,9 +118,6 @@ Route::get('/c-{collection_id}/doc-viewer.css',function($collection_id){
 });
 Route::get('/collection/{collection_id}/document/{document_id}/media-player', 'DocumentController@mediaPlayer')->middleware('auth');
 
-// Document pdf viewer edit routes
-Route::get('/collection/{collection_id}/document/{document_id}/doc-edit-viewer', 'DocumentController@docEditViewer')->middleware('document_edit');
-
 //Multiple file upload routes
 Route::get('/collection/{collection_id}/document/{document_id}/details/{path_count}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/doc-viewer/{path_count}', 'DocumentController@docViewer')->middleware('document_view');
@@ -291,6 +288,12 @@ Route::get('/global-search', 'CollectionController@globalSearch');
 
 // related documents
 Route::post('/collection/{collection_id}/document/{document_id}/add-related-document','RelatedDocumentController@addRelatedDocument')->middleware('maintainer');
+
+// Favourite Documents routes
+Route::get('/favourite-documents', 'FavouriteController@index')->middleware('auth');
+Route::post('/favourite/add', 'FavouriteController@addFavourite')->middleware('auth');
+Route::post('/favourite/remove', 'FavouriteController@removeFavourite')->middleware('auth');
+Route::get('/favourites', 'FavouriteController@getFavourites')->middleware('auth');
 
 // laravel file manager
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function (){

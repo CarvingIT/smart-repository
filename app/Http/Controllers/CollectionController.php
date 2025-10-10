@@ -403,7 +403,6 @@ $j++;
 			$extra_attributes['numeric_min_value'] = $request->input('numeric_min_value');
 			$extra_attributes['numeric_max_value'] = $request->input('numeric_max_value');
 			$extra_attributes['show_on_details_page'] = $request->input('show_on_details_page');
-			$extra_attributes['show_parents'] = $request->input('show_parents');
 			$extra_attributes['results_classname'] = $request->input('results_classname');
 			$extra_attributes['filter_width_on_collection_page'] = $request->input('filter_width_on_collection_page');
 			$meta_field->extra_attributes = json_encode($extra_attributes);
@@ -728,7 +727,7 @@ use App\UrlSuppression;
 		
 		$documents->chunk(100, function($documents) use (&$new_list){ // chunking starts
             foreach($documents as $d){
-  			$list = ['ID'=>$d->id,'Title'=>$d->title,'Path'=>$d->path];
+  			$list = ['ID'=>$d->id,'Title'=>$d->title];
 			$meta_fields = $d->collection->meta_fields;
 			$meta_details=[];
 			foreach($meta_fields as $m){
@@ -739,14 +738,8 @@ use App\UrlSuppression;
 					$meta_details = [$m->label => $details_select];
 				}
 				else{
-                    $extra_attributes = json_decode($m->extra_attributes);
-                    $show_parents = empty($extra_attributes->show_parents)?false:true;
-                    if($m->type == 'TaxonomyTree' && $show_parents){
-					    $meta_details = [$m->label => html_entity_decode($d->meta_value($m->id, false, $show_parents))];
-                    }
-                    else{
-					    $meta_details = [$m->label => html_entity_decode($d->meta_value($m->id))];
-                    }
+					//$meta_details = [$m->label => $d->meta_value($m->id)];
+					$meta_details = [$m->label => html_entity_decode($d->meta_value($m->id))];
 				}
 				$list = array_merge($list,$meta_details);
                 $related_doc_ids = $d->related_documents->pluck('related_document_id');

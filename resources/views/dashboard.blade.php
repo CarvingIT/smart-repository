@@ -135,6 +135,7 @@
 			-->
           </div>
         </div>
+
         <div class="col-md-4">
           <div class="card card-chart">
             <div class="card-header card-header-danger">

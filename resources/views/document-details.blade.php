@@ -356,7 +356,6 @@ $(document).ready(function()
 
 							@php
 								$extra_attributes = empty($m->meta_field->extra_attributes) ? null : json_decode($m->meta_field->extra_attributes);
-                                $show_parents = empty($extra_attributes->show_parents)?false:true;
 								$w = empty($extra_attributes->width_on_info_page)? 12 : $extra_attributes->width_on_info_page;
 								$show_on_details_page = empty($extra_attributes->show_on_details_page)? '' : $extra_attributes->show_on_details_page;
 								$classname = @$extra_attributes->results_classname;
@@ -368,18 +367,9 @@ $(document).ready(function()
 				           <div class="{{ $classname }}">&nbsp;</div>
 						{{ $meta_labels[$m->meta_field_id] }}</label>
 							@if($m->meta_field->type == 'MultiSelect' || $m->meta_field->type == 'Select')
-               					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">
-                                @php
-                                $field_val = json_decode($m->value);
-                                @endphp
-                                @if(is_array($field_val))
-                                {{ @implode(", ",$field_val) }}
-                                @else
-                                {{ $m->value }}
-                                @endif
-                                </span>
+                            					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ @implode(", ",json_decode($m->value)) }}</span>
 							@elseif ($m->meta_field->type ==  'TaxonomyTree')
-                            					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! $document->meta_value($m->meta_field_id, false, $show_parents) !!}</span>
+                            					<span id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{{ $document->meta_value($m->meta_field_id) }}</span>
 							@else
                             					<div id="doc-meta-{{ $meta_labels[$m->meta_field_id] }}" class="col-md-12">{!! html_entity_decode($m->value) !!}</div>
 							@endif

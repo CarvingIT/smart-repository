@@ -72,15 +72,6 @@ class DocumentController extends Controller
 		return view('doc-viewer',['collection_id'=>$collection_id,'document_id'=>$document_id,'path_count'=>$path_count]);
 	}
 
-	public function docEditViewer($collection_id, $document_id, Request $req){
-        $path_count = $req->path_count;
-        $collection = \App\Collection::find($collection_id);
-        $document = new \App\Document;
-		return view('doc-edit-viewer',['collection'=>$collection, 'document'=>$document,
-                                       'collection_id'=>$collection_id,'document_id'=>$document_id,
-                                       'path_count'=>$path_count]);
-	}
-
 	public function mediaPlayer($collection_id, $document_id, Request $req){
         $path_count = $req->path_count;
 		$document = Document::find($document_id);
@@ -401,7 +392,6 @@ class DocumentController extends Controller
     public function upload(Request $request) {
         // Flash all values into session
         $request->flash();
-        $referer = $request->input('referer');
 
         // Call the uploadFile method
 
@@ -421,9 +411,6 @@ class DocumentController extends Controller
         }
         if ($request->input('same_meta_docs_upload')) {
             return redirect('/collection/' . $request->input('collection_id') . '/document/' . $upload_status['document_id'] . '/same-meta-upload');
-        }
-        if(!empty($referer)){
-            return redirect($referer);
         } else {
             return redirect('/collection/' . $request->input('collection_id'));
         }

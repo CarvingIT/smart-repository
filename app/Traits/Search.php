@@ -727,6 +727,17 @@ trait Search{
                		$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
                 	$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
             	}
+                
+            // Add favourite button
+            if(Auth::user()){
+                $isFavourited = $d->isFavouritedBy(Auth::id());
+                if($isFavourited){
+                    $action_icons .= '<span class="btn btn-warning btn-link favourite-btn" onclick="toggleFavourite('.$d->id.')" data-document-id="'.$d->id.'" title="Remove from favourites"><i class="material-icons">star</i></span>';
+                } else {
+                    $action_icons .= '<span class="btn btn-primary btn-link favourite-btn" onclick="toggleFavourite('.$d->id.')" data-document-id="'.$d->id.'" title="Add to favourites"><i class="material-icons">star_border</i></span>';
+                }
+            }
+                
 		if(in_array($d->type, ['application/pdf'])){
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/doc-viewer" target="_blank"><i class="material-icons">open_in_browser</i></a>';
 		}
@@ -789,13 +800,12 @@ trait Search{
                 'title' => $title,
                 'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
-                'updated_at' => array('display'=>date(env('DATE_FORMAT','Y-M-d'), strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                'updated_at' => array('display'=>date('Y-M-d', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'highlights'=>$record_highlights,
                 'actions' => $action_icons
 			);
 		if(!empty($collection)){
 			foreach($collection->meta_fields as $m){
-            $extra_attributes = json_decode($m->extra_attributes);
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
 			if(!in_array($m->id, $column_config_meta_fields)) continue;
 				if(is_array(json_decode($d->meta_value($m->id)))){ // applies to fields of type Select and MultiSelect
@@ -804,11 +814,10 @@ trait Search{
 				else{
 					if($m->type == 'Date' && !empty($d->meta_value($m->id))){
 						$date = strtotime($d->meta_value($m->id));
-						$result['meta_'.$m->id] = date(env('DATE_FORMAT','Y-M-d'),$date);
+						$result['meta_'.$m->id] = date("Y-M-d",$date);
 					}
 					else{
-                        $show_parents = empty($extra_attributes->show_parents)?false:true;
-						$result['meta_'.$m->id] = $d->meta_value($m->id, false, $show_parents);
+						$result['meta_'.$m->id] = $d->meta_value($m->id);
 					}
 				}
 			}

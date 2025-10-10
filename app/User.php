@@ -174,5 +174,21 @@ class User extends Authenticatable implements MustVerifyEmail
         return false;
     }
 
+    /**
+     * Get user's favourite documents
+     */
+    public function favouriteDocuments()
+    {
+        return $this->hasMany(FavouriteDocument::class);
+    }
+
+    /**
+     * Get documents favourited by this user
+     */
+    public function favouritedDocuments()
+    {
+        return $this->belongsToMany(Document::class, 'favourite_documents');
+    }
+
 ///// 
 } // End of the class

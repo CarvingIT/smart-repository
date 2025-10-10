@@ -27,6 +27,14 @@ $old_search = Session::get('search_query');
 @endphp
 <script>
 var deldialog;
+
+// Setup CSRF token for AJAX requests
+$.ajaxSetup({
+    headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    }
+});
+
 $(document).ready(function() {
     oTable = $('#documents').DataTable({
     "columnDefs": [
@@ -281,13 +289,7 @@ function randomString(length) {
 		   	<input type="hidden" name="operator[]" value="between" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			<script>
-				$('#meta_{{ $m->id }}_search').dateRangePicker({
-                  monthSelect: true,
-                  yearSelect: [1900, moment().get('year')]
-                })
-                .bind('datepicker-change', function(event, obj){
-                    this.form.submit();
-                }); 
+				$('#meta_{{ $m->id }}_search').dateRangePicker();
 			</script>
 			</form>
 			</div>
@@ -320,13 +322,8 @@ function randomString(length) {
 			<div class="float-container" style="width:100%;">
             @php
                 $old_search_query = !empty(app('request')->input('search_term'))? app('request')->input('search_term') : ''; 
-                // set a new search query
-                if(!empty(app('request')->input('search_term'))){
-                    Session::put('search_query', $old_search_query);
-                }
                 $session_search_query = Session::get('search_query');
-                $parsed_referer = parse_url(request()->headers->get('referer'));
-                $referer = $parsed_referer['scheme'] . '://' . $parsed_referer['host'] . (isset($parsed_referer['port']) ? ':' . $parsed_referer['port'] : '') . $parsed_referer['path'];
+                $referer = request()->headers->get('referer');
                 if($referer && $referer === Request::url() 
                     && empty($old_search_query) && !empty($session_search_query)){
                     $old_search_query = $session_search_query;
@@ -532,6 +529,66 @@ $(document).ready(function() {
             }
         });
     });
+
+});
+</script>
+
+<script>
+// Favourite document functionality - Global scope
+function toggleFavourite(documentId) {
+    console.log('toggleFavourite called with documentId:', documentId);
+    const button = $(`[data-document-id="${documentId}"]`);
+    const icon = button.find('i');
+    const isFavourited = icon.text() === 'star';
+    
+    console.log('Button found:', button.length);
+    console.log('Current icon text:', icon.text());
+    console.log('Is favourited:', isFavourited);
+    
+    const url = isFavourited ? '/favourite/remove' : '/favourite/add';
+    const newIcon = isFavourited ? 'star_border' : 'star';
+    const newClass = isFavourited ? 'btn-primary' : 'btn-warning';
+    const oldClass = isFavourited ? 'btn-warning' : 'btn-primary';
+    const newTitle = isFavourited ? 'Add to favourites' : 'Remove from favourites';
+    
+    $.ajax({
+        url: url,
+        method: 'POST',
+        data: {
+            document_id: documentId
+        },
+        success: function(response) {
+            if (response.success) {
+                // Update button appearance
+                icon.text(newIcon);
+                button.removeClass(oldClass).addClass(newClass);
+                button.attr('title', newTitle);
+                
+                // Show success message (optional)
+                if (typeof toastr !== 'undefined') {
+                    toastr.success(response.message);
+                } else {
+                    // Fallback alert
+                    // alert(response.message);
+                }
+                
+                // Update favourite count in dashboard if available
+                if ($('#favourite-count').length) {
+                    const currentCount = parseInt($('#favourite-count').text()) || 0;
+                    const newCount = isFavourited ? currentCount - 1 : currentCount + 1;
+                    $('#favourite-count').text(newCount);
+                }
+                
+                console.log('Favourite status updated successfully');
+            } else {
+                alert(response.message || 'Error occurred');
+            }
+        },
+        error: function() {
+            alert('Error occurred while updating favourite status');
+        }
+    });
+}
 
 	</script>
 @endsection
