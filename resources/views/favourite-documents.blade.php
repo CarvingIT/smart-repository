@@ -3,6 +3,24 @@
 @section('content')
 @push('js')
 <script src="/js/jquery.dataTables.min.js"></script>
+<style>
+.dataTables_info {
+    display: none !important;
+}
+#favourites-table_info {
+    display: none !important;
+}
+.dataTables_wrapper .dataTables_info {
+    display: none !important;
+}
+div.dataTables_wrapper div.dataTables_info {
+    display: none !important;
+}
+/* Hide any text containing 'found' */
+*:contains("found") {
+    display: none !important;
+}
+</style>
 <script>
 // Setup CSRF token for AJAX requests
 $.ajaxSetup({
@@ -23,8 +41,20 @@ $(document).ready(function() {
         ],
         "order": [[ 4, "desc" ]],
         "pageLength": 10,
+        "info": false,
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "dom": '<"top"f>rt<"bottom"lp><"clear">',
         "language": {
-            "processing": "<img src='/i/processing.gif'>"
+            "processing": "<img src='/i/processing.gif'>",
+            "search": "Search:",
+            "lengthMenu": "Show _MENU_ entries",
+            "info": "",
+            "infoEmpty": "",
+            "infoFiltered": "",
+            "zeroRecords": "No matching records found",
+            "emptyTable": "No data available in table"
         }
     });
 });
@@ -47,7 +77,6 @@ $(document).ready(function() {
                                 </div>
                             </div>
                         @else
-                            
                             <div class="table-responsive">
                                 <table id="favourites-table" class="table">
                                     <thead class="text-primary">
@@ -110,10 +139,11 @@ $(document).ready(function() {
 function removeFavourite(documentId, favouriteId) {
     if(confirm('Are you sure you want to remove this document from favourites?')) {
         $.ajax({
-            url: '/favourite/remove',
+            url: '/favourites/remove',
             method: 'POST',
             data: {
-                document_id: documentId
+                document_id: documentId,
+                _token: '{{ csrf_token() }}'
             },
             success: function(response) {
                 if (response.success) {
