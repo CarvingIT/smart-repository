@@ -76,6 +76,14 @@ height:auto;
 #doc-view {
   flex:60%;
 }
+#extracted-text-view {
+  flex:60%;
+  height:100vh;
+  overflow-y:scroll;
+}
+#extracted-text{
+    padding:20px;
+}
 body{
 margin:0;
 font-family:"Roboto", "Helvetica", "Arial", sans-serif;
@@ -109,6 +117,19 @@ h4{
 --bs-gutter-x:0em;
 }
 </style>
+<script language="javascript">
+    function toggleTextView(){
+        var text_view_display = $('#extracted-text-view').css('display');
+        if(text_view_display == 'none'){
+            $('#extracted-text-view').show();
+            $('#doc-view').hide();
+        }
+        else{
+            $('#extracted-text-view').hide();
+            $('#doc-view').show();
+        }
+    }
+</script>
 </head>
 <body>
 @php
@@ -132,8 +153,13 @@ else{
 }
 @endphp
 </div>
+<div id="extracted-text-view" style="display:none;">
+    <div id="extracted-text"> 
+    {!! nl2br($doc->text_content) !!}
+    </div>
+</div>
 <div id="meta-view">
-	<h4>Associated Meta Information <span class="text-right" style="float:right"></h4>
+	<h4>Associated Meta Information <span class="text-right" style="float:right"><a href="#" title="Toggle to show/hide extracted text" onclick="toggleTextView();" style="color:#fff;text-decoration:none;">T</a></span></h4>
     <div id="meta-data">
     <form name="edit-meta-data" method="post" action="/collection/{{ $collection_id }}/upload">
         @csrf()
