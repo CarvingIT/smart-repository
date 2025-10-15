@@ -87,7 +87,12 @@ class RebuildElasticIndex extends Command
                 'body'  => $body
             ];
 
-            $response = $client->index($params);
+            try{
+                $response = $client->index($params);
+            }
+            catch(\Exception $e){
+                echo $e->getMessage()."\n";
+            }
             //print_r($response);
             echo "\t".$d->title."\n";
         }
