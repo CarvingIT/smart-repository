@@ -422,7 +422,7 @@ trait Search{
 
 	        $ordered_document_ids = '';
             $scores = [];
-    	    $params['size'] = 1000;// set a max size returned by ES
+    	    $params['size'] = 10000;// set a max size returned by ES
             //Log::debug(json_encode($params));
         //} // if search term is entered
             $document_ids = [];
