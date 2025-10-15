@@ -503,7 +503,7 @@ trait Search{
 		$documents = $documents
             ->with('meta')
 			->orderby($sort_column,$sort_direction)
-            //->limit($length)->offset($start)
+            ->limit($length)->offset($start)
             ->get();
 		}
 	}
