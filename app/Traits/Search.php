@@ -428,7 +428,7 @@ trait Search{
             $document_ids = [];
 		    try{
                 Log::debug(json_encode($params));
-                $count_response = $client->count($params);
+                //$count_response = $client->count($params);
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
                     $document_ids[] = $h['_id'];
@@ -446,8 +446,7 @@ trait Search{
 
         $columns = array('type', 'title', 'size', 'updated_at');
     	//if(isset($document_ids) && count($document_ids) > 0){
-        //$filtered_count = $documents->count();
-        $filtered_count = $count_response['count'];// to be updated
+        $filtered_count = @count($document_ids);// to be updated
 	    if(isset($document_ids)){
 	        Log::debug('Found: '.@count($document_ids));
             //Log::debug('Listed IDs: '.json_encode($document_ids));        
