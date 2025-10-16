@@ -92,6 +92,18 @@ function showDeleteDialog(document_id){
         });
 }
 
+function showSubCollectionDeleteDialog(collection_id){
+        str = randomString(6);
+        $('#text_subcollection_captcha').text(str);
+        $('#hidden_subcollection_captcha').val(str);
+        $('#delete_subcollection_id').val(collection_id);
+        deldialog = $( "#deletesubcollectiondialog" ).dialog({
+                title: 'Are you sure ?',
+                resizable: true
+        });
+}
+
+
 function randomString(length) {
    var result           = '';
    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -108,6 +120,16 @@ function randomString(length) {
 <link rel="stylesheet" href="/js/daterangepicker.css"/>
 
 @endpush
+	    <div id="deletesubcollectiondialog" style="display:none;">
+		<form name="deletesubcollection" method="post" action="/collection/delete">
+		@csrf
+		<p>Enter <span id="text_subcollection_captcha"></span> to delete</p>
+		<input type="text" name="delete_subcollection_captcha" value="" />
+		<input type="hidden" id="hidden_subcollection_captcha" name="hidden_subcollection_captcha" value="" />
+		<input type="hidden" id="delete_subcollection_id" name="subcollection_id" value="" />
+		<button class="btn btn-danger" type="submit" value="delete">Delete</button>
+		</form>
+	    </div>
 	    <div id="deletedialog" style="display:none;">
 		<form name="deletedoc" method="post" action="/document/delete">
 		@csrf
@@ -160,7 +182,7 @@ function randomString(length) {
 		<!-- children collections -->		
 			@if ($collection->parent_id) 
 			<div>
-				<a 	title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
+				<a title="Back to {{ $collection->parent->name }}" href="/collection/{{ $collection->parent->id }}" />						
 						<i class="material-icons">folder</i> . .
 				</a>
 			</div>
@@ -171,6 +193,7 @@ function randomString(length) {
 				<a href="/collection/{{ $child->id }}">
 					<i class="material-icons">folder</i>
 					{{ $child->name }}
+					@if(count($child->documents) == 0 && count($child->children) == 0)<a href="#" onClick="showSubCollectionDeleteDialog({{ $child->id }});"><i class="material-icons">delete</i> </a>@endif
 				</a>
 				</div>
 				@endforeach

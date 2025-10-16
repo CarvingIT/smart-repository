@@ -61,6 +61,7 @@ Route::get('/collection/{collection_id}/user', 'CollectionController@showCollect
 // child-collection
 Route::get('/collection/{collection_id}/child-collection/{child_collection_id}', 'CollectionController@showChildCollectionForm')->middleware('maintainer');
 Route::post('/collection/{collection_id}/save-child-collection', 'CollectionController@saveChildCollection')->middleware('maintainer');
+Route::post('/collection/delete','CollectionController@deleteSubCollection');
 
 // Collection-user management
 Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('maintainer');

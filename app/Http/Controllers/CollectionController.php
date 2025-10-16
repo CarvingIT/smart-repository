@@ -677,6 +677,25 @@ use App\UrlSuppression;
 		return redirect('/collection/'.$req->collection_id);
 	}
 
+    	public function deleteSubCollection(Request $request){
+        	$collection = \App\Collection::find($request->subcollection_id);
+		$parent_collection_id = $collection->parent_id;
+
+    		if ($collection != null) {
+			if(!empty($request->delete_subcollection_captcha) &&
+                	$request->delete_subcollection_captcha == $request->hidden_subcollection_captcha){
+       	 		if($collection->delete()){
+            			Session::flash('alert-success', 'Collection deleted successfully!');
+       	 			return redirect('/collection/'.$parent_collection_id);
+			}
+        		}
+        		else{
+                		Session::flash('alert-danger', 'Please fill Captcha');
+       	 			return redirect('/collection/'.$parent_collection_id);
+        		}
+    		}
+	}//delete sub collection funcion ends
+
 	public function exportXlsx(Request $request, $collection_id){
 		//echo $collection_id; exit;
 		$list = $meta_details = [];
