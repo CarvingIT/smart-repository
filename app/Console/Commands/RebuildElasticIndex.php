@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Document;
 use App\Collection;
 use Elastic\Elasticsearch\ClientBuilder;
+use Illuminate\Support\Facades\Log;
 
 class RebuildElasticIndex extends Command
 {
@@ -93,6 +94,7 @@ class RebuildElasticIndex extends Command
             }
             catch(\Exception $e){
                 echo $e->getMessage()."\n";
+                Log::debug("Could not index record - ".$d->id);
             }
             //print_r($response);
         }
