@@ -87,6 +87,7 @@ class RebuildElasticIndex extends Command
                 'body'  => $body
             ];
 
+            echo $d->id."\t".$d->title."\n";
             try{
                 $response = $client->index($params);
             }
@@ -94,7 +95,6 @@ class RebuildElasticIndex extends Command
                 echo $e->getMessage()."\n";
             }
             //print_r($response);
-            echo "\t".$d->title."\n";
         }
 		$client->indices()->close(['index'=>'sr_documents']);
 		$client->indices()->open(['index'=>'sr_documents']);
