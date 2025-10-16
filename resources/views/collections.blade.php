@@ -23,14 +23,14 @@
                   <div class="card-body">
                     <div class="row justify-content-center">
                     <div class="col-sm-12 col-md-4 text-center stats-on-card document-count">
-                        {{ $c->documents->count() }}
+                        {{ (int)@$stats[$c->id]->cnt }}
                     </div>
                     <div class="col-sm-12 col-md-4 text-center stats-on-card user-count">
                     {{ $c->getUsers()->count() }}
                     </div>
                     <div class="col-sm-12 col-md-4 text-center stats-on-card space-utilization">
                     <span>
-                    {{ \App\Util::human_filesize($c->documents->sum('size')) }}
+                    {{ \App\Util::human_filesize((int)@$stats[$c->id]->size) }}
                     </span>
                     </div>
                     </div>
