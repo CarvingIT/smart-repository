@@ -88,13 +88,14 @@ class RebuildElasticIndex extends Command
                 'body'  => $body
             ];
 
-            echo $d->id."\t".$d->title."\n";
+            //echo $d->id."\t".$d->title."\n";
+            echo '.';
             try{
                 $response = $client->index($params);
             }
             catch(\Exception $e){
-                echo $e->getMessage()."\n";
-                Log::debug("Could not index record - ".$d->id);
+                //echo $e->getMessage()."\n";
+                echo "\nCould not index record - ".$d->id."\n"; 
             }
             //print_r($response);
         }
