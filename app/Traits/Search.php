@@ -454,7 +454,7 @@ trait Search{
 
         $columns = array('type', 'title', 'size', 'updated_at');
     	//if(isset($document_ids) && count($document_ids) > 0){
-        $filtered_count = $count_response['count'];// to be updated
+        $filtered_count = ($count_response['count'] > 10000)?10000:$count_response['count'];// to be updated
 
 	    if(isset($document_ids)){
 	        Log::debug('Found: '.@count($document_ids));
