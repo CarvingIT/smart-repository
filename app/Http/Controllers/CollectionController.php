@@ -678,7 +678,7 @@ use App\UrlSuppression;
 	}
 
     	public function deleteSubCollection(Request $request){
-        	$collection = \App\Collection::find($request->subcollection_id);
+        	$collection = \App\Collection::find($request->collection_id);
 		$parent_collection_id = $collection->parent_id;
 
     		if ($collection != null) {

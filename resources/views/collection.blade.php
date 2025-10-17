@@ -92,11 +92,11 @@ function showDeleteDialog(document_id){
         });
 }
 
-function showSubCollectionDeleteDialog(subcollection_id){
+function showSubCollectionDeleteDialog(collection_id){
         str = randomString(6);
         $('#text_subcollection_captcha').text(str);
         $('#hidden_subcollection_captcha').val(str);
-        $('#delete_subcollection_id').val(subcollection_id);
+        $('#delete_subcollection_id').val(collection_id);
         deldialog = $( "#deletesubcollectiondialog" ).dialog({
                 title: 'Are you sure ?',
                 resizable: true
@@ -125,9 +125,8 @@ function randomString(length) {
 		@csrf
 		<p>Enter <span id="text_subcollection_captcha"></span> to delete</p>
 		<input type="text" name="delete_subcollection_captcha" value="" />
-		<input type="text" id="hidden_subcollection_captcha" name="hidden_subcollection_captcha" value="" />
-		<input type="text" id="delete_subcollection_id" name="subcollection_id" value="" />
-		<input type="text" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
+		<input type="hidden" id="hidden_subcollection_captcha" name="hidden_subcollection_captcha" value="" />
+		<input type="hidden" id="delete_subcollection_id" name="collection_id" value="" />
 		<button class="btn btn-danger" type="submit" value="delete">Delete</button>
 		</form>
 	    </div>
