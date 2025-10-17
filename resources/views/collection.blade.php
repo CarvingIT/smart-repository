@@ -44,9 +44,9 @@ $(document).ready(function() {
 			    echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
 			    $i++;
 		    }
-		echo '{ "targets":['.$i++.'], "className":"text-left"'. (($hide_approval_status)?',"visible":false':'').'},';
-		echo '{ "targets":['.$i++.'], "className":"text-left"'.(($hide_size)?',"visible":false':"").'},';
-		echo '{ "targets":['.$i++.'], "className":"text-left"'.(($hide_creation_time)?',"visible":false':"").'},';
+		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'. (($hide_approval_status)?',"visible":false':'').'},';
+		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'.(($hide_size)?',"visible":false':"").'},';
+		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'.(($hide_creation_time)?',"visible":false':"").'},';
 		@endphp	
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],

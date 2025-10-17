@@ -414,7 +414,7 @@ trait Search{
 			}
             // default sorting if no search is performed
             if(empty($request->search['value'])){
-                $columns = array('size', 'updated_at');
+                $columns = ['type','title', 'size', 'created_at'];
                 // default meta sort field 
                 // get from the collection config and use
                 // to be updated
@@ -468,11 +468,7 @@ trait Search{
 	    if(!empty($ordered_document_ids)){
 		    $documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
 	    }
-	    $documents = $documents
-         //->with('meta')
-	     //->offset($start) 
-	     //->limit($length)
-	     ->get();
+	    $documents = $documents->get();
 
         /*
 		$doc_ids = [];
@@ -509,12 +505,7 @@ trait Search{
 		}
 		else{
             //Log::debug('ELSE');
-		    //$sort_column = empty($sort_column)?'updated_at':$sort_column;
-		    $documents = $documents
-                //->with('meta')
-			    //->orderby($sort_column,$sort_direction)
-                //->limit($length)->offset($start)
-                ->get();
+		    $documents = $documents->get();
 		}
 	}
 
