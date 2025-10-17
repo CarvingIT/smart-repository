@@ -438,15 +438,10 @@ trait Search{
                 unset($params_cnt['body']['sort']);
                 $count_response = $client->count($params_cnt);
            	    $response = $client->search($params);
-                $i = 0;
                 foreach($response['hits']['hits'] as $h){
-                    if($i >= ($start + $length)) break;
-                    if($i >= $start){ 
                         $document_ids[] = $h['_id'];
 		                $highlights[$h['_id']] = @$h['highlight'];
 		                $scores[$h['_id']] = $h['_score'];
-                    }
-                    $i++;
                 }
 		    }
 		    catch(\Exception $e){
@@ -459,7 +454,7 @@ trait Search{
 
         $columns = array('type', 'title', 'size', 'updated_at');
     	//if(isset($document_ids) && count($document_ids) > 0){
-        $filtered_count = ($count_response['count'] > 10000)?10000:$count_response['count'];// to be updated
+        $filtered_count = $count_response['count'];// to be updated
 
 	    if(isset($document_ids)){
 	        Log::debug('Found: '.@count($document_ids));
