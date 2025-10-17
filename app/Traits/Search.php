@@ -470,8 +470,8 @@ trait Search{
 	    }
 	    $documents = $documents
          //->with('meta')
-	     ->offset($start) 
-	     ->limit($length)
+	     //->offset($start) 
+	     //->limit($length)
 	     ->get();
 
         /*
