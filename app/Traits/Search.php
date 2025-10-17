@@ -417,7 +417,7 @@ trait Search{
                 $columns = array('size', 'updated_at');
 	            $sort_column = empty($columns[@$request->order[0]['column']])?'updated_at':$columns[@$request->order[0]['column']];
 	            $sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
-                //$params['body']['sort'] = [$sort_column => [ 'order' => $sort_direction]];
+                $params['body']['sort'] = [$sort_column => [ 'order' => $sort_direction]];
             }
 
 	        $ordered_document_ids = '';
@@ -430,6 +430,7 @@ trait Search{
                 Log::debug(json_encode($params));
                 $params_cnt = $params;
                 unset($params_cnt['body']['highlight']);
+                unset($params_cnt['body']['sort']);
                 $count_response = $client->count($params_cnt);
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
@@ -449,11 +450,11 @@ trait Search{
         $columns = array('type', 'title', 'size', 'updated_at');
     	//if(isset($document_ids) && count($document_ids) > 0){
         $filtered_count = ($count_response['count'] > 10000)?10000:$count_response['count'];// to be updated
+
 	    if(isset($document_ids)){
 	        Log::debug('Found: '.@count($document_ids));
-            //Log::debug('Listed IDs: '.json_encode($document_ids));        
        	    $documents = \App\Document::whereIn('id', $document_ids);
-            if(!empty($search_term)) $filtered_count = $documents->count();
+            //if(!empty($search_term)) $filtered_count = $documents->count();
 	    }
 
 	if(!empty($search_term)){
@@ -463,19 +464,21 @@ trait Search{
 		    $documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
 	    }
 	    $documents = $documents
-         ->with('meta')
+         //->with('meta')
 	     ->offset($start) 
 	     ->limit($length)
 	     ->get();
 
+        /*
 		$doc_ids = [];
 		foreach($documents as $d){
 			$doc_ids[] = $d->id;
 		}
 		Log::debug('Doc ids in result: '.implode(",", $doc_ids));	
+        */
 		//exit;
 	}
-	else{
+	else{ // no search
 		if(env('DEFAULT_META_SORT_FIELD',false)){
             Log::debug('meta sort');
 			$sort_direction = env('DEFAULT_META_SORT_DIRECTION','desc');
@@ -494,19 +497,19 @@ trait Search{
 			$documents = $documents->whereIn('id', $ordered_document_ids);
 			$filtered_count = $documents->count();
 			$documents = $documents
-                ->with('meta')
+                //->with('meta')
 				->orderByRaw("FIELD(id, $doc_id_str)")
                 ->limit($length)->offset($start)
                 ->get();
 		}
 		else{
             //Log::debug('ELSE');
-		$sort_column = empty($sort_column)?'updated_at':$sort_column;
-		$documents = $documents
-            ->with('meta')
-			->orderby($sort_column,$sort_direction)
-            ->limit($length)->offset($start)
-            ->get();
+		    $sort_column = empty($sort_column)?'updated_at':$sort_column;
+		    $documents = $documents
+                //->with('meta')
+			    ->orderby($sort_column,$sort_direction)
+                ->limit($length)->offset($start)
+                ->get();
 		}
 	}
 
@@ -638,13 +641,13 @@ trait Search{
 		$length = empty($request->length)?10:$request->length;
 		if(!empty($sort_column)){
 		$documents = $documents
-            ->with('meta')
+            //->with('meta')
 			->orderBy($sort_column,$sort_direction)
    	        ->limit($length)->offset($request->start)->get();
 		}
 		else{// initial sorting is by relevance (or whatever order the database returns)
 		$documents = $documents
-            ->with('meta')
+            //->with('meta')
    	        ->limit($length)->offset($request->start)->get();
 		}
 		if($request->is('api/*') || $request->return_format == 'raw'){
