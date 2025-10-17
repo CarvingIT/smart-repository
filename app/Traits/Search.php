@@ -415,6 +415,9 @@ trait Search{
             // default sorting if no search is performed
             if(empty($request->search['value'])){
                 $columns = array('size', 'updated_at');
+                // default meta sort field 
+                // get from the collection config and use
+                // to be updated
 	            $sort_column = empty($columns[@$request->order[0]['column']])?'updated_at':$columns[@$request->order[0]['column']];
 	            $sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
                 $params['body']['sort'] = [$sort_column => [ 'order' => $sort_direction]];
@@ -433,10 +436,15 @@ trait Search{
                 unset($params_cnt['body']['sort']);
                 $count_response = $client->count($params_cnt);
            	    $response = $client->search($params);
+                $i = 0;
                 foreach($response['hits']['hits'] as $h){
-                    $document_ids[] = $h['_id'];
-		            $highlights[$h['_id']] = @$h['highlight'];
-		            $scores[$h['_id']] = $h['_score'];
+                    if($i >= ($start + $length)) break;
+                    if($i >= $start){ 
+                        $document_ids[] = $h['_id'];
+		                $highlights[$h['_id']] = @$h['highlight'];
+		                $scores[$h['_id']] = $h['_score'];
+                    }
+                    $i++;
                 }
 		    }
 		    catch(\Exception $e){
@@ -494,7 +502,7 @@ trait Search{
 			}
 			$doc_id_str = implode(",", $ordered_document_ids);
 
-			$documents = $documents->whereIn('id', $ordered_document_ids);
+			$documents = \App\Document::whereIn('id', $ordered_document_ids);
 			$filtered_count = $documents->count();
 			$documents = $documents
                 //->with('meta')
@@ -504,11 +512,11 @@ trait Search{
 		}
 		else{
             //Log::debug('ELSE');
-		    $sort_column = empty($sort_column)?'updated_at':$sort_column;
+		    //$sort_column = empty($sort_column)?'updated_at':$sort_column;
 		    $documents = $documents
                 //->with('meta')
-			    ->orderby($sort_column,$sort_direction)
-                ->limit($length)->offset($start)
+			    //->orderby($sort_column,$sort_direction)
+                //->limit($length)->offset($start)
                 ->get();
 		}
 	}
