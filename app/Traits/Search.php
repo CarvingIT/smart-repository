@@ -428,7 +428,9 @@ trait Search{
             $document_ids = [];
 		    try{
                 Log::debug(json_encode($params));
-                $count_response = $client->count($params);
+                $params_cnt = $params;
+                unset($params_cnt['body']['highlight']);
+                $count_response = $client->count($params_cnt);
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
                     $document_ids[] = $h['_id'];
