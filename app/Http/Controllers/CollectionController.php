@@ -729,6 +729,7 @@ use App\UrlSuppression;
 		$documents = \App\Document::where('collection_id', $collection_id);
 		$documents = $this->getTitleFilteredDocuments($request, $documents);
 		$documents = $this->getMetaFilteredDocuments($request, $documents);
+        $documents = $documents->take(1000);
 
 		$collection = \App\Collection::find($collection_id);
 		$filename = $collection->name;
