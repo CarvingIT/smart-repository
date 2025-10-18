@@ -56,10 +56,10 @@ class ImportDocs extends Command
         }
         if($dir){
 	    // create a sym link storage/app/import pointing to this dir
-	    @unlink('storage/app/import');
-	    symlink($dir, 'storage/app/import');
+	    @unlink(storage_path().'/app/import');
+	    symlink($dir, storage_path().'/app/import');
 			//meta info file exists ?
-			$meta_info_file = 'storage/app/import/meta.csv';
+			$meta_info_file = storage_path().'/app/import/meta.csv';
             $handle = fopen($meta_info_file, "r");
 
 			$meta_values = [];
