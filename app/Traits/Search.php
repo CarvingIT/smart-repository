@@ -763,12 +763,9 @@ trait Search{
 				$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
 			}
 
-			// Check if current user has favorited this document
-			$isFavorited = false;
-			if(Auth::check()){
-				$isFavorited = \App\UserFavorite::isFavorited(Auth::id(), $d->id);
-			}
-
+		// Check if current user has favorited this document (only for authenticated users)
+		if(Auth::check()){
+			$isFavorited = \App\UserFavorite::isFavorited(Auth::id(), $d->id);
 			$favIcon = $isFavorited ? 'favorite' : 'favorite_border';
 			$favTitle = $isFavorited ? 'Remove from favourites' : 'Add to favourites';
 			$favPressed = $isFavorited ? 'true' : 'false';
@@ -776,9 +773,9 @@ trait Search{
 			$action_icons .= '<button type="button" class="btn btn-primary btn-link js-fav-toggle-ui" data-doc-id="'.$d->id.'" aria-pressed="'.$favPressed.'" title="'.$favTitle.'">';
 			$action_icons .= '<i class="material-icons fav-icon">'.$favIcon.'</i>';
 			$action_icons .= '</button>';
-
-			if(in_array($d->type, ['application/pdf'])){
-				$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/doc-viewer" target="_blank"><i class="material-icons">open_in_browser</i></a>';
+		}		
+		if(in_array($d->type, ['application/pdf'])){
+			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/doc-viewer" target="_blank"><i class="material-icons">open_in_browser</i></a>';
 			}
 			else if(preg_match('/^audio/',$d->type) || preg_match('/^video/',$d->type)){
 				// commented the line below since the video/audio can be played on the details page.
