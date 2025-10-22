@@ -143,7 +143,7 @@ class ImportDocs extends Command
                     }
                 }
                 if(!$dry_run){
-               	    $d = DocumentController::importFile($collection_id, 'import/'.$f, @$meta_values[$f]);
+               	    $d = DocumentController::importFile($collection_id, storage_path('app').'/import/'.$f, @$meta_values[$f]);
 				    // update title
 				    if(!empty($titles[$f])){
 					    $d->title = $titles[$f];
