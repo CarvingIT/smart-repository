@@ -56,10 +56,10 @@ class ImportDocs extends Command
         }
         if($dir){
 	    // create a sym link storage/app/import pointing to this dir
-	    @unlink(storage_path().'/app/import');
-	    symlink($dir, storage_path().'/app/import');
+	    @unlink(storage_path('app').'/import');
+	    symlink($dir, storage_path('app').'/import');
 			//meta info file exists ?
-			$meta_info_file = storage_path().'/app/import/meta.csv';
+			$meta_info_file = storage_path('app').'/import/meta.csv';
             $handle = fopen($meta_info_file, "r");
 
 			$meta_values = [];
@@ -90,7 +90,7 @@ class ImportDocs extends Command
 				}
 
 				while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
-                    if(!is_file(storage_path().'/app/import/'.$values[0])){
+                    if(!is_file(storage_path('app').'/import/'.$values[0])){
                         echo "WARNING: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
                     }
 					$row = [];
@@ -130,11 +130,11 @@ class ImportDocs extends Command
 			}
 			#exit;
             //list the directory and take each file path in array
-            $list = scandir(storage_path().'/app/import');
+            $list = scandir(storage_path('app').'/import');
             foreach($list as $f){
     	     // don't import meta.csv
 		     if ($f == 'meta.csv') continue;
-             if(is_file(storage_path().'/app/import/'.$f)){
+             if(is_file(storage_path('app').'/import/'.$f)){
                 if($dry_run){
                     if($show_meta_data){
                	        echo $dir.'/'.$f."\n";
