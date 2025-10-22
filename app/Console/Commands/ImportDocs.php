@@ -143,7 +143,13 @@ class ImportDocs extends Command
                     }
                 }
                 if(!$dry_run){
+                    try{
                	    $d = DocumentController::importFile($collection_id, storage_path('app').'/import/'.$f, @$meta_values[$f]);
+                    }
+                    catch(\Exception $e){
+                        echo "$f was not imported. There was an error.";
+                        echo $e->getMessage()."\n";
+                    }
 				    // update title
 				    if(!empty($titles[$f])){
 					    $d->title = $titles[$f];
