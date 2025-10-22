@@ -440,7 +440,6 @@ class DocumentController extends Controller
         $write_path = 'smartarchive_assets/'.$collection_id.'/0/'.$new_filename;
         if($collection->storage_drive == 'local' && env('LOCAL_STORAGE_PATH')){
             $write_path = storage_path('app').'/'.$write_path;
-            $path = 'app/'.$path;
         }
         echo "Reading from ".$path." and writing to ". $write_path."\n";
 		Storage::disk($collection->storage_drive)
