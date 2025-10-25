@@ -77,11 +77,19 @@ class DocumentSaved
                 'id'    => $event->document->id,
                 'body'  => $body
             ];
+
+            // delete record if present
 	    	try{
                 $del_response = $client->delete($del_params);
-            	$response = $client->index($params);
-	    		Log::info('Elastic index updated for document '. $event->document->id.'.');
 	    	}
+	    	catch(\Exception $e){
+	    		//Log::warning($e->getMessage());
+	    	}
+            // index the new/updated document
+            try{
+           	    $response = $client->index($params);
+    		    Log::info('Elastic index updated for document '. $event->document->id.'.');
+            }
 	    	catch(\Exception $e){
 	    		Log::warning($e->getMessage());
 	    	}
