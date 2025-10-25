@@ -55,7 +55,6 @@ class RebuildElasticIndex extends Command
     }
 
     public function indexCollection($c){
-        //$c = Collection::find($collection_id);
         echo "Rebuilding elastic index of ".$c->name."\n";
 	    if($c->content_type == 'Uploaded documents'){
 		$index = 'sr_documents';
@@ -72,9 +71,18 @@ class RebuildElasticIndex extends Command
 		->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
 		->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
 		->build();
-	    // first, clear the old index
-	    //$client->indices()->delete(array('index'=>$index));
-
+	    // first, clear the old records from the index
+        $delete_params = [
+                'index' => $index,
+                'body'=>[
+                    'query'=>[
+                        'match'=>[
+                            'collection_id' => $c->id
+                        ]
+                    ]
+                ]
+            ];
+        $delete_response = $client->deleteByQuery($delete_params);
         foreach($docs as $d){
             $body = $d->toArray();
             $body['text_content'] = $d->text_content;
