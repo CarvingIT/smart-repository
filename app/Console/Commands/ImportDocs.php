@@ -135,6 +135,7 @@ class ImportDocs extends Command
     	     // don't import meta.csv
 		     if ($f == 'meta.csv') continue;
              if(is_file(storage_path('app').'/import/'.$f)){
+                echo "File ". storage_path('app').'/import/'.$f ." exists.\n";
                 if($dry_run){
                     if($show_meta_data){
                	        echo $dir.'/'.$f."\n";
@@ -145,6 +146,7 @@ class ImportDocs extends Command
                 if(!$dry_run){
                     try{
                	    $d = DocumentController::importFile($collection_id, 'import/'.$f, @$meta_values[$f]);
+                    echo "Document ID - ". $d->id."\n";
                     }
                     catch(\Exception $e){
                         echo "$f was not imported. There was an error.";
