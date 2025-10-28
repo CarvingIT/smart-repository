@@ -29,21 +29,21 @@ class UserFavorite extends Model{
     }
 
 
-    public function isMyFavorite($userId){
+    public function isMyFavorite(){
         return $this->user_id === auth()->id();
     }
 
 
-    public static function isFavorited($userId, $documentId){
-        return static::where('user_id', $userId)
-                     ->where('document_id', $documentId)
+    public static function isFavorited($user_id, $document_id){
+        return static::where('user_id', $user_id)
+                     ->where('document_id', $document_id)
                      ->exists();
     }
 
 
-    public static function toggle($userId, $documentId){
-        $favorite = static::where('user_id', $userId)
-                         ->where('document_id', $documentId)
+    public static function toggle($user_id, $document_id){
+        $favorite = static::where('user_id', $user_id)
+                         ->where('document_id', $document_id)
                          ->first();
 
         if ($favorite) {
@@ -53,8 +53,8 @@ class UserFavorite extends Model{
         } else {
             // Favorite if it doesn't exist
             static::create([
-                'user_id' => $userId,
-                'document_id' => $documentId,
+                'user_id' => $user_id,
+                'document_id' => $document_id,
             ]);
             return true;
         }
