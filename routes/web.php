@@ -285,7 +285,7 @@ Route::get('/feedback-thank-you', function(){ return view('feedback-thank-you');
 // About Repository
 Route::view('/about', 'about-repository');
 
-Route::get('/collection/{collection_id}/search-results', 'CollectionContr=oller@searchResults');
+Route::get('/collection/{collection_id}/search-results', 'CollectionController@searchResults');
 Route::get('/collection/search-results', 'CollectionController@searchResults');
 Route::get('/global-search', 'CollectionController@globalSearch');
 

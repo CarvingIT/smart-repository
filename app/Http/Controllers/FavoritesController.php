@@ -25,12 +25,13 @@ class FavoritesController extends Controller
     public function data(){
         try {
             $user = Auth::user();
-            $favorites = $user->favoriteDocuments()->with("collection")->get();
+            $favorites = $user->favorites()->with("collection")->get();
 
             $data = [];
             foreach($favorites as $document){
                 $data[] = [
-                    "title" => $document->title ?: "Untitled",
+                    "title" => '<a href="/collection/' . $document->collection_id . '/document/' . $document->id . '/details">'
+                                . ($document->title ?: "Untitled ") . '</a>',
                     "collection_name" => $document->collection ? $document->collection->name : "N/A",
                     "created_at" => $document->created_at ? $document->created_at->format('Y-M-d') : "N/A",
                     "size" => $document->size ? \App\Util::human_filesize($document->size) : "0 B",
