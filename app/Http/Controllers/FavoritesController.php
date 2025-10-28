@@ -71,13 +71,13 @@ class FavoritesController extends Controller
     }
 
     public function toggle(Document $document){
-        $userId = Auth::id();
+        $user_id = Auth::id();
 
-        $isNowFavorited = UserFavorite::toggle($userId, $document->id);
+        $is_now_favorited = UserFavorite::toggle($user_id, $document->id);
 
         return response()->json([
             "status" => "success",
-            "favorited" => $isNowFavorited,
+            "favorited" => $is_now_favorited,
         ]);
     }
 }

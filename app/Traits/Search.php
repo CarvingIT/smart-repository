@@ -765,13 +765,13 @@ trait Search{
 
 		// Check if current user has favorited this document (only for authenticated users)
 		if(Auth::check()){
-			$isFavorited = \App\UserFavorite::isFavorited(Auth::id(), $d->id);
-			$favIcon = $isFavorited ? 'favorite' : 'favorite_border';
-			$favTitle = $isFavorited ? 'Remove from favourites' : 'Add to favourites';
-			$favPressed = $isFavorited ? 'true' : 'false';
+			$is_favorited = \App\UserFavorite::isFavorited(Auth::id(), $d->id);
+			$fav_icon = $is_favorited ? 'favorite' : 'favorite_border';
+			$fav_title = $is_favorited ? 'Remove from favourites' : 'Add to favourites';
+			$fav_pressed = $is_favorited ? 'true' : 'false';
 
-			$action_icons .= '<button type="button" class="btn btn-primary btn-link js-fav-toggle-ui" data-doc-id="'.$d->id.'" aria-pressed="'.$favPressed.'" title="'.$favTitle.'">';
-			$action_icons .= '<i class="material-icons fav-icon">'.$favIcon.'</i>';
+			$action_icons .= '<button type="button" class="btn btn-primary btn-link js-fav-toggle-ui" data-doc-id="'.$d->id.'" aria-pressed="'.$fav_pressed.'" title="'.$fav_title.'">';
+			$action_icons .= '<i class="material-icons fav-icon">'.$fav_icon.'</i>';
 			$action_icons .= '</button>';
 		}		
 		if(in_array($d->type, ['application/pdf'])){
