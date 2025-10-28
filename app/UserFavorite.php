@@ -29,6 +29,11 @@ class UserFavorite extends Model{
     }
 
 
+    public function isMyFavorite($userId){
+        return $this->user_id === auth()->id();
+    }
+
+
     public static function isFavorited($userId, $documentId){
         return static::where('user_id', $userId)
                      ->where('document_id', $documentId)

@@ -118,6 +118,7 @@ function randomString(length) {
 
 <script src="/js/jquery.daterangepicker.min.js"></script>
 <link rel="stylesheet" href="/js/daterangepicker.css"/>
+<script src="{{ asset("js/favorites.js") }}"></script>
 
 @endpush
 	    <div id="deletedialog" style="display:none;">
