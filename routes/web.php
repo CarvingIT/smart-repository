@@ -295,5 +295,11 @@ Route::post('/collection/{collection_id}/document/{document_id}/add-related-docu
 // laravel file manager
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function (){
     \UniSharp\LaravelFilemanager\Lfm::routes();
-}
-);
+});
+
+// User favorites
+Route::group(["middleware" => ["auth"]], function() {
+	Route::get('/favorites', 'FavoritesController@index')->name('favorites.index');
+	Route::get("/favorites/data", "FavoritesController@data")->name("favorites.data");
+	Route::post('/favorites/toggle/{document}', 'FavoritesController@toggle')->name('favorites.toggle');
+});
