@@ -268,7 +268,7 @@ trait Search{
 
     try{
 	$client = $this->getElasticClient();
-    Log::debug('Query: '.json_encode($params_cnt));
+    //Log::debug('Query: '.json_encode($params_cnt));
     $cnt_response = $client->count($params_cnt);
     }
     catch(\Exception $e){
@@ -328,7 +328,7 @@ trait Search{
                 $meta_queries = $this->getMustQueriesFromMetaFilters($meta_filters);
                 $must_query = array_merge($must_query, $meta_queries);
                 foreach($must_query as $m_q){
-                    Log::info('Must Q: '.json_encode($m_q));
+                    //Log::info('Must Q: '.json_encode($m_q));
                     $params['body']['query']['bool']['must'][] = $m_q;
                 }
 
