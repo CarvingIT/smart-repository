@@ -232,25 +232,26 @@ trait Search{
 		}
 		else{
       		$elastic_index = 'sr_documents';
-            $filter_query[] = ['terms'=>['collection_id' => 
-                array_merge($collections_without_approval, $collections_requiring_approval)]];
+            // collections requiring approval
+            $collections_without_approval = array_map(function($value) {
+                return (string)$value;
+            }, $collections_without_approval);
+            $collections_requiring_approval = array_map(function($value) {
+                return (string)$value;
+            }, $collections_requiring_approval);
+            
+            $filter_by_collection = [];
+            foreach($collections_without_approval as $c){
+                $filter_by_collection['bool']['should'][] = ['term' => ['collection_id' => $c]];
+            }
+            foreach($collections_requiring_approval as $c){
+                $q_must = [];
+                $q_must['bool']['must'][] = ['term'=>['collection_id' => $c]];
+                $q_must['bool']['must'][] = ['exists'=>['field'=>'approved_on']];
+                $filter_by_collection['bool']['should'][] = $q_must;
+            }
+            $filter_query = $filter_by_collection;
 
-            $must_query[] = [
-                                ['bool'=>
-                                    ['should'=>
-                                        ['match'=>
-                                            ['terms' =>
-                                                ['collection_id'=>$collections_without_approval]
-                                            ]
-                                        ]
-                                    ]
-                                ],
-                                ['bool'=>
-                                    ['should'=>['match'=>['terms'=>['collection_id'=>$collections_requiring_approval]],
-                                            'exists'=>['field'=>'approved_on']]
-                                    ]
-                                ]
-                            ];
 		}
 		//Log::debug($elastic_index.' - '.implode(",", $collection_ids));
 	}
@@ -267,10 +268,11 @@ trait Search{
 
     try{
 	$client = $this->getElasticClient();
+    //Log::debug('Query: '.json_encode($params_cnt));
     $cnt_response = $client->count($params_cnt);
     }
     catch(\Exception $e){
-	    //Log::debug('Count error:'. $e->getMessage());	
+	    Log::debug('Count error:'. $e->getMessage());	
         Log::debug('Switching to DB search');
 		return $this->searchDB($request);
     }
@@ -326,7 +328,7 @@ trait Search{
                 $meta_queries = $this->getMustQueriesFromMetaFilters($meta_filters);
                 $must_query = array_merge($must_query, $meta_queries);
                 foreach($must_query as $m_q){
-                    Log::info('Must Q: '.json_encode($m_q));
+                    //Log::info('Must Q: '.json_encode($m_q));
                     $params['body']['query']['bool']['must'][] = $m_q;
                 }
 
