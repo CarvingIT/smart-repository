@@ -14,7 +14,7 @@ class ExportCollection extends Command
      *
      * @var string
      */
-    protected $signature = 'SR:ExportCollection {collection_id : ID of the collection}';
+    protected $signature = 'SR:ExportCollection {collection_id : ID of the collection} {query?}';
 
     /**
      * The console command description.
@@ -31,13 +31,33 @@ class ExportCollection extends Command
     public function handle()
     {
         $collection_id = $this->argument('collection_id');
+        $query = $this->argument('query');
+        $q_parts = explode(";", $query);
+
         $c = Collection::find($collection_id);
         $date_time = date('Y-m-d-H:i:s');
+
+        $documents = Document::where('collection_id', $collection_id);
+
+        foreach($q_parts as $part){
+            if(!empty($part)){
+                $part_ar = explode("|", $part);
+                $documents = $documents->where(trim($part_ar[0]), trim($part_ar[1]), trim($part_ar[2]));
+            }
+        }
+        try{
+            $doc_count = $documents->count();
+            echo "Your query matches ".$doc_count." documents.\n";
+            if($doc_count === 0) exit;
+        }
+        catch(\Exception $e){
+            echo "Error: ".$e->getMessage()."\n";
+            exit;
+        }
         $user_home = getenv('HOME');
         $filename = "$user_home/collection-$collection_id-$date_time.xlsx";
         echo "Exporting collection ".$c->name." to $filename.\n";
 
-        $documents = Document::where('collection_id', $collection_id);
         $meta_fields = $c->meta_fields;
         $new_list  = $new_meta_details = [];
    
