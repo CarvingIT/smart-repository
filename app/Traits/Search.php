@@ -838,8 +838,8 @@ trait Search{
 				}
 				else{
 					if($m->type == 'Date' && !empty($d->meta_value($m->id))){
-						$date = strtotime($d->meta_value($m->id));
-						$result['meta_'.$m->id] = date(env('DATE_FORMAT','Y-M-d'),$date);
+						$date = date_create($d->meta_value($m->id));
+					    $result['meta_'.$m->id] = $date ? date_format($date, env('DATE_FORMAT','Y-M-d')):'';
 					}
 					else{
                         $show_parents = empty($extra_attributes->show_parents)?false:true;
