@@ -80,7 +80,11 @@ else{
         @if(!$m->meta_field || empty(strip_tags($m->value))) @continue @endif
 
 		@if(@$m->meta_field->type == 'Date')
-		<p><label>{{ @$m->meta_field->label }}</label><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
+		<p><label>{{ @$m->meta_field->label }}</label><br />
+        @if(date_create($doc->meta_value($m->meta_field_id)))
+        {{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}
+        @endif
+        </p>
 		@else
 		<p><label>{{ @$m->meta_field->label }}</label><br />{!! html_entity_decode($doc->meta_value($m->meta_field_id)) !!}</p>
 		@endif
