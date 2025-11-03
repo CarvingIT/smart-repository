@@ -200,4 +200,39 @@ class Document extends Model implements Auditable
         return $this->belongsToMany(User::class, 'user_favourite', 'document_id', 'user_id');
     }
 
+    /**
+     * Get the file extension of the document
+     */
+    public function getFileExtension(){
+        if(empty($this->path)){
+            return null;
+        }
+        $path_fields = explode(".", $this->path);
+        $cnt = count($path_fields);
+        $extn = strtolower($path_fields[$cnt-1]);
+        return $extn;
+    }
+
+    /**
+     * Get unique file extensions for a collection
+     * @param int $collection_id
+     * @return array
+     */
+    public static function getUniqueExtensionsForCollection($collection_id){
+        $documents = self::where('collection_id', $collection_id)
+            ->whereNull('deleted_at')
+            ->get();
+        
+        $extensions = [];
+        foreach($documents as $doc){
+            $ext = $doc->getFileExtension();
+            if(!empty($ext) && !in_array($ext, $extensions)){
+                $extensions[] = $ext;
+            }
+        }
+        
+        sort($extensions);
+        return $extensions;
+    }
+
 }
