@@ -58,6 +58,22 @@ trait Search{
 		return $documents;
 	}
 
+    /**
+     * Filter documents by file extension
+     */
+    public function getExtensionFilteredDocuments($request, $documents){
+        $extension_filter = empty(Session::get('extension_filter'))?$request->extension_filter:Session::get('extension_filter');
+        
+        if(!empty($request->extension_filter)){
+            $documents = $documents->where('path', 'like', '%.'.$request->extension_filter);
+        }
+        else if(!empty($extension_filter[$request->collection_id])){
+            $documents = $documents->where('path', 'like', '%.'.$extension_filter[$request->collection_id]);
+        }
+        
+        return $documents;
+    }
+
     public function getMetaFiltersFromRequest($request){
 		// check if meta filters are present in the query
 		$query_params = $request->query();
@@ -291,6 +307,17 @@ trait Search{
                 $title_query = Session::get('title_filter')[$request->collection_id];
             }
         }
+        
+        // get extension filtered documents
+        $extension_query = '';
+        if(!empty($request->extension_filter)){
+            $extension_query = $request->extension_filter;
+        }
+        else{
+            if(!empty(Session::get('extension_filter')[$request->collection_id])){
+                $extension_query = Session::get('extension_filter')[$request->collection_id];
+            }
+        }
 	    Log::debug('Total Count: '.$total_count);
         //$total_count = $cnt_response->count;
         // get the list of IDs to filter from
@@ -414,6 +441,17 @@ trait Search{
 						]];
 				Log::debug('Adding must to title. Param array is - '. json_encode($params));
 			}
+            
+            // following must query is used for extension-filtering
+            if(!empty($extension_query)){
+                Log::debug('Adding must match clause for extension. Query is - '. json_encode($extension_query));
+                $params['body']['query']['bool']['must'][] = 
+                        ['wildcard' => [
+                            'path.keyword' => '*.'.$extension_query
+                        ]];
+                Log::debug('Adding must to extension. Param array is - '. json_encode($params));
+            }
+            
             // default sorting if no search is performed
             if(empty($request->search['value'])){
                 $columns = ['type','title', 'size', 'created_at'];
@@ -612,6 +650,10 @@ trait Search{
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
+        // get Extension filtered documents
+        if(!empty(Session::get('extension_filter')) || !empty($request->extension_filter)){
+            $documents = $this->getExtensionFilteredDocuments($request, $documents);
+        }
         // get Meta filtered documents
         $documents = $this->getMetaFilteredDocuments($request, $documents);
 
@@ -834,6 +876,7 @@ trait Search{
         $result = array(
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
+                'file_extension' => strtoupper($d->getFileExtension() ?? ''),
                 'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date(env('DATE_FORMAT','Y-M-d'), strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),

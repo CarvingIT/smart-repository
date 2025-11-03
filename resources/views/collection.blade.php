@@ -2,6 +2,52 @@
 
 @section('content')
 @push('js')
+<style>
+/* File Type Dropdown Styling */
+#extension_filter {
+    border: 1px solid #9c27b0;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: white;
+    z-index: 9999;
+    padding: 4px;
+}
+
+#extension_filter option {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin: 2px 0;
+    transition: all 0.2s ease;
+}
+
+/* Hover effect - blue background */
+#extension_filter option:hover {
+    background-color: #2196F3 !important;
+    color: white !important;
+}
+
+/* Selected option - gray background */
+#extension_filter option:checked {
+    background-color: #e0e0e0 !important;
+    color: #333 !important;
+    font-weight: 600;
+}
+
+/* Active/Focus state */
+#extension_filter option:active {
+    background-color: #1976D2 !important;
+    color: white !important;
+}
+
+/* Make dropdown overlay properly */
+#file_type_header {
+    position: relative;
+    z-index: 1;
+}
+</style>
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
@@ -47,6 +93,8 @@ $(document).ready(function() {
 		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'. (($hide_approval_status)?',"visible":false':'').'},';
 		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'.(($hide_size)?',"visible":false':"").'},';
 		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'.(($hide_creation_time)?',"visible":false':"").'},';
+		// File Extension column (last data column before actions)
+		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-center"},';
 		@endphp	
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
@@ -86,8 +134,78 @@ $(document).ready(function() {
               'sort': 'updated_date'
             }
         },
+       {data:"file_extension"},
         {data:"actions"},
     ],
+    });
+
+    // Load file extensions for the collection
+    $.ajax({
+        url: '/collection/{{$collection->id}}/extensions',
+        method: 'GET',
+        success: function(response) {
+            var extensionSelect = $('#extension_filter');
+            response.extensions.forEach(function(ext) {
+                extensionSelect.append('<option value="' + ext + '">' + ext.toUpperCase() + '</option>');
+            });
+            
+            // Check if there's a pre-selected extension filter from session
+            @php
+                $extension_filter = Session::get('extension_filter');
+                $selected_extension = !empty($extension_filter[$collection->id]) ? $extension_filter[$collection->id] : '';
+            @endphp
+            @if(!empty($selected_extension))
+                extensionSelect.val('{{ $selected_extension }}');
+            @endif
+        }
+    });
+    
+    // Toggle dropdown on header click - directly show options
+    $('#file_type_header').on('click', function(e) {
+        e.stopPropagation();
+        var dropdown = $('#extension_filter');
+        if(dropdown.is(':visible')) {
+            dropdown.hide();
+        } else {
+            dropdown.show();
+        }
+    });
+    
+    // Hide dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if(!$(e.target).closest('#file_type_header').length) {
+            $('#extension_filter').hide();
+        }
+    });
+    
+    // Handle extension filter selection (click on option)
+    $('#extension_filter').on('click', 'option', function() {
+        var selectedExtension = $(this).val();
+        $('#extension_filter').hide(); // Hide dropdown after selection
+        
+        if(selectedExtension) {
+            // Send filter to backend
+            $.ajax({
+                url: '/collection/{{$collection->id}}/quickextensionfilter',
+                method: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    extension_filter: selectedExtension
+                },
+                success: function() {
+                    // Reload DataTable
+                    oTable.ajax.reload();
+                }
+            });
+        } else {
+            // Remove filter
+            window.location.href = '/collection/{{$collection->id}}/removeextensionfilter';
+        }
+    });
+    
+    // Prevent dropdown from closing when clicking on select element
+    $('#extension_filter').on('click', function(e) {
+        e.stopPropagation();
     });
 
 } );
@@ -237,6 +355,7 @@ function randomString(length) {
 			</div>
 			@endif
             --}}
+            
 			@foreach($meta_fields as $m)
                 @php
                     $extra_attributes = empty($m->extra_attributes) ? null : json_decode($m->extra_attributes);
@@ -373,7 +492,7 @@ function randomString(length) {
 		<!-- show filters -->
 		<div>
         <p>
-	@php
+        @php
             $meta_labels = array();
             foreach($meta_fields as $m){
 				if(!empty($meta_labels[$m->id]))
@@ -383,6 +502,7 @@ function randomString(length) {
             }
             $all_meta_filters = Session::get('meta_filters');
 		$title_filter = Session::get('title_filter');
+		$extension_filter = Session::get('extension_filter');
 		$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
         @endphp
 		@if(!empty($title_filter[$collection->id]))
@@ -392,6 +512,15 @@ function randomString(length) {
                 </a>
                 </span>
 		@endif
+		{{-- Extension filter tag removed as filter is in column header
+		@if(!empty($extension_filter[$collection->id]))
+			<span class="filtertag">{{ __('File Type')}} <i>{{ strtoupper($extension_filter[$collection->id])}}</i>
+                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removeextensionfilter">
+                <i class="tinyicon material-icons">close</i>
+                </a>
+                </span>
+		@endif
+		--}}
 		@if($show_meta_filters)
         @foreach( $all_meta_filters[$collection->id] as $m)
 		@php
@@ -439,6 +568,12 @@ function randomString(length) {
                             <th>{{__('Approval Status')}}</th>
                             <th>{{__('Size')}}</th>
                             <th>{{__('Created')}}</th>
+                            <th style="position: relative; cursor: pointer;" id="file_type_header">
+                                <span>{{__('File Type')}} <i class="material-icons" style="font-size: 16px; vertical-align: middle;">arrow_drop_down</i></span>
+                                <select id="extension_filter" size="5" class="form-control" name="extension_filter" style="position: absolute; top: 100%; left: 0; z-index: 1000; display: none; min-width: 140px; height: auto;">
+                                    <option value="">{{ __('All Types') }}</option>
+                                </select>
+                            </th>
                 <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
                 </tr>
                 </thead>
