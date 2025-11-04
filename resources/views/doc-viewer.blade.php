@@ -69,15 +69,20 @@ else{
 @endphp
 </div>
 <div id="meta-view">
-	<h4>Associated Meta Information</h4>
+	<h4>Associated Meta Information<span class="text-right" style="float:right"><a href="/collection/{{ $collection_id }}/document/{{ $document_id }}/doc-edit-viewer" style="color:#eee;">Edit</a></span></h4>
     <div id="meta-data">
-	@foreach($doc->meta as $m)
-        @if(!$m->meta_field || empty($m->value)) @continue @endif
+    @php
+        $meta_info = $doc->meta->sortBy(function ($m){
+            return @$m->meta_field->display_order;
+        });
+    @endphp 
+	@foreach($meta_info as $m)
+        @if(!$m->meta_field || empty(strip_tags($m->value))) @continue @endif
 
 		@if(@$m->meta_field->type == 'Date')
 		<p><label>{{ @$m->meta_field->label }}</label><br />{{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}</p>
 		@else
-		<p><label>{{ @$m->meta_field->label }}</label><br />{!! $doc->meta_value($m->meta_field_id) !!}</p>
+		<p><label>{{ @$m->meta_field->label }}</label><br />{!! html_entity_decode($doc->meta_value($m->meta_field_id)) !!}</p>
 		@endif
 	@endforeach
     </div>

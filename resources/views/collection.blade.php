@@ -281,7 +281,13 @@ function randomString(length) {
 		   	<input type="hidden" name="operator[]" value="between" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			<script>
-				$('#meta_{{ $m->id }}_search').dateRangePicker();
+				$('#meta_{{ $m->id }}_search').dateRangePicker({
+                  monthSelect: true,
+                  yearSelect: [1900, moment().get('year')]
+                })
+                .bind('datepicker-change', function(event, obj){
+                    this.form.submit();
+                }); 
 			</script>
 			</form>
 			</div>
@@ -314,8 +320,13 @@ function randomString(length) {
 			<div class="float-container" style="width:100%;">
             @php
                 $old_search_query = !empty(app('request')->input('search_term'))? app('request')->input('search_term') : ''; 
+                // set a new search query
+                if(!empty(app('request')->input('search_term'))){
+                    Session::put('search_query', $old_search_query);
+                }
                 $session_search_query = Session::get('search_query');
-                $referer = request()->headers->get('referer');
+                $parsed_referer = parse_url(request()->headers->get('referer'));
+                $referer = $parsed_referer['scheme'] . '://' . $parsed_referer['host'] . (isset($parsed_referer['port']) ? ':' . $parsed_referer['port'] : '') . $parsed_referer['path'];
                 if($referer && $referer === Request::url() 
                     && empty($old_search_query) && !empty($session_search_query)){
                     $old_search_query = $session_search_query;

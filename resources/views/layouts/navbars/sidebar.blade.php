@@ -25,6 +25,12 @@
                 <p>{{ __('Dashboard') }} </p>
        </a>
       </li>
+      <li class="nav-item{{ $activePage == 'shared-links' ? ' active' : '' }}">
+        <a class="nav-link" href="{{ route('shared-links.index') }}">
+          <i class="material-icons">share</i>
+            <p>{{ __('Shared Links') }}</p>
+        </a>
+      </li>
       <li class="nav-item{{ $activePage == 'collection' ? ' active' : '' }}">
         <a class="nav-link" href="/collections">
           <i class="material-icons">library_books</i>

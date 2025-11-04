@@ -768,6 +768,9 @@ trait Search{
                 $action_icons .= '<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog('.$d->id.');" title="Delete document"><i class="material-icons">delete</i></span>';
                     }
                 }
+                if(Auth::user()->canShareDocument($d->id)){
+                    $action_icons .= '<a class="btn btn-info btn-link" href="'.route('shared-links.create', ['document' => $d->id]).'" title="Share document"><i class="material-icons">share</i></a>';
+                }
             }
 	    } // if collection's content-type == Uploaded documents
 	    //$title = $d->title.': '. substr($d->text_content, 0, 100).' ...';
@@ -789,12 +792,13 @@ trait Search{
                 'title' => $title,
                 'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
-                'updated_at' => array('display'=>date('Y-M-d', strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
+                'updated_at' => array('display'=>date(env('DATE_FORMAT','Y-M-d'), strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
                 'highlights'=>$record_highlights,
                 'actions' => $action_icons
 			);
 		if(!empty($collection)){
 			foreach($collection->meta_fields as $m){
+            $extra_attributes = json_decode($m->extra_attributes);
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
 			if(!in_array($m->id, $column_config_meta_fields)) continue;
 				if(is_array(json_decode($d->meta_value($m->id)))){ // applies to fields of type Select and MultiSelect
@@ -803,10 +807,11 @@ trait Search{
 				else{
 					if($m->type == 'Date' && !empty($d->meta_value($m->id))){
 						$date = strtotime($d->meta_value($m->id));
-						$result['meta_'.$m->id] = date("Y-M-d",$date);
+						$result['meta_'.$m->id] = date(env('DATE_FORMAT','Y-M-d'),$date);
 					}
 					else{
-						$result['meta_'.$m->id] = $d->meta_value($m->id);
+                        $show_parents = empty($extra_attributes->show_parents)?false:true;
+						$result['meta_'.$m->id] = $d->meta_value($m->id, false, $show_parents);
 					}
 				}
 			}
