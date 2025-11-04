@@ -65,10 +65,10 @@ trait Search{
         $extension_filter = empty(Session::get('extension_filter'))?$request->extension_filter:Session::get('extension_filter');
         
         if(!empty($request->extension_filter)){
-            $documents = $documents->where('path', 'like', '%.'.$request->extension_filter);
+            $documents = $documents->where('type', $request->extension_filter);
         }
         else if(!empty($extension_filter[$request->collection_id])){
-            $documents = $documents->where('path', 'like', '%.'.$extension_filter[$request->collection_id]);
+            $documents = $documents->where('type', $extension_filter[$request->collection_id]);
         }
         
         return $documents;
@@ -876,7 +876,7 @@ trait Search{
         $result = array(
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
-                'file_extension' => strtoupper($d->getFileExtension() ?? ''),
+                'file_extension' => strtoupper($d->type ?? ''),
                 'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date(env('DATE_FORMAT','Y-M-d'), strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
