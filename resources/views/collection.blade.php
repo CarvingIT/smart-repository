@@ -30,8 +30,8 @@ var deldialog;
 $(document).ready(function() {
     oTable = $('#documents').DataTable({
     "columnDefs": [
-		{ "targets":[0], "className":'text-center', @if($hide_type)"visible":false @endif},
-		{ "targets":[1], "className":'text-left' @if($hide_title) ,"visible":false @endif},
+		{ "targets":[0], "className":'text-center', "sortable":false, @if($hide_type)"visible":false @endif},
+		{ "targets":[1], "className":'text-left',"sortable":false, @if($hide_title) ,"visible":false @endif},
 		@php
 			$i = 2;
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
@@ -44,9 +44,9 @@ $(document).ready(function() {
 			    echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
 			    $i++;
 		    }
-		echo '{ "targets":['.$i++.'], "className":"text-left"'. (($hide_approval_status)?',"visible":false':'').'},';
-		echo '{ "targets":['.$i++.'], "className":"text-left"'.(($hide_size)?',"visible":false':"").'},';
-		echo '{ "targets":['.$i++.'], "className":"text-left"'.(($hide_creation_time)?',"visible":false':"").'},';
+		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'. (($hide_approval_status)?',"visible":false':'').'},';
+		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'.(($hide_size)?',"visible":false':"").'},';
+		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'.(($hide_creation_time)?',"visible":false':"").'},';
 		@endphp	
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
@@ -118,6 +118,7 @@ function randomString(length) {
 
 <script src="/js/jquery.daterangepicker.min.js"></script>
 <link rel="stylesheet" href="/js/daterangepicker.css"/>
+<script src="{{ asset("js/favorites.js") }}"></script>
 
 @endpush
 	    <div id="deletedialog" style="display:none;">
@@ -166,7 +167,7 @@ function randomString(length) {
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <!--a href="/collection/{{ $collection->id }}/export" title="Export collection to CSV" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a-->
-                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="Export collection to XLSX" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
+                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="Export up to 1000 records to XLSX" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
 				  @endif
                   </div>
         </div>
@@ -225,6 +226,7 @@ function randomString(length) {
             </div>
 		<div class="card search-filters-card">
 		<div class="row">
+            {{--
 			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
 			<div class="float-container col-md-12">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
@@ -234,6 +236,7 @@ function randomString(length) {
 			</form>
 			</div>
 			@endif
+            --}}
 			@foreach($meta_fields as $m)
                 @php
                     $extra_attributes = empty($m->extra_attributes) ? null : json_decode($m->extra_attributes);
@@ -326,11 +329,13 @@ function randomString(length) {
                 }
                 $session_search_query = Session::get('search_query');
                 $parsed_referer = parse_url(request()->headers->get('referer'));
-                $referer = $parsed_referer['scheme'] . '://' . $parsed_referer['host'] . (isset($parsed_referer['port']) ? ':' . $parsed_referer['port'] : '') . $parsed_referer['path'];
-                if($referer && $referer === Request::url() 
-                    && empty($old_search_query) && !empty($session_search_query)){
-                    $old_search_query = $session_search_query;
-                } 
+                if(!empty($parsed_referer['path'])){
+                    $referer = $parsed_referer['scheme'] . '://' . $parsed_referer['host'] . (isset($parsed_referer['port']) ? ':' . $parsed_referer['port'] : '') . $parsed_referer['path'];
+                    if($referer && $referer === Request::url() 
+                        && empty($old_search_query) && !empty($session_search_query)){
+                        $old_search_query = $session_search_query;
+                    } 
+                }
             @endphp
 			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
 		    <input type="text" class="search-field" id="collection_search" 
@@ -496,7 +501,8 @@ $(document).ready(function() {
         $(this).select2ToTree({dropdownCssClass : 'full-width'});
     });
 
-    oTable.search($('#collection_search').val()).draw();
+    // why is this call needed?
+    //oTable.search($('#collection_search').val()).draw();
     
     });
 

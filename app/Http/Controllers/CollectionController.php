@@ -52,7 +52,16 @@ class CollectionController extends Controller
 
     public function list(){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
-        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections]);
+        $stats_rows = DB::table('documents')
+            ->select('collection_id', DB::raw('count(*) as cnt'), DB::raw('sum(size) as size'))
+            ->whereNull('deleted_at')
+            ->groupBy('collection_id')
+            ->get();
+        $stats = [];
+        foreach($stats_rows as $stat){
+            $stats[$stat->collection_id] = $stat;
+        }
+        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats]);
     }
 
     public function save(Request $request){
@@ -720,6 +729,7 @@ use App\UrlSuppression;
 		$documents = \App\Document::where('collection_id', $collection_id);
 		$documents = $this->getTitleFilteredDocuments($request, $documents);
 		$documents = $this->getMetaFilteredDocuments($request, $documents);
+        $documents = $documents->take(1000);
 
 		$collection = \App\Collection::find($collection_id);
 		$filename = $collection->name;

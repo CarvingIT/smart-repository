@@ -196,4 +196,8 @@ class Document extends Model implements Auditable
         }
     }
 
+    public function favorites(){
+        return $this->belongsToMany(User::class, 'user_favourite', 'document_id', 'user_id');
+    }
+
 }

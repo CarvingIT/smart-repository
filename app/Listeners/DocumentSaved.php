@@ -32,7 +32,6 @@ class DocumentSaved
     {
         //$was_changed = $event->document->wasChanged();
 
-        //if(!$was_changed){
 		$notifiable = $event->document->collection;
         $collection_config = json_decode($event->document->collection->column_config);
         if(!empty($collection_config->slack_webhook) || !empty($collection_config->notify_email)){
@@ -44,56 +43,9 @@ class DocumentSaved
 		    }
         }
 
-	    // Update elasticsearch index 
-		// if collection requires approval and the document is not approved, don't update the elastic index
-		// also attempt to remove this particular record from elastic index
-       	$elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
-       	$hosts = explode(",",$elastic_hosts);
-        $client = ClientBuilder::create()->setHosts($hosts)
-		        ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
-		        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
-                ->build();
-		if($event->document->collection->require_approval == 1 && 
-			empty($event->document->approved_on)){
-			// don't update the elastic index
-			// remove the record
-        	$params = [
-            	'index'=>'sr_documents',
-            	'id'=>$event->document->id
-        	];
-        	try{
-        	$response = $client->delete($params);
-        	Log::info('Removed document {id} from Elastic index', ['id'=>$event->document->id]);
-        	}
-        	catch(\Exception $e){
-            	Log::warning($e->getMessage());
-        	}
-		}
-		else{
-            $body = $event->document->toArray();
-            $body['collection_id'] = $event->document->collection->id;
-            $body['title'] = $event->document->title;
-            $body['text_content'] = $event->document->text_content;
-
-            $body['created_by'] = $event->document->created_by;
-            $body['updated_at'] = $event->document->updated_at;
-            $body['approved_on'] = $event->document->approved_on;
-            $params = [
-                'index' => 'sr_documents',
-                'id'    => $event->document->id,
-                'body'  => $body
-            ];
-	    	try{
-            	$response = $client->index($params);
-	    		Log::info('Elastic index updated for document {id}.', ['id'=>$event->document->id]);
-	    	}
-	    	catch(\Exception $e){
-	    		Log::warning($e->getMessage());
-	    	}
-		}
-
 		// add a record in the approvals table
-		if($event->document->collection->require_approval == 1){
+		if($event->document->collection->require_approval == 1  
+           && empty($event->document->approved_on)){
 			// get the first role id from approval workflow
 			$collection_config = $event->document->collection->column_config;	
 			$col_conf = json_decode($collection_config);
@@ -101,6 +53,45 @@ class DocumentSaved
 			$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
 			$event->document->approvals()->save($approval_record);
 		}
-      //} // wasChanged
+
+	    // Update elasticsearch index 
+        Log::info('Updating the elasticsearch index now');
+       	$elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
+       	$hosts = explode(",",$elastic_hosts);
+        $client = ClientBuilder::create()->setHosts($hosts)
+		        ->setBasicAuthentication('elastic', env('ELASTIC_PASSWORD','some-default-password'))
+		        ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
+                ->build();
+            $body = $event->document->toArray();
+            $body['text_content'] = $event->document->text_content;
+            foreach($event->document->meta as $mv){
+                if(empty($mv->value)) continue;
+                $body['meta_'.$mv->meta_field_id] = $mv->value;
+            }
+            $del_params = [
+                'index' => 'sr_documents',
+                'id'    => $event->document->id
+            ];
+            $params = [
+                'index' => 'sr_documents',
+                'id'    => $event->document->id,
+                'body'  => $body
+            ];
+
+            // delete record if present
+	    	try{
+                $del_response = $client->delete($del_params);
+	    	}
+	    	catch(\Exception $e){
+	    		//Log::warning($e->getMessage());
+	    	}
+            // index the new/updated document
+            try{
+           	    $response = $client->index($params);
+    		    Log::info('Elastic index updated for document '. $event->document->id.'.');
+            }
+	    	catch(\Exception $e){
+	    		Log::warning($e->getMessage());
+	    	}
     }
 }

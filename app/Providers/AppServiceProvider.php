@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Schema::defaultStringLength(191);
 		try{
+            $this->app->useStoragePath(env("LOCAL_STORAGE_PATH",storage_path()));
 			$config_disks = config('filesystems.disks');	
 			// get disks defined in the database
 			$db_disks = []; 

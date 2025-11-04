@@ -437,8 +437,18 @@ class DocumentController extends Controller
 
 		$collection = Collection::find($collection_id);
 		//$filecontents = Storage::get($path);
-		Storage::disk($collection->storage_drive)
-			->writeStream('smartarchive_assets/'.$collection_id.'/0/'.$new_filename, Storage::readStream($path));
+        $write_path = 'smartarchive_assets/'.$collection_id.'/0/'.$new_filename;
+        //echo "Storage path - ".storage_path()."\n";
+        //echo "Reading from ".$path." and writing to ". $write_path."\n";
+		$write_success = Storage::disk($collection->storage_drive)
+			->writeStream($write_path, Storage::readStream($path));
+        if($write_success){
+            echo "File copied\n";
+        }
+        else{
+            echo "File copy failed. Aborting.\n";
+            //exit;
+        }
 		$filesize = Storage::size($path);
 		$mimetype = Storage::mimeType($path);
         $d = new Document;
