@@ -446,8 +446,8 @@ trait Search{
             if(!empty($extension_query)){
                 Log::debug('Adding must match clause for extension. Query is - '. json_encode($extension_query));
                 $params['body']['query']['bool']['must'][] = 
-                        ['wildcard' => [
-                            'path.keyword' => '*.'.$extension_query
+                        ['match' => [
+                            'type' => $extension_query
                         ]];
                 Log::debug('Adding must to extension. Param array is - '. json_encode($params));
             }
@@ -876,7 +876,7 @@ trait Search{
         $result = array(
                 'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
                 'title' => $title,
-                'file_extension' => strtoupper($d->type ?? ''),
+                'file_extension' => $d->type ?? '',
                 'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date(env('DATE_FORMAT','Y-M-d'), strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),

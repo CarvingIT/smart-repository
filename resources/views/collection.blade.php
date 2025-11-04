@@ -3,50 +3,6 @@
 @section('content')
 @push('js')
 <style>
-/* File Type Dropdown Styling */
-#extension_filter {
-    border: 1px solid #9c27b0;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-    max-height: 200px;
-    overflow-y: auto;
-    background-color: white;
-    z-index: 9999;
-    padding: 4px;
-}
-
-#extension_filter option {
-    padding: 10px 15px;
-    cursor: pointer;
-    border-radius: 3px;
-    margin: 2px 0;
-    transition: all 0.2s ease;
-}
-
-/* Hover effect - blue background */
-#extension_filter option:hover {
-    background-color: #2196F3 !important;
-    color: white !important;
-}
-
-/* Selected option - gray background */
-#extension_filter option:checked {
-    background-color: #e0e0e0 !important;
-    color: #333 !important;
-    font-weight: 600;
-}
-
-/* Active/Focus state */
-#extension_filter option:active {
-    background-color: #1976D2 !important;
-    color: white !important;
-}
-
-/* Make dropdown overlay properly */
-#file_type_header {
-    position: relative;
-    z-index: 1;
-}
 </style>
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.js" defer></script>
@@ -93,8 +49,6 @@ $(document).ready(function() {
 		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'. (($hide_approval_status)?',"visible":false':'').'},';
 		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'.(($hide_size)?',"visible":false':"").'},';
 		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-left"'.(($hide_creation_time)?',"visible":false':"").'},';
-		// File Extension column (last data column before actions)
-		echo '{ "targets":['.$i++.'], "sortable":false, "className":"text-center"},';
 		@endphp	
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
@@ -134,78 +88,8 @@ $(document).ready(function() {
               'sort': 'updated_date'
             }
         },
-       {data:"file_extension"},
         {data:"actions"},
     ],
-    });
-
-    // Load file extensions for the collection
-    $.ajax({
-        url: '/collection/{{$collection->id}}/extensions',
-        method: 'GET',
-        success: function(response) {
-            var extensionSelect = $('#extension_filter');
-            response.extensions.forEach(function(ext) {
-                extensionSelect.append('<option value="' + ext + '">' + ext.toUpperCase() + '</option>');
-            });
-            
-            // Check if there's a pre-selected extension filter from session
-            @php
-                $extension_filter = Session::get('extension_filter');
-                $selected_extension = !empty($extension_filter[$collection->id]) ? $extension_filter[$collection->id] : '';
-            @endphp
-            @if(!empty($selected_extension))
-                extensionSelect.val('{{ $selected_extension }}');
-            @endif
-        }
-    });
-    
-    // Toggle dropdown on header click - directly show options
-    $('#file_type_header').on('click', function(e) {
-        e.stopPropagation();
-        var dropdown = $('#extension_filter');
-        if(dropdown.is(':visible')) {
-            dropdown.hide();
-        } else {
-            dropdown.show();
-        }
-    });
-    
-    // Hide dropdown when clicking outside
-    $(document).on('click', function(e) {
-        if(!$(e.target).closest('#file_type_header').length) {
-            $('#extension_filter').hide();
-        }
-    });
-    
-    // Handle extension filter selection (click on option)
-    $('#extension_filter').on('click', 'option', function() {
-        var selectedExtension = $(this).val();
-        $('#extension_filter').hide(); // Hide dropdown after selection
-        
-        if(selectedExtension) {
-            // Send filter to backend
-            $.ajax({
-                url: '/collection/{{$collection->id}}/quickextensionfilter',
-                method: 'POST',
-                data: {
-                    _token: '{{ csrf_token() }}',
-                    extension_filter: selectedExtension
-                },
-                success: function() {
-                    // Reload DataTable
-                    oTable.ajax.reload();
-                }
-            });
-        } else {
-            // Remove filter
-            window.location.href = '/collection/{{$collection->id}}/removeextensionfilter';
-        }
-    });
-    
-    // Prevent dropdown from closing when clicking on select element
-    $('#extension_filter').on('click', function(e) {
-        e.stopPropagation();
     });
 
 } );
@@ -344,17 +228,27 @@ function randomString(length) {
             </div>
 		<div class="card search-filters-card">
 		<div class="row">
-            {{--
 			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
-			<div class="float-container col-md-12">
+			<div class="float-container col-md-6">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
-		   		<label for="title_search" class="search-label">{{ __('Look for a phrase in the title of the documents.') }}</label>
-		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
+		   		<label for="title_search" class="search-label">{{ __('Title') }}</label>
+		   		<input type="text" class="search-field" id="title_search" name="title_filter" placeholder="{{ __('Search in title...') }}"/>
 			</form>
 			</div>
 			@endif
-            --}}
+            
+			@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
+			<div class="float-container col-md-6">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickextensionfilter">
+			@csrf
+		   		<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
+		   		<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
+					<option value="" selected disabled style="color:#999;">{{ __('Filter by file type...') }}</option>
+				</select>
+			</form>
+			</div>
+			@endif
             
 			@foreach($meta_fields as $m)
                 @php
@@ -512,15 +406,13 @@ function randomString(length) {
                 </a>
                 </span>
 		@endif
-		{{-- Extension filter tag removed as filter is in column header
 		@if(!empty($extension_filter[$collection->id]))
-			<span class="filtertag">{{ __('File Type')}} <i>{{ strtoupper($extension_filter[$collection->id])}}</i>
+			<span class="filtertag">{{ __('File Type')}} <i>{{ $extension_filter[$collection->id]}}</i>
                 <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removeextensionfilter">
                 <i class="tinyicon material-icons">close</i>
                 </a>
                 </span>
 		@endif
-		--}}
 		@if($show_meta_filters)
         @foreach( $all_meta_filters[$collection->id] as $m)
 		@php
@@ -545,7 +437,7 @@ function randomString(length) {
                 </span>
         @endforeach
         @endif
-		@if(!empty($title_filter[$collection->id]) || $show_meta_filters)
+		@if(!empty($title_filter[$collection->id]) || !empty($extension_filter[$collection->id]) || $show_meta_filters)
                 <a title="{{ __('Remove all filters') }}" href="/collection/{{ $collection->id }}/removeallfilters">
                 <i class="tinyicon material-icons">delete_forever</i>
                 </a>
@@ -568,12 +460,6 @@ function randomString(length) {
                             <th>{{__('Approval Status')}}</th>
                             <th>{{__('Size')}}</th>
                             <th>{{__('Created')}}</th>
-                            <th style="position: relative; cursor: pointer;" id="file_type_header">
-                                <span>{{__('File Type')}} <i class="material-icons" style="font-size: 16px; vertical-align: middle;">arrow_drop_down</i></span>
-                                <select id="extension_filter" size="5" class="form-control" name="extension_filter" style="position: absolute; top: 100%; left: 0; z-index: 1000; display: none; min-width: 140px; height: auto;">
-                                    <option value="">{{ __('All Types') }}</option>
-                                </select>
-                            </th>
                 <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
                 </tr>
                 </thead>
@@ -635,6 +521,65 @@ $(document).ready(function() {
     $('.selectpickertree').each(function(index,element){
         $(this).select2ToTree({dropdownCssClass : 'full-width'});
     });
+
+    // Load file types for the dropdown
+    @if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
+    $.ajax({
+        url: '/collection/{{$collection->id}}/extensions',
+        method: 'GET',
+        success: function(response) {
+            var fileTypeSelect = $('#file_type_search');
+            response.extensions.forEach(function(type) {
+                // Create user-friendly label
+                var label = getFriendlyLabel(type);
+                fileTypeSelect.append('<option value="' + type + '">' + label + '</option>');
+            });
+            
+            // Pre-select if filter is active
+            @php
+                $extension_filter = Session::get('extension_filter');
+                $selected_type = !empty($extension_filter[$collection->id]) ? $extension_filter[$collection->id] : '';
+            @endphp
+            @if(!empty($selected_type))
+                fileTypeSelect.val('{{ $selected_type }}');
+                fileTypeSelect.css('color', '#000'); // Change to black when value selected
+            @endif
+        }
+    });
+    
+    // Change color when user selects an option
+    $('#file_type_search').on('change', function() {
+        if($(this).val()) {
+            $(this).css('color', '#000'); // Black text for selected value
+        } else {
+            $(this).css('color', '#999'); // Gray for placeholder
+        }
+    });
+    
+    // Helper function to create friendly labels
+    function getFriendlyLabel(mimeType) {
+        var friendlyNames = {
+            'application/pdf': 'PDF',
+            'application/msword': 'DOC',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+            'application/vnd.ms-excel': 'XLS',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX',
+            'application/vnd.ms-powerpoint': 'PPT',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PPTX',
+            'image/jpeg': 'JPEG',
+            'image/png': 'PNG',
+            'image/gif': 'GIF',
+            'text/plain': 'TXT',
+            'text/csv': 'CSV',
+            'application/zip': 'ZIP',
+            'video/mp4': 'MP4',
+            'audio/mpeg': 'MP3'
+        };
+        
+        var shortName = friendlyNames[mimeType] || mimeType.split('/')[1].toUpperCase();
+        return shortName + ' (' + mimeType + ')';
+    }
+    @endif
 
     // why is this call needed?
     //oTable.search($('#collection_search').val()).draw();
