@@ -3,8 +3,8 @@
 @section('content')
 <div class="content">
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-md-8">
+        <div class="row justify-content-center">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="card-header card-header-primary">
                         <h4 class="card-title">{{ __('Create Shared Link') }}</h4>
@@ -17,20 +17,21 @@
                             
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="form-group">
+                                    <div class="form-group bmd-form-group">
                                         <label for="password" class="bmd-label-floating">{{ __('Password (optional)') }}</label>
-                                        <input type="password" name="password" id="password" class="form-control" placeholder="Leave empty for no password protection">
+                                        <input type="password" name="password" id="password" class="form-control">
                                         @if ($errors->has('password'))
                                             <span class="text-danger">{{ $errors->first('password') }}</span>
                                         @endif
+                                        <small class="form-text text-muted">Leave empty for no password protection</small>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="expires_at" class="bmd-label-floating">{{ __('Expires At (optional)') }}</label>
+                                    <div class="form-group bmd-form-group">
+                                        <label for="expires_at" class="bmd-label-static">{{ __('Expires At (optional)') }}</label>
                                         <input type="datetime-local" name="expires_at" id="expires_at" class="form-control">
                                         @if ($errors->has('expires_at'))
                                             <span class="text-danger">{{ $errors->first('expires_at') }}</span>
@@ -42,14 +43,29 @@
 
                             <div class="row">
                                 <div class="col-md-12">
-                                    <div class="form-check">
-                                        <label class="form-check-label">
-                                            <input class="form-check-input" type="checkbox" name="downloadable" value="1" checked>
-                                            {{ __('Allow Download') }}
-                                            <span class="form-check-sign">
-                                                <span class="check"></span>
-                                            </span>
-                                        </label>
+                                    <div class="form-group bmd-form-group">
+                                        <label for="permission_level" class="bmd-label-static">{{ __('Access Permission') }}</label>
+                                        <select name="permission_level" id="permission_level" class="form-control">
+                                            <option value="view">{{ __('View Only') }}</option>
+                                            <option value="download">{{ __('Download Only') }}</option>
+                                            <option value="both" selected>{{ __('View and Download') }}</option>
+                                        </select>
+                                        @if ($errors->has('permission_level'))
+                                            <span class="text-danger">{{ $errors->first('permission_level') }}</span>
+                                        @endif
+                                        <small class="form-text text-muted">Choose what users can do with this shared document</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group bmd-form-group">
+                                        <label for="description" class="bmd-label-floating">{{ __('Description (optional)') }}</label>
+                                        <textarea name="description" id="description" class="form-control" rows="3"></textarea>
+                                        @if ($errors->has('description'))
+                                            <span class="text-danger">{{ $errors->first('description') }}</span>
+                                        @endif
                                     </div>
                                 </div>
                             </div>

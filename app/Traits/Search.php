@@ -768,7 +768,9 @@ trait Search{
                 $action_icons .= '<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog('.$d->id.');" title="Delete document"><i class="material-icons">delete</i></span>';
                     }
                 }
-                $action_icons .= '<a class="btn btn-info btn-link" href="'.route('shared-links.create', ['document' => $d->id]).'" title="Share document"><i class="material-icons">share</i></a>';
+                if(Auth::user()->canShareDocument($d->id)){
+                    $action_icons .= '<a class="btn btn-info btn-link" href="'.route('shared-links.create', ['document' => $d->id]).'" title="Share document"><i class="material-icons">share</i></a>';
+                }
             }
 	    } // if collection's content-type == Uploaded documents
 	    //$title = $d->title.': '. substr($d->text_content, 0, 100).' ...';

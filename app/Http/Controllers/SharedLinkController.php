@@ -12,7 +12,11 @@ class SharedLinkController extends Controller
 {
     public function index()
     {
-        $sharedLinks = SharedLink::with('document')->where('user_id', Auth::id())->paginate(15);
+        if (Auth::user()->hasRole('admin')) {
+            $sharedLinks = SharedLink::with(['document', 'user'])->latest()->paginate(15);
+        } else {
+            $sharedLinks = SharedLink::with('document')->where('user_id', Auth::id())->latest()->paginate(15);
+        }
         return view('shared-links.index', compact('sharedLinks'));
     }
 
@@ -27,7 +31,8 @@ class SharedLinkController extends Controller
             'document_id' => 'required|exists:documents,id',
             'password' => 'nullable|string|min:6',
             'expires_at' => 'nullable|date|after:now',
-            'downloadable' => 'boolean',
+            'permission_level' => 'required|in:view,download,both',
+            'description' => 'nullable|string|max:500',
         ]);
 
         $sharedLink = SharedLink::create([
@@ -36,8 +41,10 @@ class SharedLinkController extends Controller
             'token' => Str::random(40),
             'password' => $request->password ? bcrypt($request->password) : null,
             'expires_at' => $request->expires_at,
+            'permission_level' => $request->permission_level,
+            'description' => $request->description,
             'is_active' => true,
-            'downloadable' => $request->input('downloadable', true),
+            'downloadable' => in_array($request->permission_level, ['download', 'both']), // backward compatibility
         ]);
 
         return redirect()->route('shared-links.index')->with('success', 'Shared link created successfully.');
@@ -108,7 +115,7 @@ class SharedLinkController extends Controller
             }
         }
 
-        if (!$sharedLink->downloadable) {
+        if (!in_array($sharedLink->permission_level ?? 'both', ['download', 'both'])) {
             return abort(403, 'This file is not available for download.');
         }
 
@@ -140,16 +147,24 @@ class SharedLinkController extends Controller
         $request->validate([
             'password' => 'nullable|string|min:6',
             'expires_at' => 'nullable|date|after:now',
+            'permission_level' => 'required|in:view,download,both',
+            'description' => 'nullable|string|max:500',
             'is_active' => 'boolean',
-            'downloadable' => 'boolean',
         ]);
 
-        $sharedLink->update([
-            'password' => $request->password ? bcrypt($request->password) : null,
+        $data = [
             'expires_at' => $request->expires_at,
-            'is_active' => $request->input('is_active', false),
-            'downloadable' => $request->input('downloadable', false),
-        ]);
+            'permission_level' => $request->permission_level,
+            'description' => $request->description,
+            'is_active' => $request->input('is_active', 0),
+            'downloadable' => in_array($request->permission_level, ['download', 'both']),
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = bcrypt($request->password);
+        }
+
+        $sharedLink->update($data);
 
         return redirect()->route('shared-links.index')->with('success', 'Shared link updated successfully.');
     }

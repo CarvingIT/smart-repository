@@ -4,66 +4,87 @@
 <div class="content">
     <div class="container-fluid">
         <div class="row justify-content-center">
-            <div class="col-md-12 d-flex justify-content-center">
-                <div class="card mt-5 shadow-sm w-100" style="max-width: 600px;">
+            <div class="col-md-12">
+                <div class="card">
                     <div class="card-header card-header-primary">
-                        <h4 class="card-title mb-0">{{ __('Edit Shared Link') }}</h4>
-                        <small class="card-category">
-                            {{ __('Edit shared link for: ') . ($sharedLink->document->title ?? 'Unknown Document') }}
-                        </small>
+                        <h4 class="card-title">{{ __('Edit Shared Link') }}</h4>
+                        <p class="card-category">{{ __('Editing link for document: ') . $sharedLink->document->title }}</p>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('shared-links.update', $sharedLink) }}" method="POST">
                             @csrf
                             @method('PUT')
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group bmd-form-group">
+                                        <label for="password" class="bmd-label-floating">{{ __('New Password (optional)') }}</label>
+                                        <input type="password" name="password" id="password" class="form-control">
+                                        <small class="form-text text-muted">Leave blank to keep the current password.</small>
+                                        @if ($errors->has('password'))
+                                            <span class="text-danger">{{ $errors->first('password') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group bmd-form-group">
+                                        <label for="expires_at" class="bmd-label-static">{{ __('Expires At (optional)') }}</label>
+                                        <input type="datetime-local" name="expires_at" id="expires_at" class="form-control" value="{{ old('expires_at', optional($sharedLink->expires_at)->format('Y-m-d\TH:i')) }}">
+                                        @if ($errors->has('expires_at'))
+                                            <span class="text-danger">{{ $errors->first('expires_at') }}</span>
+                                        @endif
+                                        <small class="form-text text-muted">Leave empty for link that never expires.</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group bmd-form-group">
+                                        <label for="permission_level" class="bmd-label-static">{{ __('Access Permission') }}</label>
+                                        <select name="permission_level" id="permission_level" class="form-control">
+                                            <option value="view" {{ old('permission_level', $sharedLink->permission_level) == 'view' ? 'selected' : '' }}>{{ __('View Only') }}</option>
+                                            <option value="download" {{ old('permission_level', $sharedLink->permission_level) == 'download' ? 'selected' : '' }}>{{ __('Download Only') }}</option>
+                                            <option value="both" {{ old('permission_level', $sharedLink->permission_level) == 'both' ? 'selected' : '' }}>{{ __('View and Download') }}</option>
+                                        </select>
+                                        @if ($errors->has('permission_level'))
+                                            <span class="text-danger">{{ $errors->first('permission_level') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group bmd-form-group">
+                                        <label for="description" class="bmd-label-floating">{{ __('Description (optional)') }}</label>
+                                        <textarea name="description" id="description" class="form-control" rows="3">{{ old('description', $sharedLink->description) }}</textarea>
+                                        @if ($errors->has('description'))
+                                            <span class="text-danger">{{ $errors->first('description') }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                             
-                            {{-- Password --}}
-                            <div class="form-group mb-4">
-                                <label for="password" class="form-label">{{ __('Password (leave blank to keep unchanged)') }}</label>
-                                <input type="password" name="password" id="password" class="form-control">
-                                @error('password')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Expires At --}}
-                            <div class="form-group mb-4">
-                                <label for="expires_at" class="form-label">{{ __('Expires At (optional)') }}</label>
-                                <input type="datetime-local" name="expires_at" id="expires_at" class="form-control"
-                                    value="{{ optional($sharedLink->expires_at)->format('Y-m-d\TH:i') }}">
-                                @error('expires_at')
-                                    <div class="text-danger mt-1">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            {{-- Checkboxes --}}
-                            <div class="row mb-4">
-                                <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-12">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1"
-                                            {{ $sharedLink->is_active ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="is_active">
-                                            {{ __('Active') }}
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="downloadable" name="downloadable" value="1"
-                                            {{ $sharedLink->downloadable ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="downloadable">
-                                            {{ __('Allow Download') }}
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="checkbox" name="is_active" value="1" {{ old('is_active', $sharedLink->is_active) ? 'checked' : '' }}>
+                                            {{ __('Link is Active') }}
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- Buttons --}}
-                            <div class="d-flex justify-content-start gap-2 flex-wrap">
-                                <button type="submit" class="btn btn-primary btn-sm">{{ __('UPDATE LINK') }}</button>
-                                <a href="{{ route('shared-links.index') }}" class="btn btn-secondary btn-sm">{{ __('Cancel') }}</a>
-                            </div>
+                            <button type="submit" class="btn btn-primary">{{ __('Update Link') }}</button>
+                            <a href="{{ route('shared-links.index') }}" class="btn btn-default">{{ __('Cancel') }}</a>
                         </form>
                     </div>
                 </div>

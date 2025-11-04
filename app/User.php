@@ -141,6 +141,17 @@ class User extends Authenticatable implements MustVerifyEmail
         return false;
     }
 
+    public function canShareDocument($document_id){
+        $document = \App\Document::find($document_id);
+        $collection_id = $document->collection_id;
+        if($this->hasPermission($collection_id, 'MAINTAINER') || 
+            $this->hasPermission($collection_id, 'CAN_SHARE') ||
+            ($this->hasPermission($collection_id, 'VIEW') && $document->created_by == $this->id)){
+            return true;
+        }
+        return false;
+    }
+
     public function canApproveDocument($document_id, $user_role=null){
         $document = \App\Document::find($document_id);
         $collection_id = $document->collection_id;

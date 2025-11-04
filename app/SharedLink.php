@@ -15,6 +15,8 @@ class SharedLink extends Model
         'token',
         'password',
         'expires_at',
+        'permission_level',
+        'description',
         'is_active',
         'downloadable',
     ];

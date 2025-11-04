@@ -21,6 +21,7 @@ class PermissionsSeeder extends Seeder
             array('VIEW', 'Can view any content'),
             array('VIEW_OWN', 'Can view own content'),
 	    array('APPROVE', 'Can approve content'),
+            array('CAN_SHARE', 'Can share documents'),
         );
         // add permissions
         foreach($permissions as $p){
