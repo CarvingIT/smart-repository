@@ -377,7 +377,14 @@ $j++;
      * Get unique extensions for a collection (AJAX endpoint)
      */
     public function getCollectionExtensions($collection_id){
-        $extensions = Document::getUniqueExtensionsForCollection($collection_id);
+        $extensions = Document::where('collection_id', $collection_id)
+            ->whereNull('deleted_at')
+            ->distinct()
+            ->pluck('type')
+            ->filter()
+            ->sort()
+            ->values()
+            ->toArray();
         return response()->json(['extensions' => $extensions]);
     }
     
