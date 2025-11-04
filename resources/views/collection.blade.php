@@ -228,7 +228,7 @@ function randomString(length) {
             </div>
 		<div class="card search-filters-card">
 		<div class="row">
-			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
+			{{-- @if(!empty($column_config->title_search) && $column_config->title_search == 1)
 			<div class="float-container col-md-6">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
@@ -236,21 +236,19 @@ function randomString(length) {
 		   		<input type="text" class="search-field" id="title_search" name="title_filter" placeholder="{{ __('Search in title...') }}"/>
 			</form>
 			</div>
-			@endif
+		@endif --}}
             
-			@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
-			<div class="float-container col-md-6">
-			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickextensionfilter">
-			@csrf
-		   		<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
-		   		<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
-					<option value="" selected disabled style="color:#999;">{{ __('Filter by file type...') }}</option>
-				</select>
-			</form>
-			</div>
-			@endif
-            
-			@foreach($meta_fields as $m)
+		@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
+		<div class="float-container col-md-12">
+		<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickextensionfilter">
+		@csrf
+	   		<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
+	   		<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
+				<option value="" selected disabled style="color:#999;">{{ __('Filter by file type...') }}</option>
+			</select>
+		</form>
+		</div>
+		@endif			@foreach($meta_fields as $m)
                 @php
                     $extra_attributes = empty($m->extra_attributes) ? null : json_decode($m->extra_attributes);
                     $w = empty($extra_attributes->filter_width_on_collection_page)? 12 : $extra_attributes->filter_width_on_collection_page;
@@ -472,16 +470,16 @@ function randomString(length) {
 </div>
 </div>
 		<script>
-			@if(!empty(env('TRANSLITERATION')) && $collection->content_type == 'Uploaded documents') 
-				// transliteration in the title box is needed only for collection of types "Uploaded documents"
-				let searchbox = document.getElementById("collection_search");
-				enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
-			   @if(!empty($column_config->title_search) && $column_config->title_search == 1)
-				let titlesearchbox = document.getElementById("title_search");
-				enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
-			   @endif
+		@if(!empty(env('TRANSLITERATION')) && $collection->content_type == 'Uploaded documents') 
+			// transliteration in the title box is needed only for collection of types "Uploaded documents"
+			let searchbox = document.getElementById("collection_search");
+			enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
+		   {{-- @if(!empty($column_config->title_search) && $column_config->title_search == 1)
+			let titlesearchbox = document.getElementById("title_search");
+			enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
+		   @endif --}}
 
-				@foreach($collection->meta_fields as $m)
+			@foreach($collection->meta_fields as $m)
 					@if($m->type != 'Text') @continue @endif
 					@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
 					let m_{{$m->id}}_searchbox = document.getElementById("meta_{{$m->id}}_search");

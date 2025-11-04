@@ -89,13 +89,13 @@ $(document).ready(function() {
 			@endforeach
 		</div>
 
-		<h4>{{__('Search Fields')}}</h4>
-		<div class="form-group row">
-           <div class="col-md-3"><input name="title_search" type="checkbox" value="1" 
-			@if(!empty($column_config->title_search) && $column_config->title_search == 1) checked="checked" @endif /> {{ __('Title') }}</div>
-           <div class="col-md-3"><input name="file_type_search" type="checkbox" value="1" 
-			@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1) checked="checked" @endif /> {{ __('File Type') }}</div>
-			@foreach($collection->meta_fields as $m)
+	<h4>{{__('Search Fields')}}</h4>
+	<div class="form-group row">
+       {{-- <div class="col-md-3"><input name="title_search" type="checkbox" value="1" 
+		@if(!empty($column_config->title_search) && $column_config->title_search == 1) checked="checked" @endif /> {{ __('Title') }}</div> --}}
+       <div class="col-md-3"><input name="file_type_search" type="checkbox" value="1" 
+		@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1) checked="checked" @endif /> {{ __('File Type') }}</div>
+		@foreach($collection->meta_fields as $m)
            <div class="col-md-3"><input name="meta_fields_search[]" type="checkbox" value="{{ $m->id }}" 
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search)) checked="checked" @endif /> {{ $m->label }}</div>
 			@endforeach
