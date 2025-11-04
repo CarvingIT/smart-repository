@@ -238,17 +238,7 @@ function randomString(length) {
 			</div>
 		@endif --}}
             
-		@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
-		<div class="float-container col-md-12">
-		<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickextensionfilter">
-		@csrf
-	   		<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
-	   		<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
-				<option value="" selected disabled style="color:#999;">{{ __('Filter by file type...') }}</option>
-			</select>
-		</form>
-		</div>
-		@endif			@foreach($meta_fields as $m)
+			@foreach($meta_fields as $m)
                 @php
                     $extra_attributes = empty($m->extra_attributes) ? null : json_decode($m->extra_attributes);
                     $w = empty($extra_attributes->filter_width_on_collection_page)? 12 : $extra_attributes->filter_width_on_collection_page;
@@ -348,6 +338,15 @@ function randomString(length) {
                     } 
                 }
             @endphp
+			@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickextensionfilter">
+			@csrf
+	   			<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
+	   			<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
+					<option value="" selected disabled style="color:#999;">{{ __('Filter by file type...') }}</option>
+				</select>
+			</form>
+			@endif
 			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
 		    <input type="text" class="search-field" id="collection_search" 
             value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
