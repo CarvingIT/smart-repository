@@ -190,6 +190,31 @@ class SystemInfoCheck extends Command
                 }
             }
         }
+
+        if ($section === 'all' || $section === 'disk') {
+            $this->info("\n=== Disk Space Information ===");
+            $disks = $service->getStorageInfo();
+            
+            foreach ($disks as $name => $info) {
+                $this->line("\n💽 " . ucfirst($name));
+                $this->line("   Path: {$info['path']}");
+                $this->line("   Total: {$info['total_human']}");
+                $this->line("   Used: {$info['used_human']} ({$info['percentage']}%)");
+                $this->line("   Free: {$info['free_human']}");
+                
+                // Status with color
+                switch ($info['status']) {
+                    case 'critical':
+                        $this->error("   Status: ⚠ CRITICAL - Very Low Disk Space!");
+                        break;
+                    case 'warning':
+                        $this->error("   Status: ⚠ WARNING - Low Disk Space");
+                        break;
+                    default:
+                        $this->info("   Status: ✓ OK");
+                }
+            }
+        }
         
         return Command::SUCCESS;
     }

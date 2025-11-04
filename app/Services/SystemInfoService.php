@@ -21,6 +21,7 @@ class SystemInfoService
             'ocr' => $this->checkOcrLibraries(),
             'versions' => $this->getVersionInfo(),
             "database" => $this->getDatabaseInfo(),
+            "disk_space" => $this->getStorageInfo(),
         ];
     }
 
@@ -327,4 +328,58 @@ class SystemInfoService
             ];
         }
     }
+
+    // Storage
+
+    private function formatBytes($bytes, $precision = 2){
+        if ($bytes == 0) return "0 B";
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $factor = floor((strlen($bytes) - 1) / 3);
+
+        return sprintf("%.{$precision}f", $bytes / pow(1024, $factor)) . ' ' . $units[$factor];
+    }
+
+    private function getDiskStatus($percentage) {
+        if ($percentage >= 95){
+            return "critical";
+        } elseif ($percentage >= 75) {
+            return "warning";
+        } else {
+            return "ok";
+        }
+    }
+
+    public function getStorageInfo() {
+        $paths = [
+            "storage" => storage_path(),
+            "application" => base_path(),
+            "public" => public_path(),
+        ];
+
+        $results = [];
+
+        foreach($paths as $name => $path) {
+            if(file_exists($path)) {
+                $total = disk_total_space($path);
+                $free = disk_free_space($path);
+                $used = $total - $free;
+                $percentage = ($total > 0) ? round(($used / $total) * 100, 2) : 0;
+
+                $results[$name] = [
+                    "path" => $path,
+                    "total" => $total,
+                    "used" => $used,
+                    "free" => $free,
+                    "percentage" => $percentage,
+                    "total_human" => $this->formatBytes($total),
+                    "used_human" => $this->formatBytes($used),
+                    "free_human" => $this->formatBytes($free),
+                    "status" => $this->getDiskStatus($percentage),
+                ];
+            }
+        }
+
+        return $results;
+    }
+
 }
