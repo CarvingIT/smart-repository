@@ -873,8 +873,21 @@ trait Search{
             }
         }
 	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.strip_tags(implode(' ... ', $content_matches), '<em>').'</p>';
+        
+        // Check if file is an image type and display actual image instead of icon
+        $image_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml'];
+        $type_display = '';
+        if(in_array($d->type, $image_types)){
+            // Display actual image with max dimensions
+            $image_url = '/collection/'.$d->collection_id.'/document/'.$d->id;
+            $type_display = '<img class="file-thumbnail" src="'.$image_url.'" style="max-width:50px; max-height:50px; object-fit:contain;" />';
+        } else {
+            // Display file type icon
+            $type_display = '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
+        }
+        
         $result = array(
-                'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
+                'type' => array('display'=>$type_display, 'filetype'=>$d->icon()),
                 'title' => $title,
                 'file_extension' => $d->type ?? '',
                 'approval_status' => $approval_status,
