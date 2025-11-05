@@ -111,6 +111,12 @@ select.search-field option:disabled{
     opacity:0.7;
 }
 
+.listicon{
+    max-width:50px;
+    max-height:50px;
+    object-fit:contain;
+}
+
 a.nav-link{
 	margin-right:0 !important;
 }

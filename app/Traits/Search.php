@@ -880,7 +880,7 @@ trait Search{
         if(in_array($d->type, $image_types)){
             // Display actual image with max dimensions
             $image_url = '/collection/'.$d->collection_id.'/document/'.$d->id;
-            $type_display = '<img class="file-thumbnail" src="'.$image_url.'" style="max-width:50px; max-height:50px; object-fit:contain;" />';
+            $type_display = '<img class="listicon" src="'.$image_url.'" />';
         } else {
             // Display file type icon
             $type_display = '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
