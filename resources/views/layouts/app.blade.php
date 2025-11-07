@@ -28,9 +28,9 @@ foreach($config as $c){
     <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
     <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
-    <!--
+    
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    -->
+    
         <!--   Core JS Files   -->
         <script src="/js/jquery-3.5.1.js"></script>
         <!--   Core JS Files   -->

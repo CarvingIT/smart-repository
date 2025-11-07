@@ -363,6 +363,31 @@ $j++;
         return redirect('/collection/'.$request->collection_id);
 	}
     
+    /**
+     * Replace extension filter for a collection
+     */
+    public function replaceExtensionFilter(Request $request){
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$request->collection_id] = $request->extension_filter;
+        Session::put('extension_filter', $extension_filter);
+        return redirect('/collection/'.$request->collection_id);
+    }
+    
+    /**
+     * Get unique extensions for a collection (AJAX endpoint)
+     */
+    public function getCollectionExtensions($collection_id){
+        $extensions = Document::where('collection_id', $collection_id)
+            ->whereNull('deleted_at')
+            ->distinct()
+            ->pluck('type')
+            ->filter()
+            ->sort()
+            ->values()
+            ->toArray();
+        return response()->json(['extensions' => $extensions]);
+    }
+    
     public function metaInformation($collection_id, $meta_field_id=null){
         $collection = \App\Collection::find($collection_id);
         if(empty($meta_field_id)){
@@ -457,6 +482,16 @@ $j++;
         return redirect('/collection/'.$collection_id);
 	}
 
+    /**
+     * Remove extension filter for a collection
+     */
+    public function removeExtensionFilter($collection_id){
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$collection_id] = null;
+        Session::put('extension_filter', $extension_filter);
+        return redirect('/collection/'.$collection_id);
+    }
+
     public function removeAllMetaFilters($collection_id){
         $all_meta_filters = Session::get('meta_filters');
         $all_meta_filters[$collection_id] = null;
@@ -468,6 +503,11 @@ $j++;
 		$title_filter = Session::get('title_filter');
 		$title_filter[$collection_id] = null;
         Session::put('title_filter', $title_filter);
+        
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$collection_id] = null;
+        Session::put('extension_filter', $extension_filter);
+        
         $all_meta_filters = Session::get('meta_filters');
         $all_meta_filters[$collection_id] = null;
         Session::put('meta_filters', $all_meta_filters);
