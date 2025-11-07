@@ -37,22 +37,22 @@
                    <input type="hidden" name="collection_id" value="{{ request()->collection_id }}" />
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="collection_name" class="col-md-12 col-form-label text-md-right">Name</label> 
+                   <label for="collection_name" class="col-md-12 col-form-label text-md-right">{{ __('Name') }}</label> 
                     </div>
                     <div class="col-md-8">
-                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your {{ __('collection')}} a name" value="{{ $collection->name }}" required />
+                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="{{ __('Give your collection a name') }}" value="{{ $collection->name }}" required />
                     </div>
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="description" class="col-md-12 col-form-label text-md-right">Description</label> 
+                   <label for="description" class="col-md-12 col-form-label text-md-right">{{ __('Description') }}</label> 
 			</div>
                     <div class="col-md-8">
-                    <textarea name="description" id="description" class="form-control" value="" placeholder="Description" required >{{ $collection->description }}</textarea>
+                    <textarea name="description" id="description" class="form-control" value="" placeholder="{{ __('Description') }}" required >{{ $collection->description }}</textarea>
                     </div>
                    </div>
                    <div class="form-group row mb-0"><div class="col-md-8 offset-md-4"><button type="submit" class="btn btn-primary">
-                                    Save
+                                    {{ __('Save') }}
                           </button> 
                      </div></div> 
                    </form> 
