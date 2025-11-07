@@ -34,7 +34,7 @@ class SharedLinkController extends Controller
             'document_id' => 'required|exists:documents,id',
             'password' => 'nullable|string|min:6',
             'expires_at' => 'nullable|date|after:now',
-            'permission_level' => 'required|in:view,download,both',
+            'permission_level' => 'required|in:download',
             'description' => 'nullable|string|max:500',
         ]);
 
@@ -50,7 +50,7 @@ class SharedLinkController extends Controller
             'permission_level' => $request->permission_level,
             'description' => $request->description,
             'is_active' => true,
-            'downloadable' => in_array($request->permission_level, ['download', 'both']), // backward compatibility
+            'downloadable' => true,
         ]);
 
         return redirect()->route('shared-links.index')->with('success', 'Shared link created successfully.');
@@ -121,7 +121,7 @@ class SharedLinkController extends Controller
             }
         }
 
-        if (!in_array($sharedLink->permission_level ?? 'both', ['download', 'both'])) {
+        if (!in_array($sharedLink->permission_level ?? 'download', ['download'])) {
             return abort(403, 'This file is not available for download.');
         }
 
@@ -153,7 +153,7 @@ class SharedLinkController extends Controller
         $request->validate([
             'password' => 'nullable|string|min:6',
             'expires_at' => 'nullable|date|after:now',
-            'permission_level' => 'required|in:view,download,both',
+            'permission_level' => 'required|in:download',
             'description' => 'nullable|string|max:500',
             'is_active' => 'boolean',
         ]);
@@ -163,7 +163,7 @@ class SharedLinkController extends Controller
             'permission_level' => $request->permission_level,
             'description' => $request->description,
             'is_active' => $request->input('is_active', 0),
-            'downloadable' => in_array($request->permission_level, ['download', 'both']),
+            'downloadable' => true,
         ];
 
         if ($request->filled('password')) {

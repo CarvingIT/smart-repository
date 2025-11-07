@@ -190,5 +190,9 @@ class User extends Authenticatable implements MustVerifyEmail
                     ->withTimestamps();
     }
 
+    public function sharedLinks(){
+        return $this->hasMany(SharedLink::class);
+    }
+
 ///// 
 } // End of the class

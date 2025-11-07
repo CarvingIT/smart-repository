@@ -815,6 +815,11 @@ trait Search{
 			$action_icons .= '<button type="button" class="btn btn-primary btn-link js-fav-toggle-ui" data-doc-id="'.$d->id.'" aria-pressed="'.$fav_pressed.'" title="'.$fav_title.'">';
 			$action_icons .= '<i class="material-icons fav-icon">'.$fav_icon.'</i>';
 			$action_icons .= '</button>';
+			
+			// Share button - check if user can share this document
+			if(Auth::user()->canShareDocument($d->id)){
+				$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/share" title="Share document"><i class="material-icons">share</i></a>';
+			}
 		}		
 		if(in_array($d->type, ['application/pdf'])){
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/doc-viewer" target="_blank"><i class="material-icons">open_in_browser</i></a>';
