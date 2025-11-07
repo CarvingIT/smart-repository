@@ -316,3 +316,4 @@ Route::group(['middleware' => 'auth'], function () {
 Route::get('/shared/{token}', 'SharedLinkController@publicView')->name('shared-links.public-view');
 Route::post('/shared/{token}/verify', 'SharedLinkController@verifyPassword')->name('shared-links.verify-password');
 Route::get('/shared/{token}/download', 'SharedLinkController@download')->name('shared-links.download');
+Route::get('/shared/{token}/viewer', 'SharedLinkController@viewer')->name('shared-links.viewer');
