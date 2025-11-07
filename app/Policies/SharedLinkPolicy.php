@@ -62,7 +62,7 @@ class SharedLinkPolicy
      */
     public function update(User $user, SharedLink $sharedLink)
     {
-        return $user->id === $sharedLink->user_id;
+        return $user->id === $sharedLink->user_id || $user->hasRole('admin');
     }
 
     /**
@@ -74,7 +74,7 @@ class SharedLinkPolicy
      */
     public function delete(User $user, SharedLink $sharedLink)
     {
-        return $user->id === $sharedLink->user_id;
+        return $user->id === $sharedLink->user_id || $user->hasRole('admin');
     }
 
     /**

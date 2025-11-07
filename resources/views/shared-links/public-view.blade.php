@@ -11,15 +11,17 @@
             <div class="card-body">
                 <p class="card-description text-center">{{ $sharedLink->description }}</p>
                 
-                <div class="text-center">
-                    @if(in_array($sharedLink->permission_level, ['download', 'both']))
-                        <a href="{{ route('shared-links.download', $sharedLink->token) }}" class="btn btn-primary btn-round">Download</a>
-                    @endif
+                <div class="text-center mb-3">
+                    <a href="{{ route('shared-links.download', $sharedLink->token) }}" class="btn btn-primary btn-round">
+                        <i class="material-icons">cloud_download</i> Download Document
+                    </a>
                 </div>
 
+                @if(in_array($sharedLink->document->type, ['application/pdf']))
                 <div class="mt-4">
-                    <iframe src="{{ route('documents.view', ['id' => $sharedLink->document->id, 'collection_id' => $sharedLink->document->collection_id]) }}" width="100%" height="600px" frameborder="0"></iframe>
+                    <iframe src="/collection/{{ $sharedLink->document->collection_id }}/document/{{ $sharedLink->document->id }}/doc-viewer" width="100%" height="600px" frameborder="0"></iframe>
                 </div>
+                @endif
             </div>
         </div>
     </div>
