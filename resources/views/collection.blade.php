@@ -365,12 +365,12 @@ function randomString(length) {
         @if(env('ENABLE_SEARCH_OPTIONS') == 1 && env('SEARCH_MODE') == 'elastic')
         <div class="row">
            <div class="col-6">
-            Scope of full-text search: 
-            <input type="radio" class="full_text_scope" name="full_text_scope" value="title_n_content" @if(!$full_text_scope || $full_text_scope == 'title_n_content') checked @endif> Title and Content</input>
-            <input type="radio" class="full_text_scope" name="full_text_scope" value="title" @if($full_text_scope == 'title') checked @endif> Title only</input>
+            {{ __('Scope of full-text search:') }} 
+            <input type="radio" class="full_text_scope" name="full_text_scope" value="title_n_content" @if(!$full_text_scope || $full_text_scope == 'title_n_content') checked @endif> {{ __('Title and Content') }}</input>
+            <input type="radio" class="full_text_scope" name="full_text_scope" value="title" @if($full_text_scope == 'title') checked @endif> {{ __('Title only') }}</input>
             </div>
             <div class="col-6">
-            <input type="checkbox" id="fuzzy-search" name="fuzzy" value="1" /> Fuzzy search
+            <input type="checkbox" id="fuzzy-search" name="fuzzy" value="1" /> {{ __('Fuzzy search') }}
             </div>
 	   </div>
         @endif
@@ -398,14 +398,14 @@ function randomString(length) {
         @endphp
 		@if(!empty($title_filter[$collection->id]))
 			<span class="filtertag">{{ __('Title contains')}} <i>{{ $title_filter[$collection->id]}}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removetitlefilter">
+                <a class="removefiltertag" title="{{ __('remove') }}" href="/collection/{{ $collection->id }}/removetitlefilter">
                 <i class="tinyicon material-icons">close</i>
                 </a>
                 </span>
 		@endif
 		@if(!empty($extension_filter[$collection->id]))
 			<span class="filtertag">{{ __('File Type')}} <i>{{ $extension_filter[$collection->id]}}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removeextensionfilter">
+                <a class="removefiltertag" title="{{ __('remove') }}" href="/collection/{{ $collection->id }}/removeextensionfilter">
                 <i class="tinyicon material-icons">close</i>
                 </a>
                 </span>
@@ -422,12 +422,12 @@ function randomString(length) {
             <span class="filtertag">
 	@if(empty($meta_labels[$m['field_id']]))
             {{ $m['field_id'] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <a class="removefiltertag" title="{{ __('remove') }}" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
 	@else
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <a class="removefiltertag" title="{{ __('remove') }}" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
 	@endif

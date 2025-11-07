@@ -50,7 +50,7 @@ else{
 		@if (empty($collection->id))
                 <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Add Collection') }}</h4></div>
 		@else
-                <div class="card-header card-header-primary"><h4 class="card-title">Edit Collection</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Edit Collection') }}</h4></div>
 		@endif
 
                 <div class="card-body">
@@ -74,35 +74,35 @@ else{
                     <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="collection_name" class="col-md-12 col-form-label text-md-right">Name</label> 
+                   <label for="collection_name" class="col-md-12 col-form-label text-md-right">{{ __('Name') }}</label> 
                     </div>
                     <div class="col-md-8">
-                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="Give your {{ __('collection') }} a name" value="{{ $collection->name }}" required />
+                    <input type="text" name="collection_name" id="collection_name" class="form-control" placeholder="{{ __('Give your collection a name') }}" value="{{ $collection->name }}" required />
                     </div>
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="description" class="col-md-12 col-form-label text-md-right">Description</label> 
+                   <label for="description" class="col-md-12 col-form-label text-md-right">{{ __('Description') }}</label> 
 			</div>
                     <div class="col-md-8">
-                    <textarea name="description" id="description" class="form-control" value="" placeholder="Description" required >{{ $collection->description }}</textarea>
+                    <textarea name="description" id="description" class="form-control" value="" placeholder="{{ __('Description') }}" required >{{ $collection->description }}</textarea>
                     </div>
                    </div>
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="content-type" class="col-md-12 col-form-label text-md-right">Content Type</label> 
+                   <label for="content-type" class="col-md-12 col-form-label text-md-right">{{ __('Content Type') }}</label> 
                     </div>
                     <div class="col-md-8">
 			<select name="content_type" class="selectpicker" id="content_type" onchange="hideStorageDriveField();" @if(!empty($collection->content_type)) disabled @endif>
-			            <option value="Uploaded documents" @if($collection->content_type == 'Uploaded documents') selected @endif>Uploaded Documents</option>
-			            <option value="Web resources" @if($collection->content_type == 'Web resources') selected @endif>Web resources</option>
+			            <option value="Uploaded documents" @if($collection->content_type == 'Uploaded documents') selected @endif>{{ __('Uploaded Documents') }}</option>
+			            <option value="Web resources" @if($collection->content_type == 'Web resources') selected @endif>{{ __('Web resources') }}</option>
 			</select>
                     </div>
                    </div>
 		   <div id="storage_drive"> <!-- Storage Drive div used to toggle as per content_type option -->
                    <div class="form-group row">
                     <div class="col-md-4">
-                   	<label for="storage_disks" class="col-md-12 col-form-label text-md-right">Storage Drive</label> 
+                   	<label for="storage_disks" class="col-md-12 col-form-label text-md-right">{{ __('Storage Drive') }}</label> 
                     </div>
                     <div class="col-md-8">
 			<select name="storage_drive" class="selectpicker" @if(!empty($collection->storage_drive)) disabled @endif>
@@ -118,10 +118,10 @@ else{
                    </div><!-- Storage Drive div ends -->
                    <div class="form-group row">
                     <div class="col-md-4">
-                   <label for="maintainer" class="col-md-12 col-form-label text-md-right">Maintainer</label> 
+                   <label for="maintainer" class="col-md-12 col-form-label text-md-right">{{ __('Maintainer') }}</label> 
 			       </div>
                     <div class="col-md-8">
-                    <input type="text" name="maintainer" id="maintainer" class="form-control" value="@if(!empty($collection->maintainer()->email)){{$collection->maintainer()->email}}@endif" placeholder="Email ID of the maintainer">
+                    <input type="text" name="maintainer" id="maintainer" class="form-control" value="@if(!empty($collection->maintainer()->email)){{$collection->maintainer()->email}}@endif" placeholder="{{ __('Email ID of the maintainer') }}">
                     </div>
                    </div>
                    <div class="form-group row">
@@ -132,7 +132,7 @@ else{
                     @if($collection->type == 'Members Only')
                      checked 
                     @endif
-                    /> <label>Members Only</label>
+                    /> <label>{{ __('Members Only') }}</label>
                     </div>
                    </div>
                    <div class="form-group row">
@@ -143,12 +143,12 @@ else{
 		                @if($collection->require_approval == 1)
                                     checked
                         @endif
-                    /> <label>Document becomes available after approval</label>
+                    /> <label>{{ __('Document becomes available after approval') }}</label>
                     </div>
                    </div>
                 
                    <div class="form-group row mb-0"><div class="col-md-8 offset-md-4"><button type="submit" class="btn btn-primary">
-                                    Save
+                                    {{ __('Save') }}
                                 </button> 
                      </div></div> 
                    </form> 
