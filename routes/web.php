@@ -307,3 +307,13 @@ Route::group(["middleware" => ["auth"]], function() {
 	Route::get("/favorites/data", "FavoritesController@data")->name("favorites.data");
 	Route::post('/favorites/toggle/{document}', 'FavoritesController@toggle')->name('favorites.toggle');
 });
+
+// Shared Links
+Route::group(['middleware' => 'auth'], function () {
+    Route::resource('shared-links', 'SharedLinkController')->except(['show']);
+    Route::get('/document/{document}/share', 'SharedLinkController@create')->name('shared-links.create');
+});
+Route::get('/shared/{token}', 'SharedLinkController@publicView')->name('shared-links.public-view');
+Route::post('/shared/{token}/verify', 'SharedLinkController@verifyPassword')->name('shared-links.verify-password');
+Route::get('/shared/{token}/download', 'SharedLinkController@download')->name('shared-links.download');
+Route::get('/shared/{token}/viewer', 'SharedLinkController@viewer')->name('shared-links.viewer');
