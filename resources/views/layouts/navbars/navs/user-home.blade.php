@@ -124,6 +124,7 @@ $collections = \App\Collection::all();
  	         <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
 	         <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
 	         <a class="dropdown-item" href="/admin/deleted-documents">{{ __('Deleted Documents') }}</a>
+	         <a class="dropdown-item" href="/admin/system-info">{{ __('System Information') }}</a>
             @endif
             <div class="dropdown-divider"></div>
 			@if(empty(env('SAML2_SLS')))
