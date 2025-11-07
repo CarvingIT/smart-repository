@@ -128,16 +128,154 @@ class SharedLinkController extends Controller
         $document = $sharedLink->document;
         $storage_drive = empty($document->collection->storage_drive) ? 'local' : $document->collection->storage_drive;
         
-        // Use Storage facade to get the file
-        $filePath = \Storage::disk($storage_drive)->path($document->path);
+        // Check if cloud storage
+        $cloud_storages = ['google'];
+        $driver = config("filesystems.disks.{$storage_drive}.driver");
+        
+        if (in_array($driver, $cloud_storages)) {
+            return $this->downloadCloudFile($document, $storage_drive);
+        }
+        
+        // For local storage
+        try {
+            $file_path = $document->path;
+            
+            // Extract filename from path and remove prefix
+            $path_parts = explode('/', $file_path);
+            $file_name = array_pop($path_parts);
+            $file_name = preg_replace('/\d*_\d*_/', '', $file_name);
+            $file_name = preg_replace('/,/', '', $file_name);
+            
+            // Get the full file path
+            $fullPath = \Storage::disk($storage_drive)->path($file_path);
+            
+            if (!file_exists($fullPath)) {
+                return abort(404, 'File not found.');
+            }
+            
+            $mime = \Storage::disk($storage_drive)->mimeType($file_path);
+            $size = \Storage::disk($storage_drive)->size($file_path);
+            
+            $response = [
+                'Content-Type' => $mime,
+                'Content-Length' => $size,
+                'Content-Description' => 'File Transfer',
+                'Content-Transfer-Encoding' => 'binary',
+            ];
+            
+            // Force download for non-PDF files
+            if ($mime != 'application/pdf') {
+                $response['Content-Disposition'] = "attachment; filename={$file_name}";
+            }
+            
+            ob_end_clean();
+            
+            return \Response::make(\Storage::disk($storage_drive)->get($file_path), 200, $response);
+            
+        } catch (\Exception $e) {
+            return abort(500, 'Error downloading file: ' . $e->getMessage());
+        }
+    }
+    
+    private function downloadCloudFile($document, $storage_drive)
+    {
+        $filename = $document->path;
+        $dir = '/';
+        $recursive = false;
+        $contents = collect(\Storage::disk($storage_drive)->listContents($dir, $recursive));
+        
+        $file = $contents
+            ->where('type', '=', 'file')
+            ->where('filename', '=', pathinfo($filename, PATHINFO_FILENAME))
+            ->where('extension', '=', pathinfo($filename, PATHINFO_EXTENSION))
+            ->first();
+        
+        if (!$file) {
+            return abort(404, 'File not found in cloud storage.');
+        }
+        
+        $path_parts = explode('/', $filename);
+        $file_name = array_pop($path_parts);
+        $file_name = preg_replace('/\d*_\d*_/', '', $file_name);
+        $file_name = preg_replace('/,/', '', $file_name);
+        
+        $mime = \Storage::disk($storage_drive)->mimeType($filename);
+        $size = \Storage::disk($storage_drive)->size($filename);
+        
+        $response = [
+            'Content-Type' => $mime,
+            'Content-Length' => $size,
+            'Content-Description' => 'File Transfer',
+            'Content-Transfer-Encoding' => 'binary',
+        ];
+        
+        if ($mime != 'application/pdf') {
+            $response['Content-Disposition'] = "attachment; filename={$file_name}";
+        }
+        
+        ob_end_clean();
+        
+        return \Response::make(\Storage::disk($storage_drive)->get($filename), 200, $response);
+    }
 
-        if (!file_exists($filePath)) {
-            return abort(404, 'File not found.');
+    public function viewer(Request $request, $token)
+    {
+        $sharedLink = SharedLink::where('token', $token)->where('is_active', true)->firstOrFail();
+
+        if ($sharedLink->expires_at && $sharedLink->expires_at->isPast()) {
+            return abort(404);
         }
 
-        $filename = str_replace(['/', '\\'], '_', $document->title);
+        // Check if this link requires a password
+        if ($sharedLink->password) {
+            // Check if password has been verified in this session
+            $verifiedLinks = session('verified_links', []);
+            
+            if (!in_array($token, $verifiedLinks)) {
+                return abort(403, 'Password required to view this document.');
+            }
+        }
 
-        return response()->download($filePath, $filename . '.' . $document->file_ext);
+        $document = $sharedLink->document;
+        $storage_drive = empty($document->collection->storage_drive) ? 'local' : $document->collection->storage_drive;
+        
+        // Check if cloud storage
+        $cloud_storages = ['google'];
+        $driver = config("filesystems.disks.{$storage_drive}.driver");
+        
+        if (in_array($driver, $cloud_storages)) {
+            // For cloud storage, redirect to download or show error
+            return abort(501, 'Cloud storage viewer not implemented.');
+        }
+        
+        // For local storage - serve the PDF directly
+        try {
+            $file_path = $document->path;
+            
+            // Get the full file path
+            $fullPath = \Storage::disk($storage_drive)->path($file_path);
+            
+            if (!file_exists($fullPath)) {
+                return abort(404, 'File not found.');
+            }
+            
+            $mime = \Storage::disk($storage_drive)->mimeType($file_path);
+            
+            // Only serve PDFs in viewer
+            if ($mime != 'application/pdf') {
+                return abort(400, 'Only PDF files can be viewed.');
+            }
+            
+            $response = [
+                'Content-Type' => $mime,
+                'Content-Disposition' => 'inline',
+            ];
+            
+            return \Response::make(\Storage::disk($storage_drive)->get($file_path), 200, $response);
+            
+        } catch (\Exception $e) {
+            return abort(500, 'Error viewing file: ' . $e->getMessage());
+        }
     }
 
     public function edit(SharedLink $sharedLink)

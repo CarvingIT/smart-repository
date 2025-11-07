@@ -9,7 +9,9 @@
                 <h4 class="card-title"><strong>{{ $sharedLink->document->title }}</strong></h4>
             </div>
             <div class="card-body">
-                <p class="card-description text-center">{{ $sharedLink->description }}</p>
+                @if($sharedLink->description)
+                    <p class="card-description text-center">{{ $sharedLink->description }}</p>
+                @endif
                 
                 <div class="text-center mb-3">
                     <a href="{{ route('shared-links.download', $sharedLink->token) }}" class="btn btn-primary btn-round">
@@ -19,7 +21,7 @@
 
                 @if(in_array($sharedLink->document->type, ['application/pdf']))
                 <div class="mt-4">
-                    <iframe src="/collection/{{ $sharedLink->document->collection_id }}/document/{{ $sharedLink->document->id }}/doc-viewer" width="100%" height="600px" frameborder="0"></iframe>
+                    <iframe src="{{ route('shared-links.viewer', $sharedLink->token) }}" width="100%" height="600px" frameborder="0"></iframe>
                 </div>
                 @endif
             </div>
