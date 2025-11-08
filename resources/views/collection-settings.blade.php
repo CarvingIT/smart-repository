@@ -117,17 +117,17 @@ $(document).ready(function() {
             <div class="col-md-12"><input name="document_viewer_download" type="checkbox" value="1"
             @if(!empty($column_config->document_viewer_download))
                 checked="checked"
-            @endif /> Allow download of documents</div>
+            @endif /> {{ __('Allow download of documents') }}</div>
         </div>
 
 		<h4>{{__('Display of search results')}}</h4>
 		<div class="form-group row">
            <div class="col-md-3">
-				Title replacement
+				{{ __('Title replacement') }}
 		   </div>
            <div class="col-md-9">
 				<select class="form-control1" name="replace_title_with_meta">
-					<option value="">Don't replace with any meta value</option>
+					<option value="">{{ __("Don't replace with any meta value") }}</option>
 				@foreach ($collection->meta_fields as $m)
 					<option value="{{ $m->id }}" @if (@$column_config->replace_title_with_meta == $m->id) {{ 'selected' }} @endif >{{ $m->label }}</option>
 				@endforeach
@@ -138,15 +138,15 @@ $(document).ready(function() {
 		<h4>{{__('Document Approval')}}</h4>
 		<div class="form-group row">
                   <div class="col-md-12"><input type="checkbox" id="display_unapproved_docs" name="display_unapproved_docs" value="1"
-                        @if(@$column_config->display_unapproved_docs == 1) checked @endif />Display Unapproved Documents
+                        @if(@$column_config->display_unapproved_docs == 1) checked @endif />{{ __('Display Unapproved Documents') }}
                   </div>
                     <br />
                   <div class="col-md-12"><input type="checkbox" id="display_approval_log" name="display_approval_log" value="1"
-                        @if(@$column_config->display_approval_log == 1) checked @endif />Display Document Approval Log
+                        @if(@$column_config->display_approval_log == 1) checked @endif />{{ __('Display Document Approval Log') }}
                   </div>
                     <br />
                     <div class="col-md-12">
-            <strong>Document Work Flow</strong>
+            <strong>{{ __('Document Work Flow') }}</strong>
 			<select class="selectsequence" id="selectsequence" name="approved_by[]" multiple style="width:100%;">	
 				@if(!empty($column_config->approved_by))
 					@foreach($column_config->approved_by as $approver)
@@ -199,7 +199,7 @@ $(document).ready(function() {
 			</div>
 
 			<div class="col-md-3">
-			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="Label for display" />
+			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="{{ __('Label for display') }}" />
 			</div>
 
 			</div>
@@ -209,17 +209,17 @@ $(document).ready(function() {
 		<h4>{{__('Notifications')}}</h4>
 		<div class="form-group row">
 			<div class="col-md-2 text-right">
-				<label for="slack_webhook"><img src="/i/Slack_Mark_Web.png" class="icon"/>Slack Webhook</label>
+				<label for="slack_webhook"><img src="/i/Slack_Mark_Web.png" class="icon"/>{{ __('Slack Webhook') }}</label>
 			</div>
 			<div class="col-md-10">
-				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="Slack webhook url" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
+				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="{{ __('Slack webhook url') }}" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
 			</div>
 
 			<div class="col-md-2 text-right">
-				<label for="notify_email"><img src="/i/notify_email.png" class="icon"/>Send email to</label>
+				<label for="notify_email"><img src="/i/notify_email.png" class="icon"/>{{ __('Send email to') }}</label>
 			</div>
 			<div class="col-md-10">
-				<input type="text" class="form-control" name="notify_email" id="notify_email" placeholder="Notification email address" value="@if(!empty($column_config->notify_email)) {{ $column_config->notify_email }} @endif" />
+				<input type="text" class="form-control" name="notify_email" id="notify_email" placeholder="{{ __('Notification email address') }}" value="@if(!empty($column_config->notify_email)) {{ $column_config->notify_email }} @endif" />
 			</div>
 		</div>
 
@@ -228,10 +228,10 @@ $(document).ready(function() {
 		<p>{{ __('Attachments sent to this email address will be automatically imported into your collection. You may need the help of your IT staff to fill out the following details.') }}</p>
 			<div class="row">
 				<div class="col-md-2 text-right">
-					<label for="email_address">Email address</label>
+					<label for="email_address">{{ __('Email address') }}</label>
 				</div>
 				<div class="col-md-10">
-					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="e.g. knowledge@yourdomain.com" value="@if(!empty($mailbox->address)) {{ $mailbox->address }} @endif" />
+					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="{{ __('e.g. knowledge@yourdomain.com') }}" value="@if(!empty($mailbox->address)) {{ $mailbox->address }} @endif" />
 				</div>
 			</div>
 		@php
@@ -242,7 +242,7 @@ $(document).ready(function() {
 		@endphp
 			<div class="row">
 				<div class="col-md-2">
-					<label for="imap_server">IMAP server</label>
+					<label for="imap_server">{{ __('IMAP server') }}</label>
 				</div>
 				<div class="col-md-10">
 					<input type="text" class="form-control" name="imap_server" id="imap_server" value="@if($creds) {{ $creds->server_address }} @endif" />
