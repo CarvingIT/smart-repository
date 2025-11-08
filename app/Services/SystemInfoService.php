@@ -230,6 +230,7 @@ class SystemInfoService
                 $packages[$package_name] = [
                     'version' => $package['version'] ?? 'unknown',
                     'name' => $package_name,
+                    'description' => $package['description'] ?? '',
                 ];
             }
         }
