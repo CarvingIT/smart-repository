@@ -34,8 +34,8 @@ $(document).ready(function() {
                   </div>
                 @endif
                 <div class="row">
-                  <div class="col-12 text-right">
-                    <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary" title="Add User"><i class="material-icons">add</i></a>
+                    <div class="col-12 text-right">
+                    <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary" title="{{ __('Add User') }}"><i class="material-icons">add</i></a>
                   </div>
                 </div>
                 <div class="table-responsive">

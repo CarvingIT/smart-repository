@@ -7,7 +7,22 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#taxonomy").DataTable();
+    $("#taxonomy").DataTable({
+        "language": {
+            "lengthMenu": "{{ __('Show _MENU_ entries') }}",
+            "zeroRecords": "{{ __('No matching records found') }}",
+            "info": "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+            "infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+            "infoFiltered": "{{ __('(filtered from _MAX_ total entries)') }}",
+            "search": "{{ __('Search:') }}",
+            "paginate": {
+                "first": "{{ __('First') }}",
+                "last": "{{ __('Last') }}",
+                "next": "{{ __('Next') }}",
+                "previous": "{{ __('Previous') }}"
+            }
+        }
+    });
 } );
 
 function showDeleteDialog(taxonomy_id){
@@ -89,11 +104,11 @@ for (i = 0; i < toggler.length; i++) {
                     </div>
                 <div class="row">
                   <div class="col-12 text-right">
-                    <a href="{{ route('taxonomies.create') }}" class="btn btn-sm btn-primary" title="New Taxonomy Tree"><i class="material-icons">add</i></a>
+                    <a href="{{ route('taxonomies.create') }}" class="btn btn-sm btn-primary" title="{{ __('New Taxonomy Tree') }}"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 		<div class="table-responsive">
-		    <h3>Taxonomy</h3>
+		    <h3>{{ __('Taxonomy') }}</h3>
 <ul>
 @php
 	$tags = App\Taxonomy::orderBy('display_order')->get();
@@ -136,11 +151,11 @@ for (i = 0; i < toggler.length; i++) {
                  <div id="deletedialog" style="display:none;">
                 <form name="deletedoc" method="post" action="/admin/taxonomies/delete">
                 @csrf
-                <p>Enter <span id="text_captcha"></span> to delete</p>
+                <p>{{ __('Enter') }} <span id="text_captcha"></span> {{ __('to delete') }}</p>
                 <input type="text" name="delete_captcha" value="" />
                 <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
                 <input type="hidden" id="delete_taxonomy_id" name="taxonomy_id" value="{{ $u->id }}" />
-                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+                <button class="btn btn-danger" type="submit" value="delete">{{ __('Delete') }}</button>
                 </form>
                 </div>
                 

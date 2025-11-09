@@ -60,6 +60,18 @@ $(document).ready(function() {
     "language": 
 	{          
 	"processing": "<img src='/i/processing.gif'>",
+	"lengthMenu": "{{ __('Show _MENU_ entries') }}",
+	"zeroRecords": "{{ __('No matching records found') }}",
+	"info": "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+	"infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+	"infoFiltered": "{{ __('(filtered from _MAX_ total entries)') }}",
+	"search": "{{ __('Search:') }}",
+	"paginate": {
+		"first": "{{ __('First') }}",
+		"last": "{{ __('Last') }}",
+		"next": "{{ __('Next') }}",
+		"previous": "{{ __('Previous') }}"
+	}
 	},
     "columns":[
        {data:"type",
@@ -457,7 +469,7 @@ function randomString(length) {
                             <th>{{__('Approval Status')}}</th>
                             <th>{{__('Size')}}</th>
                             <th>{{__('Created')}}</th>
-                <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
+                <th>@if(env('SHOW_ACTIONS_TH') == 1) {{ __('Actions') }} @endif</th>
                 </tr>
                 </thead>
                </table>

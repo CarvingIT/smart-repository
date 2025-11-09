@@ -7,9 +7,24 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#role").DataTable(
-        {"columnDefs":[{"orderable": false, targets: [1]}]}
-    );
+    $("#role").DataTable({
+        "columnDefs":[{"orderable": false, targets: [1]}],
+        "language": {
+            "search": "{{ __('Search:') }}",
+            "lengthMenu": "{{ __('Show _MENU_ entries') }}",
+            "info": "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+            "infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+            "infoFiltered": "{{ __('(filtered from _MAX_ total entries)') }}",
+            "paginate": {
+                "first": "{{ __('First') }}",
+                "last": "{{ __('Last') }}",
+                "next": "{{ __('Next') }}",
+                "previous": "{{ __('Previous') }}"
+            },
+            "zeroRecords": "{{ __('No matching records found') }}",
+            "emptyTable": "{{ __('No data available in table') }}"
+        }
+    });
 } );
 
 function showDeleteDialog(role_id){
@@ -62,12 +77,12 @@ function randomString(length) {
                     </div>
                 <div class="row">
                   <div class="col-12 text-right">
-                    <a href="{{ route('roles.create') }}" class="btn btn-sm btn-primary" title="Add Role"><i class="material-icons">add</i></a>
-                    <p class="text-left">Define roles if you want some users to be able to read/write information on certain fields that you define. You can think of mapping roles to the positions in your organization.
+                    <a href="{{ route('roles.create') }}" class="btn btn-sm btn-primary" title="{{ __('Add Role') }}"><i class="material-icons">add</i></a>
+                    <p class="text-left">{{ __('Define roles if you want some users to be able to read/write information on certain fields that you define. You can think of mapping roles to the positions in your organization.') }}
                     </p>
-                    <p class="text-left">Do not confuse this with permissions. Permissions within a collection are specific to that particular collection and are assigned to a user when the user is added (made a member) to that collection. 
+                    <p class="text-left">{{ __('Do not confuse this with permissions. Permissions within a collection are specific to that particular collection and are assigned to a user when the user is added (made a member) to that collection.') }} 
                     </p>
-                    <p class="text-left">"admin" is the only default role and can not be edited or deleted.</p>
+                    <p class="text-left">{{ __('"admin" is the only default role and can not be edited or deleted.') }}</p>
                   </div>
                 </div>
 
@@ -75,8 +90,8 @@ function randomString(length) {
                     <table id="role" class="table">
                         <thead class="text-primary">
                             <tr>
-                            <th>Roles</th>
-                            <th class="text-right">Actions</th>
+                            <th>{{ __('Roles') }}</th>
+                            <th class="text-right">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
