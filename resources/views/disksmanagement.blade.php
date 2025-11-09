@@ -7,7 +7,22 @@
 
 <script>
 $(document).ready(function() {
-    $('#disks').DataTable();
+    $('#disks').DataTable({
+        "language": {
+            "search": "{{ __('Search:') }}",
+            "lengthMenu": "{{ __('Show _MENU_ entries') }}",
+            "info": "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+            "infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+            "infoFiltered": "{{ __('(filtered from _MAX_ total entries)') }}",
+            "paginate": {
+                "first": "{{ __('First') }}",
+                "last": "{{ __('Last') }}",
+                "next": "{{ __('Next') }}",
+                "previous": "{{ __('Previous') }}"
+            },
+            "zeroRecords": "{{ __('No matching records found') }}"
+        }
+    });
 } );
 
 function showDeleteDialog(disk_id){
@@ -37,7 +52,7 @@ function randomString(length) {
         <div class="col-md-12">
             <div class="card">
             <div class="card-header card-header-primary">
-                <h4 class="card-title">Disks</h4>
+                <h4 class="card-title">{{ __('Disks') }}</h4>
               </div>		
 
                 <div class="card-body">
@@ -55,7 +70,7 @@ function randomString(length) {
                     </div>
 		<div class="row">
                   <div class="col-12 text-right">
-                    <a href="/admin/disk-form/new" class="btn btn-sm btn-primary" title="Add Disk"><i class="material-icons">add</i></a>
+                    <a href="/admin/disk-form/new" class="btn btn-sm btn-primary" title="{{ __('Add Disk') }}"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 
@@ -63,10 +78,10 @@ function randomString(length) {
                     <table id="disks" class="table">
                         <thead class="text-primary">
                             <tr>
-                            <th>Name</th>
-                            <th>Type</th>
-                            <th>Created</th>
-                            <th class="text-right">Actions</th>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Created') }}</th>
+                            <th class="text-right">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,17 +95,17 @@ function randomString(length) {
 				<i class="material-icons">edit</i>
                                 <div class="ripple-container"></div>
 				</a>
-			<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $d->id }});" title="Delete Storage"><i class="material-icons">delete</i></span>
+			<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $d->id }});" title="{{ __('Delete Storage') }}"><i class="material-icons">delete</i></span>
                             </td>    <!-- use font awesome icons or image icons -->
                         </tr>
             <div id="deletedialog" style="display:none;">
                 <form name="deletedisk" method="post" action="/admin/disk/delete">
                 @csrf
-                <p>Enter <span id="text_captcha"></span> to delete</p>
+                <p>{{ __('Enter') }} <span id="text_captcha"></span> {{ __('to delete') }}</p>
                 <input type="text" name="delete_captcha" value="" />
                 <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
                 <input type="hidden" id="delete_disk_id" name="disk_id" value="{{ $d->id }}" />
-                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+                <button class="btn btn-danger" type="submit" value="delete">{{ __('Delete') }}</button>
                 </form>
             </div>
 

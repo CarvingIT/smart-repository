@@ -15,15 +15,15 @@ $(document).ready(function() {
       <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card ">
-              <div class="card-header card-header-primary">
-                <h4 class="card-title">{{ __('Add User') }}</h4>
+                <div class="card-header card-header-primary">
+                <h4 class="card-title">{{ __('Edit User') }}</h4>
                 <p class="card-category"></p>
               </div>
 
               <div class="card-body ">
                  <div class="row">
                   <div class="col-md-12 text-right">
-                      <a href="/admin/usermanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
+                      <a href="/admin/usermanagement" class="btn btn-sm btn-primary" title="{{ __('Back to List') }}"><i class="material-icons">arrow_back</i></a>
                   </div>
                 </div>
                 <form method="post" action="{{ route('user.update', $user) }}" autocomplete="off">
@@ -52,8 +52,8 @@ $(document).ready(function() {
                   </div>
                 </div>
                 <div class="form-group row">
-                   <div class="col-md-4">
-                  <label class="col-md-8 col-form-label text-md-right" for="input-password">{{ __(' Password') }}</label>
+                  <div class="col-md-4">
+                  <label class="col-md-8 col-form-label text-md-right" for="input-password">{{ __('Password') }}</label>
                     </div>
                   <div class="col-md-6">
                       <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" input type="password" name="password" id="input-password" placeholder="{{ __('Password') }}" value="" @if(empty($user->password)) required @endif />
@@ -83,7 +83,7 @@ $(document).ready(function() {
 				}
 			@endphp
                       <select class="form-control selectsequence" name="user_role[]" id="input-user-role" multiple />
-			<option value="">Select Role</option>
+            <option value="">{{ __('Select Role') }}</option>
 			@foreach($roles as $role)
 				<option value="{{ $role->id }}" @if(in_array($role->id,$user_role_ids)) selected @endif>{{ ucfirst($role->name) }}</option>
 			@endforeach

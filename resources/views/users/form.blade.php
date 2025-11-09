@@ -12,9 +12,9 @@
 
               <div class="card-body ">
                  <div class="row">
-                  <div class="col-md-12 text-right">
-                      <a href="/admin/usermanagement" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
-                  </div>
+          <div class="col-md-12 text-right">
+            <a href="/admin/usermanagement" class="btn btn-sm btn-primary" title="{{ __('Back to List') }}"><i class="material-icons">arrow_back</i></a>
+          </div>
                 </div>
                 @if(empty($user))
                 <form method="post" action="{{ route('user.store') }}" autocomplete="off">
@@ -46,8 +46,8 @@
                   </div>
                 </div>
                 <div class="form-group row">
-                   <div class="col-md-4">
-                  <label class="col-md-12 col-form-label text-md-right" for="input-password">{{ __(' Password') }}</label>
+                  <div class="col-md-4">
+                  <label class="col-md-12 col-form-label text-md-right" for="input-password">{{ __('Password') }}</label>
                     </div>
                   <div class="col-md-8">
                       <input class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" input type="password" name="password" id="input-password" placeholder="{{ __('Password') }}" value="" required />

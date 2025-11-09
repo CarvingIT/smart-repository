@@ -37,7 +37,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Database')}} :: Configuration</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Database')}} :: {{ __('Configuration') }}</h4></div>
                 <div class="col-md-12 text-right">
                 <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
                 </div>
@@ -108,7 +108,7 @@ $(document).ready(function() {
 				@continue
 			@endif
            <div class="col-md-3"><input name="auth_user_permissions[]" type="checkbox" value="{{ $p->name }}" 
-			@if(!empty($column_config->auth_user_permissions) && in_array($p->name, $column_config->auth_user_permissions)) checked="checked" @endif /> {{ $p->description }}</div>
+			@if(!empty($column_config->auth_user_permissions) && in_array($p->name, $column_config->auth_user_permissions)) checked="checked" @endif /> {{ __($p->description) }}</div>
 			@endforeach
 		</div>
 
@@ -171,15 +171,15 @@ $(document).ready(function() {
 		<h4>{{__('Info page')}}</h4>
 		<div class="form-group row">
            <div class="col-md-3"><input name="show_word_cloud" type="checkbox" value="1" 
-			@if(!empty($column_config->show_word_cloud) && $column_config->show_word_cloud == 1) checked="checked" @endif /> Show word cloud</div>
+			@if(!empty($column_config->show_word_cloud) && $column_config->show_word_cloud == 1) checked="checked" @endif /> {{ __('Show word cloud') }}</div>
            <div class="col-md-3"><input name="show_audit_trail" type="checkbox" value="1" 
-			@if(!empty($column_config->show_audit_trail) && $column_config->show_audit_trail == 1) checked="checked" @endif /> Show audit trail</div>
+			@if(!empty($column_config->show_audit_trail) && $column_config->show_audit_trail == 1) checked="checked" @endif /> {{ __('Show audit trail') }}</div>
 			<hr />
            <div class="col-md-12 row">
-			<div class="col-md-5"><h5>Current label</h5></div>
-			<div class="col-md-2"><h5>Hide Label?</h5></div>
-			<div class="col-md-2"><h5>Hide Field?</h5></div>
-			<div class="col-md-3"><h5>Label override</h5></div>
+			<div class="col-md-5"><h5>{{ __('Current label') }}</h5></div>
+			<div class="col-md-2"><h5>{{ __('Hide Label?') }}</h5></div>
+			<div class="col-md-2"><h5>{{ __('Hide Field?') }}</h5></div>
+			<div class="col-md-3"><h5>{{ __('Label override') }}</h5></div>
 			</div>
 			
 			@foreach($collection->meta_fields as $m)
@@ -250,7 +250,7 @@ $(document).ready(function() {
 			</div>
 			<div class="row">
 				<div class="col-md-2">
-					<label for="server_port">Port</label>
+					<label for="server_port">{{ __('Port') }}</label>
 				</div>
 				<div class="col-md-10">
 					<input type="text" class="form-control" name="server_port" id="server_port" value="@if($creds) {{ $creds->server_port }} @endif" />
@@ -258,11 +258,11 @@ $(document).ready(function() {
 			</div>
 			<div class="row">
 				<div class="col-md-2">
-					<label for="security">SSL/TLS</label>
+					<label for="security">{{ __('SSL/TLS') }}</label>
 				</div>
 				<div class="col-md-10">
 					<select name="security" class="selectpicker" id="security">
-						<option value="">Security</option>
+						<option value="">{{ __('Security') }}</option>
 						<option value="ssl" @if($creds && $creds->security == 'ssl') {{ 'selected' }} @endif>SSL</option>
 						<option value="tls" @if($creds && $creds->security == 'tls') {{ 'selected' }} @endif>TLS</option>
 					</select>
@@ -270,13 +270,13 @@ $(document).ready(function() {
 			</div>
 			<div class="row">
 				<div class="col-md-2">
-					<label for="username">Username</label>
+					<label for="username">{{ __('Username') }}</label>
 				</div>
 				<div class="col-md-4">
 					<input type="text" name="username" id="username" value="@if($creds) {{ $creds->username }} @endif" />
 				</div>
 				<div class="col-md-2">
-					<label for="password">Password</label>
+					<label for="password">{{ __('Password') }}</label>
 				</div>
 				<div class="col-md-4">
 					<input type="password" name="password" id="password" value="@if($creds) {{ $creds->password }} @endif" />
@@ -289,7 +289,7 @@ $(document).ready(function() {
 		</div>
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
-        <button type="submit" class="btn btn-primary"> Save </button>
+        <button type="submit" class="btn btn-primary"> {{ __('Save') }} </button>
     </div>
 </div>
 
