@@ -65,12 +65,12 @@ function showMetaFieldForm(){
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections') }}</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Manage Cataloging Fields</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections') }}</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: {{ __('Manage Cataloging Fields') }}</h4></div>
                 <div class="col-md-12 text-right">
 				@if(empty($edit_field->id))
-                <a href="#" id="addmetafieldbutton" onclick="showMetaFieldForm();" class="btn btn-sm btn-primary" title="Add"><i class="material-icons">add</i></a>
+                <a href="#" id="addmetafieldbutton" onclick="showMetaFieldForm();" class="btn btn-sm btn-primary" title="{{ __('Add') }}"><i class="material-icons">add</i></a>
 				@endif
-                <a href="/collection/{{ $collection->id }}" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
+                <a href="/collection/{{ $collection->id }}" class="btn btn-sm btn-primary" title="{{ __('Back') }}"><i class="material-icons">arrow_back</i></a>
                 </div>
 
                 <div class="card-body">
@@ -93,18 +93,18 @@ function showMetaFieldForm(){
                     <input type="hidden" name="meta_field_id" value="{{$edit_field->id}}" />
                    <div class="form-group row">
                    <div class="col-md-4">
-                   <label for="label" class="col-md-12 col-form-label text-md-right">Label</label> 
+                   <label for="label" class="col-md-12 col-form-label text-md-right">{{ __('Label') }}</label> 
 		   </div>
                     <div class="col-md-8">
-                    <input type="text" name="label" id="label" class="form-control" placeholder="Label of the field you will be creating" value="{{ $edit_field->label }}" required />
+                    <input type="text" name="label" id="label" class="form-control" placeholder="{{ __('Label of the field you will be creating') }}" value="{{ $edit_field->label }}" required />
                     </div>
                    </div>
                    <div class="form-group row">
                    <div class="col-md-4">
-                   <label for="placeholder" class="col-md-12 col-form-label text-md-right">Placeholder text</label> 
+                   <label for="placeholder" class="col-md-12 col-form-label text-md-right">{{ __('Placeholder text') }}</label> 
 		   </div>
                     <div class="col-md-8">
-                    <input type="text" name="placeholder" id="placeholder" class="form-control" placeholder="A short description of what you want to store" value="{{ $edit_field->placeholder }}" required />
+                    <input type="text" name="placeholder" id="placeholder" class="form-control" placeholder="{{ __('A short description of what you want to store') }}" value="{{ $edit_field->placeholder }}" required />
                     </div>
                    </div>
 			<!-- Field available to -->
@@ -114,7 +114,7 @@ function showMetaFieldForm(){
 		{{-- @if(in_array('available_to',$columns)) --}}
                    <div class="form-group row">
                    <div class="col-md-4">
-                   <label for="placeholder" class="col-md-12 col-form-label text-md-right">Field available to</label> 
+                   <label for="placeholder" class="col-md-12 col-form-label text-md-right">{{ __('Field available to') }}</label> 
 		   </div>
                    <div class="col-md-8">
 				@php 
@@ -122,8 +122,8 @@ function showMetaFieldForm(){
 				$roles_array = [];
 				$roles_array = explode(",",$edit_field->available_to);
 				@endphp
-                        <select class="selectpicker" id="available_to" name="available_to[]" title="Roles" multiple required>
-                                <option value="100" @if(!empty($edit_field->available_to) && $edit_field->available_to == 100) selected @endif>All</option> 
+                        <select class="selectpicker" id="available_to" name="available_to[]" title="{{ __('Roles') }}" multiple required>
+                                <option value="100" @if(!empty($edit_field->available_to) && $edit_field->available_to == 100) selected @endif>{{ __('All') }}</option> 
 				@foreach($roles as $role)
                             	<option value="{{ $role->id }}" @if(!empty($edit_field->available_to) && in_array($role->id,$roles_array)) selected @endif>{{ $role->name }}</option> 
 				@endforeach
@@ -133,34 +133,34 @@ function showMetaFieldForm(){
 		{{--@endif --}} {{-- if of checking available_to field exists ends--}}		
                    <div class="form-group row">
                    <div class="col-md-4">
-                   <label for="type" class="col-md-12 col-form-label text-md-right">Field type</label> 
+                   <label for="type" class="col-md-12 col-form-label text-md-right">{{ __('Field type') }}</label> 
         		   </div>
                     <div class="col-md-8">
                         <select class="selectpicker" id="type" name="type">
-                            <option value="Text" @if($edit_field->type == 'Text') selected @endif>Text</option> 
-                            <option value="Textarea" @if($edit_field->type == 'Textarea') selected @endif>Textarea</option> 
-                            <option value="Numeric" @if($edit_field->type == 'Numeric') selected @endif>Numeric</option> 
-                            <option value="Select" @if($edit_field->type == 'Select') selected @endif>Select from options</option> 
-                            <option value="MultiSelect" @if($edit_field->type == 'MultiSelect') selected @endif>Multiple select</option> 
-                            <option value="SelectCombo" @if($edit_field->type == 'SelectCombo') selected @endif>Select with custom input</option> 
-                            <option value="Date" @if($edit_field->type == 'Date') selected @endif>Date</option> 
-                            <option value="TaxonomyTree" @if($edit_field->type == 'TaxonomyTree') selected @endif>Taxonomy Tree</option> 
+                            <option value="Text" @if($edit_field->type == 'Text') selected @endif>{{ __('Text') }}</option> 
+                            <option value="Textarea" @if($edit_field->type == 'Textarea') selected @endif>{{ __('Textarea') }}</option> 
+                            <option value="Numeric" @if($edit_field->type == 'Numeric') selected @endif>{{ __('Numeric') }}</option> 
+                            <option value="Select" @if($edit_field->type == 'Select') selected @endif>{{ __('Select from options') }}</option> 
+                            <option value="MultiSelect" @if($edit_field->type == 'MultiSelect') selected @endif>{{ __('Multiple select') }}</option> 
+                            <option value="SelectCombo" @if($edit_field->type == 'SelectCombo') selected @endif>{{ __('Select with custom input') }}</option> 
+                            <option value="Date" @if($edit_field->type == 'Date') selected @endif>{{ __('Date') }}</option> 
+                            <option value="TaxonomyTree" @if($edit_field->type == 'TaxonomyTree') selected @endif>{{ __('Taxonomy Tree') }}</option> 
                         </select>
                     </div>
                    </div>
 
                    <div class="form-group row" id="options-field">
 		   			<div class="col-md-4">
-                   <label for="options" class="col-md-12 col-form-label text-md-right">Options</label> 
+                   <label for="options" class="col-md-12 col-form-label text-md-right">{{ __('Options') }}</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="text" name="options" id="options" class="form-control" placeholder="Comma separated list of options" value="{{ $edit_field->options }}" />
+                    <input type="text" name="options" id="options" class="form-control" placeholder="{{ __('Comma separated list of options') }}" value="{{ $edit_field->options }}" />
                     </div>
                    </div>
 
                    <div class="form-group row" id="taxonomy-tree-selection">
 		   			<div class="col-md-4">
-                   <label for="tax-sel" class="col-md-12 col-form-label text-md-right">Select Tree</label> 
+                   <label for="tax-sel" class="col-md-12 col-form-label text-md-right">{{ __('Select Tree') }}</label> 
                    </div>
                     <div class="col-md-8">
 					<select class="selectpicker" name="treeoptions">
@@ -190,36 +190,36 @@ function showMetaFieldForm(){
 
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label class="col-md-12 col-form-label text-md-right">Minimum Value</label> 
+                   <label class="col-md-12 col-form-label text-md-right">{{ __('Minimum Value') }}</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="text" name="numeric_min_value" id="numeric_min_value" class="form-control" placeholder="A number" value="{{ $numeric_min_value}}" />
+                    <input type="text" name="numeric_min_value" id="numeric_min_value" class="form-control" placeholder="{{ __('A number') }}" value="{{ $numeric_min_value}}" />
                     </div>
                    </div>
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label class="col-md-12 col-form-label text-md-right">Maximum Value</label> 
+                   <label class="col-md-12 col-form-label text-md-right">{{ __('Maximum Value') }}</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="text" name="numeric_max_value" id="numeric_max_value" class="form-control" placeholder="A number" value="{{ $numeric_max_value}}" />
+                    <input type="text" name="numeric_max_value" id="numeric_max_value" class="form-control" placeholder="{{ __('A number') }}" value="{{ $numeric_max_value}}" />
                     </div>
                    </div>
 		   </div>
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label for="display_order" class="col-md-12 col-form-label text-md-right">Display Order</label> 
+                   <label for="display_order" class="col-md-12 col-form-label text-md-right">{{ __('Display Order') }}</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="number" name="display_order" id="display_order" class="form-control" placeholder="A number" value="{{ $edit_field->display_order}}" required />
+                    <input type="number" name="display_order" id="display_order" class="form-control" placeholder="{{ __('A number') }}" value="{{ $edit_field->display_order}}" required />
                     </div>
                    </div>
 
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label for="results_display_order" class="col-md-12 col-form-label text-md-right">Display Order in Search Results</label> 
+                   <label for="results_display_order" class="col-md-12 col-form-label text-md-right">{{ __('Display Order in Search Results') }}</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="number" name="results_display_order" id="results_display_order" class="form-control" placeholder="A number" value="{{ $edit_field->results_display_order}}" />
+                    <input type="number" name="results_display_order" id="results_display_order" class="form-control" placeholder="{{ __('A number') }}" value="{{ $edit_field->results_display_order}}" />
                     </div>
                    </div>
 						@php
@@ -231,20 +231,20 @@ function showMetaFieldForm(){
 
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label for="results_classname" class="col-md-12 col-form-label text-md-right">Classname in search result</label> 
+                   <label for="results_classname" class="col-md-12 col-form-label text-md-right">{{ __('Classname in search result') }}</label> 
                    </div>
                     <div class="col-md-8">
-                    <input type="text" name="results_classname" id="results_classname" class="form-control" placeholder="classname" value="{{ $results_classname}}" />
+                    <input type="text" name="results_classname" id="results_classname" class="form-control" placeholder="{{ __('classname') }}" value="{{ $results_classname}}" />
                     </div>
                    </div>
 
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label class="col-md-12 col-form-label text-md-right">Width on info page</label> 
+                   <label class="col-md-12 col-form-label text-md-right">{{ __('Width on info page') }}</label> 
                    </div>
                     <div class="col-md-8">
 						<select name="width_on_info_page" class="form-control">
-							<option value="12">Full</option>
+							<option value="12">{{ __('Full') }}</option>
 							<option value="1" @if($width_on_info_page == '1') selected @endif>1/12</option>
 							<option value="2" @if($width_on_info_page == '2') selected @endif>1/6</option>
 							<option value="3" @if($width_on_info_page == '3') selected @endif>1/4</option>
@@ -262,11 +262,11 @@ function showMetaFieldForm(){
 
                    <div class="form-group row">
 		   			<div class="col-md-4">
-                   <label class="col-md-12 col-form-label text-md-right">Filter width on collection page</label> 
+                   <label class="col-md-12 col-form-label text-md-right">{{ __('Filter width on collection page') }}</label> 
                    </div>
                     <div class="col-md-8">
 						<select name="filter_width_on_collection_page" class="form-control">
-							<option value="12">Full</option>
+							<option value="12">{{ __('Full') }}</option>
 							<option value="1" @if($filter_width_on_collection_page == '1') selected @endif>1/12</option>
 							<option value="2" @if($filter_width_on_collection_page == '2') selected @endif>1/6</option>
 							<option value="3" @if($filter_width_on_collection_page == '3') selected @endif>1/4</option>
@@ -289,7 +289,7 @@ function showMetaFieldForm(){
                     <input type="checkbox" name="is_required" id="is_required" class="form-control1" value="1" 
 					@if($edit_field->is_required == 1) {{ 'checked' }} @endif
 					/>
-                    <label for="is_required">Is required</label> 
+                    <label for="is_required">{{ __('Is required') }}</label> 
                     </div>
                    </div>
 
@@ -300,7 +300,7 @@ function showMetaFieldForm(){
                     <input type="checkbox" name="with_rich_text_editor" class="with_rich_text_editor form-control1" value="1" 
 					@if($edit_field->with_rich_text_editor == 1) {{ 'checked' }} @endif
 					/>
-                    <label for="with_rich_text_editor">With Rich Text Editor</label> 
+                    <label for="with_rich_text_editor">{{ __('With Rich Text Editor') }}</label> 
                     </div>
                    </div>
 
@@ -315,7 +315,7 @@ function showMetaFieldForm(){
                    <input type="checkbox" name="show_on_details_page" id="show_on_details_page" class="form-control1" value="1" 
 				@if($show_on_details_page == 1) {{ 'checked' }} @endif
 				/>
-                    <label for="show_on_details_page">Show on details page</label> 
+                    <label for="show_on_details_page">{{ __('Show on details page') }}</label> 
                     </div>
                    </div>
 
@@ -330,16 +330,16 @@ function showMetaFieldForm(){
                     <input type="checkbox" name="show_parents" class="form-control1" value="1" 
 					@if($show_parents == 1) {{ 'checked' }} @endif
 					/>
-                    <label>Show parents in the list and details view</label> 
+                    <label>{{ __('Show parents in the list and details view') }}</label> 
                     </div>
                    </div>
 
                    <div class="form-group row mb-0"><div class="col-md-12 offset-md-4">
 								<button type="submit" class="btn btn-primary">
-                                    Save
+                                    {{ __('Save') }}
                                 </button> 
 								<button onclick="document.location.href='/collection/{{$collection->id}}/meta';" class="btn btn-primary">
-                                    Cancel
+                                    {{ __('Cancel') }}
                                 </button> 
                      </div></div> 
                    </form> 
@@ -348,10 +348,10 @@ function showMetaFieldForm(){
                         <thead class=" text-primary">
                             <tr>
                             <th>#</th>
-                            <th>Label</th>
-                            <th>Type</th>
-                            <th>Options</th>
-                            <th class="text-right">Actions</th>
+                            <th>{{ __('Label') }}</th>
+                            <th>{{ __('Type') }}</th>
+                            <th>{{ __('Options') }}</th>
+                            <th class="text-right">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -364,7 +364,7 @@ function showMetaFieldForm(){
                                 @if ($f->type == 'TaxonomyTree')
                                     @php
                                         $t_label = \App\Taxonomy::find($f->options);
-                                        echo 'Select from: '.@$t_label->label;
+                                        echo __('Select from: ').@$t_label->label;
                                     @endphp
                                 @else
                                    @if (empty($f->options))

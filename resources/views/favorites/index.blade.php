@@ -21,6 +21,22 @@ $(document).ready(function() {
             { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'td-actions text-right dt-nowrap' }
         ],
         order: [[2, 'desc']], // Sort by created_at descending
+        language: {
+            "search": "{{ __('Search:') }}",
+            "lengthMenu": "{{ __('Show') }} _MENU_ {{ __('entries') }}",
+            "info": "{{ __('Showing') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
+            "infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+            "infoFiltered": "({{ __('filtered from') }} _MAX_ {{ __('total entries') }})",
+            "paginate": {
+                "first": "{{ __('First') }}",
+                "last": "{{ __('Last') }}",
+                "next": "{{ __('Next') }}",
+                "previous": "{{ __('Previous') }}"
+            },
+            "processing": "{{ __('Processing...') }}",
+            "zeroRecords": "{{ __('No matching records found') }}",
+            "emptyTable": "{{ __('No data available in table') }}"
+        }
     });
 
     // Handle unfavorite button click

@@ -34,12 +34,12 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">Collections</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: User Permissions</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections') }}</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: {{ __('User Permissions') }}</h4></div>
 
                 <div class="card-body">
 		<div class="row">
 			<div class="col-md-12 text-right">
-                      	<a href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary" title="Back to List"><i class="material-icons">arrow_back</i></a>
+                      	<a href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary" title="{{ __('Back to List') }}"><i class="material-icons">arrow_back</i></a>
                   </div>
                 </div>
                     @if (session('status'))
@@ -57,18 +57,18 @@ $(document).ready(function() {
                     <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                    <div class="form-group row">
 			<div class="col-md-4">
-                   <label for="user_id" class="col-md-10 col-form-label text-md-right">User ID</label> 
+                   <label for="user_id" class="col-md-10 col-form-label text-md-right">{{ __('User ID') }}</label> 
 			</div>
                     <div class="col-md-4">
-                    <input type="text" name="user_id" id="user_id" class="form-control" placeholder="User Email ID" 
+                    <input type="text" name="user_id" id="user_id" class="form-control" placeholder="{{ __('User Email ID') }}" 
                     value="@if(!empty($user->id)){{ $user->email }}@endif" required/>
 			<div id="countryList"></div>
                     </div>
                    </div>
                     <div class="form-group row">
 			        <div class="col-md-4"></div>
-			        <div class="col-md-4"><h5>Permission</h5></div>
-			        <div class="col-md-4"><h5>Forever or select a date</h5></div>
+			        <div class="col-md-4"><h5>{{ __('Permission') }}</h5></div>
+			        <div class="col-md-4"><h5>{{ __('Forever or select a date') }}</h5></div>
                     </div>
                     @foreach(\App\Permission::all() as $p)
 			@if(count($collection_has_approval)==0 && $p->name == 'APPROVE')
@@ -81,7 +81,7 @@ $(document).ready(function() {
                     @if(!empty($user_permissions['p'.$p->id]))
                      checked 
                     @endif
-                    />  {{ $p->description }}
+                    />  {{ __($p->description) }}
                     </div>
                     <div class="col-md-4">
 					<input type="date" name="p_{{ $p->id }}_till_date" value="{{ @$user_permissions['p'.$p->id][1] }}" />
@@ -102,7 +102,7 @@ $(document).ready(function() {
 			@endif
                     @endforeach
                    <div class="form-group row mb-0"><div class="col-md-8 offset-md-4"><button type="submit" class="btn btn-primary">
-                                    Save
+                                    {{ __('Save') }}
                                 </button> 
                      </div></div> 
                    </form> 

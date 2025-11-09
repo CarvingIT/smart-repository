@@ -5,7 +5,7 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">Admin Dashboard</div>
+                <div class="card-header">{{ __('Admin Dashboard') }}</div>
 
                 <div class="card-body">
                     @if (session('status'))
@@ -18,8 +18,8 @@
                     @endif
 
                   <ul>
-                    <li><a href="/admin/collectionmanagement">Manage Collections</a></li>
-                    <li><a href="/admin/usermanagement">Manage Users</a></li>
+                    <li><a href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a></li>
+                    <li><a href="/admin/usermanagement">{{ __('Manage Users') }}</a></li>
                   </ul>
                 </div>
             </div>
