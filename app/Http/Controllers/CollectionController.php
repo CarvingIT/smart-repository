@@ -124,7 +124,6 @@ class CollectionController extends Controller
 		$documents = $documents->limit($length)->offset($start)->get();
         return view('collection', ['collection'=>$collection, 
 			'filtered_results_count'=>$total_count,
-			'results'=>$documents,'documents'=>$documents, 
 			'activePage'=>'collection','titlePage'=>'Collections', 
 			'title'=>'Smart Repository']);
     }
