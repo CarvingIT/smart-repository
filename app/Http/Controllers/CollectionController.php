@@ -115,16 +115,7 @@ class CollectionController extends Controller
 
     public function collection($collection_id, Request $request){
         $collection = Collection::find($collection_id);
-		$length = empty($request->length)? 10 : $request->limit;
-		$start = empty($request->start)? 0 : $request->start;
-        $documents = \App\Document::where('collection_id','=',$collection_id)
-			 ->whereNotNull('approved_on')
-			 ->orderby('updated_at','DESC');
-		$total_count = $documents->count();
-		$documents = $documents->limit($length)->offset($start)->get();
         return view('collection', ['collection'=>$collection, 
-			'filtered_results_count'=>$total_count,
-			'results'=>$documents,'documents'=>$documents, 
 			'activePage'=>'collection','titlePage'=>'Collections', 
 			'title'=>'Smart Repository']);
     }
