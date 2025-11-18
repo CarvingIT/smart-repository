@@ -66,6 +66,9 @@ class DocumentRevisionCreated
             } elseif ($delta < 0) {
                 $collection->decrement("size_active", abs($delta));
             }
+        } else {
+            $collection->increment("document_count");
+            $collection->increment("size_active", $revision_size);
         }
     }
 }
