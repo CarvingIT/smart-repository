@@ -59,5 +59,29 @@ class DocumentDeleted
 	    catch(\Exception $e){
 	    	Log::warning($e->getMessage());
 	    }
+
+        $document = $event->document;
+        $collection = $document->collection;
+
+        if (!$collection) {
+            return; 
+        }
+
+        $document_size = (int)$document->size;
+        $revisions_size = (int) \App\DocumentRevision::where('document_id', $document->id)
+            ->sum('size');
+
+        if ($document->deleted_at !== null){
+            $collection->decrement("document_count");
+
+            if ($document_size > 0) {
+                $collection->decrement("size_active", $document_size);
+            }
+
+            if ($revisions_size > 0) {
+                $collection->decrement("size_revisions", $revisions_size);
+                $collection->increment("size_deleted", $revisions_size);
+            }
+        }
     }
 }
