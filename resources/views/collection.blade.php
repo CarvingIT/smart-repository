@@ -355,7 +355,7 @@ function randomString(length) {
 			@csrf
 	   			<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
 	   			<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
-					<option value="" selected disabled style="color:#999;">{{ __('Filter by file type...') }}</option>
+					<option value="" selected disabled style="color:#999;"></option>
 				</select>
 			</form>
 			@endif
