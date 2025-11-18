@@ -11,7 +11,7 @@ class RecalculateCollectionStats extends Command
      *
      * @var string
      */
-    protected $signature = 'collection:recalculate-stats';
+    protected $signature = 'SR:RecalculateStats';
 
     /**
      * The console command description.
