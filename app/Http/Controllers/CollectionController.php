@@ -52,14 +52,12 @@ class CollectionController extends Controller
 
     public function list(){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
-        $stats_rows = DB::table('documents')
-            ->select('collection_id', DB::raw('count(*) as cnt'), DB::raw('sum(size) as size'))
-            ->whereNull('deleted_at')
-            ->groupBy('collection_id')
-            ->get();
         $stats = [];
-        foreach($stats_rows as $stat){
-            $stats[$stat->collection_id] = $stat;
+        foreach($collections as $collection){
+            $stats[$collection->id] = (object)[
+				"cnt" => $collection->document_count,
+				"size" => $collection->size_active
+			];
         }
         return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats]);
     }

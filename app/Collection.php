@@ -13,6 +13,8 @@ class Collection extends Model
     use SoftDeletes;
 	use Notifiable;
 
+	protected $fillable = ["document_count", "size_active", "size_revisions", "size_deleted"];
+
     public function documents(){
         return $this->hasMany('App\Document');
     }
