@@ -40,5 +40,32 @@ class DocumentRevisionCreated
         catch(\Exception $e){
             Log::error($e->getMessage());
         }
+
+        $revision = $event->document_revision;
+        $document = $revision->document;
+        $collection = $document->collection;
+
+        if (!$collection || $document->deleted_at !== null ) {
+            return;
+        }
+
+        $revision_size = (int)$revision->size;
+
+        $prev = \App\DocumentRevision::where('document_id', $document->id)
+            ->where('id', '<', $revision->id)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        $collection->increment("size_revisions", $revision_size);
+
+        if ($prev) {
+            $prev_size = (int)$prev->size;
+            $delta = $revision_size - $prev_size;
+            if ($delta > 0) {
+                $collection->increment("size_active", $delta);
+            } elseif ($delta < 0) {
+                $collection->decrement("size_active", abs($delta));
+            }
+        }
     }
 }

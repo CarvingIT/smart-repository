@@ -93,5 +93,18 @@ class DocumentSaved
 	    	catch(\Exception $e){
 	    		Log::warning($e->getMessage());
 	    	}
+        
+        // update collection stats
+        $collection = $event->document->collection;
+        $document = $event->document;
+
+        if ($collection && $document->deleted_at === null){
+
+            if($document->wasRecentlyCreated){
+                $collection->increment("document_count");
+            }
+
+            $collection->increment("size_active", $document->size);
+        }
     }
 }
