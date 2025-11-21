@@ -93,8 +93,13 @@ trait Search{
     public function getMustQueriesFromMetaFilters($meta_filters){
         $must_queries = [];
         foreach($meta_filters as $mf){
-            if(in_array($mf['operator'], ['=','contains'])){
+            if($mf['operator'] == '='){
                 $must_queries[] = ['match'=>
+                            ['meta_'.$mf['field_id'] => $mf['value'] ]
+                        ];
+            }
+            else if($mf['operator'] == 'contains'){
+                $must_queries[] = ['match_phrase'=>
                             ['meta_'.$mf['field_id'] => $mf['value'] ]
                         ];
             }
@@ -119,7 +124,7 @@ trait Search{
     public function getMetaFilteredDocuments($request, $documents){
         $meta_filters = $this->getMetaFiltersFromRequest($request);
         foreach($meta_filters as $mf){
-			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filteres like created_at, created_by
+			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filters like created_at, created_by
 				if($mf['field_id'] == 'created_at'){
 					$documents = $documents->where('created_at', $mf['operator'], $mf['value']);
 				}	
@@ -133,15 +138,24 @@ trait Search{
 					// e.g. &meta_10[]=somevalue&meta_10[]=someothervalue
 					//print_r($mf['value']);exit;
 					foreach($mf['value'] as $v){
-                				$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
+            			$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
         					$query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$v.'"%');
-                    				});
+               			});
 					}
 				}
 				else{
-                			$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                    	    		$query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
-                    			});
+		            // find the type of meta field 
+		            $m_field = MetaField::find($mf['field_id']);
+		            if ($m_field->type == 'TaxonomyTree'){
+                	    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                            $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$mf['value'].'"%');
+                    	});
+		            }
+                    else{
+           			    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+           	    		    $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
+           			    });
+                    }
 				}
             }
             else if($mf['operator'] == '>='){
@@ -157,22 +171,11 @@ trait Search{
                 );
             }
             else if($mf['operator'] == 'contains'){
-		// find the type of meta field 
-		$m_field = MetaField::find($mf['field_id']);
-		if ($m_field->type == 'TaxonomyTree'){
-                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$mf['value'].'"%');
-                    	}
-                	);
-		}
-		else{
-                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
-                    	}
-                	);
-            	}
-            }
-	}
+           	    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                    $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
+               	});
+            } //contains
+	    }// foreach
         return $documents;
     }
 
