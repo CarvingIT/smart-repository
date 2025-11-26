@@ -15,6 +15,13 @@ use App\Util;
 trait Search{
     // wrapper function for search
     public function search(Request $request){
+        // log search query
+		$old_query = Session::get('search_query');
+        // put new query in session even if it is null
+        if($request->has('search')){
+	        Session::put('search_query', $request->search['value']);
+        }
+
         if($request->input('full_text_scope')){
             Session::put('full_text_scope', $request->input('full_text_scope'));
         }
@@ -25,17 +32,12 @@ trait Search{
             $search_results = $this->searchDB($request); 
         }
 
-        // log search query
-		$old_query = Session::get('search_query');
-        // put new query in session even if it is null
-	    Session::put('search_query', $request->search['value']);
-
-		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
-			&& !$request->is('api/*') && strlen($request->search['value'])>1){
+		if(!empty($search_term) && $old_query != $search_term 
+			&& !$request->is('api/*') && strlen($search_term)>3){ // this part needs updates
 			$meta_query = json_encode($this->getMetaFilters($request));
         	$search_log_data = array('collection_id'=> $request->collection_id, 
                 'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
-                'search_query'=> $request->search['value'], 
+                'search_query'=> $search_term, 
                 'meta_query'=> $meta_query,
 				'ip_address' => $request->ip(),
                 'results'=>$search_results['recordsFiltered']);
@@ -187,6 +189,7 @@ trait Search{
         ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
 	->build();
 	}
+
     // elastic search
     public function searchElastic($request){
     $params = array();
@@ -303,7 +306,8 @@ trait Search{
 
 		$highlights = [];
         //if((!empty($request->search['value']) && strlen($request->search['value'])>1)){
-            $search_term = @$request->search['value'];
+            //$search_term = @$request->search['value'];
+            $search_term = Session::get('search_query');
 	        Log::debug('Search term: '.$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
@@ -418,7 +422,8 @@ trait Search{
 				Log::debug('Adding must to title. Param array is - '. json_encode($params));
 			}
             // default sorting if no search is performed
-            if(empty($request->search['value'])){
+            //if(empty($request->search['value'])){
+            if(empty($search_term)){
                 $columns = ['type','title', 'size', 'created_at'];
                 // default meta sort field 
                 // get from the collection config and use
@@ -518,16 +523,14 @@ trait Search{
 		->where('require_approval','=','1')->get();
 
 		if($request->is('api/*') || $request->return_format == 'raw'){
-			return 
-        	 array(
-            	'data'=>$documents,
+			return ['data'=>$documents,
 		        'highlights'=>$highlights,
 		        'scores'=>$scores,
             	'draw'=>(int) $request->draw,
             	'recordsTotal'=> $total_count,
             	'recordsFiltered' => $filtered_count,
             	'error'=> '',
-        	);
+        	];
 		}
 		else{
             //Log::debug(count($documents));
@@ -619,8 +622,9 @@ trait Search{
         $documents = $this->getMetaFilteredDocuments($request, $documents);
 
         // content search
-        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-            $documents = $documents->search($request->search['value']);
+        $search_term = Session::get('search_query');
+        if(!empty($search_term)){
+            $documents = $documents->search($search_term);
         }
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 

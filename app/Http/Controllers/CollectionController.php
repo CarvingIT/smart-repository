@@ -715,11 +715,17 @@ use App\UrlSuppression;
 		//echo $collection_id; exit;
 		$list = $meta_details = [];
 		$filename = '';
-		$documents = \App\Document::where('collection_id', $collection_id);
-		$documents = $this->getTitleFilteredDocuments($request, $documents);
-		$documents = $this->getMetaFilteredDocuments($request, $documents);
-        $documents = $documents->take(1000);
-
+        $request->merge(['return_format'=>'raw', 
+                    'length'=>10000, 
+                    'collection_id'=>$collection_id,
+                    ]);
+        $search_data = json_decode($this->search($request));
+        $doc_ar = []; 
+        foreach($search_data->data as $d){
+            $doc_ar[] = $d->id;
+        }
+		$documents = Document::whereIn('id',$doc_ar);
+        
 		$collection = \App\Collection::find($collection_id);
 		$filename = $collection->name;
 		$meta_fields = $collection->meta_fields;
