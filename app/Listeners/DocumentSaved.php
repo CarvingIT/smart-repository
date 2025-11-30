@@ -9,6 +9,7 @@ use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\DocumentSaved as DocumentSavedNotification;
 use App\Approval;
+use App\Services\ThumbnailService;
 
 class DocumentSaved
 {
@@ -93,5 +94,26 @@ class DocumentSaved
 	    	catch(\Exception $e){
 	    		Log::warning($e->getMessage());
 	    	}
+
+        // Generate PDF thumbnail if document is a PDF
+        if ($event->document->type == 'application/pdf') {
+            $thumbnailService = new ThumbnailService();
+            
+            // Get the PDF file path
+            $collection = $event->document->collection;
+            $storageDrive = empty($collection->storage_drive) ? 'local' : $collection->storage_drive;
+            
+            if ($storageDrive === 'local' && !empty($event->document->path)) {
+                $pdfPath = storage_path('app/' . $event->document->path);
+                if (file_exists($pdfPath)) {
+                    try {
+                        $thumbnailService->generateThumbnail($pdfPath, $event->document->collection_id, $event->document->id);
+                        Log::info('PDF thumbnail generated for document ' . $event->document->id);
+                    } catch (\Exception $e) {
+                        Log::warning('Failed to generate thumbnail for document ' . $event->document->id . ': ' . $e->getMessage());
+                    }
+                }
+            }
+        }
     }
 }
