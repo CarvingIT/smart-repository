@@ -42,6 +42,7 @@
         "smalot/pdfparser": "^0.14.0",
         "spatie/crawler": "^4.7",
         "spatie/image-optimizer": "^1.2",
+        "spatie/pdf-to-image": "^3.1",
         "spatie/pdf-to-text": "^1.4",
         "swiftmailer/swiftmailer": "^6.0",
         "thiagoalessio/tesseract_ocr": "^2.13",

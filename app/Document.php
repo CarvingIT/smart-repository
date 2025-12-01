@@ -10,6 +10,7 @@ use OwenIt\Auditing\Contracts\Auditable;
 use Carbon\Carbon;
 use App\Taxonomy;
 use App\Approval;
+use Illuminate\Support\Facades\Storage;
 
 class Document extends Model implements Auditable
 {
@@ -194,6 +195,38 @@ class Document extends Model implements Auditable
             $approved_by_role = @$latest_approval_record->approver_role->name;
             return "Approval pending at ".ucfirst($approved_by_role);
         }
+    }
+
+    /**
+     * Get the thumbnail URL for a PDF document
+     * Returns the thumbnail URL if it exists, otherwise returns null
+     * 
+     * @return string|null
+     */
+    public function getThumbnailUrl()
+    {
+        // Only check for PDF documents
+        if ($this->type !== 'application/pdf' && !str_contains($this->type, 'application/pdf')) {
+            return null;
+        }
+
+        $thumbnailPath = "doc-thumbnails/{$this->collection_id}/{$this->id}_thumb.jpg";
+        
+        if (\Storage::disk('public')->exists($thumbnailPath)) {
+            return asset("storage/{$thumbnailPath}");
+        }
+        
+        return null;
+    }
+
+    /**
+     * Check if document has a thumbnail
+     * 
+     * @return bool
+     */
+    public function hasThumbnail()
+    {
+        return !is_null($this->getThumbnailUrl());
     }
 
 }

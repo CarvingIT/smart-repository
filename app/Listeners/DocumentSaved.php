@@ -9,6 +9,7 @@ use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\DocumentSaved as DocumentSavedNotification;
 use App\Approval;
+use App\Services\ThumbnailService;
 
 class DocumentSaved
 {
@@ -93,5 +94,37 @@ class DocumentSaved
 	    	catch(\Exception $e){
 	    		Log::warning($e->getMessage());
 	    	}
+
+        // Generate PDF thumbnail only if a PDF file was uploaded
+        // Check if document was recently created/updated with a file
+        if ($event->document->type == 'application/pdf' && !empty($event->document->path)) {
+            $thumbnailService = new ThumbnailService();
+            
+            // Get the PDF file path
+            $collection = $event->document->collection;
+            $storageDrive = empty($collection->storage_drive) ? 'local' : $collection->storage_drive;
+            
+            // Only generate thumbnail if file is on local storage and exists
+            if ($storageDrive === 'local') {
+                $pdfPath = storage_path('app/' . $event->document->path);
+                
+                // Check if file exists and was recently modified (uploaded/updated)
+                if (file_exists($pdfPath)) {
+                    $fileModifiedTime = filemtime($pdfPath);
+                    $documentUpdatedTime = strtotime($event->document->updated_at);
+                    
+                    // Generate thumbnail only if file was modified within last 5 minutes
+                    // This ensures we only regenerate when file is actually uploaded
+                    if (($documentUpdatedTime - $fileModifiedTime) < 300) {
+                        try {
+                            $thumbnailService->generateThumbnail($pdfPath, $event->document->collection_id, $event->document->id);
+                            Log::info('PDF thumbnail generated for document ' . $event->document->id);
+                        } catch (\Exception $e) {
+                            Log::warning('Failed to generate thumbnail for document ' . $event->document->id . ': ' . $e->getMessage());
+                        }
+                    }
+                }
+            }
+        }
     }
 }
