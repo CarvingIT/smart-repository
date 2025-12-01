@@ -121,9 +121,10 @@ else{
                    	<label for="pdf_viewer" class="col-md-12 col-form-label text-md-right">{{ __('PDF Viewer') }}</label> 
                     </div>
                     <div class="col-md-8">
+			@php $col_config = json_decode($collection->column_config); @endphp
 			<select name="pdf_viewer" class="selectpicker">
-			            <option value="viewerjs" @if($collection->pdf_viewer == 'viewerjs' || empty($collection->pdf_viewer)) selected @endif>{{ __('ViewerJS (Default)') }}</option>
-			            <option value="dearflip" @if($collection->pdf_viewer == 'dearflip') selected @endif>{{ __('DearFlip (Flip Book)') }}</option>
+			            <option value="viewerjs" @if(@$col_config->pdf_viewer == 'viewerjs' || empty($col_config->pdf_viewer)) selected @endif>{{ __('ViewerJS (Default)') }}</option>
+			            <option value="dearflip" @if(@$col_config->pdf_viewer == 'dearflip') selected @endif>{{ __('DearFlip (Flip Book)') }}</option>
 			</select>
                     </div>
                    </div>

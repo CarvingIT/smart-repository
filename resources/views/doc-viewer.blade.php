@@ -6,7 +6,8 @@
 @php
     $doc = \App\Document::find($document_id);
     $collection = \App\Collection::find($collection_id);
-    $pdf_viewer = $collection->pdf_viewer ?? 'viewerjs';
+    $column_config = json_decode($collection->column_config);
+    $pdf_viewer = @$column_config->pdf_viewer ?? 'viewerjs';
 @endphp
 @if($pdf_viewer === 'dearflip')
 <!-- Set DearFlip Location before loading the script -->

@@ -121,10 +121,10 @@ $(document).ready(function() {
             <div class="col-md-12">
                 <strong>{{ __('PDF Viewer:') }}</strong><br/>
                 <input type="radio" name="pdf_viewer" value="viewerjs" id="viewer_viewerjs" 
-                    @if($collection->pdf_viewer == 'viewerjs' || empty($collection->pdf_viewer)) checked @endif />
+                    @if(@$column_config->pdf_viewer == 'viewerjs' || empty($column_config->pdf_viewer)) checked @endif />
                 <label for="viewer_viewerjs">{{ __('Default (ViewerJS)') }}</label><br/>
                 <input type="radio" name="pdf_viewer" value="dearflip" id="viewer_dearflip" 
-                    @if($collection->pdf_viewer == 'dearflip') checked @endif />
+                    @if(@$column_config->pdf_viewer == 'dearflip') checked @endif />
                 <label for="viewer_dearflip">{{ __('DearFlip (Flip Book)') }}</label>
             </div>
         </div>
