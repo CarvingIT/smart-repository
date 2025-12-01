@@ -826,8 +826,15 @@ trait Search{
             }
         }
 	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.strip_tags(implode(' ... ', $content_matches), '<em>').'</p>';
+        
+        // Check if document has a thumbnail
+        $thumbnailUrl = $d->getThumbnailUrl();
+        $iconDisplay = $thumbnailUrl 
+            ? '<img class="file-icon" src="'.$thumbnailUrl.'" style="width:50px; height:50px; object-fit:cover;" />' 
+            : '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
+        
         $result = array(
-                'type' => array('display'=>'<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />', 'filetype'=>$d->icon()),
+                'type' => array('display'=>$iconDisplay, 'filetype'=>$d->icon()),
                 'title' => $title,
                 'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),

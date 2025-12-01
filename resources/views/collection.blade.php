@@ -626,17 +626,26 @@ $(document).ready(function() {
             data: requestData,
             dataType: 'json',
             success: function(response) {
-                tileData = response.data;
-                renderTiles(tileData);
+                console.log('Tile view: AJAX response received', response);
+                if (response && response.data) {
+                    tileData = response.data;
+                    renderTiles(tileData);
+                } else {
+                    console.error('Tile view: Invalid response format', response);
+                    $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">warning</i><p>Invalid data format</p></div>');
+                }
             },
-            error: function() {
-                $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">error_outline</i><p>Error loading documents</p></div>');
+            error: function(xhr, status, error) {
+                console.error('Tile view: AJAX error', status, error);
+                $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">error_outline</i><p>Error loading documents. Please check console for details.</p></div>');
             }
         });
     }
     
     // Render tiles from data
     function renderTiles(data) {
+        console.log('Tile view: Rendering tiles', data.length, 'documents');
+        
         if (!data || data.length === 0) {
             $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">folder_open</i><p>No documents found</p></div>');
             return;
@@ -644,14 +653,29 @@ $(document).ready(function() {
         
         var tilesHtml = '';
         
-        data.forEach(function(doc) {
-            var icon = getFileIcon(doc.type.filetype);
-            var iconClass = getFileIconClass(doc.type.filetype);
-            var docUrl = '/collection/{{ $collection->id }}/document/' + doc.DT_RowId.replace('row_', '');
+        data.forEach(function(doc, index) {
+            // Safe access to nested properties
+            var filetype = doc.type && doc.type.filetype ? doc.type.filetype : 'unknown';
+            var icon = getFileIcon(filetype);
+            var iconClass = getFileIconClass(filetype);
+            var docId = doc.DT_RowId ? doc.DT_RowId.replace('row_', '') : '';
+            var docUrl = '/collection/{{ $collection->id }}/document/' + docId;
+            
+            if (index === 0) {
+                console.log('Tile view: Sample document data', doc);
+            }
+            
+            // Escape HTML to prevent XSS
+            function escapeHtml(text) {
+                if (!text) return '';
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
             
             // Build metadata HTML
             var metadataHtml = '<div class="tile-metadata"><div class="tile-metadata-content">';
-            metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + doc.title + '</span></div>';
+            metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(doc.title) + '</span></div>';
             
             @foreach($collection->meta_fields as $m)
             @if(in_array($m->id,$column_config_meta_fields))
@@ -682,8 +706,23 @@ $(document).ready(function() {
             metadataHtml += '</div></div>';
             
             tilesHtml += '<div class="document-tile" onclick="window.location.href=\'' + docUrl + '\'">';
-            tilesHtml += '  <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
-            tilesHtml += '  <div class="tile-title">' + doc.title + '</div>';
+            
+            // Show thumbnail if available, otherwise show icon
+            if (doc.type && doc.type.display && doc.type.display.includes('<img')) {
+                // Extract thumbnail URL from img tag
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = doc.type.display;
+                var imgElement = tempDiv.querySelector('img');
+                if (imgElement) {
+                    tilesHtml += '  <div class="tile-thumbnail"><img src="' + imgElement.src + '" alt="Document preview" /></div>';
+                } else {
+                    tilesHtml += '  <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+                }
+            } else {
+                tilesHtml += '  <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+            }
+            
+            tilesHtml += '  <div class="tile-title">' + escapeHtml(doc.title) + '</div>';
             
             @if(!$hide_size || !$hide_creation_time)
             tilesHtml += '  <div class="tile-info">';

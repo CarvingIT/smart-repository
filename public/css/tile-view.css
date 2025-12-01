@@ -45,6 +45,41 @@
 
 .tile-icon i.material-icons {
     font-size: 64px;
+    font-family: "Material Icons" !important;
+    font-weight: normal;
+    font-style: normal;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    font-feature-settings: "liga";
+}
+
+/* Document thumbnail in tile */
+.tile-thumbnail {
+    width: 100%;
+    max-width: 200px;
+    height: 140px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 4px;
+    background: #f5f5f5;
+}
+
+.tile-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
 }
 
 /* File type specific icon colors */
@@ -99,6 +134,7 @@
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
     -webkit-box-orient: vertical;
     word-break: break-word;
 }
@@ -323,6 +359,7 @@
     .tile-title {
         font-size: 12px;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
     }
 
     .tile-metadata {
