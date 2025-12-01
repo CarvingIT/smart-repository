@@ -210,7 +210,7 @@ class Document extends Model implements Auditable
             return null;
         }
 
-        $thumbnailPath = "doc-thumbnails/{$this->collection_id}/{$this->id}/thumbnail.jpg";
+        $thumbnailPath = "doc-thumbnails/{$this->collection_id}/{$this->id}_thumb.jpg";
         
         if (\Storage::disk('public')->exists($thumbnailPath)) {
             return asset("storage/{$thumbnailPath}");

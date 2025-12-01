@@ -25,13 +25,13 @@ class ThumbnailService
                 return false;
             }
 
-            // Create thumbnail directory if it doesn't exist
-            $thumbnailDir = storage_path("app/public/doc-thumbnails/{$collectionId}/{$documentId}");
+            // Create collection-level thumbnail directory if it doesn't exist
+            $thumbnailDir = storage_path("app/public/doc-thumbnails/{$collectionId}");
             if (!is_dir($thumbnailDir)) {
                 mkdir($thumbnailDir, 0755, true);
             }
 
-            $thumbnailPath = "{$thumbnailDir}/thumbnail.jpg";
+            $thumbnailPath = "{$thumbnailDir}/{$documentId}_thumb.jpg";
 
             // Try Imagick first, then fall back to Ghostscript + GD
             if (extension_loaded('imagick')) {
@@ -201,16 +201,14 @@ class ThumbnailService
      */
     public function getThumbnailUrl($collectionId, $documentId)
     {
-        $thumbnailPath = "doc-thumbnails/{$collectionId}/{$documentId}/thumbnail.jpg";
-        
+        $thumbnailPath = "doc-thumbnails/{$collectionId}/{$documentId}_thumb.jpg";
+
         if (Storage::disk('public')->exists($thumbnailPath)) {
             return asset("storage/{$thumbnailPath}");
         }
-        
-        return null;
-    }
 
-    /**
+        return null;
+    }    /**
      * Check if a thumbnail exists for a document
      * 
      * @param int $collectionId Collection ID
@@ -219,7 +217,7 @@ class ThumbnailService
      */
     public function thumbnailExists($collectionId, $documentId)
     {
-        $thumbnailPath = "doc-thumbnails/{$collectionId}/{$documentId}/thumbnail.jpg";
+        $thumbnailPath = "doc-thumbnails/{$collectionId}/{$documentId}_thumb.jpg";
         return Storage::disk('public')->exists($thumbnailPath);
     }
 
@@ -233,26 +231,18 @@ class ThumbnailService
     public function deleteThumbnail($collectionId, $documentId)
     {
         try {
-            $thumbnailPath = "doc-thumbnails/{$collectionId}/{$documentId}/thumbnail.jpg";
-            
+            $thumbnailPath = "doc-thumbnails/{$collectionId}/{$documentId}_thumb.jpg";
+
             if (Storage::disk('public')->exists($thumbnailPath)) {
                 Storage::disk('public')->delete($thumbnailPath);
-                
-                // Try to remove the directory if empty
-                $thumbnailDir = storage_path("app/public/doc-thumbnails/{$collectionId}/{$documentId}");
-                if (is_dir($thumbnailDir) && count(scandir($thumbnailDir)) === 2) {
-                    rmdir($thumbnailDir);
-                }
             }
-            
+
             return true;
         } catch (\Exception $e) {
             Log::error("Failed to delete thumbnail for document {$documentId}: " . $e->getMessage());
             return false;
         }
-    }
-
-    /**
+    }    /**
      * Regenerate thumbnail for a document
      * 
      * @param \App\Document $document
