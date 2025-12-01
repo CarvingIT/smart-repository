@@ -2,7 +2,26 @@
 <head>
 <title>{{ env('APP_NAME', 'Smart Repository') }}::Document Viewer</title>
 <link rel="icon" type="image/png" href="/material/img/favicon.png">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+@php
+    $doc = \App\Document::find($document_id);
+    $collection = \App\Collection::find($collection_id);
+    $pdf_viewer = $collection->pdf_viewer ?? 'viewerjs';
+@endphp
+@if($pdf_viewer === 'dearflip')
+<!-- Set DearFlip Location before loading the script -->
+<script>
+    var dFlipLocation = "/dearflip/dflip/";
+</script>
+<!-- DearFlip Flipbook StyleSheet -->
+<link href="/dearflip/dflip/css/dflip.min.css" rel="stylesheet" type="text/css">
+<!-- DearFlip Icons Stylesheet -->
+<link href="/dearflip/dflip/css/themify-icons.min.css" rel="stylesheet" type="text/css">
+@endif
 <style>
+html, body {
+  height: 100%;
+}
 .row {
   display:flex;
   height:100%;
@@ -14,6 +33,11 @@ overflow-y:scroll;
 }
 #doc-view {
   flex:60%;
+  height: 100%;
+}
+._df_book {
+  width: 100%;
+  height: 100vh;
 }
 body{
 margin:0;
@@ -47,26 +71,53 @@ h4{
 </style>
 </head>
 <body>
-@php
-    $doc = \App\Document::find($document_id);
-@endphp
 <div class="row">
 <div id="doc-view">
-@php
-if(!is_null($path_count)){
-    $path = json_decode($doc->path);
-    $file_url = $path[$path_count];
-    $file_path  = $path[$path_count];
-@endphp
-<iframe id="pdfreAder" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}/details/{{ $path_count }}" width="100%" height="100%"></iframe> 
-@php
-}
-else{
-@endphp
-<iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}" width="100%" height="100%"></iframe>
-@php
-}
-@endphp
+@if($pdf_viewer === 'dearflip')
+    <div id="df_document_viewer" style="width:100%; height:100%;"></div>
+    <!-- DearFlip main Js file -->
+    <script src="/dearflip/dflip/js/dflip.min.js" type="text/javascript"></script>
+    <script>
+    // Wait for DOM and dflip to be ready
+    jQuery(document).ready(function($) {
+        var pdfUrl = "{{ !is_null($path_count) ? '/collection/'.$collection_id.'/document/'.$document_id.'/details/'.$path_count : '/collection/'.$collection_id.'/document/'.$document_id }}";
+        
+        console.log("DearFlip: Initializing with PDF URL:", pdfUrl);
+        console.log("DearFlip: DFLIP object available:", typeof DFLIP !== 'undefined');
+        
+        if (typeof DFLIP !== 'undefined') {
+            var options = {
+                source: pdfUrl,
+                webgl: true,
+                height: '100%',
+                backgroundColor: '#f5f5f5',
+                scrollWheel: true,
+                autoEnableOutline: false,
+                autoEnableThumbnail: false,
+                overwritePDFOutline: false,
+                duration: 800,
+                onReady: function(flipbook) {
+                    console.log("DearFlip: Flipbook ready!");
+                },
+                onFlip: function(flipbook) {
+                    console.log("DearFlip: Page flipped");
+                }
+            };
+            
+            console.log("DearFlip: Creating flipbook with options:", options);
+            var flipbook = $("#df_document_viewer").flipBook(pdfUrl, options);
+        } else {
+            console.error("DearFlip: DFLIP library not loaded!");
+        }
+    });
+    </script>
+@else
+    @if(!is_null($path_count))
+    <iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}/details/{{ $path_count }}" width="100%" height="100%"></iframe>
+    @else
+    <iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}" width="100%" height="100%"></iframe>
+    @endif
+@endif
 </div>
 <div id="meta-view">
 	<h4>Associated Meta Information<span class="text-right" style="float:right"><a href="/collection/{{ $collection_id }}/document/{{ $document_id }}/doc-edit-viewer" style="color:#eee;">Edit</a></span></h4>
@@ -95,16 +146,17 @@ else{
 <script>
 	var iframe = document.getElementById('pdfreader');
 
-    iframe.onload = function() {
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        const cssLink = iframeDoc.createElement('link');
-        cssLink.href = '/c-{{ $collection_id }}/doc-viewer.css';
-        cssLink.rel = 'stylesheet';
-        cssLink.type = 'text/css';
-        iframeDoc.head.appendChild(cssLink);
-    };
+    if (iframe) {
+        iframe.onload = function() {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+            const cssLink = iframeDoc.createElement('link');
+            cssLink.href = '/c-{{ $collection_id }}/doc-viewer.css';
+            cssLink.rel = 'stylesheet';
+            cssLink.type = 'text/css';
+            iframeDoc.head.appendChild(cssLink);
+        };
+    }
 
-	var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
 </script>
 </body>
 </html>

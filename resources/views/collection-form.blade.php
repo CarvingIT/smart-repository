@@ -118,6 +118,17 @@ else{
                    </div><!-- Storage Drive div ends -->
                    <div class="form-group row">
                     <div class="col-md-4">
+                   	<label for="pdf_viewer" class="col-md-12 col-form-label text-md-right">{{ __('PDF Viewer') }}</label> 
+                    </div>
+                    <div class="col-md-8">
+			<select name="pdf_viewer" class="selectpicker">
+			            <option value="viewerjs" @if($collection->pdf_viewer == 'viewerjs' || empty($collection->pdf_viewer)) selected @endif>{{ __('ViewerJS (Default)') }}</option>
+			            <option value="dearflip" @if($collection->pdf_viewer == 'dearflip') selected @endif>{{ __('DearFlip (Flip Book)') }}</option>
+			</select>
+                    </div>
+                   </div>
+                   <div class="form-group row">
+                    <div class="col-md-4">
                    <label for="maintainer" class="col-md-12 col-form-label text-md-right">{{ __('Maintainer') }}</label> 
 			       </div>
                     <div class="col-md-8">
