@@ -4,7 +4,7 @@
 <link rel="icon" type="image/png" href="/material/img/favicon.png">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @php
-    $doc = \App\Document::find($document_id);
+    // Document model is passed directly from the controller as $doc
     $collection = \App\Collection::find($collection_id);
     $column_config = json_decode($collection->column_config);
     $pdf_viewer = @$column_config->pdf_viewer ?? 'viewerjs';
@@ -81,7 +81,7 @@ h4{
     <script>
     // Wait for DOM and dflip to be ready
     jQuery(document).ready(function($) {
-        var pdfUrl = "{{ !is_null($path_count) ? '/collection/'.$collection_id.'/document/'.$document_id.'/details/'.$path_count : '/collection/'.$collection_id.'/document/'.$document_id }}";
+        var pdfUrl = "{{ !is_null($path_count) ? '/collection/'.$collection_id.'/document/'.$doc->id.'/details/'.$path_count : '/collection/'.$collection_id.'/document/'.$doc->id }}";
         
         console.log("DearFlip: Initializing with PDF URL:", pdfUrl);
         console.log("DearFlip: DFLIP object available:", typeof DFLIP !== 'undefined');
@@ -114,14 +114,14 @@ h4{
     </script>
 @else
     @if(!is_null($path_count))
-    <iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}/details/{{ $path_count }}" width="100%" height="100%"></iframe>
+    <iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $doc->id }}/details/{{ $path_count }}" width="100%" height="100%"></iframe>
     @else
-    <iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $document_id }}" width="100%" height="100%"></iframe>
+    <iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $doc->id }}" width="100%" height="100%"></iframe>
     @endif
 @endif
 </div>
 <div id="meta-view">
-	<h4>Associated Meta Information<span class="text-right" style="float:right"><a href="/collection/{{ $collection_id }}/document/{{ $document_id }}/doc-edit-viewer" style="color:#eee;">Edit</a></span></h4>
+    <h4>Associated Meta Information<span class="text-right" style="float:right"><a href="/collection/{{ $collection_id }}/document/{{ $doc->id }}/doc-edit-viewer?viewer=viewerjs" style="color:#eee;">Edit</a></span></h4>
     <div id="meta-data">
     @php
         $meta_info = $doc->meta->sortBy(function ($m){

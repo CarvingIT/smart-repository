@@ -32,7 +32,11 @@ class SecureHeaders
         }
         $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         $response->headers->set('Access-Control-Allow-Origin', 'mozilla.github.io');
-        $response->headers->set('Content-Security-Policy', "script-src 'self' 'unsafe-inline' 'unsafe-eval' www.googletagmanager.com cdn.jsdelivr.net code.jquery.com mozilla.github.io; style-src 'self' 'unsafe-inline' use.fontawesome.com cdn.jsdelivr.net fonts.googleapis.com code.jquery.com maxcdn.bootstrapcdn.com"); 
+        // NOTE: 'unsafe-eval' was previously added to support PDF.js (dearflip) but it's a security risk.
+        // We avoid adding 'unsafe-eval' to the CSP header here. If PDF rendering requires it, we should
+        // investigate safer alternatives (e.g., ensure pdf.worker.js is loaded via Worker script, use
+        // blob URLs, or update the library). See issue tracking for more details.
+        $response->headers->set('Content-Security-Policy', "script-src 'self' 'unsafe-inline' www.googletagmanager.com cdn.jsdelivr.net code.jquery.com mozilla.github.io; style-src 'self' 'unsafe-inline' use.fontawesome.com cdn.jsdelivr.net fonts.googleapis.com code.jquery.com maxcdn.bootstrapcdn.com"); 
 		foreach($this->unwantedHeaderList as $h){
 			$response->headers->remove($h);
 		}
