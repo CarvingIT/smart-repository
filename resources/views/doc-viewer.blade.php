@@ -97,6 +97,13 @@ h4{
                 autoEnableThumbnail: false,
                 overwritePDFOutline: false,
                 duration: 800,
+                // Pass PDF.js options via docParameters to avoid requiring 'unsafe-eval' in CSP
+                // Setting isEvalSupported: false makes PDF.js use alternative code paths
+                // that don't require eval(), allowing stricter CSP policies
+                docParameters: {
+                    url: pdfUrl,
+                    isEvalSupported: false
+                },
                 onReady: function(flipbook) {
                     console.log("DearFlip: Flipbook ready!");
                 },
