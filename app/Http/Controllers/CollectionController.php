@@ -50,7 +50,7 @@ class CollectionController extends Controller
     }
 
 
-    public function list(){
+    public function list(Request $request){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
         $stats = [];
         foreach($collections as $collection){
@@ -59,7 +59,32 @@ class CollectionController extends Controller
 				"size" => $collection->size_active
 			];
         }
-        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats]);
+        
+        // Handle sorting
+        $sort_by = $request->input('sort_by', 'name_asc'); // default to alphabetical ascending
+        
+        switch($sort_by) {
+            case 'name_asc':
+                $collections = $collections->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE);
+                break;
+            case 'name_desc':
+                $collections = $collections->sortByDesc('name', SORT_NATURAL|SORT_FLAG_CASE);
+                break;
+            case 'size_asc':
+                $collections = $collections->sortBy(function($collection) use ($stats) {
+                    return isset($stats[$collection->id]) ? (int)$stats[$collection->id]->cnt : 0;
+                });
+                break;
+            case 'size_desc':
+                $collections = $collections->sortByDesc(function($collection) use ($stats) {
+                    return isset($stats[$collection->id]) ? (int)$stats[$collection->id]->cnt : 0;
+                });
+                break;
+            default:
+                $collections = $collections->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE);
+        }
+        
+        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats, 'sort_by'=>$sort_by]);
     }
 
     public function save(Request $request){
