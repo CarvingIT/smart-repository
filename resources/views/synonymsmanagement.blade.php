@@ -1,4 +1,4 @@
-@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'title'=>'Manage Synonyms'])
+@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'title'=>__('Manage Synonyms')])
 
 @section('content')
 <script src="/js/jquery.dataTables.min.js"></script>
@@ -7,7 +7,22 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#synonyms").DataTable();
+    $("#synonyms").DataTable({
+        "language": {
+            "lengthMenu": "{{ __('Show _MENU_ entries') }}",
+            "zeroRecords": "{{ __('No matching records found') }}",
+            "info": "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+            "infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+            "infoFiltered": "{{ __('(filtered from _MAX_ total entries)') }}",
+            "search": "{{ __('Search:') }}",
+            "paginate": {
+                "first": "{{ __('First') }}",
+                "last": "{{ __('Last') }}",
+                "next": "{{ __('Next') }}",
+                "previous": "{{ __('Previous') }}"
+            }
+        }
+    });
 } );
 
 function showDeleteDialog(synonyms_id){
@@ -16,7 +31,7 @@ function showDeleteDialog(synonyms_id){
         $('#hidden_captcha').text(str);
         $('#delete_synonyms_id').val(synonyms_id);
         deldialog = $( "#deletedialog" ).dialog({
-                title: 'Are you sure ?',
+                title: '{{ __("Are you sure ?") }}',
                 resizable: true
         });
 }
@@ -79,7 +94,7 @@ function randomString(length) {
                     </div>
                 <div class="row">
                   <div class="col-12 text-right">
-                    <a href="{{ route('synonyms.create') }}" class="btn btn-sm btn-primary" title="Add Synonyms"><i class="material-icons">add</i></a>
+                    <a href="{{ route('synonyms.create') }}" class="btn btn-sm btn-primary" title="{{ __('Add Synonyms') }}"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 
@@ -87,8 +102,8 @@ function randomString(length) {
                     <table id="synonyms" class="table">
                         <thead class="text-primary">
                             <tr>
-                            <th>Synonyms</th>
-                            <th class="text-right">Actions</th>
+                            <th>{{ __('Synonyms') }}</th>
+                            <th class="text-right">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -101,17 +116,17 @@ function randomString(length) {
 				    <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
 				</a>
-				<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete Synonym"><i class="material-icons">delete</i></span>
+				<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="{{ __('Delete Synonym') }}"><i class="material-icons">delete</i></span>
                             </td>
                         </tr>
 	    <div id="deletedialog" style="display:none;">
                 <form name="deletedoc" method="post" action="/admin/synonyms/delete">
                 @csrf
-                <p>Enter <span id="text_captcha"></span> to delete</p>
+                <p>{{ __('Enter') }} <span id="text_captcha"></span> {{ __('to delete') }}</p>
                 <input type="text" name="delete_captcha" value="" />
                 <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
                 <input type="hidden" id="delete_synonyms_id" name="synonyms_id" value="{{ $u->id }}" />
-                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+                <button class="btn btn-danger" type="submit" value="delete">{{ __('Delete') }}</button>
                 </form>
             </div>
                         @endforeach

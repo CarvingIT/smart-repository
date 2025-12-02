@@ -143,6 +143,17 @@ $(document).ready(function(){
                     <input type="text" name="timeout" id="timeout" class="form-control" placeholder="Timeout in seconds" value="{{ @$disk_config->timeout }}" />
                     </div>
                    </div>
+                   <div class="form-group row">
+                   <div class="col-md-3">
+                   <label for="ssl" class="col-md-12 col-form-label text-md-right">SSL</label> 
+                    </div>
+                    <div class="col-md-9">
+                    <div class="form-check" style="padding-top: 8px;">
+                    <input type="checkbox" name="ssl" id="ssl" value="true" @if(@$disk_config->ssl == 'true') checked @endif style="width: 20px; height: 20px; margin-right: 10px; cursor: pointer;" />
+                    <label for="ssl" style="display: inline; cursor: pointer; margin: 0;">Enable SSL</label>
+                    </div>
+                    </div>
+                   </div>
 
 				  </div>
 

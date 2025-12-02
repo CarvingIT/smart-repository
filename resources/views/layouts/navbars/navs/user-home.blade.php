@@ -109,10 +109,12 @@ $collections = \App\Collection::all();
             </p>
 			-->
           </a>
-	  <span class="howdy" style="width:200px;"><a href="/dashboard" style="color:inherit !important;">Welcome @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
+	  <span class="howdy" style="width:200px;"><a href="/dashboard" style="color:inherit !important;">{{ __('Welcome') }} @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             <a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a>
+            <a class="dropdown-item" href="{{ route('favorites.index') }}">{{ __('Favourites') }}</a>
+            <a class="dropdown-item" href="{{ route('shared-links.index') }}">{{ __('Shared Links') }}</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>
@@ -123,6 +125,7 @@ $collections = \App\Collection::all();
  	         <a class="dropdown-item" href="/admin/sysconfig">{{ __('System Configuration') }}</a>
 	         <a class="dropdown-item" href="/reports">{{ __('Reports') }}</a>
 	         <a class="dropdown-item" href="/admin/deleted-documents">{{ __('Deleted Documents') }}</a>
+	         <a class="dropdown-item" href="/admin/system-info">{{ __('System Information') }}</a>
             @endif
             <div class="dropdown-divider"></div>
 			@if(empty(env('SAML2_SLS')))

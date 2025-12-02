@@ -37,7 +37,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Database')}} :: Configuration</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Database')}} :: {{ __('Configuration') }}</h4></div>
                 <div class="col-md-12 text-right">
                 <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
                 </div>
@@ -89,9 +89,13 @@ $(document).ready(function() {
 			@endforeach
 		</div>
 
-		<h4>{{__('Search Fields')}}</h4>
-		<div class="form-group row">
-			@foreach($collection->meta_fields as $m)
+	<h4>{{__('Search Fields')}}</h4>
+	<div class="form-group row">
+       {{-- <div class="col-md-3"><input name="title_search" type="checkbox" value="1" 
+		@if(!empty($column_config->title_search) && $column_config->title_search == 1) checked="checked" @endif /> {{ __('Title') }}</div> --}}
+       <div class="col-md-3"><input name="file_type_search" type="checkbox" value="1" 
+		@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1) checked="checked" @endif /> {{ __('File Type') }}</div>
+		@foreach($collection->meta_fields as $m)
            <div class="col-md-3"><input name="meta_fields_search[]" type="checkbox" value="{{ $m->id }}" 
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search)) checked="checked" @endif /> {{ $m->label }}</div>
 			@endforeach
@@ -104,7 +108,7 @@ $(document).ready(function() {
 				@continue
 			@endif
            <div class="col-md-3"><input name="auth_user_permissions[]" type="checkbox" value="{{ $p->name }}" 
-			@if(!empty($column_config->auth_user_permissions) && in_array($p->name, $column_config->auth_user_permissions)) checked="checked" @endif /> {{ $p->description }}</div>
+			@if(!empty($column_config->auth_user_permissions) && in_array($p->name, $column_config->auth_user_permissions)) checked="checked" @endif /> {{ __($p->description) }}</div>
 			@endforeach
 		</div>
 
@@ -113,17 +117,26 @@ $(document).ready(function() {
             <div class="col-md-12"><input name="document_viewer_download" type="checkbox" value="1"
             @if(!empty($column_config->document_viewer_download))
                 checked="checked"
-            @endif /> Allow download of documents</div>
+            @endif /> {{ __('Allow download of documents') }}</div>
+            <div class="col-md-12">
+                <strong>{{ __('PDF Viewer:') }}</strong><br/>
+                <input type="radio" name="pdf_viewer" value="viewerjs" id="viewer_viewerjs" 
+                    @if(@$column_config->pdf_viewer == 'viewerjs' || empty($column_config->pdf_viewer)) checked @endif />
+                <label for="viewer_viewerjs">{{ __('Default (ViewerJS)') }}</label><br/>
+                <input type="radio" name="pdf_viewer" value="dearflip" id="viewer_dearflip" 
+                    @if(@$column_config->pdf_viewer == 'dearflip') checked @endif />
+                <label for="viewer_dearflip">{{ __('DearFlip (Flip Book)') }}</label>
+            </div>
         </div>
 
 		<h4>{{__('Display of search results')}}</h4>
 		<div class="form-group row">
            <div class="col-md-3">
-				Title replacement
+				{{ __('Title replacement') }}
 		   </div>
            <div class="col-md-9">
 				<select class="form-control1" name="replace_title_with_meta">
-					<option value="">Don't replace with any meta value</option>
+					<option value="">{{ __("Don't replace with any meta value") }}</option>
 				@foreach ($collection->meta_fields as $m)
 					<option value="{{ $m->id }}" @if (@$column_config->replace_title_with_meta == $m->id) {{ 'selected' }} @endif >{{ $m->label }}</option>
 				@endforeach
@@ -134,15 +147,15 @@ $(document).ready(function() {
 		<h4>{{__('Document Approval')}}</h4>
 		<div class="form-group row">
                   <div class="col-md-12"><input type="checkbox" id="display_unapproved_docs" name="display_unapproved_docs" value="1"
-                        @if(@$column_config->display_unapproved_docs == 1) checked @endif />Display Unapproved Documents
+                        @if(@$column_config->display_unapproved_docs == 1) checked @endif />{{ __('Display Unapproved Documents') }}
                   </div>
                     <br />
                   <div class="col-md-12"><input type="checkbox" id="display_approval_log" name="display_approval_log" value="1"
-                        @if(@$column_config->display_approval_log == 1) checked @endif />Display Document Approval Log
+                        @if(@$column_config->display_approval_log == 1) checked @endif />{{ __('Display Document Approval Log') }}
                   </div>
                     <br />
                     <div class="col-md-12">
-            <strong>Document Work Flow</strong>
+            <strong>{{ __('Document Work Flow') }}</strong>
 			<select class="selectsequence" id="selectsequence" name="approved_by[]" multiple style="width:100%;">	
 				@if(!empty($column_config->approved_by))
 					@foreach($column_config->approved_by as $approver)
@@ -167,15 +180,15 @@ $(document).ready(function() {
 		<h4>{{__('Info page')}}</h4>
 		<div class="form-group row">
            <div class="col-md-3"><input name="show_word_cloud" type="checkbox" value="1" 
-			@if(!empty($column_config->show_word_cloud) && $column_config->show_word_cloud == 1) checked="checked" @endif /> Show word cloud</div>
+			@if(!empty($column_config->show_word_cloud) && $column_config->show_word_cloud == 1) checked="checked" @endif /> {{ __('Show word cloud') }}</div>
            <div class="col-md-3"><input name="show_audit_trail" type="checkbox" value="1" 
-			@if(!empty($column_config->show_audit_trail) && $column_config->show_audit_trail == 1) checked="checked" @endif /> Show audit trail</div>
+			@if(!empty($column_config->show_audit_trail) && $column_config->show_audit_trail == 1) checked="checked" @endif /> {{ __('Show audit trail') }}</div>
 			<hr />
            <div class="col-md-12 row">
-			<div class="col-md-5"><h5>Current label</h5></div>
-			<div class="col-md-2"><h5>Hide Label?</h5></div>
-			<div class="col-md-2"><h5>Hide Field?</h5></div>
-			<div class="col-md-3"><h5>Label override</h5></div>
+			<div class="col-md-5"><h5>{{ __('Current label') }}</h5></div>
+			<div class="col-md-2"><h5>{{ __('Hide Label?') }}</h5></div>
+			<div class="col-md-2"><h5>{{ __('Hide Field?') }}</h5></div>
+			<div class="col-md-3"><h5>{{ __('Label override') }}</h5></div>
 			</div>
 			
 			@foreach($collection->meta_fields as $m)
@@ -195,7 +208,7 @@ $(document).ready(function() {
 			</div>
 
 			<div class="col-md-3">
-			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="Label for display" />
+			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="{{ __('Label for display') }}" />
 			</div>
 
 			</div>
@@ -205,17 +218,17 @@ $(document).ready(function() {
 		<h4>{{__('Notifications')}}</h4>
 		<div class="form-group row">
 			<div class="col-md-2 text-right">
-				<label for="slack_webhook"><img src="/i/Slack_Mark_Web.png" class="icon"/>Slack Webhook</label>
+				<label for="slack_webhook"><img src="/i/Slack_Mark_Web.png" class="icon"/>{{ __('Slack Webhook') }}</label>
 			</div>
 			<div class="col-md-10">
-				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="Slack webhook url" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
+				<input type="text" class="form-control" name="slack_webhook" id="slack_webhook" placeholder="{{ __('Slack webhook url') }}" value="@if(!empty($column_config->slack_webhook)) {{ $column_config->slack_webhook }} @endif" />
 			</div>
 
 			<div class="col-md-2 text-right">
-				<label for="notify_email"><img src="/i/notify_email.png" class="icon"/>Send email to</label>
+				<label for="notify_email"><img src="/i/notify_email.png" class="icon"/>{{ __('Send email to') }}</label>
 			</div>
 			<div class="col-md-10">
-				<input type="text" class="form-control" name="notify_email" id="notify_email" placeholder="Notification email address" value="@if(!empty($column_config->notify_email)) {{ $column_config->notify_email }} @endif" />
+				<input type="text" class="form-control" name="notify_email" id="notify_email" placeholder="{{ __('Notification email address') }}" value="@if(!empty($column_config->notify_email)) {{ $column_config->notify_email }} @endif" />
 			</div>
 		</div>
 
@@ -224,10 +237,10 @@ $(document).ready(function() {
 		<p>{{ __('Attachments sent to this email address will be automatically imported into your collection. You may need the help of your IT staff to fill out the following details.') }}</p>
 			<div class="row">
 				<div class="col-md-2 text-right">
-					<label for="email_address">Email address</label>
+					<label for="email_address">{{ __('Email address') }}</label>
 				</div>
 				<div class="col-md-10">
-					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="e.g. knowledge@yourdomain.com" value="@if(!empty($mailbox->address)) {{ $mailbox->address }} @endif" />
+					<input type="text" class="form-control" name="email_address" id="email_address" placeholder="{{ __('e.g. knowledge@yourdomain.com') }}" value="@if(!empty($mailbox->address)) {{ $mailbox->address }} @endif" />
 				</div>
 			</div>
 		@php
@@ -238,7 +251,7 @@ $(document).ready(function() {
 		@endphp
 			<div class="row">
 				<div class="col-md-2">
-					<label for="imap_server">IMAP server</label>
+					<label for="imap_server">{{ __('IMAP server') }}</label>
 				</div>
 				<div class="col-md-10">
 					<input type="text" class="form-control" name="imap_server" id="imap_server" value="@if($creds) {{ $creds->server_address }} @endif" />
@@ -246,7 +259,7 @@ $(document).ready(function() {
 			</div>
 			<div class="row">
 				<div class="col-md-2">
-					<label for="server_port">Port</label>
+					<label for="server_port">{{ __('Port') }}</label>
 				</div>
 				<div class="col-md-10">
 					<input type="text" class="form-control" name="server_port" id="server_port" value="@if($creds) {{ $creds->server_port }} @endif" />
@@ -254,11 +267,11 @@ $(document).ready(function() {
 			</div>
 			<div class="row">
 				<div class="col-md-2">
-					<label for="security">SSL/TLS</label>
+					<label for="security">{{ __('SSL/TLS') }}</label>
 				</div>
 				<div class="col-md-10">
 					<select name="security" class="selectpicker" id="security">
-						<option value="">Security</option>
+						<option value="">{{ __('Security') }}</option>
 						<option value="ssl" @if($creds && $creds->security == 'ssl') {{ 'selected' }} @endif>SSL</option>
 						<option value="tls" @if($creds && $creds->security == 'tls') {{ 'selected' }} @endif>TLS</option>
 					</select>
@@ -266,13 +279,13 @@ $(document).ready(function() {
 			</div>
 			<div class="row">
 				<div class="col-md-2">
-					<label for="username">Username</label>
+					<label for="username">{{ __('Username') }}</label>
 				</div>
 				<div class="col-md-4">
 					<input type="text" name="username" id="username" value="@if($creds) {{ $creds->username }} @endif" />
 				</div>
 				<div class="col-md-2">
-					<label for="password">Password</label>
+					<label for="password">{{ __('Password') }}</label>
 				</div>
 				<div class="col-md-4">
 					<input type="password" name="password" id="password" value="@if($creds) {{ $creds->password }} @endif" />
@@ -285,7 +298,7 @@ $(document).ready(function() {
 		</div>
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
-        <button type="submit" class="btn btn-primary"> Save </button>
+        <button type="submit" class="btn btn-primary"> {{ __('Save') }} </button>
     </div>
 </div>
 

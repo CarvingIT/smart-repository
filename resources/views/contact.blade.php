@@ -1,4 +1,4 @@
-@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Contact','activePage'=>'contact','titlePage'=>'Contact Us'])
+@extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>__('Contact'),'activePage'=>'contact','titlePage'=>__('Contact Us')])
 
 @section('content')
 @php
@@ -13,7 +13,7 @@
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title">Contact Us</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Contact Us') }}</h4></div>
 
                 <div class="card-body">
 					@if(!empty($settings['contact_page']))

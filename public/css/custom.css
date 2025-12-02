@@ -106,6 +106,16 @@ select.search-field{
     background-color:#fff;
     line-height:2;
 }
+select.search-field option:disabled{
+    color:#999;
+    opacity:0.7;
+}
+
+.listicon{
+    max-width:50px;
+    max-height:50px;
+    object-fit:contain;
+}
 
 a.nav-link{
 	margin-right:0 !important;

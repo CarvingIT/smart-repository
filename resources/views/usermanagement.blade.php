@@ -1,4 +1,4 @@
-@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'title'=>'Manage Users'])
+@extends('layouts.app',['class'=> 'off-canvas-sidebar', 'title'=>__('Manage Users')])
 
 @section('content')
 <script src="/js/jquery.dataTables.min.js"></script>
@@ -7,7 +7,23 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    $("#users").DataTable();
+    $("#users").DataTable({
+        "language": {
+            "search": "{{ __('Search:') }}",
+            "lengthMenu": "{{ __('Show _MENU_ entries') }}",
+            "info": "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+            "infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+            "infoFiltered": "{{ __('(filtered from _MAX_ total entries)') }}",
+            "paginate": {
+                "first": "{{ __('First') }}",
+                "last": "{{ __('Last') }}",
+                "next": "{{ __('Next') }}",
+                "previous": "{{ __('Previous') }}"
+            },
+            "zeroRecords": "{{ __('No matching records found') }}",
+            "emptyTable": "{{ __('No data available in table') }}"
+        }
+    });
 } );
 
 function showDeleteDialog(user_id){
@@ -79,7 +95,7 @@ function randomString(length) {
                     </div>
                 <div class="row">
                   <div class="col-12 text-right">
-                    <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary" title="Add User"><i class="material-icons">add</i></a>
+                    <a href="{{ route('user.create') }}" class="btn btn-sm btn-primary" title="{{ __('Add User') }}"><i class="material-icons">add</i></a>
                   </div>
                 </div>
 
@@ -87,11 +103,11 @@ function randomString(length) {
                     <table id="users" class="table">
                         <thead class="text-primary">
                             <tr>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role[s]</th>
-                            <th>Created Date</th>
-                            <th class="text-right">Actions</th>
+                            <th>{{ __('Name') }}</th>
+                            <th>{{ __('Email') }}</th>
+                            <th>{{ __('Role[s]') }}</th>
+                            <th>{{ __('Created Date') }}</th>
+                            <th class="text-right">{{ __('Actions') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -112,17 +128,17 @@ function randomString(length) {
 				    <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>
 				</a>
-				<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="Delete User"><i class="material-icons">delete</i></span>
+				<span class="btn btn-danger btn-link confirmdelete" onclick="showDeleteDialog({{ $u->id }});" title="{{ __('Delete User') }}"><i class="material-icons">delete</i></span>
                             </td>    
                         </tr>
 	    <div id="deletedialog" style="display:none;">
                 <form name="deletedoc" method="post" action="/admin/user/delete">
                 @csrf
-                <p>Enter <span id="text_captcha"></span> to delete</p>
+                <p>{{ __('Enter') }} <span id="text_captcha"></span> {{ __('to delete') }}</p>
                 <input type="text" name="delete_captcha" value="" />
                 <input type="hidden" id="hidden_captcha" name="hidden_captcha" value="" />
                 <input type="hidden" id="delete_user_id" name="user_id" value="{{ $u->id }}" />
-                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+                <button class="btn btn-danger" type="submit" value="delete">{{ __('Delete') }}</button>
                 </form>
             </div>
                         @endforeach

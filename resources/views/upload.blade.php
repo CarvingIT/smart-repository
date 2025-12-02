@@ -78,9 +78,9 @@ tinymce.init({
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections') }}</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: Upload Document</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title"><a href="/collections">{{ __('Collections') }}</a> :: <a href="/collection/{{ $collection->id }}">{{ $collection->name }}</a> :: {{ __('Upload Document') }}</h4></div>
                 <div class="col-md-12 text-right">
-                <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
+                <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="{{ __('Back') }}"><i class="material-icons">arrow_back</i></a>
                 </div>
 
                 <div class="card-body">
@@ -105,20 +105,20 @@ tinymce.init({
 @endif
 		<div class="form-group row">
 	   	   <div class="col-md-3">
-		   <label for="title" class="col-md-12 col-form-label text-md-right">Title</label>
+		   <label for="title" class="col-md-12 col-form-label text-md-right">{{ __('Title') }}</label>
 		   </div>
                     <div class="col-md-9">
                     <input class="form-control" type="text" id="title" name="title" size="40" value="{{ old('title',$document->title) }}" 
-                    placeholder="If left blank, we shall guess!" maxlength="150" />
+                    placeholder="{{ __('If left blank, we shall guess!') }}" maxlength="150" />
                     </div>
 		</div>
 		@if(empty($document->id) || $document->type != 'N/A')
 		<div class="form-group row">
 		   <div class="col-md-3">
-		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">Document</label>
+		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">{{ __('Document') }}</label>
 		   </div>
     		   <div class="col-md-9">
-			   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
+			   <label for='filesize'><font color="red">{{ __('File size must be less than') }} {{ $size_limit }}B.</font></label>
     		   <input id="uploadfile" type="file" class="form-control-file" name="document[]" multiple/> 
     		   </div>
 		</div>
@@ -126,11 +126,11 @@ tinymce.init({
 		@if(empty($document->id) || $document->type == 'N/A')
 		<div class="form-group row">
 		   <div class="col-md-3">
-		   <label for="externallink" class="col-md-12 col-form-label text-md-right">External Link</label>
+		   <label for="externallink" class="col-md-12 col-form-label text-md-right">{{ __('External Link') }}</label>
 		   </div>
     		   <div class="col-md-9">
 				@if(empty($document->id))
-				Enter a link below only if there's no document to be uploaded. 
+				{{ __('Enter a link below only if there\'s no document to be uploaded.') }}
 				@endif
     		   <input type="text" class="form-control-file" id="externallink" name="external_link" 
 					value="{{ old('external_link', $document->external_link) }}" 
@@ -141,7 +141,7 @@ tinymce.init({
 		@if(!empty($document->id) && $document->type != 'N/A')
 		<div class="form-group row">
 		   <div class="col-md-3">
-		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">Uploaded Document</label>
+		   <label for="uploadfile" class="col-md-12 col-form-label text-md-right">{{ __('Uploaded Document') }}</label>
 		   </div>
     		   <div class="col-md-9">
 			@if(!empty($document->id))<a href="/collection/{{ $collection->id }}/document/{{ $document->id }}" target="_blank">{{ html_entity_decode($document->title) }} </a> @endif
@@ -277,12 +277,12 @@ tinymce.init({
    		   <input id="same_meta_docs" type="checkbox" name="same_meta_docs_upload" value="1" /> 
 	   </div>
    	   <div class="col-md-9">
-	   		<label for="same_meta_docs" class="col-md-12 col-form-label">Upload more documents of the same field values above</label>
+	   		<label for="same_meta_docs" class="col-md-12 col-form-label">{{ __('Upload more documents of the same field values above') }}</label>
    	   </div>
 	</div>
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
-        <button type="submit" class="btn btn-primary"> Save </button>
+        <button type="submit" class="btn btn-primary"> {{ __('SAVE') }} </button>
     </div>
 </div>
 

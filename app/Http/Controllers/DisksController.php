@@ -42,6 +42,11 @@ class DisksController extends Controller
 				$config = ['driver'=>$driver, 'host'=>$request->host, 'port'=>(int) $request->port,
 				'username'=>$request->username, 'password'=>$request->password,
 				'root'=>$request->root, 'timeout'=>(int) $request->timeout];
+				
+				// Add SSL parameter if checkbox is checked
+				if($request->has('ssl') && $request->ssl == 'true'){
+					$config['ssl'] = 'true';
+				}
 			}
 			else if($driver == 's3'){
 				$config = ['driver'=>$driver,'key'=>$request->key,'secret'=>$request->secret,
