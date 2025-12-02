@@ -10,6 +10,7 @@
 <link href="/css/jquery-ui.css" rel="stylesheet">
 <link href="/css/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
+<link href="/css/tile-view.css" rel="stylesheet" />
 <script src="/js/select2.min.js"></script>
 <script src="/js/select2totree.js"></script>
 @php
@@ -158,6 +159,10 @@ function randomString(length) {
         <div class="card-body">
 		<div class="row">
                   <div class="col-12 text-right">
+                  <!-- View Toggle Button -->
+                  <button id="view-toggle-btn" class="btn btn-sm btn-primary" title="Switch to Tile View">
+                    <i class="material-icons">view_module</i>
+                  </button>
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
@@ -485,6 +490,12 @@ function randomString(length) {
                 </thead>
                </table>
 		    </div>
+		    
+		    <!-- Tile View Container -->
+		    <div id="tile-container" class="tile-container">
+		        <!-- Tiles will be dynamically injected here -->
+		    </div>
+		    
                  </div>
             </div>
         </div>
@@ -638,6 +649,297 @@ $(document).ready(function() {
             }
         });
     });
+
+    // ===== TILE VIEW FUNCTIONALITY =====
+    
+    var currentViewMode = localStorage.getItem('viewMode_{{ $collection->id }}') || 'list';
+    var tileData = [];
+    var currentPage = 0;
+    var recordsPerPage = 50;
+    var totalRecords = 0;
+    var isLoading = false;
+    
+    // Initialize view mode on page load
+    function initializeViewMode() {
+        if (currentViewMode === 'tile') {
+            activateTileView();
+        }
+    }
+    
+    // Toggle between list and tile view
+    $('#view-toggle-btn').click(function() {
+        if (currentViewMode === 'list') {
+            currentViewMode = 'tile';
+            activateTileView();
+        } else {
+            currentViewMode = 'list';
+            activateListView();
+        }
+        localStorage.setItem('viewMode_{{ $collection->id }}', currentViewMode);
+    });
+    
+    // Activate tile view
+    function activateTileView() {
+        $('.card-body').addClass('tile-view-active');
+        $('#tile-container').addClass('active');
+        $('#view-toggle-btn').html('<i class="material-icons">view_list</i>');
+        $('#view-toggle-btn').attr('title', 'Switch to List View');
+        
+        // Trigger search to populate tiles
+        var searchValue = $('#collection_search').val();
+        loadTiles(searchValue);
+    }
+    
+    // Activate list view
+    function activateListView() {
+        $('.card-body').removeClass('tile-view-active');
+        $('#tile-container').removeClass('active');
+        $('#view-toggle-btn').html('<i class="material-icons">view_module</i>');
+        $('#view-toggle-btn').attr('title', 'Switch to Tile View');
+        
+        // Refresh datatable
+        oTable.draw();
+    }
+    
+    // Load tiles with AJAX
+    function loadTiles(searchQuery, append) {
+        if (isLoading) return;
+        isLoading = true;
+        
+        if (!append) {
+            $('#tile-container').html('<div class="tile-loading-spinner"><img src="/i/processing.gif"></div>');
+            currentPage = 0;
+        }
+        
+        var requestData = {
+            draw: 1,
+            start: currentPage * recordsPerPage,
+            length: recordsPerPage,
+            search: { value: searchQuery || '' }
+        };
+        
+        $.ajax({
+            url: '/collection/{{ $collection->id }}/search',
+            method: 'GET',
+            data: requestData,
+            dataType: 'json',
+            success: function(response) {
+                console.log('Tile view: AJAX response received', response);
+                isLoading = false;
+                
+                if (response && response.data) {
+                    totalRecords = response.recordsFiltered || response.recordsTotal || 0;
+                    
+                    if (append) {
+                        tileData = tileData.concat(response.data);
+                    } else {
+                        tileData = response.data;
+                    }
+                    
+                    renderTiles(tileData, append);
+                    updatePaginationInfo();
+                } else {
+                    console.error('Tile view: Invalid response format', response);
+                    $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">warning</i><p>Invalid data format</p></div>');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Tile view: AJAX error', status, error);
+                isLoading = false;
+                $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">error_outline</i><p>Error loading documents. Please check console for details.</p></div>');
+            }
+        });
+    }
+    
+    // Update pagination info
+    function updatePaginationInfo() {
+        var showing = tileData.length;
+        var paginationHtml = '<div class="tile-pagination-info">Showing ' + showing + ' of ' + totalRecords + ' documents';
+        
+        if (showing < totalRecords) {
+            paginationHtml += ' <button class="btn btn-sm btn-primary" id="load-more-tiles">Load More</button>';
+        }
+        
+        paginationHtml += '</div>';
+        
+        if ($('#tile-pagination').length) {
+            $('#tile-pagination').html(paginationHtml);
+        } else {
+            $('#tile-container').after('<div id="tile-pagination" class="text-center mt-3"></div>');
+            $('#tile-pagination').html(paginationHtml);
+        }
+        
+        // Load more button click handler
+        $('#load-more-tiles').off('click').on('click', function() {
+            currentPage++;
+            loadTiles($('#collection_search').val(), true);
+        });
+    }
+    
+    // Render tiles from data
+    function renderTiles(data, append) {
+        console.log('Tile view: Rendering tiles', data.length, 'documents');
+        
+        if (!data || data.length === 0) {
+            $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">folder_open</i><p>No documents found</p></div>');
+            $('#tile-pagination').remove();
+            return;
+        }
+        
+        var tilesHtml = append ? '' : '';
+        
+        data.forEach(function(doc, index) {
+            // Safe access to nested properties
+            var filetype = doc.type && doc.type.filetype ? doc.type.filetype : 'unknown';
+            var icon = getFileIcon(filetype);
+            var iconClass = getFileIconClass(filetype);
+            var docId = doc.DT_RowId ? doc.DT_RowId.replace('row_', '') : '';
+            var docUrl = '/collection/{{ $collection->id }}/document/' + docId;
+            
+            if (index === 0) {
+                console.log('Tile view: Sample document data', doc);
+            }
+            
+            // Escape HTML to prevent XSS
+            function escapeHtml(text) {
+                if (!text) return '';
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            // Build metadata HTML
+            var metadataHtml = '<div class="tile-metadata"><div class="tile-metadata-content">';
+            metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(doc.title) + '</span></div>';
+            
+            @foreach($collection->meta_fields as $m)
+            @if(in_array($m->id,$column_config_meta_fields))
+            if (doc.meta_{{ $m->id }}) {
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">{{ __($m->label) }}:</span><span class="metadata-value">' + doc.meta_{{ $m->id }} + '</span></div>';
+            }
+            @endif
+            @endforeach
+            
+            @if(!$hide_approval_status)
+            if (doc.approval_status) {
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">Approval:</span><span class="metadata-value">' + doc.approval_status + '</span></div>';
+            }
+            @endif
+            
+            @if(!$hide_size)
+            if (doc.size && doc.size.display) {
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">Size:</span><span class="metadata-value">' + doc.size.display + '</span></div>';
+            }
+            @endif
+            
+            @if(!$hide_creation_time)
+            if (doc.updated_at && doc.updated_at.display) {
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">Updated:</span><span class="metadata-value">' + doc.updated_at.display + '</span></div>';
+            }
+            @endif
+            
+            metadataHtml += '</div></div>';
+            
+            tilesHtml += '<div class="document-tile" onclick="window.location.href=\'' + docUrl + '\'">';
+            
+            // Show thumbnail if available, otherwise show icon
+            if (doc.type && doc.type.display && doc.type.display.includes('<img')) {
+                // Extract thumbnail URL from img tag
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = doc.type.display;
+                var imgElement = tempDiv.querySelector('img');
+                if (imgElement) {
+                    tilesHtml += '  <div class="tile-thumbnail"><img src="' + imgElement.src + '" alt="Document preview" /></div>';
+                } else {
+                    tilesHtml += '  <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+                }
+            } else {
+                tilesHtml += '  <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+            }
+            
+            tilesHtml += '  <div class="tile-title">' + escapeHtml(doc.title) + '</div>';
+            
+            @if(!$hide_size || !$hide_creation_time)
+            tilesHtml += '  <div class="tile-info">';
+            @if(!$hide_size)
+            if (doc.size && doc.size.display) {
+                tilesHtml += '<div>' + doc.size.display + '</div>';
+            }
+            @endif
+            @if(!$hide_creation_time)
+            if (doc.updated_at && doc.updated_at.display) {
+                tilesHtml += '<div>' + doc.updated_at.display + '</div>';
+            }
+            @endif
+            tilesHtml += '  </div>';
+            @endif
+            
+            tilesHtml += metadataHtml;
+            tilesHtml += '</div>';
+        });
+        
+        if (append) {
+            $('#tile-container').append(tilesHtml);
+        } else {
+            $('#tile-container').html(tilesHtml);
+        }
+    }
+    
+    // Get material icon for file type
+    function getFileIcon(filetype) {
+        var iconMap = {
+            'pdf': 'picture_as_pdf',
+            'doc': 'description',
+            'docx': 'description',
+            'xls': 'table_chart',
+            'xlsx': 'table_chart',
+            'ppt': 'slideshow',
+            'pptx': 'slideshow',
+            'txt': 'text_snippet',
+            'jpg': 'image',
+            'jpeg': 'image',
+            'png': 'image',
+            'gif': 'image',
+            'mp4': 'video_library',
+            'avi': 'video_library',
+            'mp3': 'audio_file',
+            'wav': 'audio_file',
+            'zip': 'folder_zip',
+            'rar': 'folder_zip',
+            'html': 'code',
+            'htm': 'code'
+        };
+        
+        return iconMap[filetype] || 'insert_drive_file';
+    }
+    
+    // Get CSS class for file type
+    function getFileIconClass(filetype) {
+        if (filetype === 'pdf') return 'pdf';
+        if (filetype === 'doc' || filetype === 'docx') return 'doc';
+        if (filetype === 'xls' || filetype === 'xlsx') return 'xls';
+        if (filetype === 'ppt' || filetype === 'pptx') return 'ppt';
+        if (filetype === 'txt') return 'txt';
+        if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'].includes(filetype)) return 'image';
+        if (['mp4', 'avi', 'mov', 'wmv'].includes(filetype)) return 'video';
+        if (['mp3', 'wav', 'ogg'].includes(filetype)) return 'audio';
+        if (['zip', 'rar', '7z', 'tar', 'gz'].includes(filetype)) return 'archive';
+        return 'default';
+    }
+    
+    // Re-trigger tile load on search
+    var originalSearch = $('#collection_search').data('events') ? $('#collection_search').data('events').keyup : null;
+    $('#collection_search').off('keyup').on('keyup', function() {
+        if (currentViewMode === 'tile') {
+            var searchValue = $(this).val();
+            loadTiles(searchValue);
+        } else {
+            oTable.search($(this).val()).draw();
+        }
+    });
+    
+    // Initialize view mode
+    initializeViewMode();
 
 	</script>
 @endsection
