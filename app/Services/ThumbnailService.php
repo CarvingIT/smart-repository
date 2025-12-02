@@ -53,11 +53,8 @@ class ThumbnailService
     {
         try {
             $pdf = new Pdf($pdfPath);
-            $pdf->setPage(1)
-                ->setOutputFormat('jpg')
-                ->setCompressionQuality(80);
-            
-            $pdf->saveImage($thumbnailPath);
+            $pdf->selectPage(1)
+                ->save($thumbnailPath);
 
             Log::info("Thumbnail generated with Imagick for document {$documentId}");
             return true;
