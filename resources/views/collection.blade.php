@@ -565,7 +565,9 @@ $(document).ready(function() {
     var currentViewMode = localStorage.getItem('viewMode_{{ $collection->id }}') || 'list';
     var tileData = [];
     var currentPage = 0;
-    var recordsPerPage = 20;
+    var recordsPerPage = 50;
+    var totalRecords = 0;
+    var isLoading = false;
     
     // Initialize view mode on page load
     function initializeViewMode() {
@@ -610,8 +612,14 @@ $(document).ready(function() {
     }
     
     // Load tiles with AJAX
-    function loadTiles(searchQuery) {
-        $('#tile-container').html('<div class="tile-loading-spinner"><img src="/i/processing.gif"></div>');
+    function loadTiles(searchQuery, append) {
+        if (isLoading) return;
+        isLoading = true;
+        
+        if (!append) {
+            $('#tile-container').html('<div class="tile-loading-spinner"><img src="/i/processing.gif"></div>');
+            currentPage = 0;
+        }
         
         var requestData = {
             draw: 1,
@@ -627,9 +635,19 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 console.log('Tile view: AJAX response received', response);
+                isLoading = false;
+                
                 if (response && response.data) {
-                    tileData = response.data;
-                    renderTiles(tileData);
+                    totalRecords = response.recordsFiltered || response.recordsTotal || 0;
+                    
+                    if (append) {
+                        tileData = tileData.concat(response.data);
+                    } else {
+                        tileData = response.data;
+                    }
+                    
+                    renderTiles(tileData, append);
+                    updatePaginationInfo();
                 } else {
                     console.error('Tile view: Invalid response format', response);
                     $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">warning</i><p>Invalid data format</p></div>');
@@ -637,21 +655,48 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error('Tile view: AJAX error', status, error);
+                isLoading = false;
                 $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">error_outline</i><p>Error loading documents. Please check console for details.</p></div>');
             }
         });
     }
     
+    // Update pagination info
+    function updatePaginationInfo() {
+        var showing = tileData.length;
+        var paginationHtml = '<div class="tile-pagination-info">Showing ' + showing + ' of ' + totalRecords + ' documents';
+        
+        if (showing < totalRecords) {
+            paginationHtml += ' <button class="btn btn-sm btn-primary" id="load-more-tiles">Load More</button>';
+        }
+        
+        paginationHtml += '</div>';
+        
+        if ($('#tile-pagination').length) {
+            $('#tile-pagination').html(paginationHtml);
+        } else {
+            $('#tile-container').after('<div id="tile-pagination" class="text-center mt-3"></div>');
+            $('#tile-pagination').html(paginationHtml);
+        }
+        
+        // Load more button click handler
+        $('#load-more-tiles').off('click').on('click', function() {
+            currentPage++;
+            loadTiles($('#collection_search').val(), true);
+        });
+    }
+    
     // Render tiles from data
-    function renderTiles(data) {
+    function renderTiles(data, append) {
         console.log('Tile view: Rendering tiles', data.length, 'documents');
         
         if (!data || data.length === 0) {
             $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">folder_open</i><p>No documents found</p></div>');
+            $('#tile-pagination').remove();
             return;
         }
         
-        var tilesHtml = '';
+        var tilesHtml = append ? '' : '';
         
         data.forEach(function(doc, index) {
             // Safe access to nested properties
@@ -743,7 +788,11 @@ $(document).ready(function() {
             tilesHtml += '</div>';
         });
         
-        $('#tile-container').html(tilesHtml);
+        if (append) {
+            $('#tile-container').append(tilesHtml);
+        } else {
+            $('#tile-container').html(tilesHtml);
+        }
     }
     
     // Get material icon for file type

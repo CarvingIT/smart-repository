@@ -8,22 +8,23 @@
 
 .tile-container.active {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 20px;
     width: 100%;
+    padding: 10px;
 }
 
 /* Individual tile card */
 .document-tile {
     position: relative;
-    background: #fff;
-    border: 1px solid #e0e0e0;
+    background: transparent;
+    border: none;
     border-radius: 8px;
-    padding: 20px;
+    padding: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    min-height: 200px;
+    box-shadow: none;
+    min-height: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -32,8 +33,7 @@
 
 .document-tile:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-    border-color: #9c27b0;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 /* Document icon in tile */
@@ -61,24 +61,24 @@
     font-feature-settings: "liga";
 }
 
-/* Document thumbnail in tile */
+/* Document thumbnail in tile - A4 aspect ratio */
 .tile-thumbnail {
     width: 100%;
-    max-width: 200px;
-    height: 140px;
-    margin-bottom: 15px;
+    aspect-ratio: 1 / 1.414;
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
     border-radius: 4px;
-    background: #f5f5f5;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .tile-thumbnail img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 4px;
 }
 
@@ -385,39 +385,19 @@
     margin: 0;
 }
 
-/* Pagination for tile view */
-.tile-pagination {
+/* Pagination info for tile view */
+.tile-pagination-info {
     display: flex;
     justify-content: center;
-    margin-top: 30px;
-    gap: 10px;
-}
-
-.tile-pagination button {
-    padding: 8px 16px;
-    border: 1px solid #ddd;
-    background: white;
-    color: #333;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
-
-.tile-pagination button:hover:not(:disabled) {
-    background: #9c27b0;
-    color: white;
-    border-color: #9c27b0;
-}
-
-.tile-pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.tile-pagination .page-info {
-    display: flex;
     align-items: center;
-    padding: 0 15px;
+    gap: 15px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 15px;
     color: #666;
     font-size: 14px;
+}
+
+#tile-pagination {
+    margin-top: 20px;
 }
