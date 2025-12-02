@@ -15,6 +15,13 @@ use App\Util;
 trait Search{
     // wrapper function for search
     public function search(Request $request){
+        // log search query
+		$old_query = Session::get('search_query');
+        // put new query in session even if it is null
+        if($request->has('search')){
+	        Session::put('search_query', $request->search['value']);
+        }
+
         if($request->input('full_text_scope')){
             Session::put('full_text_scope', $request->input('full_text_scope'));
         }
@@ -25,17 +32,12 @@ trait Search{
             $search_results = $this->searchDB($request); 
         }
 
-        // log search query
-		$old_query = Session::get('search_query');
-        // put new query in session even if it is null
-	    Session::put('search_query', $request->search['value']);
-
-		if(!empty($request->search['value']) && $old_query != $request->search['value'] 
-			&& !$request->is('api/*') && strlen($request->search['value'])>1){
+		if(!empty($search_term) && $old_query != $search_term 
+			&& !$request->is('api/*') && strlen($search_term)>3){ // this part needs updates
 			$meta_query = json_encode($this->getMetaFilters($request));
         	$search_log_data = array('collection_id'=> $request->collection_id, 
                 'user_id'=> empty(\Auth::user()->id) ? null : \Auth::user()->id,
-                'search_query'=> $request->search['value'], 
+                'search_query'=> $search_term, 
                 'meta_query'=> $meta_query,
 				'ip_address' => $request->ip(),
                 'results'=>$search_results['recordsFiltered']);
@@ -109,8 +111,13 @@ trait Search{
     public function getMustQueriesFromMetaFilters($meta_filters){
         $must_queries = [];
         foreach($meta_filters as $mf){
-            if(in_array($mf['operator'], ['=','contains'])){
+            if($mf['operator'] == '='){
                 $must_queries[] = ['match'=>
+                            ['meta_'.$mf['field_id'] => $mf['value'] ]
+                        ];
+            }
+            else if($mf['operator'] == 'contains'){
+                $must_queries[] = ['match_phrase'=>
                             ['meta_'.$mf['field_id'] => $mf['value'] ]
                         ];
             }
@@ -135,7 +142,7 @@ trait Search{
     public function getMetaFilteredDocuments($request, $documents){
         $meta_filters = $this->getMetaFiltersFromRequest($request);
         foreach($meta_filters as $mf){
-			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filteres like created_at, created_by
+			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filters like created_at, created_by
 				if($mf['field_id'] == 'created_at'){
 					$documents = $documents->where('created_at', $mf['operator'], $mf['value']);
 				}	
@@ -149,15 +156,24 @@ trait Search{
 					// e.g. &meta_10[]=somevalue&meta_10[]=someothervalue
 					//print_r($mf['value']);exit;
 					foreach($mf['value'] as $v){
-                				$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
+            			$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
         					$query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$v.'"%');
-                    				});
+               			});
 					}
 				}
 				else{
-                			$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                    	    		$query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
-                    			});
+		            // find the type of meta field 
+		            $m_field = MetaField::find($mf['field_id']);
+		            if ($m_field->type == 'TaxonomyTree'){
+                	    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                            $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$mf['value'].'"%');
+                    	});
+		            }
+                    else{
+           			    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+           	    		    $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
+           			    });
+                    }
 				}
             }
             else if($mf['operator'] == '>='){
@@ -173,22 +189,11 @@ trait Search{
                 );
             }
             else if($mf['operator'] == 'contains'){
-		// find the type of meta field 
-		$m_field = MetaField::find($mf['field_id']);
-		if ($m_field->type == 'TaxonomyTree'){
-                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$mf['value'].'"%');
-                    	}
-                	);
-		}
-		else{
-                	$documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
-                    	}
-                	);
-            	}
-            }
-	}
+           	    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                    $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
+               	});
+            } //contains
+	    }// foreach
         return $documents;
     }
 
@@ -200,6 +205,7 @@ trait Search{
         ->setCABundle('/etc/elasticsearch/certs/http_ca.crt')
 	->build();
 	}
+
     // elastic search
     public function searchElastic($request){
     $params = array();
@@ -327,7 +333,8 @@ trait Search{
 
 		$highlights = [];
         //if((!empty($request->search['value']) && strlen($request->search['value'])>1)){
-            $search_term = @$request->search['value'];
+            //$search_term = @$request->search['value'];
+            $search_term = Session::get('search_query');
 	        Log::debug('Search term: '.$search_term);
 			//$search_mode = empty($request->search_mode)?'default':$request->search_mode;
 
@@ -453,7 +460,8 @@ trait Search{
             }
             
             // default sorting if no search is performed
-            if(empty($request->search['value'])){
+            //if(empty($request->search['value'])){
+            if(empty($search_term)){
                 $columns = ['type','title', 'size', 'created_at'];
                 // default meta sort field 
                 // get from the collection config and use
@@ -553,16 +561,14 @@ trait Search{
 		->where('require_approval','=','1')->get();
 
 		if($request->is('api/*') || $request->return_format == 'raw'){
-			return 
-        	 array(
-            	'data'=>$documents,
+			return ['data'=>$documents,
 		        'highlights'=>$highlights,
 		        'scores'=>$scores,
             	'draw'=>(int) $request->draw,
             	'recordsTotal'=> $total_count,
             	'recordsFiltered' => $filtered_count,
             	'error'=> '',
-        	);
+        	];
 		}
 		else{
             //Log::debug(count($documents));
@@ -658,8 +664,9 @@ trait Search{
         $documents = $this->getMetaFilteredDocuments($request, $documents);
 
         // content search
-        if(!empty($request->search['value']) && strlen($request->search['value'])>3){
-            $documents = $documents->search($request->search['value']);
+        $search_term = Session::get('search_query');
+        if(!empty($search_term)){
+            $documents = $documents->search($search_term);
         }
 	// get approval exception 
 	// the exceptions will be removed from the models with ->whereNotIn 
@@ -878,7 +885,7 @@ trait Search{
             }
         }
 	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.strip_tags(implode(' ... ', $content_matches), '<em>').'</p>';
-        
+      
         // Check if file is an image type and display actual image instead of icon
         $image_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml'];
         $type_display = '';
@@ -886,7 +893,15 @@ trait Search{
             // Display actual image with max dimensions
             $image_url = '/collection/'.$d->collection_id.'/document/'.$d->id;
             $type_display = '<img class="listicon" src="'.$image_url.'" />';
-        } else {
+        } 
+          else if($d->type == 'application/pdf'){
+            // Check if document has a thumbnail
+              $thumbnailUrl = $d->getThumbnailUrl();
+              $type_display = $thumbnailUrl 
+            ? '<img class="file-icon" src="'.$thumbnailUrl.'" style="width:50px; height:50px; object-fit:cover;" />' 
+            : '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
+          }
+          else {
             // Display file type icon
             $type_display = '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
         }

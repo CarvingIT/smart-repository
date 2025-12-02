@@ -52,14 +52,12 @@ class CollectionController extends Controller
 
     public function list(){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
-        $stats_rows = DB::table('documents')
-            ->select('collection_id', DB::raw('count(*) as cnt'), DB::raw('sum(size) as size'))
-            ->whereNull('deleted_at')
-            ->groupBy('collection_id')
-            ->get();
         $stats = [];
-        foreach($stats_rows as $stat){
-            $stats[$stat->collection_id] = $stat;
+        foreach($collections as $collection){
+            $stats[$collection->id] = (object)[
+				"cnt" => $collection->document_count,
+				"size" => $collection->size_active
+			];
         }
         return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats]);
     }
@@ -761,11 +759,17 @@ use App\UrlSuppression;
 		//echo $collection_id; exit;
 		$list = $meta_details = [];
 		$filename = '';
-		$documents = \App\Document::where('collection_id', $collection_id);
-		$documents = $this->getTitleFilteredDocuments($request, $documents);
-		$documents = $this->getMetaFilteredDocuments($request, $documents);
-        $documents = $documents->take(1000);
-
+        $request->merge(['return_format'=>'raw', 
+                    'length'=>10000, 
+                    'collection_id'=>$collection_id,
+                    ]);
+        $search_data = json_decode($this->search($request));
+        $doc_ar = []; 
+        foreach($search_data->data as $d){
+            $doc_ar[] = $d->id;
+        }
+		$documents = Document::whereIn('id',$doc_ar);
+        
 		$collection = \App\Collection::find($collection_id);
 		$filename = $collection->name;
 		$meta_fields = $collection->meta_fields;

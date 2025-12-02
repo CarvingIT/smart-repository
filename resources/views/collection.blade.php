@@ -257,7 +257,18 @@ function randomString(length) {
                 @endphp
 			@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
 
-			@if($m->type == 'Text' || $m->type == 'SelectCombo' || $m->type == 'Numeric' || $m->type == 'Textarea')
+			@if($m->type == 'SelectCombo' || $m->type == 'Numeric')
+			<div class="float-container col-md-{{ $w }}">
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
+			@csrf
+		   	<label for="meta_{{ $m->id }}_search" class="search-label">{{ __($m->label) }}</label>
+		   	<input type="text" class="search-field" id="meta_{{ $m->id }}_search" name="meta_value[{{ $m->id }}][]" onblur="this.form.submit();"/>
+		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
+		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
+		   	<input type="hidden" name="operator[]" value="=" />
+			</form>
+			</div>
+			@elseif($m->type == 'Text' || $m->type == 'Textarea')
 			<div class="float-container col-md-{{ $w }}">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickmetafilters">
 			@csrf
@@ -283,7 +294,7 @@ function randomString(length) {
                     @endforeach
             </select>
             <input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
-            <input type="hidden" name="operator[]" value="contains" />
+            <input type="hidden" name="operator[]" value="=" />
             <input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			</form>
             </div>
@@ -323,7 +334,7 @@ function randomString(length) {
 				@endforeach
 			</select>
 		   	<input type="hidden" name="meta_field[]" value="{{ $m->id }}" />
-		   	<input type="hidden" name="operator[]" value="contains" />
+		   	<input type="hidden" name="operator[]" value="=" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			</form>
 			</div>
