@@ -118,6 +118,15 @@ $(document).ready(function() {
             @if(!empty($column_config->document_viewer_download))
                 checked="checked"
             @endif /> {{ __('Allow download of documents') }}</div>
+            <div class="col-md-12">
+                <strong>{{ __('PDF Viewer:') }}</strong><br/>
+                <input type="radio" name="pdf_viewer" value="viewerjs" id="viewer_viewerjs" 
+                    @if(@$column_config->pdf_viewer == 'viewerjs' || empty($column_config->pdf_viewer)) checked @endif />
+                <label for="viewer_viewerjs">{{ __('Default (ViewerJS)') }}</label><br/>
+                <input type="radio" name="pdf_viewer" value="dearflip" id="viewer_dearflip" 
+                    @if(@$column_config->pdf_viewer == 'dearflip') checked @endif />
+                <label for="viewer_dearflip">{{ __('DearFlip (Flip Book)') }}</label>
+            </div>
         </div>
 
 		<h4>{{__('Display of search results')}}</h4>

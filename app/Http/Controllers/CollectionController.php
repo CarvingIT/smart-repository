@@ -77,6 +77,10 @@ class CollectionController extends Controller
          $c->description = $request->input('description');
          $c->type = empty($request->input('collection_type'))?'Public':$request->input('collection_type');
          $c->require_approval = $request->input('require_approval');
+         // Store pdf_viewer in column_config JSON
+         $col_config = json_decode($c->column_config) ?? new \stdClass();
+         $col_config->pdf_viewer = $request->input('pdf_viewer', 'viewerjs');
+         $c->column_config = json_encode($col_config);
          $c->user_id = Auth::user()->id;
          try{
             $c->save();
