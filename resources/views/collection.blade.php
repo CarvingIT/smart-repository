@@ -33,7 +33,7 @@ $(document).ready(function() {
     oTable = $('#documents').DataTable({
     "columnDefs": [
 		{ "targets":[0], "className":'text-center', "sortable":false, @if($hide_type)"visible":false @endif},
-		{ "targets":[1], "className":'text-left',"sortable":false, @if($hide_title) ,"visible":false @endif},
+		{ "targets":[1], "className":'text-left',"sortable":false, @if($hide_title)"visible":false @endif},
 		@php
 			$i = 2;
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
