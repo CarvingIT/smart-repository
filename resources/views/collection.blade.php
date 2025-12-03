@@ -658,16 +658,23 @@ $(document).ready(function() {
             var icon = getFileIcon(filetype);
             var iconClass = getFileIconClass(filetype);
             
-            // Extract document ID from DT_RowId
+            // Extract document ID - try multiple sources
             var docId = '';
             if (doc.DT_RowId) {
+                // DT_RowId format is usually "row_123"
                 docId = doc.DT_RowId.toString().replace('row_', '');
+            } else if (doc.id) {
+                docId = doc.id;
+            } else if (doc.document_id) {
+                docId = doc.document_id;
             }
             
             var docUrl = '/collection/{{ $collection->id }}/document/' + docId;
             
             if (index === 0) {
-                console.log('Tile view: Sample document data', doc);
+                console.log('Tile view: Document data', doc);
+                console.log('Tile view: Document ID extracted', docId);
+                console.log('Tile view: Document URL', docUrl);
             }
             
             // Escape HTML to prevent XSS

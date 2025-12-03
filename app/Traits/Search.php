@@ -834,6 +834,7 @@ trait Search{
             : '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
         
         $result = array(
+                'DT_RowId' => 'row_'.$d->id,
                 'type' => array('display'=>$iconDisplay, 'filetype'=>$d->icon()),
                 'title' => $title,
                 'approval_status' => $approval_status,
