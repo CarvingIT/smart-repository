@@ -60,6 +60,22 @@ trait Search{
 		return $documents;
 	}
 
+    /**
+     * Filter documents by file extension
+     */
+    public function getExtensionFilteredDocuments($request, $documents){
+        $extension_filter = empty(Session::get('extension_filter'))?$request->extension_filter:Session::get('extension_filter');
+        
+        if(!empty($request->extension_filter)){
+            $documents = $documents->where('type', $request->extension_filter);
+        }
+        else if(!empty($extension_filter[$request->collection_id])){
+            $documents = $documents->where('type', $extension_filter[$request->collection_id]);
+        }
+        
+        return $documents;
+    }
+
     public function getMetaFiltersFromRequest($request){
 		// check if meta filters are present in the query
 		$query_params = $request->query();
@@ -297,6 +313,17 @@ trait Search{
                 $title_query = Session::get('title_filter')[$request->collection_id];
             }
         }
+        
+        // get extension filtered documents
+        $extension_query = '';
+        if(!empty($request->extension_filter)){
+            $extension_query = $request->extension_filter;
+        }
+        else{
+            if(!empty(Session::get('extension_filter')[$request->collection_id])){
+                $extension_query = Session::get('extension_filter')[$request->collection_id];
+            }
+        }
 	    Log::debug('Total Count: '.$total_count);
         //$total_count = $cnt_response->count;
         // get the list of IDs to filter from
@@ -421,6 +448,17 @@ trait Search{
 						]];
 				Log::debug('Adding must to title. Param array is - '. json_encode($params));
 			}
+            
+            // following must query is used for extension-filtering
+            if(!empty($extension_query)){
+                Log::debug('Adding must match clause for extension. Query is - '. json_encode($extension_query));
+                $params['body']['query']['bool']['must'][] = 
+                        ['match' => [
+                            'type' => $extension_query
+                        ]];
+                Log::debug('Adding must to extension. Param array is - '. json_encode($params));
+            }
+            
             // default sorting if no search is performed
             //if(empty($request->search['value'])){
             if(empty($search_term)){
@@ -618,6 +656,10 @@ trait Search{
 		if(!empty(Session::get('title_filter')) || !empty($request->title_filter)){
             $documents = $this->getTitleFilteredDocuments($request, $documents);
 		}
+        // get Extension filtered documents
+        if(!empty(Session::get('extension_filter')) || !empty($request->extension_filter)){
+            $documents = $this->getExtensionFilteredDocuments($request, $documents);
+        }
         // get Meta filtered documents
         $documents = $this->getMetaFilteredDocuments($request, $documents);
 
@@ -763,24 +805,41 @@ trait Search{
             $action_icons = '';
 
 	    if($content_type == 'Uploaded documents'){
-            	$revisions = $d->revisions;
-            	$r_count = count($revisions);
-            	if($r_count > 1){
-               		$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
-                	$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
-            	}
+			$revisions = $d->revisions;
+			$r_count = count($revisions);
+			if($r_count > 1){
+				$filter_count = ($r_count > 9) ? '' : '_'.$r_count;
+				$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/revisions" title="'.$r_count.' revisions"><i class="material-icons">filter'.$filter_count.'</i></a>';
+			}
+
+		// Check if current user has favorited this document (only for authenticated users)
+		if(Auth::check()){
+			$is_favorited = \App\UserFavorite::isFavorited(Auth::id(), $d->id);
+			$fav_icon = $is_favorited ? 'favorite' : 'favorite_border';
+			$fav_title = $is_favorited ? 'Remove from favourites' : 'Add to favourites';
+			$fav_pressed = $is_favorited ? 'true' : 'false';
+
+			$action_icons .= '<button type="button" class="btn btn-primary btn-link js-fav-toggle-ui" data-doc-id="'.$d->id.'" aria-pressed="'.$fav_pressed.'" title="'.$fav_title.'">';
+			$action_icons .= '<i class="material-icons fav-icon">'.$fav_icon.'</i>';
+			$action_icons .= '</button>';
+			
+			// Share button - check if user can share this document
+			if(Auth::user()->canShareDocument($d->id)){
+				$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/share" title="Share document"><i class="material-icons">share</i></a>';
+			}
+		}		
 		if(in_array($d->type, ['application/pdf'])){
 			$action_icons .= '<a class="btn btn-primary btn-link" title="Read online" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/doc-viewer" target="_blank"><i class="material-icons">open_in_browser</i></a>';
-		}
-		else if(preg_match('/^audio/',$d->type) || preg_match('/^video/',$d->type)){
-			// commented the line below since the video/audio can be played on the details page.
-			//$action_icons .= '<a class="btn btn-primary btn-link" title="Play" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/media-player" target="_blank"><i class="material-icons">play_arrow</i></a>';
-		}
-		else{
-			if(!empty($d->path) && $d->path != 'N/A'){
-			$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
 			}
-		}
+			else if(preg_match('/^audio/',$d->type) || preg_match('/^video/',$d->type)){
+				// commented the line below since the video/audio can be played on the details page.
+				//$action_icons .= '<a class="btn btn-primary btn-link" title="Play" href="/collection/'.$d->collection_id.'/document/'.$d->id.'/media-player" target="_blank"><i class="material-icons">play_arrow</i></a>';
+			}
+			else{
+				if(!empty($d->path) && $d->path != 'N/A'){
+				$action_icons .= '<a class="btn btn-primary btn-link" title="Download" href="/collection/'.$d->collection_id.'/document/'.$d->id.'" target="_blank"><i class="material-icons">cloud_download</i></a>';
+				}
+			}
 	    }
   	    else if ($content_type == 'Web resources'){		
 		$action_icons .= '<a class="btn btn-primary btn-link" href="'.$d->url.'" target="_blank"><i class="material-icons">link</i></a>';
@@ -826,21 +885,36 @@ trait Search{
             }
         }
 	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.strip_tags(implode(' ... ', $content_matches), '<em>').'</p>';
-        
-        // Check if document has a thumbnail
-        $thumbnailUrl = $d->getThumbnailUrl();
-        $iconDisplay = $thumbnailUrl 
+      
+        // Check if file is an image type and display actual image instead of icon
+        $image_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml'];
+        $type_display = '';
+        if(in_array($d->type, $image_types)){
+            // Display actual image with max dimensions
+            $image_url = '/collection/'.$d->collection_id.'/document/'.$d->id;
+            $type_display = '<img class="listicon" src="'.$image_url.'" />';
+        } 
+          else if($d->type == 'application/pdf'){
+            // Check if document has a thumbnail
+              $thumbnailUrl = $d->getThumbnailUrl();
+              $type_display = $thumbnailUrl 
             ? '<img class="file-icon" src="'.$thumbnailUrl.'" style="width:50px; height:50px; object-fit:cover;" />' 
             : '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
+          }
+          else {
+            // Display file type icon
+            $type_display = '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
+        }
         
         $result = array(
                 'DT_RowId' => 'row_'.$d->id,
                 'type' => array('display'=>$iconDisplay, 'filetype'=>$d->icon()),
                 'title' => $title,
+                'file_extension' => $d->type ?? '',
                 'approval_status' => $approval_status,
                 'size' => array('display'=>$d->human_filesize(), 'bytes'=>$d->size),
                 'updated_at' => array('display'=>date(env('DATE_FORMAT','Y-M-d'), strtotime($d->updated_at)), 'updated_date'=>$d->updated_at),
-                'highlights'=>$record_highlights,
+                'highlights' => $record_highlights,
                 'actions' => $action_icons
 			);
 		if(!empty($collection)){

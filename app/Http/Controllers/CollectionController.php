@@ -75,6 +75,10 @@ class CollectionController extends Controller
          $c->description = $request->input('description');
          $c->type = empty($request->input('collection_type'))?'Public':$request->input('collection_type');
          $c->require_approval = $request->input('require_approval');
+         // Store pdf_viewer in column_config JSON
+         $col_config = json_decode($c->column_config) ?? new \stdClass();
+         $col_config->pdf_viewer = $request->input('pdf_viewer', 'viewerjs');
+         $c->column_config = json_encode($col_config);
          $c->user_id = Auth::user()->id;
          try{
             $c->save();
@@ -352,6 +356,31 @@ $j++;
         return redirect('/collection/'.$request->collection_id);
 	}
     
+    /**
+     * Replace extension filter for a collection
+     */
+    public function replaceExtensionFilter(Request $request){
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$request->collection_id] = $request->extension_filter;
+        Session::put('extension_filter', $extension_filter);
+        return redirect('/collection/'.$request->collection_id);
+    }
+    
+    /**
+     * Get unique extensions for a collection (AJAX endpoint)
+     */
+    public function getCollectionExtensions($collection_id){
+        $extensions = Document::where('collection_id', $collection_id)
+            ->whereNull('deleted_at')
+            ->distinct()
+            ->pluck('type')
+            ->filter()
+            ->sort()
+            ->values()
+            ->toArray();
+        return response()->json(['extensions' => $extensions]);
+    }
+    
     public function metaInformation($collection_id, $meta_field_id=null){
         $collection = \App\Collection::find($collection_id);
         if(empty($meta_field_id)){
@@ -446,6 +475,16 @@ $j++;
         return redirect('/collection/'.$collection_id);
 	}
 
+    /**
+     * Remove extension filter for a collection
+     */
+    public function removeExtensionFilter($collection_id){
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$collection_id] = null;
+        Session::put('extension_filter', $extension_filter);
+        return redirect('/collection/'.$collection_id);
+    }
+
     public function removeAllMetaFilters($collection_id){
         $all_meta_filters = Session::get('meta_filters');
         $all_meta_filters[$collection_id] = null;
@@ -457,6 +496,11 @@ $j++;
 		$title_filter = Session::get('title_filter');
 		$title_filter[$collection_id] = null;
         Session::put('title_filter', $title_filter);
+        
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$collection_id] = null;
+        Session::put('extension_filter', $extension_filter);
+        
         $all_meta_filters = Session::get('meta_filters');
         $all_meta_filters[$collection_id] = null;
         Session::put('meta_filters', $all_meta_filters);

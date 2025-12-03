@@ -14,6 +14,18 @@ $(document).ready(function() {
     "language": 
 	{          
 	"processing": "<img src='/i/processing.gif'>",
+	"lengthMenu": "{{ __('Show') }} _MENU_ {{ __('entries') }}",
+	"zeroRecords": "{{ __('No matching records found') }}",
+	"info": "{{ __('Showing') }} _START_ {{ __('to') }} _END_ {{ __('of') }} _TOTAL_ {{ __('entries') }}",
+	"infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+	"infoFiltered": "({{ __('filtered from') }} _MAX_ {{ __('total entries') }})",
+	"search": "{{ __('Search:') }}",
+	"paginate": {
+		"first": "{{ __('First') }}",
+		"last": "{{ __('Last') }}",
+		"next": "{{ __('Next') }}",
+		"previous": "{{ __('Previous') }}"
+	}
 	},
     "columns":[
        {data:"type",

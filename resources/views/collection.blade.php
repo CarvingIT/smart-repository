@@ -2,6 +2,8 @@
 
 @section('content')
 @push('js')
+<style>
+</style>
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
@@ -77,6 +79,18 @@ $(document).ready(function() {
     "language": 
 	{          
 	"processing": "<img src='/i/processing.gif'>",
+	"lengthMenu": "{{ __('Show _MENU_ entries') }}",
+	"zeroRecords": "{{ __('No matching records found') }}",
+	"info": "{{ __('Showing _START_ to _END_ of _TOTAL_ entries') }}",
+	"infoEmpty": "{{ __('Showing 0 to 0 of 0 entries') }}",
+	"infoFiltered": "{{ __('(filtered from _MAX_ total entries)') }}",
+	"search": "{{ __('Search:') }}",
+	"paginate": {
+		"first": "{{ __('First') }}",
+		"last": "{{ __('Last') }}",
+		"next": "{{ __('Next') }}",
+		"previous": "{{ __('Previous') }}"
+	}
 	},
     "columns":[
        {data:"type",
@@ -137,6 +151,7 @@ function randomString(length) {
 
 <script src="/js/jquery.daterangepicker.min.js"></script>
 <link rel="stylesheet" href="/js/daterangepicker.css"/>
+<script src="{{ asset("js/favorites.js") }}"></script>
 
 @endpush
 	    <div id="deletedialog" style="display:none;">
@@ -248,17 +263,16 @@ function randomString(length) {
             </div>
 		<div class="card search-filters-card">
 		<div class="row">
-            {{--
-			@if(!empty($column_config->title_search) && $column_config->title_search == 1)
-			<div class="float-container col-md-12">
+			{{-- @if(!empty($column_config->title_search) && $column_config->title_search == 1)
+			<div class="float-container col-md-6">
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quicktitlefilter">
 			@csrf
-		   		<label for="title_search" class="search-label">{{ __('Look for a phrase in the title of the documents.') }}</label>
-		   		<input type="text" class="search-field" id="title_search" name="title_filter"/>
+		   		<label for="title_search" class="search-label">{{ __('Title') }}</label>
+		   		<input type="text" class="search-field" id="title_search" name="title_filter" placeholder="{{ __('Search in title...') }}"/>
 			</form>
 			</div>
-			@endif
-            --}}
+		@endif --}}
+            
 			@foreach($meta_fields as $m)
                 @php
                     $extra_attributes = empty($m->extra_attributes) ? null : json_decode($m->extra_attributes);
@@ -370,6 +384,15 @@ function randomString(length) {
                     } 
                 }
             @endphp
+			@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
+			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickextensionfilter">
+			@csrf
+	   			<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
+	   			<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
+					<option value="" selected disabled style="color:#999;"></option>
+				</select>
+			</form>
+			@endif
 			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
 		    <input type="text" class="search-field" id="collection_search" 
             value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
@@ -388,12 +411,12 @@ function randomString(length) {
         @if(env('ENABLE_SEARCH_OPTIONS') == 1 && env('SEARCH_MODE') == 'elastic')
         <div class="row">
            <div class="col-6">
-            Scope of full-text search: 
-            <input type="radio" class="full_text_scope" name="full_text_scope" value="title_n_content" @if(!$full_text_scope || $full_text_scope == 'title_n_content') checked @endif> Title and Content</input>
-            <input type="radio" class="full_text_scope" name="full_text_scope" value="title" @if($full_text_scope == 'title') checked @endif> Title only</input>
+            {{ __('Scope of full-text search:') }} 
+            <input type="radio" class="full_text_scope" name="full_text_scope" value="title_n_content" @if(!$full_text_scope || $full_text_scope == 'title_n_content') checked @endif> {{ __('Title and Content') }}</input>
+            <input type="radio" class="full_text_scope" name="full_text_scope" value="title" @if($full_text_scope == 'title') checked @endif> {{ __('Title only') }}</input>
             </div>
             <div class="col-6">
-            <input type="checkbox" id="fuzzy-search" name="fuzzy" value="1" /> Fuzzy search
+            <input type="checkbox" id="fuzzy-search" name="fuzzy" value="1" /> {{ __('Fuzzy search') }}
             </div>
 	   </div>
         @endif
@@ -406,7 +429,7 @@ function randomString(length) {
 		<!-- show filters -->
 		<div>
         <p>
-	@php
+        @php
             $meta_labels = array();
             foreach($meta_fields as $m){
 				if(!empty($meta_labels[$m->id]))
@@ -416,11 +439,19 @@ function randomString(length) {
             }
             $all_meta_filters = Session::get('meta_filters');
 		$title_filter = Session::get('title_filter');
+		$extension_filter = Session::get('extension_filter');
 		$show_meta_filters = count($meta_fields)>0 && !empty($all_meta_filters[$collection->id]);
         @endphp
 		@if(!empty($title_filter[$collection->id]))
 			<span class="filtertag">{{ __('Title contains')}} <i>{{ $title_filter[$collection->id]}}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removetitlefilter">
+                <a class="removefiltertag" title="{{ __('remove') }}" href="/collection/{{ $collection->id }}/removetitlefilter">
+                <i class="tinyicon material-icons">close</i>
+                </a>
+                </span>
+		@endif
+		@if(!empty($extension_filter[$collection->id]))
+			<span class="filtertag">{{ __('File Type')}} <i>{{ $extension_filter[$collection->id]}}</i>
+                <a class="removefiltertag" title="{{ __('remove') }}" href="/collection/{{ $collection->id }}/removeextensionfilter">
                 <i class="tinyicon material-icons">close</i>
                 </a>
                 </span>
@@ -437,19 +468,19 @@ function randomString(length) {
             <span class="filtertag">
 	@if(empty($meta_labels[$m['field_id']]))
             {{ $m['field_id'] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <a class="removefiltertag" title="{{ __('remove') }}" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
 	@else
             {{ $meta_labels[$m['field_id']] }} {{ $m['operator'] }} <i>{{ $m['value'] }}</i>
-                <a class="removefiltertag" title="remove" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
+                <a class="removefiltertag" title="{{ __('remove') }}" href="/collection/{{ $collection->id }}/removefilter/{{ $m['filter_id'] }}">
                 <i class="tinyicon material-icons">close</i>
                 </a>
 	@endif
                 </span>
         @endforeach
         @endif
-		@if(!empty($title_filter[$collection->id]) || $show_meta_filters)
+		@if(!empty($title_filter[$collection->id]) || !empty($extension_filter[$collection->id]) || $show_meta_filters)
                 <a title="{{ __('Remove all filters') }}" href="/collection/{{ $collection->id }}/removeallfilters">
                 <i class="tinyicon material-icons">delete_forever</i>
                 </a>
@@ -472,7 +503,7 @@ function randomString(length) {
                             <th>{{__('Approval Status')}}</th>
                             <th>{{__('Size')}}</th>
                             <th>{{__('Created')}}</th>
-                <th>@if(env('SHOW_ACTIONS_TH') == 1) Actions @endif</th>
+                <th>@if(env('SHOW_ACTIONS_TH') == 1) {{ __('Actions') }} @endif</th>
                 </tr>
                 </thead>
                </table>
@@ -490,16 +521,16 @@ function randomString(length) {
 </div>
 </div>
 		<script>
-			@if(!empty(env('TRANSLITERATION')) && $collection->content_type == 'Uploaded documents') 
-				// transliteration in the title box is needed only for collection of types "Uploaded documents"
-				let searchbox = document.getElementById("collection_search");
-				enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
-			   @if(!empty($column_config->title_search) && $column_config->title_search == 1)
-				let titlesearchbox = document.getElementById("title_search");
-				enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
-			   @endif
+		@if(!empty(env('TRANSLITERATION')) && $collection->content_type == 'Uploaded documents') 
+			// transliteration in the title box is needed only for collection of types "Uploaded documents"
+			let searchbox = document.getElementById("collection_search");
+			enableTransliteration(searchbox, '{{ env('TRANSLITERATION') }}');
+		   {{-- @if(!empty($column_config->title_search) && $column_config->title_search == 1)
+			let titlesearchbox = document.getElementById("title_search");
+			enableTransliteration(titlesearchbox, '{{ env('TRANSLITERATION') }}');
+		   @endif --}}
 
-				@foreach($collection->meta_fields as $m)
+			@foreach($collection->meta_fields as $m)
 					@if($m->type != 'Text') @continue @endif
 					@if(!empty($column_config->meta_fields_search) && in_array($m->id, $column_config->meta_fields_search))
 					let m_{{$m->id}}_searchbox = document.getElementById("meta_{{$m->id}}_search");
@@ -539,6 +570,65 @@ $(document).ready(function() {
     $('.selectpickertree').each(function(index,element){
         $(this).select2ToTree({dropdownCssClass : 'full-width'});
     });
+
+    // Load file types for the dropdown
+    @if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
+    $.ajax({
+        url: '/collection/{{$collection->id}}/extensions',
+        method: 'GET',
+        success: function(response) {
+            var fileTypeSelect = $('#file_type_search');
+            response.extensions.forEach(function(type) {
+                // Create user-friendly label
+                var label = getFriendlyLabel(type);
+                fileTypeSelect.append('<option value="' + type + '">' + label + '</option>');
+            });
+            
+            // Pre-select if filter is active
+            @php
+                $extension_filter = Session::get('extension_filter');
+                $selected_type = !empty($extension_filter[$collection->id]) ? $extension_filter[$collection->id] : '';
+            @endphp
+            @if(!empty($selected_type))
+                fileTypeSelect.val('{{ $selected_type }}');
+                fileTypeSelect.css('color', '#000'); // Change to black when value selected
+            @endif
+        }
+    });
+    
+    // Change color when user selects an option
+    $('#file_type_search').on('change', function() {
+        if($(this).val()) {
+            $(this).css('color', '#000'); // Black text for selected value
+        } else {
+            $(this).css('color', '#999'); // Gray for placeholder
+        }
+    });
+    
+    // Helper function to create friendly labels
+    function getFriendlyLabel(mimeType) {
+        var friendlyNames = {
+            'application/pdf': 'PDF',
+            'application/msword': 'DOC',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+            'application/vnd.ms-excel': 'XLS',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX',
+            'application/vnd.ms-powerpoint': 'PPT',
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PPTX',
+            'image/jpeg': 'JPEG',
+            'image/png': 'PNG',
+            'image/gif': 'GIF',
+            'text/plain': 'TXT',
+            'text/csv': 'CSV',
+            'application/zip': 'ZIP',
+            'video/mp4': 'MP4',
+            'audio/mpeg': 'MP3'
+        };
+        
+        var shortName = friendlyNames[mimeType] || mimeType.split('/')[1].toUpperCase();
+        return shortName + ' (' + mimeType + ')';
+    }
+    @endif
 
     // why is this call needed?
     //oTable.search($('#collection_search').val()).draw();

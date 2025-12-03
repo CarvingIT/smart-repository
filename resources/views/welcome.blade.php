@@ -1,4 +1,4 @@
-@extends('layouts.app', ['class' => 'off-canvas-sidebar','activePage' => 'home', 'title' => __('DEMO SITE'), 'titlePage' => 'Collections'])
+@extends('layouts.app', ['class' => 'off-canvas-sidebar','activePage' => 'home', 'title' => __('DEMO SITE'), 'titlePage' => __('Collections')])
 
 @section('content')
 @php
@@ -157,7 +157,7 @@ function clearSearchBar(){
 <div class="row justify-content-center">
       <div class="col-md-12">
 		<div class="card">
-			<div class="card-header card-header-primary"><h4 class="card-title">{{ env('APP_NAME') }}</h4></div>
+			<div class="card-header card-header-primary"><h4 class="card-title">{{ __(env('APP_NAME')) }}</h4></div>
 			<div class="card-body">
 				<div class="row justify-content-center">
 				@if(!empty($settings['banner_image_1']))
@@ -168,23 +168,23 @@ function clearSearchBar(){
 				@endif
 			</div>
 			<div class="card-body">
-                <h4 class="text-center" data-aos="fade-up">Global Document Search</h4>
-                <p class="text-center" data-aos="fade-up" data-aos-delay="100">Search across collections for any document!</p>
+                <h4 class="text-center" data-aos="fade-up">{{ __('Global Document Search') }}</h4>
+                <p class="text-center" data-aos="fade-up" data-aos-delay="100">{{ __('Search across collections for any document!') }}</p>
           <form action="/global-search" class="form-search d-flex align-items-stretch mb-4 aos-init aos-animate" data-aos="fade-up" data-aos-delay="200" method="get">
                 <div class="search-container">
                   <div class="upperDiv"></div>      
                     <div class="search-box">
-                        <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="Search all collections" /> 
+                        <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="{{ __('Search all collections') }}" /> 
                         <input type="hidden" name="full_text_scope" value="title_n_content" />
                         <div class="buttonSide">
                             <div class="tooltip">
                                 <i class="fa-solid fa-xmark closeIcon" onclick="clearSearchBar()"></i>
-                                <span class="tooltiptext">Clear</span>
+                                <span class="tooltiptext">{{ __('Clear') }}</span>
                             </div>
                             <div class="line">
                                 <p>line</p>
                             </div>
-                        <button type="submit" value="Search" name="collection_search" class="btn btn-primary search">Search</button>
+                        <button type="submit" value="Search" name="collection_search" class="btn btn-primary search">{{ __('Search') }}</button>
                         </div>
                     </div><!-- search-box -->
                 </div><!-- search-container -->

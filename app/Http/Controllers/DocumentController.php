@@ -67,10 +67,12 @@ class DocumentController extends Controller
 	    return $download_file;
     }
 
-	public function docViewer($collection_id, $document_id, Request $req){
+    public function docViewer($collection_id, $document_id, Request $req){
         $path_count = $req->path_count;
-		return view('doc-viewer',['collection_id'=>$collection_id,'document_id'=>$document_id,'path_count'=>$path_count]);
-	}
+        $doc = \App\Document::find($document_id);
+        // Pass only the document model to the view (avoid passing both doc and document_id)
+        return view('doc-viewer', ['doc' => $doc, 'collection_id' => $collection_id, 'path_count' => $path_count]);
+    }
 
 	public function docEditViewer($collection_id, $document_id, Request $req){
         $path_count = $req->path_count;

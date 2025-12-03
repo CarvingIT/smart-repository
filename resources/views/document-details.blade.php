@@ -130,6 +130,11 @@ $(document).ready(function()
 
                   <div class="row">
                       <div class="col-md-12 text-right">
+                        @if(Auth::check() && Auth::user()->canShareDocument($document->id))
+                        <a href="{{ route('shared-links.create', ['document' => $document->id]) }}" class="btn btn-sm btn-primary" title="Share Document">
+                        <i class="material-icons">share</i>
+                        </a>
+                        @endif
                         <a href="#" onclick="$('#related_document_form').show(); return false;" class="btn btn-sm btn-primary" title="Related Documents">
                         <i class="material-icons">playlist_add</i>
                         </a>

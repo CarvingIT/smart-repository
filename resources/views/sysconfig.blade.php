@@ -6,9 +6,9 @@
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title">System Configuration</div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('System Configuration') }}</div>
                 <div class="col-md-12 text-right">
-                <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
+                <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="{{ __('Back') }}"><i class="material-icons">arrow_back</i></a>
                 </div>
 
                 <div class="card-body">
@@ -27,35 +27,35 @@
                     @csrf()
                    <div class="form-group row">
                     <div class="col-md-12">
-                        <h4>Site Configuration</h4>
+                        <h4>{{ __('Site Configuration') }}</h4>
 		            </div>
                    </div>
 		  
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="logo_url" class="col-md-12 col-form-label text-md-right">Logo URL</label> 
+                   <label for="logo_url" class="col-md-12 col-form-label text-md-right">{{ __('Logo URL') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <!--input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" /-->
-                   <label for='filesize'><font color="red">File size must be less than {{ $size_limit }}B.</font></label>
+                   <label for='filesize'><font color="red">{{ __('File size must be less than') }} {{ $size_limit }}B.</font></label>
                    <input id="logo_url" type="file" class="form-control-file" name="logo_url">
                     </div>
                    </div>
 
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="favicon_url" class="col-md-12 col-form-label text-md-right">Favicon URL</label> 
+                   <label for="favicon_url" class="col-md-12 col-form-label text-md-right">{{ __('Favicon URL') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <!--input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" /-->
-                   <label for='filesize'><font color="red">File size must be less than 50KB.</font></label>
+                   <label for='filesize'><font color="red">{{ __('File size must be less than 50KB.') }}</font></label>
                    <input id="favicon_url" type="file" class="form-control-file" name="favicon_url">
                     </div>
                    </div>
 
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="upload_file_types" class="col-md-12 col-form-label text-md-right">Upload File Types</label> 
+                   <label for="upload_file_types" class="col-md-12 col-form-label text-md-right">{{ __('Upload File Types') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <input type="text" name="upload_file_types" id="upload_file_types" class="form-control" placeholder="pdf,ppt,pptx,doc,docx,jpg,png" value="@if(!empty($sysconfig['upload_file_types'])) {{$sysconfig['upload_file_types'] }} @endif" />
@@ -64,11 +64,11 @@
 
 		   <div class="form-group row">
                     <div class="col-md-3">
-                   <label for="driver" class="col-md-12 col-form-label text-md-right">Media Disk Storage</label>
+                   <label for="driver" class="col-md-12 col-form-label text-md-right">{{ __('Media Disk Storage') }}</label>
                     </div>
                     <div class="col-md-9">
 					<select name="media_storage_drive" class="selectpicker">
-							<option value="">Select</option>
+							<option value="">{{ __('Select') }}</option>
                        		@foreach($storage_disks as $disk => $type)
                        			@if(env('ENABLE_LOCAL_STORAGE') != 1 && $disk == 'local')
                              		@continue
@@ -82,7 +82,7 @@
 
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="home_page" class="col-md-12 col-form-label text-md-right">Home page info</label> 
+                   <label for="home_page" class="col-md-12 col-form-label text-md-right">{{ __('Home page info') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <textarea name="home_page" id="home_page" class="page_content">@if(!empty($sysconfig['home_page'])) {{$sysconfig['home_page'] }} @endif</textarea>
@@ -90,7 +90,7 @@
                    </div>
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="contact_page" class="col-md-12 col-form-label text-md-right">Contact info</label> 
+                   <label for="contact_page" class="col-md-12 col-form-label text-md-right">{{ __('Contact info') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <textarea name="contact_page" id="logo_url" class="page_content">@if(!empty($sysconfig['contact_page'])) {{$sysconfig['contact_page'] }} @endif</textarea>
@@ -98,7 +98,7 @@
                    </div>
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="overridingcss" class="col-md-12 col-form-label text-md-right">Overriding CSS</label> 
+                   <label for="overridingcss" class="col-md-12 col-form-label text-md-right">{{ __('Overriding CSS') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <textarea name="overridingcss" id="overridingcss">@if(!empty($sysconfig['overridingcss'])) {{$sysconfig['overridingcss'] }} @endif</textarea>
@@ -106,7 +106,7 @@
                    </div>
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="footercode" class="col-md-12 col-form-label text-md-right">Footer</label> 
+                   <label for="footercode" class="col-md-12 col-form-label text-md-right">{{ __('Footer') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <textarea name="footer" id="overridingcss">@if(!empty($sysconfig['footer'])) {{$sysconfig['footer'] }} @endif</textarea>
@@ -114,7 +114,7 @@
                    </div>
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="bg_image" class="col-md-12 col-form-label text-md-right">Background Image</label> 
+                   <label for="bg_image" class="col-md-12 col-form-label text-md-right">{{ __('Background Image') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <input type="text" name="bg_image" id="bg_image" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['bg_image'])) {{$sysconfig['bg_image'] }} @endif" />
@@ -122,14 +122,14 @@
                    </div>
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="banner_image_1" class="col-md-12 col-form-label text-md-right">Banner Image 1</label> 
+                   <label for="banner_image_1" class="col-md-12 col-form-label text-md-right">{{ __('Banner Image 1') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <input type="text" name="banner_image_1" id="banner_image_1" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['banner_image_1'])) {{$sysconfig['banner_image_1'] }} @endif" />
                     </div>
                    </div>
                    <div class="form-group row mb-0"><div class="col-md-12 offset-md-4"><button type="submit" class="btn btn-primary">
-                                    Save
+                                    {{ __('Save') }}
                                 </button> 
                      </div></div> 
                    </form> 

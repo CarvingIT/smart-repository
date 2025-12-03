@@ -11,13 +11,13 @@
               <div class="card-icon">
                 <i class="material-icons">person</i>
               </div>
-              <p class="card-category">Profile</p>
+              <p class="card-category">{{ __('Profile') }}</p>
               <h3 class="card-title">{{ auth()->user()->name }}
 		</h3>
             </div>
 			<div class="card-body">
 				<ul>
-					<li><a href="/profile">Edit your profile</a></li>
+					<li><a href="/profile">{{ __('Edit your profile') }}</a></li>
 				</ul>
 			</div>
             <!--<div class="card-footer">
@@ -36,20 +36,20 @@
                 <!--<i class="material-icons">store</i>-->
                 <i class="material-icons">content_copy</i>
               </div>
-              <p class="card-category">Documents</p>
+              <p class="card-category">{{ __('Documents') }}</p>
               <h3 class="card-title">{{ \App\Document::where('created_by',auth()->user()->id)->count() }}</h3>
             </div>
 			<div class="card-body">
 				<ul>
-					<li><a href="/user/{{ auth()->user()->id }}/mydocs">My Uploaded Documents</a></li>
-					<li><a href="/approvals/documents/awaiting">Awaiting approval</a></li>
-					<li><a href="/approvals/documents/approved">Approved</a></li>
-					<li><a href="/approvals/documents/rejected">Rejected</a></li>
+					<li><a href="/user/{{ auth()->user()->id }}/mydocs">{{ __('My Uploaded Documents') }}</a></li>
+					<li><a href="/approvals/documents/awaiting">{{ __('Awaiting approval') }}</a></li>
+					<li><a href="/approvals/documents/approved">{{ __('Approved') }}</a></li>
+					<li><a href="/approvals/documents/rejected">{{ __('Rejected') }}</a></li>
 				</ul>
 			</div>
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">list</i><a href="/collections">Database</a> 
+                <i class="material-icons">list</i><a href="/collections">{{ __('Database') }}</a> 
               </div>
             </div>
           </div>
@@ -60,14 +60,14 @@
               <div class="card-icon">
                 <i class="material-icons">rss_feed</i>
               </div>
-              <p class="card-category">Blogs</p>
+              <p class="card-category">{{ __('Blogs') }}</p>
               <h3 class="card-title">{{ \App\BinshopsPost::where('user_id', auth()->user()->id)->count() }}</h3>
             </div>
 			<div class="card-body">
 				<ul>
-					<li><a href="/approvals/blogs/awaiting">Awaiting approval</a></li>
-					<li><a href="/approvals/blogs/approved">Approved</a></li>
-					<li><a href="/approvals/blogs/rejected">Rejected</a></li>
+					<li><a href="/approvals/blogs/awaiting">{{ __('Awaiting approval') }}</a></li>
+					<li><a href="/approvals/blogs/approved">{{ __('Approved') }}</a></li>
+					<li><a href="/approvals/blogs/rejected">{{ __('Rejected') }}</a></li>
 				</ul>
 			</div>
 			<!--
@@ -86,12 +86,12 @@
           <div class="card card-chart">
             <div class="card-header card-header-warning">
                 <h4 class="card-title">
-				Searches
+				{{ __('Searches') }}
 		</h4>
             </div>
             <div class="card-body">
 				@if (count($user_searches) == 0)
-				<p>Your last 10 searches will appear here.</p>
+				<p>{{ __('Your last 10 searches will appear here.') }}</p>
 				@endif
 				<ul>
 					@foreach ($user_searches as $s)
@@ -112,13 +112,13 @@
           <div class="card card-chart">
             <div class="card-header card-header-success">
               <h4 class="card-title">
-				Downloads
+				{{ __('Downloads') }}
               </h4>
               <!--div class="ct-chart" id="dailySalesChart"></div-->
             </div>
 			<div class="card-body">
 				@if (count($user_downloads) == 0)
-				<p>Your last 10 downloads will appear here.</p>
+				<p>{{ __('Your last 10 downloads will appear here.') }}</p>
 				@endif
 				<ul>
 						@foreach ($user_downloads as $d)
@@ -139,15 +139,15 @@
           <div class="card card-chart">
             <div class="card-header card-header-danger">
               <h4 class="card-title">
-				Help
+				{{ __('Help') }}
 	      </h4>
               <!--div class="ct-chart" id="completedTasksChart"></div-->
             </div>
             <div class="card-body">
 			  @if (count(auth()->user()->roles) == 0)
-				<p>If you would like to contribute to this portal write an email from your registered email address to the administrator of this portal.</a>
+				<p>{{ __('If you would like to contribute to this portal write an email from your registered email address to the administrator of this portal.') }}</a>
 			  @else
-				<p>Contributors' manual</p>
+				<p>{{ __("Contributors' manual") }}</p>
 			  @endif
 			  <!--
               <p class="card-category"><span class="text-success"><i class="fa fa-long-arrow-up"></i></span> increasing!</p>

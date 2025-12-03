@@ -229,4 +229,8 @@ class Document extends Model implements Auditable
         return !is_null($this->getThumbnailUrl());
     }
 
+    public function favorites(){
+        return $this->belongsToMany(User::class, 'user_favourite', 'document_id', 'user_id');
+    }
+
 }
