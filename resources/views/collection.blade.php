@@ -32,6 +32,24 @@ $old_search = Session::get('search_query');
 var deldialog;
 $(document).ready(function() {
     oTable = $('#documents').DataTable({
+    "drawCallback": function(settings) {
+        // Update tiles when DataTable redraws (pagination, search, etc.)
+        if (currentViewMode === 'tile') {
+            var api = this.api();
+            var data = api.rows({page: 'current'}).data().toArray();
+            renderTiles(data, false);
+            
+            // Update tile pagination info
+            var info = api.page.info();
+            var paginationHtml = '<div class="tile-pagination-info">Showing ' + (info.start + 1) + ' to ' + info.end + ' of ' + info.recordsTotal + ' documents</div>';
+            if ($('#tile-pagination').length) {
+                $('#tile-pagination').html(paginationHtml);
+            } else {
+                $('#tile-container').after('<div id="tile-pagination" class="text-center mt-3"></div>');
+                $('#tile-pagination').html(paginationHtml);
+            }
+        }
+    },
     "columnDefs": [
 		{ "targets":[0], "className":'text-center', "sortable":false, @if($hide_type)"visible":false @endif},
 		{ "targets":[1], "className":'text-left',"sortable":false, @if($hide_title) ,"visible":false @endif},
@@ -685,96 +703,32 @@ $(document).ready(function() {
         $('#view-toggle-btn').html('<i class="material-icons">view_list</i>');
         $('#view-toggle-btn').attr('title', 'Switch to List View');
         
-        // Trigger search to populate tiles
-        var searchValue = $('#collection_search').val();
-        loadTiles(searchValue);
-    }
-    
-    // Activate list view
-    function activateListView() {
-        $('.card-body').removeClass('tile-view-active');
-        $('#tile-container').removeClass('active');
-        $('#view-toggle-btn').html('<i class="material-icons">view_module</i>');
-        $('#view-toggle-btn').attr('title', 'Switch to Tile View');
+        // Use current DataTable data to render tiles
+        var data = oTable.rows({page: 'current'}).data().toArray();
+        renderTiles(data, false);
         
-        // Refresh datatable
-        oTable.draw();
-    }
-    
-    // Load tiles with AJAX
-    function loadTiles(searchQuery, append) {
-        if (isLoading) return;
-        isLoading = true;
-        
-        if (!append) {
-            $('#tile-container').html('<div class="tile-loading-spinner"><img src="/i/processing.gif"></div>');
-            currentPage = 0;
-        }
-        
-        var requestData = {
-            draw: 1,
-            start: currentPage * recordsPerPage,
-            length: recordsPerPage,
-            search: { value: searchQuery || '' }
-        };
-        
-        $.ajax({
-            url: '/collection/{{ $collection->id }}/search',
-            method: 'GET',
-            data: requestData,
-            dataType: 'json',
-            success: function(response) {
-                console.log('Tile view: AJAX response received', response);
-                isLoading = false;
-                
-                if (response && response.data) {
-                    totalRecords = response.recordsFiltered || response.recordsTotal || 0;
-                    
-                    if (append) {
-                        tileData = tileData.concat(response.data);
-                    } else {
-                        tileData = response.data;
-                    }
-                    
-                    renderTiles(tileData, append);
-                    updatePaginationInfo();
-                } else {
-                    console.error('Tile view: Invalid response format', response);
-                    $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">warning</i><p>Invalid data format</p></div>');
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Tile view: AJAX error', status, error);
-                isLoading = false;
-                $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">error_outline</i><p>Error loading documents. Please check console for details.</p></div>');
-            }
-        });
-    }
-    
-    // Update pagination info
-    function updatePaginationInfo() {
-        var showing = tileData.length;
-        var paginationHtml = '<div class="tile-pagination-info">Showing ' + showing + ' of ' + totalRecords + ' documents';
-        
-        if (showing < totalRecords) {
-            paginationHtml += ' <button class="btn btn-sm btn-primary" id="load-more-tiles">Load More</button>';
-        }
-        
-        paginationHtml += '</div>';
-        
+        // Update pagination info
+        var info = oTable.page.info();
+        var paginationHtml = '<div class="tile-pagination-info">Showing ' + (info.start + 1) + ' to ' + info.end + ' of ' + info.recordsTotal + ' documents</div>';
         if ($('#tile-pagination').length) {
             $('#tile-pagination').html(paginationHtml);
         } else {
             $('#tile-container').after('<div id="tile-pagination" class="text-center mt-3"></div>');
             $('#tile-pagination').html(paginationHtml);
         }
-        
-        // Load more button click handler
-        $('#load-more-tiles').off('click').on('click', function() {
-            currentPage++;
-            loadTiles($('#collection_search').val(), true);
-        });
     }
+    
+    // Activate list view
+    function activateListView() {
+        $('.card-body').removeClass('tile-view-active');
+        $('#tile-container').removeClass('active');
+        $('#tile-container').html('');
+        $('#tile-pagination').remove();
+        $('#view-toggle-btn').html('<i class="material-icons">view_module</i>');
+        $('#view-toggle-btn').attr('title', 'Switch to Tile View');
+    }
+    
+
     
     // Render tiles from data
     function renderTiles(data, append) {
@@ -793,11 +747,24 @@ $(document).ready(function() {
             var filetype = doc.type && doc.type.filetype ? doc.type.filetype : 'unknown';
             var icon = getFileIcon(filetype);
             var iconClass = getFileIconClass(filetype);
-            var docId = doc.DT_RowId ? doc.DT_RowId.replace('row_', '') : '';
+            
+            // Extract document ID - try multiple sources
+            var docId = '';
+            if (doc.DT_RowId) {
+                // DT_RowId format is usually "row_123"
+                docId = doc.DT_RowId.toString().replace('row_', '');
+            } else if (doc.id) {
+                docId = doc.id;
+            } else if (doc.document_id) {
+                docId = doc.document_id;
+            }
+            
             var docUrl = '/collection/{{ $collection->id }}/document/' + docId;
             
             if (index === 0) {
-                console.log('Tile view: Sample document data', doc);
+                console.log('Tile view: Document data', doc);
+                console.log('Tile view: Document ID extracted', docId);
+                console.log('Tile view: Document URL', docUrl);
             }
             
             // Escape HTML to prevent XSS
@@ -927,16 +894,7 @@ $(document).ready(function() {
         return 'default';
     }
     
-    // Re-trigger tile load on search
-    var originalSearch = $('#collection_search').data('events') ? $('#collection_search').data('events').keyup : null;
-    $('#collection_search').off('keyup').on('keyup', function() {
-        if (currentViewMode === 'tile') {
-            var searchValue = $(this).val();
-            loadTiles(searchValue);
-        } else {
-            oTable.search($(this).val()).draw();
-        }
-    });
+
     
     // Initialize view mode
     initializeViewMode();
