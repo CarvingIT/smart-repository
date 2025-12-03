@@ -221,12 +221,14 @@
     font-size: 20px;
 }
 
-/* Hide datatable when tile view is active */
-.tile-view-active .table-responsive {
+/* Hide datatable rows when tile view is active, keep pagination */
+.tile-view-active .table-responsive table {
     display: none !important;
 }
 
-.tile-view-active .dataTables_wrapper {
+.tile-view-active .dataTables_info,
+.tile-view-active .dataTables_length,
+.tile-view-active .dataTables_filter {
     display: none !important;
 }
 
