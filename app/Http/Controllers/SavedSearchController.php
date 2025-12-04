@@ -117,39 +117,13 @@ class SavedSearchController extends Controller
                 return 0;
             }
 
-            // Start with base query
+            // Start with base query - count documents in collection
             $documentsQuery = Document::where('collection_id', $search->collection_id);
 
-            // Apply search text if present
+            // Apply search text if present (search in title)
             if (!empty($query['search_text'])) {
                 $searchText = $query['search_text'];
-                $documentsQuery->where(function($q) use ($searchText) {
-                    $q->where('title', 'LIKE', '%' . $searchText . '%')
-                      ->orWhere('content', 'LIKE', '%' . $searchText . '%');
-                });
-            }
-
-            // Apply meta filters if present
-            if (!empty($query['meta_filters'])) {
-                foreach ($query['meta_filters'] as $filter) {
-                    $fieldId = $filter['field_id'] ?? null;
-                    $value = $filter['value'] ?? null;
-                    $operator = $filter['operator'] ?? '=';
-                    
-                    if ($fieldId && $value !== null) {
-                        $documentsQuery->whereHas('metaFieldValues', function($q) use ($fieldId, $value, $operator) {
-                            $q->where('meta_field_id', $fieldId);
-                            if ($operator === 'contains') {
-                                $q->where('value', 'LIKE', '%' . $value . '%');
-                            } elseif ($operator === 'between' && strpos($value, ' - ') !== false) {
-                                list($start, $end) = explode(' - ', $value);
-                                $q->whereBetween('value', [trim($start), trim($end)]);
-                            } else {
-                                $q->where('value', $value);
-                            }
-                        });
-                    }
-                }
+                $documentsQuery->where('title', 'LIKE', '%' . $searchText . '%');
             }
 
             // Apply title filter if present
@@ -159,12 +133,38 @@ class SavedSearchController extends Controller
 
             // Apply extension filter if present
             if (!empty($query['extension_filter'])) {
-                $documentsQuery->where('filetype', $query['extension_filter']);
+                $documentsQuery->where('type', $query['extension_filter']);
+            }
+
+            // For meta filters, we need to join with meta_field_values table
+            if (!empty($query['meta_filters'])) {
+                foreach ($query['meta_filters'] as $filter) {
+                    $fieldId = $filter['field_id'] ?? null;
+                    $value = $filter['value'] ?? null;
+                    $operator = $filter['operator'] ?? '=';
+                    
+                    if ($fieldId && $value !== null) {
+                        $documentsQuery->whereHas('meta', function($q) use ($fieldId, $value, $operator) {
+                            $q->where('meta_field_id', $fieldId);
+                            if ($operator === 'contains') {
+                                $q->where('value', 'LIKE', '%' . $value . '%');
+                            } elseif ($operator === 'between' && strpos($value, ' - ') !== false) {
+                                $parts = explode(' - ', $value);
+                                if (count($parts) == 2) {
+                                    $q->whereBetween('value', [trim($parts[0]), trim($parts[1])]);
+                                }
+                            } else {
+                                $q->where('value', $value);
+                            }
+                        });
+                    }
+                }
             }
 
             return $documentsQuery->count();
         } catch (\Exception $e) {
-            return '?';
+            \Log::error('SavedSearch preview count error: ' . $e->getMessage());
+            return '-';
         }
     }
 
