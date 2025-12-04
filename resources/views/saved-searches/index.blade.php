@@ -6,8 +6,8 @@
 <link rel="stylesheet" href="/css/jquery.dataTables.min.css" />
 <script>
 $(document).ready(function() {
-    var isAdmin = {{ $isAdmin ? 'true' : 'false' }};
-    
+    var isAdmin = false;
+
     var columns = [
         { data: 'name', name: 'name', className: 'text-left' },
         { data: 'collection_name', name: 'collection.name', className: 'text-left' },
@@ -17,10 +17,6 @@ $(document).ready(function() {
         { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'td-actions text-right dt-nowrap' }
     ];
     
-    // Add user column for admin view
-    if (isAdmin) {
-        columns.splice(2, 0, { data: 'user_name', name: 'user.name', className: 'text-left' });
-    }
     
     var table = $('#saved-searches-table').DataTable({
         processing: true,
@@ -30,7 +26,7 @@ $(document).ready(function() {
             type: 'GET'
         },
         columns: columns,
-        order: [[isAdmin ? 5 : 4, 'desc']], // Sort by created_at descending
+        order: [[4, 'desc']], // Sort by created_at descending
         language: {
             "search": "{{ __('Search:') }}",
             "lengthMenu": "{{ __('Show') }} _MENU_ {{ __('entries') }}",
@@ -87,9 +83,7 @@ $(document).ready(function() {
                 <div class="card-header card-header-primary">
                     <h4 class="card-title">
                         @if(env('ENABLE_COLLECTION_LIST') == 1)<a href="/collections">{{ __('Collections') }}</a> ::@endif {{ __('Saved Searches') }}
-                        @if($isAdmin)
-                            <span class="badge badge-info">{{ __('Admin View') }}</span>
-                        @endif
+                        
                     </h4>
                 </div>
                 <div class="card-body">
@@ -113,9 +107,7 @@ $(document).ready(function() {
                                         <tr>
                                             <th>{{ __('Name') }}</th>
                                             <th>{{ __('Collection') }}</th>
-                                            @if($isAdmin)
-                                                <th>{{ __('User') }}</th>
-                                            @endif
+                                            
                                             <th>{{ __('Query') }}</th>
                                             <th class="text-center">{{ __('Results') }}</th>
                                             <th>{{ __('Created') }}</th>

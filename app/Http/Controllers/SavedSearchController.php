@@ -17,19 +17,14 @@ class SavedSearchController extends Controller
     }
 
     /**
-     * Display a listing of all saved searches for the user.
-     * Admin users can see all saved searches from all users.
+     * Display a listing of saved searches for the authenticated user.
+     * Saved searches are private to their owner and are not visible to other users.
      */
     public function index()
     {
         $user = Auth::user();
-        
-        // Check if user is admin - they can see all saved searches
-        $isAdmin = $user->is_admin == 1 || $user->hasRole('admin') || $user->hasRole('superadmin');
-        
         return view('saved-searches.index', [
             'user' => $user,
-            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -40,25 +35,17 @@ class SavedSearchController extends Controller
     {
         try {
             $user = Auth::user();
-            $isAdmin = $user->is_admin == 1 || $user->hasRole('admin') || $user->hasRole('superadmin');
-            
-            if ($isAdmin) {
-                $savedSearches = SavedSearch::with(['collection', 'user'])
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-            } else {
-                $savedSearches = SavedSearch::where('user_id', $user->id)
-                    ->with('collection')
-                    ->orderBy('created_at', 'desc')
-                    ->get();
-            }
-
+            // Only return saved searches belonging to the authenticated user
+            $savedSearches = SavedSearch::where('user_id', $user->id)
+                ->with('collection')
+                ->orderBy('created_at', 'desc')
+                ->get();
             $data = [];
             foreach ($savedSearches as $search) {
                 $query = $search->query ?? [];
                 $searchText = $query['search_text'] ?? '';
                 $filterCount = isset($query['meta_filters']) ? count($query['meta_filters']) : 0;
-                
+
                 // Build query summary
                 $querySummary = '';
                 if (!empty($searchText)) {
@@ -74,20 +61,15 @@ class SavedSearchController extends Controller
                 $row = [
                     'id' => $search->id,
                     'name' => '<a href="' . route('saved-searches.apply', $search->id) . '">' . e($search->name) . '</a>',
-                    'collection_name' => $search->collection ? 
-                        '<a href="/collection/' . $search->collection_id . '">' . e($search->collection->name) . '</a>' : 
+                    'collection_name' => $search->collection ?
+                        '<a href="/collection/' . $search->collection_id . '">' . e($search->collection->name) . '</a>' :
                         'N/A',
                     'query_summary' => $querySummary,
                     'preview_count' => $this->getPreviewCount($search),
-                    'created_at' => $search->created_at ? $search->created_at->format('Y-M-d H:i') : 'N/A',
-                    'actions' => $this->getActionButtons($search, $user, $isAdmin),
+                    'created_at' => $search->created_at ? $search->created_at->format('Y-m-d H:i') : 'N/A',
+                    'actions' => $this->getActionButtons($search, $user),
                 ];
-                
-                // Add user column for admin
-                if ($isAdmin) {
-                    $row['user_name'] = $search->user ? e($search->user->name) : 'N/A';
-                }
-                
+
                 $data[] = $row;
             }
 
@@ -171,7 +153,7 @@ class SavedSearchController extends Controller
     /**
      * Generate action buttons for a saved search.
      */
-    private function getActionButtons(SavedSearch $search, $user, $isAdmin)
+    private function getActionButtons(SavedSearch $search, $user)
     {
         $buttons = '';
         
@@ -181,7 +163,7 @@ class SavedSearchController extends Controller
         $buttons .= '</a>';
         
         // Delete button (only for owner or admin)
-        if ($search->user_id === $user->id || $isAdmin) {
+        if ($search->user_id === $user->id) {
             $buttons .= '<button type="button" class="btn btn-danger btn-link delete-search-btn" data-search-id="' . $search->id . '" title="' . __('Delete saved search') . '">';
             $buttons .= '<i class="material-icons">delete</i>';
             $buttons .= '</button>';
@@ -267,9 +249,8 @@ class SavedSearchController extends Controller
         $user = Auth::user();
         $savedSearch = SavedSearch::findOrFail($id);
         
-        // Check if user can access this saved search
-        $isAdmin = $user->is_admin == 1 || $user->hasRole('admin') || $user->hasRole('superadmin');
-        if ($savedSearch->user_id !== $user->id && !$isAdmin) {
+        // Only the owner may apply this saved search
+        if ($savedSearch->user_id !== $user->id) {
             abort(403, __('You do not have permission to access this saved search.'));
         }
 
@@ -341,9 +322,8 @@ class SavedSearchController extends Controller
         $user = Auth::user();
         $savedSearch = SavedSearch::findOrFail($id);
         
-        // Check if user can delete this saved search
-        $isAdmin = $user->is_admin == 1 || $user->hasRole('admin') || $user->hasRole('superadmin');
-        if ($savedSearch->user_id !== $user->id && !$isAdmin) {
+        // Only the owner may delete this saved search
+        if ($savedSearch->user_id !== $user->id) {
             if (request()->ajax()) {
                 return response()->json([
                     'status' => 'error',
