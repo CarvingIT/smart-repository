@@ -384,17 +384,16 @@ function randomString(length) {
 			@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickextensionfilter">
 			@csrf
-	   			<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
-	   			<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
-					<option value="" selected disabled style="color:#999;"></option>
+	   			<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;" title="{{ __('File Type') }}">
+					<option value="" selected disabled style="color:#999;">{{ __('File Type') }}</option>
 				</select>
 			</form>
 			@endif
-			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
-			<div class="search-input-wrapper" style="display: inline-block; position: relative;">
+			<div class="search-input-wrapper" style="display: inline-block; position: relative;width: 100%;">
 				<input type="text" class="search-field" id="collection_search" 
 					value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
-					style="padding-right: 25px;"
+					style="padding-right: 25px;width: 100%;"
+					placeholder="{{ __('Type a few characters to initiate full-text search') }}"
 				/>
 				<button type="button" id="clear-search-btn" class="clear-search-btn" 
 					style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 16px; color: #999; display: none;"
