@@ -78,9 +78,11 @@ padding: 0 5px;
     padding:0.40625rem 1.25rem !important;
 }
 .closeIcon{
-color:black;
+color: #666;
 cursor:pointer;
-font-size: 18px !important;
+font-size: 20px !important;
+display: inline-block;
+vertical-align: middle;
 }
 .closeIcon:hover{
 color:#ff5619;
@@ -95,9 +97,10 @@ opacity:0;
 }
 .tooltip {
   position: relative;
-margin-bottom:7px;
-z-index:0;
-  display: inline-block;
+  margin-bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
   cursor: pointer;
   border-bottom: none;
 }
@@ -133,6 +136,33 @@ z-index:0;
 
 .tooltip:hover .tooltiptext {
   visibility: visible;
+}
+
+/* Clear button inside search input */
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+.search-input-wrapper input {
+    padding-right: 30px !important;
+    width: 100% !important;
+}
+.clear-search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    cursor: pointer;
+    display: none;
+    line-height: 1;
+}
+.clear-search-icon:hover {
+    color: #ff5619;
 }
 </style>
 <script>
@@ -174,9 +204,33 @@ z-index:0;
 
 
 function clearSearchBar(){
-     const searchText = document.getElementById('collection_search');
-     searchText.value = "";
-   }
+    const searchText = document.getElementById('collection_search');
+    searchText.value = "";
+    toggleClearButton();
+    // Redirect to global-search without any query parameters to clear results
+    window.location.href = '/global-search';
+}
+
+function toggleClearButton() {
+    const searchText = document.getElementById('collection_search');
+    const clearBtn = document.getElementById('clear-global-search');
+    if (searchText.value.trim().length > 0) {
+        clearBtn.style.display = 'block';
+    } else {
+        clearBtn.style.display = 'none';
+    }
+}
+
+// Add event listeners for the search input
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('collection_search');
+    if (searchInput) {
+        searchInput.addEventListener('input', toggleClearButton);
+        searchInput.addEventListener('keyup', toggleClearButton);
+        // Initialize on page load (in case there's already a value)
+        toggleClearButton();
+    }
+});
 
 </script>
 
@@ -208,15 +262,11 @@ function clearSearchBar(){
                 <div class="search-container">
                   <div class="upperDiv"></div>      
                     <div class="search-box">
-                        <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="Search all collections" value="{{ @$search_term }}" /> 
+                        <div class="search-input-wrapper">
+                            <input type="text" id="collection_search" class="search-field form-control form-group" name="search[value]" placeholder="Search all collections" value="{{ @$search_term }}" />
+                            <span id="clear-global-search" class="clear-search-icon" onclick="clearSearchBar()" title="Clear">&times;</span>
+                        </div>
                         <div class="buttonSide">
-                            <div class="tooltip">
-                                <i class="fa-solid fa-xmark closeIcon" onclick="clearSearchBar()"></i>
-                                <span class="tooltiptext">Clear</span>
-                            </div>
-                            <div class="line">
-                                <p>line</p>
-                            </div>
                         <button type="submit" value="Search" name="searchbutton" class="btn btn-primary search">Search</button>
                         </div>
                     </div><!-- search-box -->

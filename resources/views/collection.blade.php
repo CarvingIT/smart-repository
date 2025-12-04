@@ -145,6 +145,26 @@ function randomString(length) {
 		<button class="btn btn-danger" type="submit" value="delete">Delete</button>
 		</form>
 	    </div>
+
+		<!-- Save Search Modal -->
+		@if(Auth::check())
+		<div id="save-search-dialog" style="display:none;">
+			<form id="save-search-form">
+				@csrf
+				<input type="hidden" name="collection_id" value="{{ $collection->id }}" />
+				<div class="form-group">
+					<label for="search_name">{{ __('Name for this saved search') }}</label>
+					<input type="text" class="form-control" id="search_name" name="name" required placeholder="{{ __('e.g., Recent PDFs, 2024 Reports') }}" />
+				</div>
+				<div id="save-search-summary" class="mb-3">
+					<!-- Summary will be populated by JavaScript -->
+				</div>
+				<button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+				<button type="button" class="btn btn-secondary" id="cancel-save-search">{{ __('Cancel') }}</button>
+			</form>
+		</div>
+		@endif
+		<!-- End Save Search Modal -->
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -371,9 +391,15 @@ function randomString(length) {
 			</form>
 			@endif
 			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
-		    <input type="text" class="search-field" id="collection_search" 
-            value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
-            />
+			<div class="search-input-wrapper" style="display: inline-block; position: relative;">
+				<input type="text" class="search-field" id="collection_search" 
+					value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
+					style="padding-right: 25px;"
+				/>
+				<button type="button" id="clear-search-btn" class="clear-search-btn" 
+					style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 16px; color: #999; display: none;"
+					title="{{ __('Clear search') }}">&times;</button>
+			</div>
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -461,6 +487,11 @@ function randomString(length) {
                 <a title="{{ __('Remove all filters') }}" href="/collection/{{ $collection->id }}/removeallfilters">
                 <i class="tinyicon material-icons">delete_forever</i>
                 </a>
+				@if(Auth::check())
+				<button type="button" class="btn btn-sm btn-primary" id="save-search-btn" title="{{ __('Save this search') }}">
+					<i class="material-icons">bookmark_add</i> {{ __('Save Search') }}
+				</button>
+				@endif
 		@endif
         </p>
 		</div>
@@ -601,15 +632,41 @@ $(document).ready(function() {
     }
     @endif
 
-    // why is this call needed?
-    //oTable.search($('#collection_search').val()).draw();
+    // Trigger search on page load if search_term is passed via URL (from global search)
+    @if(!empty(app('request')->input('search_term')))
+    var initialSearchTerm = $('#collection_search').val();
+    if (initialSearchTerm && initialSearchTerm.trim().length > 0) {
+        oTable.search(initialSearchTerm.trim()).draw();
+    }
+    @endif
     
     });
 
 
 	$('#collection_search').keyup(function(){
-   		oTable.search($(this).val()).draw() ;
+   		oTable.search($(this).val()).draw();
+		toggleClearButton();
 	});
+
+	// Clear search button functionality
+	function toggleClearButton() {
+		var searchVal = $('#collection_search').val();
+		if (searchVal && searchVal.trim().length > 0) {
+			$('#clear-search-btn').show();
+		} else {
+			$('#clear-search-btn').hide();
+		}
+	}
+
+	$('#clear-search-btn').click(function() {
+		$('#collection_search').val('');
+		oTable.search('').draw();
+		$(this).hide();
+		$('#collection_search').focus();
+	});
+
+	// Initialize clear button visibility on page load
+	toggleClearButton();
 
     $(".full_text_scope").click(function(){
         $.ajax({
@@ -638,6 +695,89 @@ $(document).ready(function() {
             }
         });
     });
+
+	// Save Search functionality
+	@if(Auth::check())
+	var saveSearchDialog;
+	
+	$('#save-search-btn').click(function(){
+		// Build summary of current search/filters
+		var summary = '<strong>{{ __("Current search will be saved:") }}</strong><ul>';
+		
+		var searchText = $('#collection_search').val();
+		if (searchText) {
+			summary += '<li>{{ __("Search text:") }} "' + $('<div>').text(searchText).html() + '"</li>';
+		}
+		
+		// Get applied filters from the page
+		var filters = [];
+		$('.filtertag').each(function(){
+			var filterText = $(this).clone().children().remove().end().text().trim();
+			if (filterText) {
+				filters.push(filterText);
+			}
+		});
+		
+		if (filters.length > 0) {
+			summary += '<li>{{ __("Filters:") }} ' + filters.join(', ') + '</li>';
+		}
+		
+		if (!searchText && filters.length === 0) {
+			summary = '<p class="text-warning">{{ __("No search text or filters are currently applied. The saved search will show all documents in this collection.") }}</p>';
+		} else {
+			summary += '</ul>';
+		}
+		
+		$('#save-search-summary').html(summary);
+		$('#search_name').val('');
+		
+		saveSearchDialog = $('#save-search-dialog').dialog({
+			title: '{{ __("Save Search") }}',
+			width: 450,
+			modal: true
+		});
+	});
+	
+	$('#cancel-save-search').click(function(){
+		if (saveSearchDialog) {
+			saveSearchDialog.dialog('close');
+		}
+	});
+	
+	$('#save-search-form').submit(function(e){
+		e.preventDefault();
+		
+		var searchName = $('#search_name').val().trim();
+		if (!searchName) {
+			alert('{{ __("Please enter a name for this saved search.") }}');
+			return;
+		}
+		
+		$.ajax({
+			url: '{{ route("saved-searches.store") }}',
+			method: 'POST',
+			data: {
+				_token: '{{ csrf_token() }}',
+				name: searchName,
+				collection_id: {{ $collection->id }}
+			},
+			success: function(response) {
+				if (response.status === 'success') {
+					if (saveSearchDialog) {
+						saveSearchDialog.dialog('close');
+					}
+					alert('{{ __("Search saved successfully!") }}');
+				} else {
+					alert('{{ __("Error saving search. Please try again.") }}');
+				}
+			},
+			error: function(xhr) {
+				console.error('Error saving search:', xhr);
+				alert('{{ __("Error saving search. Please try again.") }}');
+			}
+		});
+	});
+	@endif
 
 	</script>
 @endsection

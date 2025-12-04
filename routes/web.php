@@ -308,6 +308,16 @@ Route::group(["middleware" => ["auth"]], function() {
 	Route::post('/favorites/toggle/{document}', 'FavoritesController@toggle')->name('favorites.toggle');
 });
 
+// Saved Searches
+Route::group(["middleware" => ["auth"]], function() {
+	Route::get('/saved-searches', 'SavedSearchController@index')->name('saved-searches.index');
+	Route::get('/saved-searches/data', 'SavedSearchController@data')->name('saved-searches.data');
+	Route::post('/saved-searches', 'SavedSearchController@store')->name('saved-searches.store');
+	Route::get('/saved-searches/{id}/apply', 'SavedSearchController@apply')->name('saved-searches.apply');
+	Route::delete('/saved-searches/{id}', 'SavedSearchController@destroy')->name('saved-searches.destroy');
+	Route::get('/saved-searches/collection/{collection_id}', 'SavedSearchController@forCollection')->name('saved-searches.for-collection');
+});
+
 // Shared Links
 Route::group(['middleware' => 'auth'], function () {
     Route::resource('shared-links', 'SharedLinkController')->except(['show']);
