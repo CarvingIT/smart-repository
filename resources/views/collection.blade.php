@@ -391,9 +391,15 @@ function randomString(length) {
 			</form>
 			@endif
 			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
-		    <input type="text" class="search-field" id="collection_search" 
-            value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
-            />
+			<div class="search-input-wrapper" style="display: inline-block; position: relative;">
+				<input type="text" class="search-field" id="collection_search" 
+					value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
+					style="padding-right: 25px;"
+				/>
+				<button type="button" id="clear-search-btn" class="clear-search-btn" 
+					style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 16px; color: #999; display: none;"
+					title="{{ __('Clear search') }}">&times;</button>
+			</div>
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -626,15 +632,41 @@ $(document).ready(function() {
     }
     @endif
 
-    // why is this call needed?
-    //oTable.search($('#collection_search').val()).draw();
+    // Trigger search on page load if search_term is passed via URL (from global search)
+    @if(!empty(app('request')->input('search_term')))
+    var initialSearchTerm = $('#collection_search').val();
+    if (initialSearchTerm && initialSearchTerm.trim().length > 0) {
+        oTable.search(initialSearchTerm.trim()).draw();
+    }
+    @endif
     
     });
 
 
 	$('#collection_search').keyup(function(){
-   		oTable.search($(this).val()).draw() ;
+   		oTable.search($(this).val()).draw();
+		toggleClearButton();
 	});
+
+	// Clear search button functionality
+	function toggleClearButton() {
+		var searchVal = $('#collection_search').val();
+		if (searchVal && searchVal.trim().length > 0) {
+			$('#clear-search-btn').show();
+		} else {
+			$('#clear-search-btn').hide();
+		}
+	}
+
+	$('#clear-search-btn').click(function() {
+		$('#collection_search').val('');
+		oTable.search('').draw();
+		$(this).hide();
+		$('#collection_search').focus();
+	});
+
+	// Initialize clear button visibility on page load
+	toggleClearButton();
 
     $(".full_text_scope").click(function(){
         $.ajax({
