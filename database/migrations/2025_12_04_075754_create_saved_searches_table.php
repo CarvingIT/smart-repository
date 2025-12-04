@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedInteger('collection_id'); // matches collections.id which uses increments()
             $table->string('name');
-            $table->json('query')->nullable(); // Stores search text, filters, scope, etc.
+            $table->text('query')->nullable(); // Stores search text, filters, scope, etc. as JSON string
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
