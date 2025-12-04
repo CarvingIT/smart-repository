@@ -194,5 +194,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(SharedLink::class);
     }
 
+    public function savedSearches(){
+        return $this->hasMany(SavedSearch::class);
+    }
+
 ///// 
 } // End of the class

@@ -145,6 +145,26 @@ function randomString(length) {
 		<button class="btn btn-danger" type="submit" value="delete">Delete</button>
 		</form>
 	    </div>
+
+		<!-- Save Search Modal -->
+		@if(Auth::check())
+		<div id="save-search-dialog" style="display:none;">
+			<form id="save-search-form">
+				@csrf
+				<input type="hidden" name="collection_id" value="{{ $collection->id }}" />
+				<div class="form-group">
+					<label for="search_name">{{ __('Name for this saved search') }}</label>
+					<input type="text" class="form-control" id="search_name" name="name" required placeholder="{{ __('e.g., Recent PDFs, 2024 Reports') }}" />
+				</div>
+				<div id="save-search-summary" class="mb-3">
+					<!-- Summary will be populated by JavaScript -->
+				</div>
+				<button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+				<button type="button" class="btn btn-secondary" id="cancel-save-search">{{ __('Cancel') }}</button>
+			</form>
+		</div>
+		@endif
+		<!-- End Save Search Modal -->
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -461,6 +481,11 @@ function randomString(length) {
                 <a title="{{ __('Remove all filters') }}" href="/collection/{{ $collection->id }}/removeallfilters">
                 <i class="tinyicon material-icons">delete_forever</i>
                 </a>
+				@if(Auth::check())
+				<button type="button" class="btn btn-sm btn-primary" id="save-search-btn" title="{{ __('Save this search') }}">
+					<i class="material-icons">bookmark_add</i> {{ __('Save Search') }}
+				</button>
+				@endif
 		@endif
         </p>
 		</div>
@@ -638,6 +663,89 @@ $(document).ready(function() {
             }
         });
     });
+
+	// Save Search functionality
+	@if(Auth::check())
+	var saveSearchDialog;
+	
+	$('#save-search-btn').click(function(){
+		// Build summary of current search/filters
+		var summary = '<strong>{{ __("Current search will be saved:") }}</strong><ul>';
+		
+		var searchText = $('#collection_search').val();
+		if (searchText) {
+			summary += '<li>{{ __("Search text:") }} "' + $('<div>').text(searchText).html() + '"</li>';
+		}
+		
+		// Get applied filters from the page
+		var filters = [];
+		$('.filtertag').each(function(){
+			var filterText = $(this).clone().children().remove().end().text().trim();
+			if (filterText) {
+				filters.push(filterText);
+			}
+		});
+		
+		if (filters.length > 0) {
+			summary += '<li>{{ __("Filters:") }} ' + filters.join(', ') + '</li>';
+		}
+		
+		if (!searchText && filters.length === 0) {
+			summary = '<p class="text-warning">{{ __("No search text or filters are currently applied. The saved search will show all documents in this collection.") }}</p>';
+		} else {
+			summary += '</ul>';
+		}
+		
+		$('#save-search-summary').html(summary);
+		$('#search_name').val('');
+		
+		saveSearchDialog = $('#save-search-dialog').dialog({
+			title: '{{ __("Save Search") }}',
+			width: 450,
+			modal: true
+		});
+	});
+	
+	$('#cancel-save-search').click(function(){
+		if (saveSearchDialog) {
+			saveSearchDialog.dialog('close');
+		}
+	});
+	
+	$('#save-search-form').submit(function(e){
+		e.preventDefault();
+		
+		var searchName = $('#search_name').val().trim();
+		if (!searchName) {
+			alert('{{ __("Please enter a name for this saved search.") }}');
+			return;
+		}
+		
+		$.ajax({
+			url: '{{ route("saved-searches.store") }}',
+			method: 'POST',
+			data: {
+				_token: '{{ csrf_token() }}',
+				name: searchName,
+				collection_id: {{ $collection->id }}
+			},
+			success: function(response) {
+				if (response.status === 'success') {
+					if (saveSearchDialog) {
+						saveSearchDialog.dialog('close');
+					}
+					alert('{{ __("Search saved successfully!") }}');
+				} else {
+					alert('{{ __("Error saving search. Please try again.") }}');
+				}
+			},
+			error: function(xhr) {
+				console.error('Error saving search:', xhr);
+				alert('{{ __("Error saving search. Please try again.") }}');
+			}
+		});
+	});
+	@endif
 
 	</script>
 @endsection
