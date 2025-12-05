@@ -8,11 +8,10 @@
 $(document).ready(function() {
     var isAdmin = false;
 
-    var columns = [
+        var columns = [
         { data: 'name', name: 'name', className: 'text-left' },
         { data: 'collection_name', name: 'collection.name', className: 'text-left' },
         { data: 'query_summary', name: 'query_summary', className: 'text-left', orderable: false },
-        { data: 'preview_count', name: 'preview_count', className: 'text-center', orderable: false },
         { data: 'created_at', name: 'created_at', className: 'text-left' },
         { data: 'actions', name: 'actions', orderable: false, searchable: false, className: 'td-actions text-right dt-nowrap' }
     ];
@@ -26,7 +25,7 @@ $(document).ready(function() {
             type: 'GET'
         },
         columns: columns,
-        order: [[4, 'desc']], // Sort by created_at descending
+        order: [[3, 'desc']], // Sort by created_at descending
         language: {
             "search": "{{ __('Search:') }}",
             "lengthMenu": "{{ __('Show') }} _MENU_ {{ __('entries') }}",
@@ -109,7 +108,6 @@ $(document).ready(function() {
                                             <th>{{ __('Collection') }}</th>
                                             
                                             <th>{{ __('Query') }}</th>
-                                            <th class="text-center">{{ __('Results') }}</th>
                                             <th>{{ __('Created') }}</th>
                                             <th class="text-right">{{ __('Actions') }}</th>
                                         </tr>
