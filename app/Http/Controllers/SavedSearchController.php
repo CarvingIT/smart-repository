@@ -65,7 +65,6 @@ class SavedSearchController extends Controller
                         '<a href="/collection/' . $search->collection_id . '">' . e($search->collection->name) . '</a>' :
                         'N/A',
                     'query_summary' => $querySummary,
-                    'preview_count' => $this->getPreviewCount($search),
                     'created_at' => $search->created_at ? $search->created_at->format('Y-m-d H:i') : 'N/A',
                     'actions' => $this->getActionButtons($search, $user),
                 ];
@@ -86,69 +85,7 @@ class SavedSearchController extends Controller
         }
     }
 
-    /**
-     * Get preview count of documents matching the saved search.
-     */
-    private function getPreviewCount(SavedSearch $search)
-    {
-        try {
-            $query = $search->query ?? [];
-            $collection = $search->collection;
-            
-            if (!$collection) {
-                return 0;
-            }
-
-            // Start with base query - count documents in collection
-            $documentsQuery = Document::where('collection_id', $search->collection_id);
-
-            // Apply search text if present (search in title)
-            if (!empty($query['search_text'])) {
-                $searchText = $query['search_text'];
-                $documentsQuery->where('title', 'LIKE', '%' . $searchText . '%');
-            }
-
-            // Apply title filter if present
-            if (!empty($query['title_filter'])) {
-                $documentsQuery->where('title', 'LIKE', '%' . $query['title_filter'] . '%');
-            }
-
-            // Apply extension filter if present
-            if (!empty($query['extension_filter'])) {
-                $documentsQuery->where('type', $query['extension_filter']);
-            }
-
-            // For meta filters, we need to join with meta_field_values table
-            if (!empty($query['meta_filters'])) {
-                foreach ($query['meta_filters'] as $filter) {
-                    $fieldId = $filter['field_id'] ?? null;
-                    $value = $filter['value'] ?? null;
-                    $operator = $filter['operator'] ?? '=';
-                    
-                    if ($fieldId && $value !== null) {
-                        $documentsQuery->whereHas('meta', function($q) use ($fieldId, $value, $operator) {
-                            $q->where('meta_field_id', $fieldId);
-                            if ($operator === 'contains') {
-                                $q->where('value', 'LIKE', '%' . $value . '%');
-                            } elseif ($operator === 'between' && strpos($value, ' - ') !== false) {
-                                $parts = explode(' - ', $value);
-                                if (count($parts) == 2) {
-                                    $q->whereBetween('value', [trim($parts[0]), trim($parts[1])]);
-                                }
-                            } else {
-                                $q->where('value', $value);
-                            }
-                        });
-                    }
-                }
-            }
-
-            return $documentsQuery->count();
-        } catch (\Exception $e) {
-            \Log::error('SavedSearch preview count error: ' . $e->getMessage());
-            return '-';
-        }
-    }
+    // preview count removed — not required anymore
 
     /**
      * Generate action buttons for a saved search.
@@ -185,16 +122,21 @@ class SavedSearchController extends Controller
         $user = Auth::user();
         $collectionId = $request->collection_id;
 
-        // Build the query object from current session state
+        // Build the query object from current request (preferred) and session state
         $query = [];
 
-        // Get search text from session
-        $searchQuery = Session::get('search_query');
-        if (!empty($searchQuery)) {
-            $query['search_text'] = $searchQuery;
+        // Prefer search_text sent in the request (from JS). Fall back to session.
+        $searchTextReq = $request->input('search_text');
+        if (!empty($searchTextReq)) {
+            $query['search_text'] = $searchTextReq;
+        } else {
+            $searchQuery = Session::get('search_query');
+            if (!empty($searchQuery)) {
+                $query['search_text'] = $searchQuery;
+            }
         }
 
-        // Get meta filters from session
+        // Get meta filters from session (client doesn't send them in the save form)
         $allMetaFilters = Session::get('meta_filters');
         if (!empty($allMetaFilters[$collectionId])) {
             $query['meta_filters'] = $allMetaFilters[$collectionId];
@@ -206,13 +148,18 @@ class SavedSearchController extends Controller
             $query['title_filter'] = $titleFilter[$collectionId];
         }
 
-        // Get extension filter from session
-        $extensionFilter = Session::get('extension_filter');
-        if (!empty($extensionFilter[$collectionId])) {
-            $query['extension_filter'] = $extensionFilter[$collectionId];
+        // Prefer extension_filter in request, fall back to session
+        $extensionFilterReq = $request->input('extension_filter');
+        if (!empty($extensionFilterReq)) {
+            $query['extension_filter'] = $extensionFilterReq;
+        } else {
+            $extensionFilter = Session::get('extension_filter');
+            if (!empty($extensionFilter[$collectionId])) {
+                $query['extension_filter'] = $extensionFilter[$collectionId];
+            }
         }
 
-        // Get search scope and fuzzy settings
+        // Get search scope and fuzzy settings from session
         $fullTextScope = Session::get('full_text_scope');
         if (!empty($fullTextScope)) {
             $query['full_text_scope'] = $fullTextScope;

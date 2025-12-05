@@ -486,12 +486,12 @@ function randomString(length) {
                 <a title="{{ __('Remove all filters') }}" href="/collection/{{ $collection->id }}/removeallfilters">
                 <i class="tinyicon material-icons">delete_forever</i>
                 </a>
+		@endif
 				@if(Auth::check())
-				<button type="button" class="btn btn-sm btn-primary" id="save-search-btn" title="{{ __('Save this search') }}">
+				<button type="button" class="btn btn-sm btn-primary" id="save-search-btn" title="{{ __('Save this search') }}" style="@if(empty($old_search_query) && empty($title_filter[$collection->id]) && empty($extension_filter[$collection->id]) && !$show_meta_filters) display:none; @endif">
 					<i class="material-icons">bookmark_add</i> {{ __('Save Search') }}
 				</button>
 				@endif
-		@endif
         </p>
 		</div>
 		<!-- display of applied filters ends -->
@@ -645,6 +645,7 @@ $(document).ready(function() {
 	$('#collection_search').keyup(function(){
    		oTable.search($(this).val()).draw();
 		toggleClearButton();
+		toggleSaveSearchButton();
 	});
 
 	// Clear search button functionality
@@ -657,15 +658,29 @@ $(document).ready(function() {
 		}
 	}
 
+	// Toggle Save Search button visibility based on search text or filters
+	function toggleSaveSearchButton() {
+		var searchVal = $('#collection_search').val();
+		var hasFilters = $('.filtertag').length > 0;
+		if ((searchVal && searchVal.trim().length > 0) || hasFilters) {
+			$('#save-search-btn').show();
+		} else {
+			$('#save-search-btn').hide();
+		}
+	}
+
 	$('#clear-search-btn').click(function() {
 		$('#collection_search').val('');
 		oTable.search('').draw();
 		$(this).hide();
 		$('#collection_search').focus();
+		toggleSaveSearchButton();
 	});
 
 	// Initialize clear button visibility on page load
 	toggleClearButton();
+	// Initialize save search button visibility on page load
+	toggleSaveSearchButton();
 
     $(".full_text_scope").click(function(){
         $.ajax({
