@@ -41,26 +41,7 @@ $(document).ready(function() {
             
             // Move DataTable controls to tile view layout
             setTimeout(function() {
-                if ($('#tile-container').length && $('#tile-bottom-controls').length) {
-                    $('#tile-bottom-controls').show();
-                    
-                    // Move "Show entries" dropdown to top (only if not already there)
-                    if ($('.dataTables_length').length && $('.dataTables_length').parent().attr('id') !== 'tile-container') {
-                        var $length = $('.dataTables_length').first();
-                        if (!$length.prev().is('#tile-container') && !$length.next().is('#tile-container')) {
-                            $('#tile-container').before($length.detach());
-                        }
-                    }
-                    
-                    // Move info and pagination to bottom controls wrapper (only if not already there)
-                    var $bottomControls = $('#tile-bottom-controls');
-                    if ($('.dataTables_info').length && $bottomControls.find('.dataTables_info').length === 0) {
-                        $bottomControls.empty().append($('.dataTables_info').first().detach());
-                    }
-                    if ($('.dataTables_paginate').length && $bottomControls.find('.dataTables_paginate').length === 0) {
-                        $bottomControls.append($('.dataTables_paginate').first().detach());
-                    }
-                }
+                moveTileControls();
             }, 10);
         }
     },
@@ -713,86 +694,143 @@ $(document).ready(function() {
         localStorage.setItem('viewMode_{{ $collection->id }}', currentViewMode);
     });
     
+    // Store original positions on first load
+    var originalControlsParent = {
+        length: null,
+        info: null,
+        paginate: null
+    };
+    
+    // Save original positions
+    function saveOriginalPositions() {
+        if (!originalControlsParent.length) {
+            var $length = $('.dataTables_length').first();
+            var $info = $('.dataTables_info').first();
+            var $paginate = $('.dataTables_paginate').first();
+            
+            if ($length.length) originalControlsParent.length = $length.parent();
+            if ($info.length) originalControlsParent.info = $info.parent();
+            if ($paginate.length) originalControlsParent.paginate = $paginate.parent();
+        }
+    }
+    
+    // Restore controls to original positions
+    function restoreOriginalControls() {
+        // Show the original controls (hidden during tile view)
+        var $length = $('.dataTables_length').first();
+        var $info = $('.dataTables_info').first();
+        var $paginate = $('.dataTables_paginate').first();
+        
+        // Remove inline !important styles set during tile view
+        $length.removeAttr('style');
+        $info.removeAttr('style');
+        $paginate.removeAttr('style');
+        
+        if (originalControlsParent.length) {
+            // Only move if they exist and are not already in the correct position
+            if ($length.length && originalControlsParent.length && $length.parent().get(0) !== originalControlsParent.length.get(0)) {
+                originalControlsParent.length.append($length);
+            }
+            if ($info.length && originalControlsParent.info && $info.parent().get(0) !== originalControlsParent.info.get(0)) {
+                originalControlsParent.info.append($info);
+            }
+            if ($paginate.length && originalControlsParent.paginate && $paginate.parent().get(0) !== originalControlsParent.paginate.get(0)) {
+                originalControlsParent.paginate.append($paginate);
+            }
+        }
+    }
+    
+    // Move controls for tile view
+    function moveTileControls() {
+        saveOriginalPositions();
+        
+        if ($('#tile-container').length && $('#tile-bottom-controls').length) {
+            var $length = $('.dataTables_length').first();
+            var $info = $('.dataTables_info').first();
+            var $paginate = $('.dataTables_paginate').first();
+            
+            console.log('moveTileControls - Found controls:', {
+                info: $info.length,
+                paginate: $paginate.length
+            });
+            
+            // Keep "Show entries" dropdown at its original top position
+            // No need to move it, it stays in the DataTable wrapper
+            
+            // Move only info and pagination to bottom controls wrapper
+            var $bottomControls = $('#tile-bottom-controls');
+            if ($bottomControls.length) {
+                $bottomControls.show().empty();
+                
+                if ($info.length) {
+                    $bottomControls.append($info.clone(true));
+                    // Use attr to set inline !important style
+                    $info.attr('style', 'display: none !important');
+                    console.log('Hidden info, display:', $info.css('display'));
+                }
+                if ($paginate.length) {
+                    $bottomControls.append($paginate.clone(true));
+                    // Use attr to set inline !important style
+                    $paginate.attr('style', 'display: none !important');
+                    console.log('Hidden paginate, display:', $paginate.css('display'));
+                }
+            }
+        }
+    }
+    
     // Activate tile view
     function activateTileView() {
+        // Store current scroll position
+        var scrollPos = $(window).scrollTop();
+        
         $('.card-body').addClass('tile-view-active');
         $('#tile-container').addClass('active');
         $('#view-toggle-btn').html('<i class="material-icons">view_list</i>');
         $('#view-toggle-btn').attr('title', 'Switch to List View');
         
+        // Hide the table but keep DataTable structure intact
+        $('.table-responsive table').css('display', 'none');
+        
+        // Move DataTable controls first to prevent layout shift
+        moveTileControls();
+        
         // Use current DataTable data to render tiles
         var data = oTable.rows({page: 'current'}).data().toArray();
         renderTiles(data, false);
         
-        // Move DataTable controls with a slight delay to ensure DOM is ready
-        setTimeout(function() {
-            if ($('#tile-container').length && $('#tile-bottom-controls').length) {
-                $('#tile-bottom-controls').show();
-                
-                // Move "Show entries" dropdown above tiles (only if not already there)
-                if ($('.dataTables_length').length && $('.dataTables_length').parent().attr('id') !== 'tile-container') {
-                    var $length = $('.dataTables_length').first();
-                    if (!$length.prev().is('#tile-container') && !$length.next().is('#tile-container')) {
-                        $('#tile-container').before($length.detach());
-                    }
-                }
-                
-                // Move info and pagination to bottom controls wrapper (only if not already there)
-                var $bottomControls = $('#tile-bottom-controls');
-                if ($('.dataTables_info').length && $bottomControls.find('.dataTables_info').length === 0) {
-                    $bottomControls.empty().append($('.dataTables_info').first().detach());
-                }
-                if ($('.dataTables_paginate').length && $bottomControls.find('.dataTables_paginate').length === 0) {
-                    $bottomControls.append($('.dataTables_paginate').first().detach());
-                }
-            }
-        }, 50);
+        // Restore scroll position to prevent jump
+        $(window).scrollTop(scrollPos);
     }
     
     // Activate list view
     function activateListView() {
+        // Store current scroll position
+        var scrollPos = $(window).scrollTop();
+        
         $('.card-body').removeClass('tile-view-active');
         $('#tile-container').removeClass('active');
         $('#tile-container').html('');
         
-        // Hide bottom controls wrapper and move controls back to DataTable wrapper
+        // Remove cloned controls from tile bottom
         $('#tile-bottom-controls').hide().empty();
         
-        setTimeout(function() {
-            if ($('.dataTables_wrapper').length) {
-                var $wrapper = $('.dataTables_wrapper');
-                var $tableWrapper = $('.dataTables_wrapper > .row:first');
-                var $footerWrapper = $('.dataTables_wrapper > .row:last');
-                
-                // Move length dropdown back to top row
-                if ($('.dataTables_length').length && $tableWrapper.length) {
-                    var $topLeft = $tableWrapper.find('.col-sm-12.col-md-6:first');
-                    if ($topLeft.length) {
-                        $topLeft.empty().append($('.dataTables_length').first().detach());
-                    }
-                }
-                // Move info back to bottom row
-                if ($('.dataTables_info').length && $footerWrapper.length) {
-                    var $bottomLeft = $footerWrapper.find('.col-sm-12.col-md-5:first');
-                    if ($bottomLeft.length) {
-                        $bottomLeft.empty().append($('.dataTables_info').first().detach());
-                    }
-                }
-                // Move pagination back to bottom row
-                if ($('.dataTables_paginate').length && $footerWrapper.length) {
-                    var $bottomRight = $footerWrapper.find('.col-sm-12.col-md-7:last');
-                    if ($bottomRight.length) {
-                        $bottomRight.empty().append($('.dataTables_paginate').first().detach());
-                    }
-                }
-            }
+        // Simply restore controls to their original positions without reinitializing DataTable
+        if (oTable) {
+            // Restore controls to original positions and ensure they're visible
+            restoreOriginalControls();
             
-            // Force table to redraw to restore width
-            oTable.columns.adjust().draw(false);
-        }, 10);
+            // Show the table with proper display
+            $('.table-responsive table').css('display', 'table');
+            
+            // Force DataTable to recalculate column widths WITHOUT redrawing
+            oTable.columns.adjust();
+        }
         
         $('#view-toggle-btn').html('<i class="material-icons">view_module</i>');
         $('#view-toggle-btn').attr('title', 'Switch to Tile View');
+        
+        // Restore scroll position to prevent jump
+        $(window).scrollTop(scrollPos);
     }
     
 
