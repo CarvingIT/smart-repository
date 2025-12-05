@@ -35,14 +35,16 @@ $(document).ready(function() {
     "drawCallback": function(settings) {
         // Update tiles when DataTable redraws (pagination, search, etc.)
         if (currentViewMode === 'tile') {
+            console.log('DataTable drawCallback - Tile view active, page:', settings._iDisplayStart / settings._iDisplayLength + 1);
             var api = this.api();
             var data = api.rows({page: 'current'}).data().toArray();
             renderTiles(data, false);
             
             // Move DataTable controls to tile view layout
+            // Use longer timeout to ensure DataTables has finished rendering controls
             setTimeout(function() {
                 moveTileControls();
-            }, 10);
+            }, 50);
         }
     },
     "columnDefs": [
@@ -774,40 +776,49 @@ $(document).ready(function() {
     
     // Save original positions
     function saveOriginalPositions() {
-        if (!originalControlsParent.length) {
-            var $length = $('.dataTables_length').first();
+        if (!originalControlsParent.info || !originalControlsParent.paginate) {
             var $info = $('.dataTables_info').first();
             var $paginate = $('.dataTables_paginate').first();
             
-            if ($length.length) originalControlsParent.length = $length.parent();
-            if ($info.length) originalControlsParent.info = $info.parent();
-            if ($paginate.length) originalControlsParent.paginate = $paginate.parent();
+            // Only save if not already in tile-bottom-controls
+            if ($info.length && $info.parent().attr('id') !== 'tile-bottom-controls') {
+                originalControlsParent.info = $info.parent();
+                console.log('Saved info parent:', originalControlsParent.info.attr('class'));
+            }
+            if ($paginate.length && $paginate.parent().attr('id') !== 'tile-bottom-controls') {
+                originalControlsParent.paginate = $paginate.parent();
+                console.log('Saved paginate parent:', originalControlsParent.paginate.attr('class'));
+            }
         }
     }
     
     // Restore controls to original positions
     function restoreOriginalControls() {
-        // Show the original controls (hidden during tile view)
-        var $length = $('.dataTables_length').first();
         var $info = $('.dataTables_info').first();
         var $paginate = $('.dataTables_paginate').first();
         
-        // Remove inline !important styles set during tile view
-        $length.removeAttr('style');
-        $info.removeAttr('style');
-        $paginate.removeAttr('style');
+        console.log('Restoring controls - Found:', {
+            info: $info.length,
+            paginate: $paginate.length,
+            infoParent: $info.parent().attr('id'),
+            paginateParent: $paginate.parent().attr('id'),
+            hasOriginalParents: !!(originalControlsParent.info && originalControlsParent.paginate)
+        });
         
-        if (originalControlsParent.length) {
-            // Only move if they exist and are not already in the correct position
-            if ($length.length && originalControlsParent.length && $length.parent().get(0) !== originalControlsParent.length.get(0)) {
-                originalControlsParent.length.append($length);
-            }
-            if ($info.length && originalControlsParent.info && $info.parent().get(0) !== originalControlsParent.info.get(0)) {
-                originalControlsParent.info.append($info);
-            }
-            if ($paginate.length && originalControlsParent.paginate && $paginate.parent().get(0) !== originalControlsParent.paginate.get(0)) {
-                originalControlsParent.paginate.append($paginate);
-            }
+        // Move controls back using detach to preserve event handlers
+        if (originalControlsParent.info && $info.length) {
+            // Move back regardless of current parent to ensure proper positioning
+            originalControlsParent.info.append($info.detach());
+            $info.removeAttr('style'); // Remove inline styles
+            $info.show(); // Ensure visible
+            console.log('Restored info control');
+        }
+        if (originalControlsParent.paginate && $paginate.length) {
+            // Move back regardless of current parent to ensure proper positioning
+            originalControlsParent.paginate.append($paginate.detach());
+            $paginate.removeAttr('style'); // Remove inline styles
+            $paginate.show(); // Ensure visible
+            console.log('Restored paginate control');
         }
     }
     
@@ -816,35 +827,34 @@ $(document).ready(function() {
         saveOriginalPositions();
         
         if ($('#tile-container').length && $('#tile-bottom-controls').length) {
-            var $length = $('.dataTables_length').first();
             var $info = $('.dataTables_info').first();
             var $paginate = $('.dataTables_paginate').first();
             
             console.log('moveTileControls - Found controls:', {
                 info: $info.length,
-                paginate: $paginate.length
+                paginate: $paginate.length,
+                infoParent: $info.parent().attr('id') || $info.parent().attr('class'),
+                paginateParent: $paginate.parent().attr('id') || $paginate.parent().attr('class')
             });
             
-            // Keep "Show entries" dropdown at its original top position
-            // No need to move it, it stays in the DataTable wrapper
-            
-            // Move only info and pagination to bottom controls wrapper
+            // Only move if controls exist and are not already in bottom wrapper
             var $bottomControls = $('#tile-bottom-controls');
             if ($bottomControls.length) {
-                $bottomControls.show().empty();
                 
-                if ($info.length) {
-                    $bottomControls.append($info.clone(true));
-                    // Use attr to set inline !important style
-                    $info.attr('style', 'display: none !important');
-                    console.log('Hidden info, display:', $info.css('display'));
+                // MOVE (not clone) the actual controls to preserve event handlers
+                if ($info.length && $info.parent().attr('id') !== 'tile-bottom-controls') {
+                    $bottomControls.append($info.detach());
+                    $info.attr('style', 'display: block !important'); // Force visible with !important
+                    console.log('Moved info control');
                 }
-                if ($paginate.length) {
-                    $bottomControls.append($paginate.clone(true));
-                    // Use attr to set inline !important style
-                    $paginate.attr('style', 'display: none !important');
-                    console.log('Hidden paginate, display:', $paginate.css('display'));
+                if ($paginate.length && $paginate.parent().attr('id') !== 'tile-bottom-controls') {
+                    $bottomControls.append($paginate.detach());
+                    $paginate.attr('style', 'display: block !important'); // Force visible with !important
+                    console.log('Moved paginate control');
                 }
+                
+                $bottomControls.attr('style', 'display: flex !important');
+                console.log('Bottom controls wrapper shown');
             }
         }
     }
@@ -862,12 +872,14 @@ $(document).ready(function() {
         // Hide the table but keep DataTable structure intact
         $('.table-responsive table').css('display', 'none');
         
-        // Move DataTable controls first to prevent layout shift
-        moveTileControls();
-        
         // Use current DataTable data to render tiles
         var data = oTable.rows({page: 'current'}).data().toArray();
         renderTiles(data, false);
+        
+        // Move DataTable controls after a short delay to ensure DataTable has rendered
+        setTimeout(function() {
+            moveTileControls();
+        }, 100);
         
         // Restore scroll position to prevent jump
         $(window).scrollTop(scrollPos);
@@ -882,12 +894,9 @@ $(document).ready(function() {
         $('#tile-container').removeClass('active');
         $('#tile-container').html('');
         
-        // Remove cloned controls from tile bottom
-        $('#tile-bottom-controls').hide().empty();
-        
-        // Simply restore controls to their original positions without reinitializing DataTable
+        // FIRST restore controls to their original positions BEFORE hiding/emptying the wrapper
         if (oTable) {
-            // Restore controls to original positions and ensure they're visible
+            console.log('Switching to list view - restoring controls');
             restoreOriginalControls();
             
             // Show the table with proper display
@@ -896,6 +905,9 @@ $(document).ready(function() {
             // Force DataTable to recalculate column widths WITHOUT redrawing
             oTable.columns.adjust();
         }
+        
+        // NOW hide the bottom controls wrapper (after moving controls out)
+        $('#tile-bottom-controls').hide();
         
         $('#view-toggle-btn').html('<i class="material-icons">view_module</i>');
         $('#view-toggle-btn').attr('title', 'Switch to Tile View');
