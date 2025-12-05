@@ -337,7 +337,7 @@ body:not(.tile-view-active) .dataTables_paginate {
 
 /* Bottom controls wrapper for tile view */
 #tile-bottom-controls {
-    display: flex;
+    display: flex !important;
     justify-content: space-between;
     align-items: center;
     margin-top: 20px;
@@ -349,12 +349,18 @@ body:not(.tile-view-active) .dataTables_paginate {
 #tile-bottom-controls .dataTables_info {
     margin: 0 !important;
     padding: 0 !important;
+    display: block !important;
 }
 
 #tile-bottom-controls .dataTables_paginate {
     margin: 0 !important;
     padding: 0 !important;
     margin-left: auto !important;
+    display: block !important;
+}
+
+#tile-bottom-controls .dataTables_paginate .pagination {
+    display: flex !important;
 }
 
 /* Pagination buttons maintain their original DataTable styling */
