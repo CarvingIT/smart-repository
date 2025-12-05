@@ -44,21 +44,21 @@ $(document).ready(function() {
                 if ($('#tile-container').length && $('#tile-bottom-controls').length) {
                     $('#tile-bottom-controls').show();
                     
-                    // Move "Show entries" dropdown to top
-                    if ($('.dataTables_length').length) {
-                        var $length = $('.dataTables_length');
-                        if (!$length.next().is('#tile-container')) {
-                            $('#tile-container').before($length);
+                    // Move "Show entries" dropdown to top (only if not already there)
+                    if ($('.dataTables_length').length && $('.dataTables_length').parent().attr('id') !== 'tile-container') {
+                        var $length = $('.dataTables_length').first();
+                        if (!$length.prev().is('#tile-container') && !$length.next().is('#tile-container')) {
+                            $('#tile-container').before($length.detach());
                         }
                     }
                     
-                    // Move info and pagination to bottom controls wrapper
+                    // Move info and pagination to bottom controls wrapper (only if not already there)
                     var $bottomControls = $('#tile-bottom-controls');
-                    if ($('.dataTables_info').length && !$bottomControls.find('.dataTables_info').length) {
-                        $bottomControls.append($('.dataTables_info'));
+                    if ($('.dataTables_info').length && $bottomControls.find('.dataTables_info').length === 0) {
+                        $bottomControls.empty().append($('.dataTables_info').first().detach());
                     }
-                    if ($('.dataTables_paginate').length && !$bottomControls.find('.dataTables_paginate').length) {
-                        $bottomControls.append($('.dataTables_paginate'));
+                    if ($('.dataTables_paginate').length && $bottomControls.find('.dataTables_paginate').length === 0) {
+                        $bottomControls.append($('.dataTables_paginate').first().detach());
                     }
                 }
             }, 10);
@@ -729,18 +729,21 @@ $(document).ready(function() {
             if ($('#tile-container').length && $('#tile-bottom-controls').length) {
                 $('#tile-bottom-controls').show();
                 
-                // Move "Show entries" dropdown above tiles
-                if ($('.dataTables_length').length) {
-                    $('#tile-container').before($('.dataTables_length'));
+                // Move "Show entries" dropdown above tiles (only if not already there)
+                if ($('.dataTables_length').length && $('.dataTables_length').parent().attr('id') !== 'tile-container') {
+                    var $length = $('.dataTables_length').first();
+                    if (!$length.prev().is('#tile-container') && !$length.next().is('#tile-container')) {
+                        $('#tile-container').before($length.detach());
+                    }
                 }
                 
-                // Move info and pagination to bottom controls wrapper
+                // Move info and pagination to bottom controls wrapper (only if not already there)
                 var $bottomControls = $('#tile-bottom-controls');
-                if ($('.dataTables_info').length) {
-                    $bottomControls.append($('.dataTables_info'));
+                if ($('.dataTables_info').length && $bottomControls.find('.dataTables_info').length === 0) {
+                    $bottomControls.empty().append($('.dataTables_info').first().detach());
                 }
-                if ($('.dataTables_paginate').length) {
-                    $bottomControls.append($('.dataTables_paginate'));
+                if ($('.dataTables_paginate').length && $bottomControls.find('.dataTables_paginate').length === 0) {
+                    $bottomControls.append($('.dataTables_paginate').first().detach());
                 }
             }
         }, 50);
@@ -753,24 +756,39 @@ $(document).ready(function() {
         $('#tile-container').html('');
         
         // Hide bottom controls wrapper and move controls back to DataTable wrapper
-        $('#tile-bottom-controls').hide();
+        $('#tile-bottom-controls').hide().empty();
         
         setTimeout(function() {
             if ($('.dataTables_wrapper').length) {
                 var $wrapper = $('.dataTables_wrapper');
-                // Move length dropdown back
-                if ($('.dataTables_length').length) {
-                    $wrapper.prepend($('.dataTables_length'));
+                var $tableWrapper = $('.dataTables_wrapper > .row:first');
+                var $footerWrapper = $('.dataTables_wrapper > .row:last');
+                
+                // Move length dropdown back to top row
+                if ($('.dataTables_length').length && $tableWrapper.length) {
+                    var $topLeft = $tableWrapper.find('.col-sm-12.col-md-6:first');
+                    if ($topLeft.length) {
+                        $topLeft.empty().append($('.dataTables_length').first().detach());
+                    }
                 }
-                // Move info back
-                if ($('.dataTables_info').length) {
-                    $wrapper.append($('.dataTables_info'));
+                // Move info back to bottom row
+                if ($('.dataTables_info').length && $footerWrapper.length) {
+                    var $bottomLeft = $footerWrapper.find('.col-sm-12.col-md-5:first');
+                    if ($bottomLeft.length) {
+                        $bottomLeft.empty().append($('.dataTables_info').first().detach());
+                    }
                 }
-                // Move pagination back
-                if ($('.dataTables_paginate').length) {
-                    $wrapper.append($('.dataTables_paginate'));
+                // Move pagination back to bottom row
+                if ($('.dataTables_paginate').length && $footerWrapper.length) {
+                    var $bottomRight = $footerWrapper.find('.col-sm-12.col-md-7:last');
+                    if ($bottomRight.length) {
+                        $bottomRight.empty().append($('.dataTables_paginate').first().detach());
+                    }
                 }
             }
+            
+            // Force table to redraw to restore width
+            oTable.columns.adjust().draw(false);
         }, 10);
         
         $('#view-toggle-btn').html('<i class="material-icons">view_module</i>');
@@ -808,7 +826,7 @@ $(document).ready(function() {
                 docId = doc.document_id;
             }
             
-            var docUrl = '/collection/{{ $collection->id }}/document/' + docId;
+            var docUrl = '/collection/{{ $collection->id }}/document/' + docId + '/doc-viewer';
             
             if (index === 0) {
                 console.log('Tile view: Document data', doc);
@@ -824,14 +842,22 @@ $(document).ready(function() {
                 return div.innerHTML;
             }
             
+            // Function to strip HTML tags
+            function stripHtml(html) {
+                if (!html) return '';
+                var tmp = document.createElement('div');
+                tmp.innerHTML = html;
+                return tmp.textContent || tmp.innerText || '';
+            }
+            
             // Build metadata HTML
             var metadataHtml = '<div class="tile-metadata"><div class="tile-metadata-content">';
-            metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(doc.title) + '</span></div>';
+            metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.title)) + '</span></div>';
             
             @foreach($collection->meta_fields as $m)
             @if(in_array($m->id,$column_config_meta_fields))
             if (doc.meta_{{ $m->id }}) {
-                metadataHtml += '<div class="metadata-row"><span class="metadata-label">{{ __($m->label) }}:</span><span class="metadata-value">' + doc.meta_{{ $m->id }} + '</span></div>';
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">{{ __($m->label) }}:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.meta_{{ $m->id }})) + '</span></div>';
             }
             @endif
             @endforeach
@@ -925,7 +951,7 @@ $(document).ready(function() {
             if (!$(e.target).closest('.tile-info-icon, .tile-metadata').length) {
                 var url = $(this).attr('data-doc-url');
                 if (url) {
-                    window.location.href = url;
+                    window.open(url, '_blank');
                 }
             }
         });
