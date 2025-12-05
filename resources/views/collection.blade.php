@@ -47,7 +47,7 @@ $(document).ready(function() {
     },
     "columnDefs": [
 		{ "targets":[0], "className":'text-center', "sortable":false, @if($hide_type)"visible":false @endif},
-		{ "targets":[1], "className":'text-left',"sortable":false, @if($hide_title) ,"visible":false @endif},
+		{ "targets":[1], "className":'text-left',"sortable":false, @if($hide_title)"visible":false @endif},
 		@php
 			$i = 2;
 			$column_config_meta_fields = empty($column_config->meta_fields)?[]:$column_config->meta_fields;
@@ -159,6 +159,26 @@ function randomString(length) {
 		<button class="btn btn-danger" type="submit" value="delete">Delete</button>
 		</form>
 	    </div>
+
+		<!-- Save Search Modal -->
+		@if(Auth::check())
+		<div id="save-search-dialog" style="display:none;">
+			<form id="save-search-form">
+				@csrf
+				<input type="hidden" name="collection_id" value="{{ $collection->id }}" />
+				<div class="form-group">
+					<label for="search_name">{{ __('Name for this saved search') }}</label>
+					<input type="text" class="form-control" id="search_name" name="name" required placeholder="{{ __('e.g., Recent PDFs, 2024 Reports') }}" />
+				</div>
+				<div id="save-search-summary" class="mb-3">
+					<!-- Summary will be populated by JavaScript -->
+				</div>
+				<button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+				<button type="button" class="btn btn-secondary" id="cancel-save-search">{{ __('Cancel') }}</button>
+			</form>
+		</div>
+		@endif
+		<!-- End Save Search Modal -->
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -382,16 +402,21 @@ function randomString(length) {
 			@if(!empty($column_config->file_type_search) && $column_config->file_type_search == 1)
 			<form class="inline-form" method="post" action="/collection/{{$collection->id}}/quickextensionfilter">
 			@csrf
-	   			<label for="file_type_search" class="search-label">{{ __('File Type') }}</label>
-	   			<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;">
-					<option value="" selected disabled style="color:#999;"></option>
+	   			<select class="search-field" id="file_type_search" name="extension_filter" onchange="this.form.submit();" style="color:#999;" title="{{ __('File Type') }}">
+					<option value="" selected disabled style="color:#999;">{{ __('File Type') }}</option>
 				</select>
 			</form>
 			@endif
-			<label for="collection_search">{{ __('Type a few characters to initiate full-text search') }}</label>
-		    <input type="text" class="search-field" id="collection_search" 
-            value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
-            />
+			<div class="search-input-wrapper" style="display: inline-block; position: relative;width: 100%;">
+				<input type="text" class="search-field" id="collection_search" 
+					value="@if(!empty($old_search_query)) {{ $old_search_query }} @endif"
+					style="padding-right: 25px;width: 100%;"
+					placeholder="{{ __('Type a few characters to initiate full-text search') }}"
+				/>
+				<button type="button" id="clear-search-btn" class="clear-search-btn" 
+					style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 0; font-size: 16px; color: #999; display: none;"
+					title="{{ __('Clear search') }}">&times;</button>
+			</div>
 			<style>
 			.dataTables_filter {
 			display: none;
@@ -480,6 +505,11 @@ function randomString(length) {
                 <i class="tinyicon material-icons">delete_forever</i>
                 </a>
 		@endif
+				@if(Auth::check())
+				<button type="button" class="btn btn-sm btn-primary" id="save-search-btn" title="{{ __('Save this search') }}" style="@if(empty($old_search_query) && empty($title_filter[$collection->id]) && empty($extension_filter[$collection->id]) && !$show_meta_filters) display:none; @endif">
+					<i class="material-icons">bookmark_add</i> {{ __('Save Search') }}
+				</button>
+				@endif
         </p>
 		</div>
 		<!-- display of applied filters ends -->
@@ -628,15 +658,56 @@ $(document).ready(function() {
     }
     @endif
 
-    // why is this call needed?
-    //oTable.search($('#collection_search').val()).draw();
+    // Trigger search on page load if search_term is passed via URL (from global search)
+    @if(!empty(app('request')->input('search_term')))
+    var initialSearchTerm = $('#collection_search').val();
+    if (initialSearchTerm && initialSearchTerm.trim().length > 0) {
+        oTable.search(initialSearchTerm.trim()).draw();
+    }
+    @endif
     
     });
 
 
 	$('#collection_search').keyup(function(){
-   		oTable.search($(this).val()).draw() ;
+   		oTable.search($(this).val()).draw();
+		toggleClearButton();
+		toggleSaveSearchButton();
 	});
+
+	// Clear search button functionality
+	function toggleClearButton() {
+		var searchVal = $('#collection_search').val();
+		if (searchVal && searchVal.trim().length > 0) {
+			$('#clear-search-btn').show();
+		} else {
+			$('#clear-search-btn').hide();
+		}
+	}
+
+	// Toggle Save Search button visibility based on search text or filters
+	function toggleSaveSearchButton() {
+		var searchVal = $('#collection_search').val();
+		var hasFilters = $('.filtertag').length > 0;
+		if ((searchVal && searchVal.trim().length > 0) || hasFilters) {
+			$('#save-search-btn').show();
+		} else {
+			$('#save-search-btn').hide();
+		}
+	}
+
+	$('#clear-search-btn').click(function() {
+		$('#collection_search').val('');
+		oTable.search('').draw();
+		$(this).hide();
+		$('#collection_search').focus();
+		toggleSaveSearchButton();
+	});
+
+	// Initialize clear button visibility on page load
+	toggleClearButton();
+	// Initialize save search button visibility on page load
+	toggleSaveSearchButton();
 
     $(".full_text_scope").click(function(){
         $.ajax({
@@ -1043,6 +1114,114 @@ $(document).ready(function() {
     
     // Initialize view mode
     initializeViewMode();
+
+	// Save Search functionality
+	@if(Auth::check())
+	var saveSearchDialog;
+	
+	$('#save-search-btn').click(function(){
+		// Build summary of current search/filters
+		var summary = '<strong>{{ __("Current search will be saved:") }}</strong><ul>';
+		
+		var searchText = $('#collection_search').val();
+		if (searchText) {
+			summary += '<li>{{ __("Search text:") }} "' + $('<div>').text(searchText).html() + '"</li>';
+		}
+		
+		// Get applied filters from the page but keep values (don't remove <i> elements)
+		var filters = [];
+		$('.filtertag').each(function(){
+			// clone and remove only the remove-link (anchor) so value in <i> stays
+			var $clone = $(this).clone();
+			$clone.find('a').remove();
+			var filterText = $clone.text().trim();
+			if (filterText) {
+				filters.push(filterText);
+			}
+		});
+
+		// Include file type if present and not already in filters
+		var fileTypeVal = '';
+		var fileTypeText = '';
+		var fileTypeEl = $('#file_type_search');
+		if (fileTypeEl.length) {
+			fileTypeVal = fileTypeEl.val() || '';
+			// get displayed text for selected option
+			fileTypeText = fileTypeEl.find('option:selected').text() || '';
+			if (fileTypeVal && !filters.join(' ').includes(fileTypeVal) && !filters.join(' ').includes(fileTypeText)) {
+				filters.push('{{ __("File Type") }}: ' + $('<div>').text(fileTypeText || fileTypeVal).html());
+			}
+		}
+
+		if (filters.length > 0) {
+			summary += '<li>{{ __("Filters:") }} ' + filters.join(', ') + '</li>';
+		}
+
+		if (!searchText && filters.length === 0) {
+			summary = '<p class="text-warning">{{ __("No search text or filters are currently applied. The saved search will show all documents in this collection.") }}</p>';
+		} else {
+			summary += '</ul>';
+		}
+		
+		$('#save-search-summary').html(summary);
+		$('#search_name').val('');
+		
+		saveSearchDialog = $('#save-search-dialog').dialog({
+			title: '{{ __("Save Search") }}',
+			width: 450,
+			modal: true
+		});
+	});
+	
+	$('#cancel-save-search').click(function(){
+		if (saveSearchDialog) {
+			saveSearchDialog.dialog('close');
+		}
+	});
+	
+	$('#save-search-form').submit(function(e){
+		e.preventDefault();
+		
+		var searchName = $('#search_name').val().trim();
+		if (!searchName) {
+			alert('{{ __("Please enter a name for this saved search.") }}');
+			return;
+		}
+		
+		// collect values to send: search text and filetype (controller will pick up meta filters from session)
+		var postData = {
+			_token: '{{ csrf_token() }}',
+			name: searchName,
+			collection_id: {{ $collection->id }},
+			search_text: $('#collection_search').val() || ''
+		};
+
+		var fileTypeEl = $('#file_type_search');
+		if (fileTypeEl.length) {
+			postData.extension_filter = fileTypeEl.val() || '';
+		}
+
+		$.ajax({
+			url: '{{ route("saved-searches.store") }}',
+			method: 'POST',
+			data: postData,
+			success: function(response) {
+				if (response.status === 'success') {
+					if (saveSearchDialog) {
+						saveSearchDialog.dialog('close');
+					}
+					alert('{{ __("Search saved successfully!") }}');
+				} else {
+					alert('{{ __("Error saving search. Please try again.") }}');
+				}
+			},
+			error: function(xhr) {
+				console.error('Error saving search:', xhr);
+				alert('{{ __("Error saving search. Please try again.") }}');
+			}
+		});
+	});
+	@endif
 
 	</script>
 @endsection

@@ -12,12 +12,12 @@
 @if($pdf_viewer === 'dearflip')
 <!-- Set DearFlip Location before loading the script -->
 <script>
-    var dFlipLocation = "/dearflip/dflip/";
+    var dFlipLocation = "/js/dearflip/dflip/";
 </script>
 <!-- DearFlip Flipbook StyleSheet -->
-<link href="/dearflip/dflip/css/dflip.min.css" rel="stylesheet" type="text/css">
+<link href="/js/dearflip/dflip/css/dflip.min.css" rel="stylesheet" type="text/css">
 <!-- DearFlip Icons Stylesheet -->
-<link href="/dearflip/dflip/css/themify-icons.min.css" rel="stylesheet" type="text/css">
+<link href="/js/dearflip/dflip/css/themify-icons.min.css" rel="stylesheet" type="text/css">
 @endif
 <style>
 html, body {
@@ -77,7 +77,7 @@ h4{
 @if($pdf_viewer === 'dearflip')
     <div id="df_document_viewer" style="width:100%; height:100%;"></div>
     <!-- DearFlip main Js file -->
-    <script src="/dearflip/dflip/js/dflip.min.js" type="text/javascript"></script>
+    <script src="/js/dearflip/dflip/js/dflip.min.js" type="text/javascript"></script>
     <script>
     // Wait for DOM and dflip to be ready
     jQuery(document).ready(function($) {

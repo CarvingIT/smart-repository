@@ -892,7 +892,7 @@ trait Search{
         if(in_array($d->type, $image_types)){
             // Display actual image with max dimensions
             $image_url = '/collection/'.$d->collection_id.'/document/'.$d->id;
-            $type_display = '<img class="listicon" src="'.$image_url.'" />';
+            $type_display = '<img class="file-icon" src="'.$image_url.'" />';
         } 
           else if($d->type == 'application/pdf'){
             // Check if document has a thumbnail
