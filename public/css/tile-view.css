@@ -288,11 +288,51 @@
     display: none !important;
 }
 
+/* Hide the original info and paginate controls in tile view (we show cloned ones at bottom) */
+.tile-view-active .table-responsive + .row .dataTables_info,
+.tile-view-active .table-responsive + .row .dataTables_paginate,
+.tile-view-active
+    .dataTables_wrapper
+    .row:has(.dataTables_info)
+    .dataTables_info,
+.tile-view-active
+    .dataTables_wrapper
+    .row:has(.dataTables_paginate)
+    .dataTables_paginate {
+    display: none !important;
+}
+
+.tile-view-active .card-body > .row .dataTables_info,
+.tile-view-active .card-body > .row .dataTables_paginate {
+    display: none !important;
+}
+
+/* Ensure controls are visible in list view */
+body:not(.tile-view-active) .dataTables_length,
+body:not(.tile-view-active) .dataTables_info,
+body:not(.tile-view-active) .dataTables_paginate {
+    display: block !important;
+}
+
 /* Show entries dropdown in tile view */
 .tile-view-active .dataTables_length {
     text-align: left;
     margin-bottom: 15px;
     padding: 10px 0;
+}
+
+/* Ensure length dropdown is at top in list view */
+.dataTables_length {
+    order: -1;
+}
+
+.dataTables_wrapper .row:first-child {
+    display: flex;
+    align-items: center;
+}
+
+.dataTables_wrapper .row:first-child .dataTables_length {
+    margin-bottom: 1rem;
 }
 
 /* Bottom controls wrapper for tile view */
@@ -454,6 +494,32 @@
     .tile-metadata {
         font-size: 11px;
     }
+}
+
+/* List view title truncation */
+#documents tbody td:nth-child(2) {
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#documents tbody td:nth-child(2):hover {
+    overflow: visible;
+    white-space: normal;
+    word-break: break-word;
+}
+
+/* Size and Date columns - no wrap, single line */
+#documents tbody td {
+    vertical-align: middle;
+}
+
+#documents thead th,
+#documents tbody td:nth-last-child(1),
+#documents tbody td:nth-last-child(2),
+#documents tbody td:nth-last-child(3) {
+    white-space: nowrap;
 }
 
 /* Empty state */
