@@ -46,17 +46,61 @@ class SavedSearchController extends Controller
                 $searchText = $query['search_text'] ?? '';
                 $filterCount = isset($query['meta_filters']) ? count($query['meta_filters']) : 0;
 
-                // Build query summary
-                $querySummary = '';
+                // Build query summary showing search text and explicit filter values
+                $parts = [];
                 if (!empty($searchText)) {
-                    $querySummary .= '"' . e($searchText) . '"';
+                    $parts[] = '"' . e($searchText) . '"';
                 }
-                if ($filterCount > 0) {
-                    $querySummary .= ($querySummary ? ' + ' : '') . $filterCount . ' ' . __('filter(s)');
+
+                // Meta filters: include readable label and value
+                if (!empty($query['meta_filters']) && is_array($query['meta_filters'])) {
+                    foreach ($query['meta_filters'] as $mf) {
+                        $label = $mf['field_id'];
+                        try {
+                            $mfModel = \App\MetaField::find($mf['field_id']);
+                            if ($mfModel && !empty($mfModel->label)) {
+                                $label = $mfModel->label;
+                            }
+                        } catch (\Exception $e) {
+                            // ignore and fall back to id
+                        }
+                        $value = isset($mf['value']) ? $mf['value'] : '';
+                        $operator = isset($mf['operator']) ? $mf['operator'] : '';
+                        $parts[] = e($label) . ' ' . e($operator) . ' "' . e($value) . '"';
+                    }
                 }
-                if (empty($querySummary)) {
-                    $querySummary = __('No filters');
+
+                // Title filter
+                if (!empty($query['title_filter'])) {
+                    $parts[] = __('Title contains') . ' "' . e($query['title_filter']) . '"';
                 }
+
+                // Extension / file type
+                if (!empty($query['extension_filter'])) {
+                    $ext = $query['extension_filter'];
+                    // friendly mapping
+                    $friendlyNames = [
+                        'application/pdf' => 'PDF',
+                        'application/msword' => 'DOC',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'DOCX',
+                        'application/vnd.ms-excel' => 'XLS',
+                        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'XLSX',
+                        'application/vnd.ms-powerpoint' => 'PPT',
+                        'application/vnd.openxmlformats-officedocument.presentationml.presentation' => 'PPTX',
+                        'image/jpeg' => 'JPEG',
+                        'image/png' => 'PNG',
+                        'image/gif' => 'GIF',
+                        'text/plain' => 'TXT',
+                        'text/csv' => 'CSV',
+                        'application/zip' => 'ZIP',
+                        'video/mp4' => 'MP4',
+                        'audio/mpeg' => 'MP3'
+                    ];
+                    $label = isset($friendlyNames[$ext]) ? $friendlyNames[$ext] . ' (' . $ext . ')' : $ext;
+                    $parts[] = __('File Type') . ': ' . e($label);
+                }
+
+                $querySummary = !empty($parts) ? implode(' + ', $parts) : __('No filters');
 
                 $row = [
                     'id' => $search->id,
