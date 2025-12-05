@@ -907,6 +907,7 @@ trait Search{
         }
         
         $result = array(
+                'DT_RowId' => 'row_'.$d->id,
                 'type' => array('display'=>$type_display, 'filetype'=>$d->icon()),
                 'title' => $title,
                 'file_extension' => $d->type ?? '',

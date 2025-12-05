@@ -10,6 +10,7 @@
 <link href="/css/jquery-ui.css" rel="stylesheet">
 <link href="/css/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
+<link href="/css/tile-view.css" rel="stylesheet" />
 <script src="/js/select2.min.js"></script>
 <script src="/js/select2totree.js"></script>
 @php
@@ -31,6 +32,19 @@ $old_search = Session::get('search_query');
 var deldialog;
 $(document).ready(function() {
     oTable = $('#documents').DataTable({
+    "drawCallback": function(settings) {
+        // Update tiles when DataTable redraws (pagination, search, etc.)
+        if (currentViewMode === 'tile') {
+            var api = this.api();
+            var data = api.rows({page: 'current'}).data().toArray();
+            renderTiles(data, false);
+            
+            // Move DataTable controls to tile view layout
+            setTimeout(function() {
+                moveTileControls();
+            }, 10);
+        }
+    },
     "columnDefs": [
 		{ "targets":[0], "className":'text-center', "sortable":false, @if($hide_type)"visible":false @endif},
 		{ "targets":[1], "className":'text-left',"sortable":false, @if($hide_title)"visible":false @endif},
@@ -178,6 +192,10 @@ function randomString(length) {
         <div class="card-body">
 		<div class="row">
                   <div class="col-12 text-right">
+                  <!-- View Toggle Button -->
+                  <button id="view-toggle-btn" class="btn btn-sm btn-primary" title="Switch to Tile View">
+                    <i class="material-icons">view_module</i>
+                  </button>
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
@@ -515,7 +533,16 @@ function randomString(length) {
                 </thead>
                </table>
 		    </div>
-                 </div>
+		    
+		    <!-- Tile View Container -->
+		    <div id="tile-container" class="tile-container">
+		        <!-- Tiles will be dynamically injected here -->
+		    </div>
+		    
+	    <!-- Bottom controls wrapper for tile view -->
+	    <div id="tile-bottom-controls" class="dataTables_wrapper" style="display: none;">
+	        <!-- Info and pagination will be moved here -->
+	    </div>                 </div>
             </div>
         </div>
     </div>
@@ -709,6 +736,384 @@ $(document).ready(function() {
             }
         });
     });
+
+    // ===== TILE VIEW FUNCTIONALITY =====
+    
+    var currentViewMode = localStorage.getItem('viewMode_{{ $collection->id }}') || 'list';
+    var tileData = [];
+    var currentPage = 0;
+    var recordsPerPage = 50;
+    var totalRecords = 0;
+    var isLoading = false;
+    
+    // Initialize view mode on page load
+    function initializeViewMode() {
+        if (currentViewMode === 'tile') {
+            activateTileView();
+        }
+    }
+    
+    // Toggle between list and tile view
+    $('#view-toggle-btn').click(function() {
+        if (currentViewMode === 'list') {
+            currentViewMode = 'tile';
+            activateTileView();
+        } else {
+            currentViewMode = 'list';
+            activateListView();
+        }
+        localStorage.setItem('viewMode_{{ $collection->id }}', currentViewMode);
+    });
+    
+    // Store original positions on first load
+    var originalControlsParent = {
+        length: null,
+        info: null,
+        paginate: null
+    };
+    
+    // Save original positions
+    function saveOriginalPositions() {
+        if (!originalControlsParent.length) {
+            var $length = $('.dataTables_length').first();
+            var $info = $('.dataTables_info').first();
+            var $paginate = $('.dataTables_paginate').first();
+            
+            if ($length.length) originalControlsParent.length = $length.parent();
+            if ($info.length) originalControlsParent.info = $info.parent();
+            if ($paginate.length) originalControlsParent.paginate = $paginate.parent();
+        }
+    }
+    
+    // Restore controls to original positions
+    function restoreOriginalControls() {
+        // Show the original controls (hidden during tile view)
+        var $length = $('.dataTables_length').first();
+        var $info = $('.dataTables_info').first();
+        var $paginate = $('.dataTables_paginate').first();
+        
+        // Remove inline !important styles set during tile view
+        $length.removeAttr('style');
+        $info.removeAttr('style');
+        $paginate.removeAttr('style');
+        
+        if (originalControlsParent.length) {
+            // Only move if they exist and are not already in the correct position
+            if ($length.length && originalControlsParent.length && $length.parent().get(0) !== originalControlsParent.length.get(0)) {
+                originalControlsParent.length.append($length);
+            }
+            if ($info.length && originalControlsParent.info && $info.parent().get(0) !== originalControlsParent.info.get(0)) {
+                originalControlsParent.info.append($info);
+            }
+            if ($paginate.length && originalControlsParent.paginate && $paginate.parent().get(0) !== originalControlsParent.paginate.get(0)) {
+                originalControlsParent.paginate.append($paginate);
+            }
+        }
+    }
+    
+    // Move controls for tile view
+    function moveTileControls() {
+        saveOriginalPositions();
+        
+        if ($('#tile-container').length && $('#tile-bottom-controls').length) {
+            var $length = $('.dataTables_length').first();
+            var $info = $('.dataTables_info').first();
+            var $paginate = $('.dataTables_paginate').first();
+            
+            console.log('moveTileControls - Found controls:', {
+                info: $info.length,
+                paginate: $paginate.length
+            });
+            
+            // Keep "Show entries" dropdown at its original top position
+            // No need to move it, it stays in the DataTable wrapper
+            
+            // Move only info and pagination to bottom controls wrapper
+            var $bottomControls = $('#tile-bottom-controls');
+            if ($bottomControls.length) {
+                $bottomControls.show().empty();
+                
+                if ($info.length) {
+                    $bottomControls.append($info.clone(true));
+                    // Use attr to set inline !important style
+                    $info.attr('style', 'display: none !important');
+                    console.log('Hidden info, display:', $info.css('display'));
+                }
+                if ($paginate.length) {
+                    $bottomControls.append($paginate.clone(true));
+                    // Use attr to set inline !important style
+                    $paginate.attr('style', 'display: none !important');
+                    console.log('Hidden paginate, display:', $paginate.css('display'));
+                }
+            }
+        }
+    }
+    
+    // Activate tile view
+    function activateTileView() {
+        // Store current scroll position
+        var scrollPos = $(window).scrollTop();
+        
+        $('.card-body').addClass('tile-view-active');
+        $('#tile-container').addClass('active');
+        $('#view-toggle-btn').html('<i class="material-icons">view_list</i>');
+        $('#view-toggle-btn').attr('title', 'Switch to List View');
+        
+        // Hide the table but keep DataTable structure intact
+        $('.table-responsive table').css('display', 'none');
+        
+        // Move DataTable controls first to prevent layout shift
+        moveTileControls();
+        
+        // Use current DataTable data to render tiles
+        var data = oTable.rows({page: 'current'}).data().toArray();
+        renderTiles(data, false);
+        
+        // Restore scroll position to prevent jump
+        $(window).scrollTop(scrollPos);
+    }
+    
+    // Activate list view
+    function activateListView() {
+        // Store current scroll position
+        var scrollPos = $(window).scrollTop();
+        
+        $('.card-body').removeClass('tile-view-active');
+        $('#tile-container').removeClass('active');
+        $('#tile-container').html('');
+        
+        // Remove cloned controls from tile bottom
+        $('#tile-bottom-controls').hide().empty();
+        
+        // Simply restore controls to their original positions without reinitializing DataTable
+        if (oTable) {
+            // Restore controls to original positions and ensure they're visible
+            restoreOriginalControls();
+            
+            // Show the table with proper display
+            $('.table-responsive table').css('display', 'table');
+            
+            // Force DataTable to recalculate column widths WITHOUT redrawing
+            oTable.columns.adjust();
+        }
+        
+        $('#view-toggle-btn').html('<i class="material-icons">view_module</i>');
+        $('#view-toggle-btn').attr('title', 'Switch to Tile View');
+        
+        // Restore scroll position to prevent jump
+        $(window).scrollTop(scrollPos);
+    }
+    
+
+    
+    // Render tiles from data
+    function renderTiles(data, append) {
+        console.log('Tile view: Rendering tiles', data.length, 'documents');
+        
+        if (!data || data.length === 0) {
+            $('#tile-container').html('<div class="tile-empty-state"><i class="material-icons">folder_open</i><p>No documents found</p></div>');
+            $('#tile-pagination').remove();
+            return;
+        }
+        
+        var tilesHtml = append ? '' : '';
+        
+        data.forEach(function(doc, index) {
+            // Safe access to nested properties
+            var filetype = doc.type && doc.type.filetype ? doc.type.filetype : 'unknown';
+            var icon = getFileIcon(filetype);
+            var iconClass = getFileIconClass(filetype);
+            
+            // Extract document ID - try multiple sources
+            var docId = '';
+            if (doc.DT_RowId) {
+                // DT_RowId format is usually "row_123"
+                docId = doc.DT_RowId.toString().replace('row_', '');
+            } else if (doc.id) {
+                docId = doc.id;
+            } else if (doc.document_id) {
+                docId = doc.document_id;
+            }
+            
+            var docUrl = '/collection/{{ $collection->id }}/document/' + docId + '/doc-viewer';
+            
+            if (index === 0) {
+                console.log('Tile view: Document data', doc);
+                console.log('Tile view: Document ID extracted', docId);
+                console.log('Tile view: Document URL', docUrl);
+            }
+            
+            // Escape HTML to prevent XSS
+            function escapeHtml(text) {
+                if (!text) return '';
+                var div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            // Function to strip HTML tags
+            function stripHtml(html) {
+                if (!html) return '';
+                var tmp = document.createElement('div');
+                tmp.innerHTML = html;
+                return tmp.textContent || tmp.innerText || '';
+            }
+            
+            // Build metadata HTML
+            var metadataHtml = '<div class="tile-metadata"><div class="tile-metadata-content">';
+            metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.title)) + '</span></div>';
+            
+            @foreach($collection->meta_fields as $m)
+            @if(in_array($m->id,$column_config_meta_fields))
+            if (doc.meta_{{ $m->id }}) {
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">{{ __($m->label) }}:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.meta_{{ $m->id }})) + '</span></div>';
+            }
+            @endif
+            @endforeach
+            
+            @if(!$hide_approval_status)
+            if (doc.approval_status) {
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">Approval:</span><span class="metadata-value">' + doc.approval_status + '</span></div>';
+            }
+            @endif
+            
+            @if(!$hide_size)
+            if (doc.size && doc.size.display) {
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">Size:</span><span class="metadata-value">' + doc.size.display + '</span></div>';
+            }
+            @endif
+            
+            @if(!$hide_creation_time)
+            if (doc.updated_at && doc.updated_at.display) {
+                metadataHtml += '<div class="metadata-row"><span class="metadata-label">Updated:</span><span class="metadata-value">' + doc.updated_at.display + '</span></div>';
+            }
+            @endif
+            
+            metadataHtml += '</div></div>';
+            
+            // Get plain text title
+            var tempTitleDiv = document.createElement('div');
+            tempTitleDiv.innerHTML = doc.title;
+            var plainTitle = tempTitleDiv.textContent || tempTitleDiv.innerText || '';
+            
+            tilesHtml += '<div class="document-tile" data-doc-url="' + docUrl + '">';
+            
+            // Add info icon first (outside thumbnail so it can be sibling of metadata)
+            tilesHtml += '  <div class="tile-info-icon" data-tile-id="tile_' + docId + '">i</div>';
+            
+            // Show thumbnail if available, otherwise show icon
+            if (doc.type && doc.type.display && doc.type.display.includes('<img')) {
+                // Extract thumbnail URL from img tag
+                var tempDiv = document.createElement('div');
+                tempDiv.innerHTML = doc.type.display;
+                var imgElement = tempDiv.querySelector('img');
+                if (imgElement) {
+                    tilesHtml += '  <div class="tile-thumbnail">';
+                    tilesHtml += '    <img src="' + imgElement.src + '" alt="Document preview" />';
+                    tilesHtml += '  </div>';
+                } else {
+                    tilesHtml += '  <div class="tile-thumbnail">';
+                    tilesHtml += '    <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+                    tilesHtml += '  </div>';
+                }
+            } else {
+                tilesHtml += '  <div class="tile-thumbnail">';
+                tilesHtml += '    <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+                tilesHtml += '  </div>';
+            }
+            
+            tilesHtml += '  <div class="tile-title" data-full-title="' + escapeHtml(plainTitle) + '" title="' + escapeHtml(plainTitle) + '">' + escapeHtml(plainTitle) + '</div>';
+            
+            @if(!$hide_size || !$hide_creation_time)
+            tilesHtml += '  <div class="tile-info">';
+            @if(!$hide_size)
+            if (doc.size && doc.size.display) {
+                tilesHtml += '<div>' + doc.size.display + '</div>';
+            }
+            @endif
+            @if(!$hide_creation_time)
+            if (doc.updated_at && doc.updated_at.display) {
+                tilesHtml += '<div>' + doc.updated_at.display + '</div>';
+            }
+            @endif
+            tilesHtml += '  </div>';
+            @endif
+            
+            tilesHtml += metadataHtml;
+            tilesHtml += '</div>';
+        });
+        
+        if (append) {
+            $('#tile-container').append(tilesHtml);
+        } else {
+            $('#tile-container').html(tilesHtml);
+        }
+        
+        // Add event handlers for tiles
+        attachTileEventHandlers();
+    }
+    
+    // Attach event handlers to tiles
+    function attachTileEventHandlers() {
+        // Click on tile (but not on info icon) to navigate
+        $('.document-tile').off('click').on('click', function(e) {
+            if (!$(e.target).closest('.tile-info-icon, .tile-metadata').length) {
+                var url = $(this).attr('data-doc-url');
+                if (url) {
+                    window.open(url, '_blank');
+                }
+            }
+        });
+        
+        // Metadata now shows on hover via CSS - no click handler needed
+    }
+    
+    // Get material icon for file type
+    function getFileIcon(filetype) {
+        var iconMap = {
+            'pdf': 'picture_as_pdf',
+            'doc': 'description',
+            'docx': 'description',
+            'xls': 'table_chart',
+            'xlsx': 'table_chart',
+            'ppt': 'slideshow',
+            'pptx': 'slideshow',
+            'txt': 'text_snippet',
+            'jpg': 'image',
+            'jpeg': 'image',
+            'png': 'image',
+            'gif': 'image',
+            'mp4': 'video_library',
+            'avi': 'video_library',
+            'mp3': 'audio_file',
+            'wav': 'audio_file',
+            'zip': 'folder_zip',
+            'rar': 'folder_zip',
+            'html': 'code',
+            'htm': 'code'
+        };
+        
+        return iconMap[filetype] || 'insert_drive_file';
+    }
+    
+    // Get CSS class for file type
+    function getFileIconClass(filetype) {
+        if (filetype === 'pdf') return 'pdf';
+        if (filetype === 'doc' || filetype === 'docx') return 'doc';
+        if (filetype === 'xls' || filetype === 'xlsx') return 'xls';
+        if (filetype === 'ppt' || filetype === 'pptx') return 'ppt';
+        if (filetype === 'txt') return 'txt';
+        if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'].includes(filetype)) return 'image';
+        if (['mp4', 'avi', 'mov', 'wmv'].includes(filetype)) return 'video';
+        if (['mp3', 'wav', 'ogg'].includes(filetype)) return 'audio';
+        if (['zip', 'rar', '7z', 'tar', 'gz'].includes(filetype)) return 'archive';
+        return 'default';
+    }
+    
+
+    
+    // Initialize view mode
+    initializeViewMode();
 
 	// Save Search functionality
 	@if(Auth::check())
