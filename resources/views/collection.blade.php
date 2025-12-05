@@ -723,19 +723,35 @@ $(document).ready(function() {
 			summary += '<li>{{ __("Search text:") }} "' + $('<div>').text(searchText).html() + '"</li>';
 		}
 		
-		// Get applied filters from the page
+		// Get applied filters from the page but keep values (don't remove <i> elements)
 		var filters = [];
 		$('.filtertag').each(function(){
-			var filterText = $(this).clone().children().remove().end().text().trim();
+			// clone and remove only the remove-link (anchor) so value in <i> stays
+			var $clone = $(this).clone();
+			$clone.find('a').remove();
+			var filterText = $clone.text().trim();
 			if (filterText) {
 				filters.push(filterText);
 			}
 		});
-		
+
+		// Include file type if present and not already in filters
+		var fileTypeVal = '';
+		var fileTypeText = '';
+		var fileTypeEl = $('#file_type_search');
+		if (fileTypeEl.length) {
+			fileTypeVal = fileTypeEl.val() || '';
+			// get displayed text for selected option
+			fileTypeText = fileTypeEl.find('option:selected').text() || '';
+			if (fileTypeVal && !filters.join(' ').includes(fileTypeVal) && !filters.join(' ').includes(fileTypeText)) {
+				filters.push('{{ __("File Type") }}: ' + $('<div>').text(fileTypeText || fileTypeVal).html());
+			}
+		}
+
 		if (filters.length > 0) {
 			summary += '<li>{{ __("Filters:") }} ' + filters.join(', ') + '</li>';
 		}
-		
+
 		if (!searchText && filters.length === 0) {
 			summary = '<p class="text-warning">{{ __("No search text or filters are currently applied. The saved search will show all documents in this collection.") }}</p>';
 		} else {
@@ -767,14 +783,23 @@ $(document).ready(function() {
 			return;
 		}
 		
+		// collect values to send: search text and filetype (controller will pick up meta filters from session)
+		var postData = {
+			_token: '{{ csrf_token() }}',
+			name: searchName,
+			collection_id: {{ $collection->id }},
+			search_text: $('#collection_search').val() || ''
+		};
+
+		var fileTypeEl = $('#file_type_search');
+		if (fileTypeEl.length) {
+			postData.extension_filter = fileTypeEl.val() || '';
+		}
+
 		$.ajax({
 			url: '{{ route("saved-searches.store") }}',
 			method: 'POST',
-			data: {
-				_token: '{{ csrf_token() }}',
-				name: searchName,
-				collection_id: {{ $collection->id }}
-			},
+			data: postData,
 			success: function(response) {
 				if (response.status === 'success') {
 					if (saveSearchDialog) {
