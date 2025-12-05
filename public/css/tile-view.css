@@ -512,7 +512,7 @@ body:not(.tile-view-active) .dataTables_paginate {
 
 /* Size and Date columns - no wrap, single line */
 #documents tbody td {
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 #documents thead th,
