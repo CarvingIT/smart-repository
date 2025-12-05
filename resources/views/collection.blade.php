@@ -39,15 +39,29 @@ $(document).ready(function() {
             var data = api.rows({page: 'current'}).data().toArray();
             renderTiles(data, false);
             
-            // Update tile pagination info
-            var info = api.page.info();
-            var paginationHtml = '<div class="tile-pagination-info">Showing ' + (info.start + 1) + ' to ' + info.end + ' of ' + info.recordsTotal + ' documents</div>';
-            if ($('#tile-pagination').length) {
-                $('#tile-pagination').html(paginationHtml);
-            } else {
-                $('#tile-container').after('<div id="tile-pagination" class="text-center mt-3"></div>');
-                $('#tile-pagination').html(paginationHtml);
-            }
+            // Move DataTable controls to tile view layout
+            setTimeout(function() {
+                if ($('#tile-container').length && $('#tile-bottom-controls').length) {
+                    $('#tile-bottom-controls').show();
+                    
+                    // Move "Show entries" dropdown to top
+                    if ($('.dataTables_length').length) {
+                        var $length = $('.dataTables_length');
+                        if (!$length.next().is('#tile-container')) {
+                            $('#tile-container').before($length);
+                        }
+                    }
+                    
+                    // Move info and pagination to bottom controls wrapper
+                    var $bottomControls = $('#tile-bottom-controls');
+                    if ($('.dataTables_info').length && !$bottomControls.find('.dataTables_info').length) {
+                        $bottomControls.append($('.dataTables_info'));
+                    }
+                    if ($('.dataTables_paginate').length && !$bottomControls.find('.dataTables_paginate').length) {
+                        $bottomControls.append($('.dataTables_paginate'));
+                    }
+                }
+            }, 10);
         }
     },
     "columnDefs": [
@@ -514,7 +528,10 @@ function randomString(length) {
 		        <!-- Tiles will be dynamically injected here -->
 		    </div>
 		    
-                 </div>
+	    <!-- Bottom controls wrapper for tile view -->
+	    <div id="tile-bottom-controls" class="dataTables_wrapper" style="display: none;">
+	        <!-- Info and pagination will be moved here -->
+	    </div>                 </div>
             </div>
         </div>
     </div>
@@ -707,15 +724,26 @@ $(document).ready(function() {
         var data = oTable.rows({page: 'current'}).data().toArray();
         renderTiles(data, false);
         
-        // Update pagination info
-        var info = oTable.page.info();
-        var paginationHtml = '<div class="tile-pagination-info">Showing ' + (info.start + 1) + ' to ' + info.end + ' of ' + info.recordsTotal + ' documents</div>';
-        if ($('#tile-pagination').length) {
-            $('#tile-pagination').html(paginationHtml);
-        } else {
-            $('#tile-container').after('<div id="tile-pagination" class="text-center mt-3"></div>');
-            $('#tile-pagination').html(paginationHtml);
-        }
+        // Move DataTable controls with a slight delay to ensure DOM is ready
+        setTimeout(function() {
+            if ($('#tile-container').length && $('#tile-bottom-controls').length) {
+                $('#tile-bottom-controls').show();
+                
+                // Move "Show entries" dropdown above tiles
+                if ($('.dataTables_length').length) {
+                    $('#tile-container').before($('.dataTables_length'));
+                }
+                
+                // Move info and pagination to bottom controls wrapper
+                var $bottomControls = $('#tile-bottom-controls');
+                if ($('.dataTables_info').length) {
+                    $bottomControls.append($('.dataTables_info'));
+                }
+                if ($('.dataTables_paginate').length) {
+                    $bottomControls.append($('.dataTables_paginate'));
+                }
+            }
+        }, 50);
     }
     
     // Activate list view
@@ -723,7 +751,28 @@ $(document).ready(function() {
         $('.card-body').removeClass('tile-view-active');
         $('#tile-container').removeClass('active');
         $('#tile-container').html('');
-        $('#tile-pagination').remove();
+        
+        // Hide bottom controls wrapper and move controls back to DataTable wrapper
+        $('#tile-bottom-controls').hide();
+        
+        setTimeout(function() {
+            if ($('.dataTables_wrapper').length) {
+                var $wrapper = $('.dataTables_wrapper');
+                // Move length dropdown back
+                if ($('.dataTables_length').length) {
+                    $wrapper.prepend($('.dataTables_length'));
+                }
+                // Move info back
+                if ($('.dataTables_info').length) {
+                    $wrapper.append($('.dataTables_info'));
+                }
+                // Move pagination back
+                if ($('.dataTables_paginate').length) {
+                    $wrapper.append($('.dataTables_paginate'));
+                }
+            }
+        }, 10);
+        
         $('#view-toggle-btn').html('<i class="material-icons">view_module</i>');
         $('#view-toggle-btn').attr('title', 'Switch to Tile View');
     }
@@ -807,7 +856,15 @@ $(document).ready(function() {
             
             metadataHtml += '</div></div>';
             
-            tilesHtml += '<div class="document-tile" onclick="window.location.href=\'' + docUrl + '\'">';
+            // Get plain text title
+            var tempTitleDiv = document.createElement('div');
+            tempTitleDiv.innerHTML = doc.title;
+            var plainTitle = tempTitleDiv.textContent || tempTitleDiv.innerText || '';
+            
+            tilesHtml += '<div class="document-tile" data-doc-url="' + docUrl + '">';
+            
+            // Add info icon first (outside thumbnail so it can be sibling of metadata)
+            tilesHtml += '  <div class="tile-info-icon" data-tile-id="tile_' + docId + '">i</div>';
             
             // Show thumbnail if available, otherwise show icon
             if (doc.type && doc.type.display && doc.type.display.includes('<img')) {
@@ -816,15 +873,21 @@ $(document).ready(function() {
                 tempDiv.innerHTML = doc.type.display;
                 var imgElement = tempDiv.querySelector('img');
                 if (imgElement) {
-                    tilesHtml += '  <div class="tile-thumbnail"><img src="' + imgElement.src + '" alt="Document preview" /></div>';
+                    tilesHtml += '  <div class="tile-thumbnail">';
+                    tilesHtml += '    <img src="' + imgElement.src + '" alt="Document preview" />';
+                    tilesHtml += '  </div>';
                 } else {
-                    tilesHtml += '  <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+                    tilesHtml += '  <div class="tile-thumbnail">';
+                    tilesHtml += '    <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+                    tilesHtml += '  </div>';
                 }
             } else {
-                tilesHtml += '  <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+                tilesHtml += '  <div class="tile-thumbnail">';
+                tilesHtml += '    <div class="tile-icon ' + iconClass + '"><i class="material-icons">' + icon + '</i></div>';
+                tilesHtml += '  </div>';
             }
             
-            tilesHtml += '  <div class="tile-title">' + escapeHtml(doc.title) + '</div>';
+            tilesHtml += '  <div class="tile-title" data-full-title="' + escapeHtml(plainTitle) + '" title="' + escapeHtml(plainTitle) + '">' + escapeHtml(plainTitle) + '</div>';
             
             @if(!$hide_size || !$hide_creation_time)
             tilesHtml += '  <div class="tile-info">';
@@ -850,6 +913,24 @@ $(document).ready(function() {
         } else {
             $('#tile-container').html(tilesHtml);
         }
+        
+        // Add event handlers for tiles
+        attachTileEventHandlers();
+    }
+    
+    // Attach event handlers to tiles
+    function attachTileEventHandlers() {
+        // Click on tile (but not on info icon) to navigate
+        $('.document-tile').off('click').on('click', function(e) {
+            if (!$(e.target).closest('.tile-info-icon, .tile-metadata').length) {
+                var url = $(this).attr('data-doc-url');
+                if (url) {
+                    window.location.href = url;
+                }
+            }
+        });
+        
+        // Metadata now shows on hover via CSS - no click handler needed
     }
     
     // Get material icon for file type
