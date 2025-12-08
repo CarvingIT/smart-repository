@@ -198,7 +198,7 @@ else{
             @foreach($options as $o)
                 @php
                     $o = ltrim(rtrim($o));
-                    $old_vals = old('meta_field_'.$f->id, json_decode($doc->meta_value($f->id)));
+                    $old_vals = old('meta_field_'.$f->id, json_decode($doc->meta_value($f->id, true)));
                     $old_vals = is_array($old_vals) ? $old_vals : [];
                 @endphp
             	<option value="{{$o}}" @if(@in_array($o, $old_vals)) selected="selected" @endif >{{$o}}</option>

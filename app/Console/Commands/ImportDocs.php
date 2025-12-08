@@ -50,7 +50,7 @@ class ImportDocs extends Command
         else{ echo "Not a dry run. Importing documents.\n"; }
 
         $collection_id = $this->argument('collection_id');
-        $dir = $this->argument('dir');
+        $dir = ltrim(rtrim($this->argument('dir')));
         if(empty($dir)){
             echo "Aborting. Argument {dir} must be specified.\n";
         }
@@ -88,6 +88,62 @@ class ImportDocs extends Command
 						$field_models[] = null;
 					}
 				}
+
+            ######## code for validation of csv value starts here
+
+				while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
+                    if(!is_file(storage_path('app').'/import/'.ltrim(rtrim($values[0])))){
+                        echo "WARNING: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
+                    }
+					$row = [];
+					for($i=0; $i<count($fields); $i++){
+						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
+						if($key == 'title'){
+							$titles[$values[0]] = $values[$i];
+							continue;
+						}
+						if($field_models[$i]){
+							if($field_models[$i]->type == 'Date'){
+                                $date = $values[$i];
+                                $date_details = explode("-",$date);
+                                $d_y = $date_details[0];
+                                $d_m = $date_details[1];
+                                $d_d = $date_details[2];
+                                //var_dump(checkdate($d_m, $d_d, $d_y));
+                                
+                                if(preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
+                                    if(!checkdate($d_m, $d_d, $d_y)){
+                                    echo "WARNING: Date is not in valid. YYYY-MM-DD ".$date."\n";
+                                    }
+                                }
+                                else{
+                                    echo "WARNING: Date is not in valid format. YYYY-MM-DD ".$date."\n";
+                                }
+                            }
+							if($field_models[$i]->type == 'Numeric'){
+                                if (!filter_var($values[$i], FILTER_VALIDATE_INT)) {
+                                    echo "WARNING: '".$values[$i]."' this value is not numeric.\n";
+                                }
+							}
+							if($field_models[$i]->type == 'TaxonomyTree'){
+								$t_id = $field_models[$i]->options;
+								$t = Taxonomy::find($t_id);
+								if(!$t) echo "WARNING: This taxonomy is not present in the portal.\n";
+                            }
+							if(preg_match("/Select/",$field_models[$i]->type)){
+								$select_options = $field_models[$i]->options;
+								if(empty($select_options)) echo "WARNING: This ".$field_models[$i]->type." is not present in the portal.\n";
+                                else{
+                                    $select_options = explode(",",$select_options);
+                                    if(!in_array($values[$i],$select_options)){
+                                        echo "WARNING: This value is not present in the options list in the portal.\n";
+                                    }
+                                }
+                            }
+						}
+					}
+                } ## validation whileloop ends
+            ######## validation code ends
 
 				while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
                     if(!is_file(storage_path('app').'/import/'.$values[0])){

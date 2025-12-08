@@ -441,9 +441,12 @@ $j++;
 	if($request->type == 'TaxonomyTree'){
         	$meta_field->options = $request->input('treeoptions');
 	}
-	else{
+	elseif(preg_match('/Select/i',$request->type)){
         	$meta_field->options = $request->input('options');
 	}
+    else{
+        	$meta_field->options = '';
+    }
         $meta_field->display_order = $request->input('display_order');
         $meta_field->results_display_order = $request->input('results_display_order');
         $meta_field->is_required = $request->input('is_required');
