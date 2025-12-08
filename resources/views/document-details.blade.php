@@ -130,8 +130,8 @@ $(document).ready(function()
 
                   <div class="row">
                       <div class="col-md-12 text-right">
-                        @if(Auth::check() && Auth::user()->canShareDocument($document->id))
-                        <a href="{{ route('shared-links.create', ['document' => $document->id]) }}" class="btn btn-sm btn-primary" title="Share Document">
+                        @if(env('ENABLE_SHARING') && Auth::check() && Auth::user()->canShareDocument($document->id))
+                        <a href="{{ route('shared-links.create', ['document' => $document->id]) }}" class="btn btn-sm btn-primary" title="Share this document">
                         <i class="material-icons">share</i>
                         </a>
                         @endif
