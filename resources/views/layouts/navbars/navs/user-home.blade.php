@@ -119,6 +119,7 @@ $collections = \App\Collection::all();
             @if(env('ENABLE_SHARING',0) == 1)
             <a class="dropdown-item" href="{{ route('shared-links.index') }}">{{ __('Shared Links') }}</a>
             @endif
+            <a class="dropdown-item" href="{{ route('saved-searches.index') }}">{{ __('Saved Searches') }}</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>
