@@ -819,12 +819,14 @@ trait Search{
 			$fav_title = $is_favorited ? 'Remove from favourites' : 'Add to favourites';
 			$fav_pressed = $is_favorited ? 'true' : 'false';
 
+            if(env('ENABLE_FAVORITES',0)){
 			$action_icons .= '<button type="button" class="btn btn-primary btn-link js-fav-toggle-ui" data-doc-id="'.$d->id.'" aria-pressed="'.$fav_pressed.'" title="'.$fav_title.'">';
 			$action_icons .= '<i class="material-icons fav-icon">'.$fav_icon.'</i>';
 			$action_icons .= '</button>';
+            }
 			
 			// Share button - check if user can share this document
-			if(Auth::user()->canShareDocument($d->id)){
+			if(env('ENABLE_SHARING',0) && Auth::user()->canShareDocument($d->id)){
 				$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/share" title="Share document"><i class="material-icons">share</i></a>';
 			}
 		}		
