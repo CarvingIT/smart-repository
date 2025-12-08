@@ -49,6 +49,10 @@ class RegenerateThumbnails extends Command
      */
     public function handle()
     {
+        if(!env('ENABLE_PDF_THUMBNAILS')){
+            echo "The feature of PDF thumbnails is not active.\n";
+            exit;
+        }
         $collection_id = $this->argument('collection_id');
         
         if ($collection_id == 'all') {
