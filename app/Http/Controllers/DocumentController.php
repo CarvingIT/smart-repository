@@ -846,10 +846,14 @@ public function approveDocument(Request $request){
 
 public function titleSuggest(Request $request){
 	$term = $request->input('term');
-	$docs = Document::where('title','like','%'.$term.'%')->get();
+	$docs = Document::where('title','like','%'.$term.'%')->orderBy('updated_at','desc')->take(100);
 	$suggestions = [];
-	foreach($docs as $d){
-		$suggestions[] = ['id'=>$d->id,'title'=>$d->title];
+    if($docs->count() > 100){
+		$suggestions[] = ['id'=>null,'title'=>'Too many results; narrow down.'];
+    }
+    $doc_models = $docs->get();
+	foreach($doc_models as $d){
+	    $suggestions[] = ['id'=>$d->id,'title'=>$d->title];
 	}
 	return $suggestions;
 }

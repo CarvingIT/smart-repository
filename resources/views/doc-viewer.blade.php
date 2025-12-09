@@ -136,7 +136,7 @@ h4{
         });
     @endphp 
 	@foreach($meta_info as $m)
-        @if(!$m->meta_field || empty(strip_tags($m->value))) @continue @endif
+        @if(!$m->meta_field || (empty(strip_tags($m->value)) && !@$column_config->document_viewer_empty_fields)) @continue @endif
 
 		@if(@$m->meta_field->type == 'Date')
 		<p><label>{{ @$m->meta_field->label }}</label><br />
