@@ -98,6 +98,9 @@ class ImportDocs extends Command
                     }
 					$row = [];
 					for($i=0; $i<count($fields); $i++){
+
+                        $values[$i] = trim($values[$i]);
+
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
 						if($key == 'title'){
 							$titles[$values[0]] = $values[$i];
@@ -165,11 +168,14 @@ class ImportDocs extends Command
 
             $handle = fopen($meta_info_file, "r");
 				while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
-                    if(!is_file(storage_path('app').'/import/'.$values[0])){
+                    if(!is_file(storage_path('app').'/import/'.trim($values[0]))){
                         echo "WARNING: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
                     }
 					$row = [];
 					for($i=0; $i<count($fields); $i++){
+
+                        $values[$i] = trim($values[$i]);
+
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
 						if($key == 'title'){
 							$titles[$values[0]] = $values[$i];
@@ -181,7 +187,7 @@ class ImportDocs extends Command
 								$t = Taxonomy::find($t_id);
 								if(!$t) continue;
 								$t_family = $t->createFamily(); 
-								$val_ar = explode('|',@$values[$i]);
+								$val_ar = explode('|',@trim($values[$i]));
 								$t_ids = [];
 								foreach($t_family as $tfm){
 									foreach($val_ar as $v){
@@ -196,8 +202,7 @@ class ImportDocs extends Command
 								$meta_values[$values[0]][] = $row;
 							}
 							else{ // text, textarea etc are all default
-								$row = ['field_id' => $key, 'field_value'=>@$values[$i]];	
-print_r($row); echo"\n";
+								$row = ['field_id' => $key, 'field_value'=>@trim($values[$i])];	
 								$meta_values[$values[0]][] = $row;
 							}
 						}
