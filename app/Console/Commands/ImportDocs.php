@@ -110,9 +110,9 @@ class ImportDocs extends Command
 							if($field_models[$i]->type == 'Date'){
                                 $date = $values[$i];
                                 $date_details = explode("-",$date);
-                                $d_y = $date_details[0];
-                                $d_m = $date_details[1];
-                                $d_d = $date_details[2];
+                                $d_y = trim($date_details[0]);
+                                $d_m = trim($date_details[1]);
+                                $d_d = trim($date_details[2]);
                                 //var_dump(checkdate($d_m, $d_d, $d_y));
                                 
                                 if(preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
@@ -148,7 +148,9 @@ class ImportDocs extends Command
                                 }
                                 else{
                                     $select_options = explode(",",$select_options);
-                                    if(!in_array($values[$i],$select_options)){
+                                    $trimmed_select_options = array_map('trim',$select_options);
+
+                                    if(!in_array($values[$i],$trimmed_select_options)){
                                         $validation_error_log[] = "ERROR: This '".$values[$i]."' value is not present in the options list of ".$field_models[$i]->label." in the portal.";
                                         echo "ERROR: This '".$values[$i]."' value is not present in the options list of ".$field_models[$i]->label." in the portal.\n";
                                     }
