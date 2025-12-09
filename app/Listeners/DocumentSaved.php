@@ -97,7 +97,7 @@ class DocumentSaved
 
         // Generate PDF thumbnail only if a PDF file was uploaded
         // Check if document was recently created/updated with a file
-        if ($event->document->type == 'application/pdf' && !empty($event->document->path)) {
+        if (env('ENABLE_PDF_THUMBNAILS') && $event->document->type == 'application/pdf' && !empty($event->document->path)) {
             $thumbnailService = new ThumbnailService();
             
             // Get the PDF file path

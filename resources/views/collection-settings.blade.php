@@ -118,6 +118,10 @@ $(document).ready(function() {
             @if(!empty($column_config->document_viewer_download))
                 checked="checked"
             @endif /> {{ __('Allow download of documents') }}</div>
+            <div class="col-md-12"><input name="document_viewer_empty_fields" type="checkbox" value="1"
+            @if(!empty($column_config->document_viewer_empty_fields))
+                checked="checked"
+            @endif /> {{ __('Display empty meta information fields') }}</div>
             <div class="col-md-12">
                 <strong>{{ __('PDF Viewer:') }}</strong>
                 <input type="radio" name="pdf_viewer" value="viewerjs" id="viewer_viewerjs" 
