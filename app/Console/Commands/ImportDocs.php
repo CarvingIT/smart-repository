@@ -61,11 +61,13 @@ class ImportDocs extends Command
 			//meta info file exists ?
 			$meta_info_file = storage_path('app').'/import/meta.csv';
             $handle = fopen($meta_info_file, "r");
+            $handle1 = fopen($meta_info_file, "r");
 
 			$meta_values = [];
 			$titles = [];
 			if(is_file($meta_info_file)){
                 $fields = fgetcsv($handle, null, "\t");
+                $fields1 = fgetcsv($handle1, null, "\t");
 
 				$field_models = [];
                 $field_num = 0;
@@ -90,69 +92,95 @@ class ImportDocs extends Command
 				}
 
             ######## code for validation of csv value starts here
-
+                $validation_error_log = [];
 				while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
                     if(!is_file(storage_path('app').'/import/'.ltrim(rtrim($values[0])))){
-                        echo "WARNING: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
+                        $validation_error_log[] = "ERROR: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
+                        echo "ERROR: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
                     }
 					$row = [];
 					for($i=0; $i<count($fields); $i++){
+
+                        $values[$i] = trim($values[$i]);
+
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
-						if($key == 'title'){
+						if(preg_match('/title/i',$key)){
 							$titles[$values[0]] = $values[$i];
 							continue;
 						}
 						if($field_models[$i]){
 							if($field_models[$i]->type == 'Date'){
                                 $date = $values[$i];
-                                $date_details = explode("-",$date);
-                                $d_y = $date_details[0];
-                                $d_m = $date_details[1];
-                                $d_d = $date_details[2];
-                                //var_dump(checkdate($d_m, $d_d, $d_y));
                                 
                                 if(preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
+                                    $date_details = explode("-",$date);
+                                    $d_y = trim($date_details[0]);
+                                    $d_m = trim($date_details[1]);
+                                    $d_d = trim($date_details[2]);
+                                    //var_dump(checkdate($d_m, $d_d, $d_y));
                                     if(!checkdate($d_m, $d_d, $d_y)){
-                                    echo "WARNING: Date is not in valid. YYYY-MM-DD ".$date."\n";
+                                    $validation_error_log[] = "ERROR: For the field ".$field_models[$i]->label." the value is not valid. ".$date;
+                                    echo "ERROR: For the field ".$field_models[$i]->label." the value is not valid. ".$date."\n";
                                     }
                                 }
                                 else{
-                                    echo "WARNING: Date is not in valid format. YYYY-MM-DD ".$date."\n";
+                                    $validation_error_log[] = "ERROR: For the field ".$field_models[$i]->label." the value is not in valid format. YYYY-MM-DD ".$date;
+                                    echo "ERROR: For the field ".$field_models[$i]->label." the value is not in valid format. YYYY-MM-DD ".$date."\n";
                                 }
                             }
 							if($field_models[$i]->type == 'Numeric'){
                                 if (!filter_var($values[$i], FILTER_VALIDATE_INT)) {
-                                    echo "WARNING: '".$values[$i]."' this value is not numeric.\n";
+                                    $validation_error_log[] = "ERROR: For the field ".$field_models[$i]->label." the value '".$values[$i]."' is not numeric.";
+                                    echo "ERROR: For the field ".$field_models[$i]->label." the value '".$values[$i]."' is not numeric.\n";
                                 }
 							}
 							if($field_models[$i]->type == 'TaxonomyTree'){
 								$t_id = $field_models[$i]->options;
 								$t = Taxonomy::find($t_id);
-								if(!$t) echo "WARNING: This taxonomy is not present in the portal.\n";
+								if(!$t){
+                                    $validation_error_log[]= "ERROR: ".$t->label." this taxonomy is not present in the portal.";
+                                    echo "ERROR: ".$t->label." this taxonomy is not present in the portal.\n";
+                                }
                             }
-							if(preg_match("/Select/",$field_models[$i]->type)){
+							if($field_models[$i]->type == 'Select' || $field_models[$i]->type == 'MultiSelect'){
 								$select_options = $field_models[$i]->options;
-								if(empty($select_options)) echo "WARNING: This ".$field_models[$i]->type." is not present in the portal.\n";
+								if(empty($select_options)){
+                                    $validation_error_log[] = "ERROR: This ".$field_models[$i]->options." are not present in the portal.";
+                                    echo "ERROR: This ".$field_models[$i]->options." are not present in the portal.\n";
+                                }
                                 else{
                                     $select_options = explode(",",$select_options);
-                                    if(!in_array($values[$i],$select_options)){
-                                        echo "WARNING: This value is not present in the options list in the portal.\n";
+                                    $trimmed_select_options = array_map('trim',$select_options);
+
+                                    if(!in_array($values[$i],$trimmed_select_options)){
+                                        $validation_error_log[] = "ERROR: This '".$values[$i]."' value is not present in the options list of ".$field_models[$i]->label." in the portal.";
+                                        echo "ERROR: This '".$values[$i]."' value is not present in the options list of ".$field_models[$i]->label." in the portal.\n";
                                     }
                                 }
                             }
-						}
+                        }
 					}
-                } ## validation whileloop ends
-            ######## validation code ends
+                } //## validation whileloop ends
 
-				while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
-                    if(!is_file(storage_path('app').'/import/'.$values[0])){
+                if(!empty($validation_error_log)){
+                    exit;
+                }
+
+
+                ######### Validation code ends
+
+
+				while(($values = fgetcsv($handle1, null, "\t")) !== FALSE){
+                    if(!is_file(storage_path('app').'/import/'.trim($values[0]))){
                         echo "WARNING: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
                     }
 					$row = [];
 					for($i=0; $i<count($fields); $i++){
+
+                        $values[$i] = trim($values[$i]);
+
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
-						if($key == 'title'){
+						if(preg_match('/title/i',$key)){
 							$titles[$values[0]] = $values[$i];
 							continue;
 						}
@@ -162,7 +190,7 @@ class ImportDocs extends Command
 								$t = Taxonomy::find($t_id);
 								if(!$t) continue;
 								$t_family = $t->createFamily(); 
-								$val_ar = explode('|',@$values[$i]);
+								$val_ar = explode('|',@trim($values[$i]));
 								$t_ids = [];
 								foreach($t_family as $tfm){
 									foreach($val_ar as $v){
@@ -177,7 +205,7 @@ class ImportDocs extends Command
 								$meta_values[$values[0]][] = $row;
 							}
 							else{ // text, textarea etc are all default
-								$row = ['field_id' => $key, 'field_value'=>@$values[$i]];	
+								$row = ['field_id' => $key, 'field_value'=>@trim($values[$i])];	
 								$meta_values[$values[0]][] = $row;
 							}
 						}
