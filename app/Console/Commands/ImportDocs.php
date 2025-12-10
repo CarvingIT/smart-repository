@@ -61,11 +61,13 @@ class ImportDocs extends Command
 			//meta info file exists ?
 			$meta_info_file = storage_path('app').'/import/meta.csv';
             $handle = fopen($meta_info_file, "r");
+            $handle1 = fopen($meta_info_file, "r");
 
 			$meta_values = [];
 			$titles = [];
 			if(is_file($meta_info_file)){
                 $fields = fgetcsv($handle, null, "\t");
+                $fields1 = fgetcsv($handle1, null, "\t");
 
 				$field_models = [];
                 $field_num = 0;
@@ -102,20 +104,20 @@ class ImportDocs extends Command
                         $values[$i] = trim($values[$i]);
 
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
-						if($key == 'title'){
+						if(preg_match('/title/i',$key)){
 							$titles[$values[0]] = $values[$i];
 							continue;
 						}
 						if($field_models[$i]){
 							if($field_models[$i]->type == 'Date'){
                                 $date = $values[$i];
-                                $date_details = explode("-",$date);
-                                $d_y = trim($date_details[0]);
-                                $d_m = trim($date_details[1]);
-                                $d_d = trim($date_details[2]);
-                                //var_dump(checkdate($d_m, $d_d, $d_y));
                                 
                                 if(preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
+                                    $date_details = explode("-",$date);
+                                    $d_y = trim($date_details[0]);
+                                    $d_m = trim($date_details[1]);
+                                    $d_d = trim($date_details[2]);
+                                    //var_dump(checkdate($d_m, $d_d, $d_y));
                                     if(!checkdate($d_m, $d_d, $d_y)){
                                     $validation_error_log[] = "ERROR: For the field ".$field_models[$i]->label." the value is not valid. ".$date;
                                     echo "ERROR: For the field ".$field_models[$i]->label." the value is not valid. ".$date."\n";
@@ -168,8 +170,7 @@ class ImportDocs extends Command
                 ######### Validation code ends
 
 
-            $handle = fopen($meta_info_file, "r");
-				while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
+				while(($values = fgetcsv($handle1, null, "\t")) !== FALSE){
                     if(!is_file(storage_path('app').'/import/'.trim($values[0]))){
                         echo "WARNING: File - ".$values[0]." is not found in the directory but is mentioned in the meta.csv file.\n";
                     }
@@ -179,7 +180,7 @@ class ImportDocs extends Command
                         $values[$i] = trim($values[$i]);
 
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
-						if($key == 'title'){
+						if(preg_match('/title/i',$key)){
 							$titles[$values[0]] = $values[$i];
 							continue;
 						}
