@@ -87,8 +87,15 @@ class RebuildElasticIndex extends Command
             $body = $d->toArray();
             $body['text_content'] = $d->text_content;
             foreach($d->meta as $mv){
-                if(!empty($mv->value))
-                $body['meta_'.$mv->meta_field_id] = $mv->value;
+                if(!empty($mv->value)){
+                    if($mv->meta_field->type == 'Numeric') {
+                        $val = floatval($mv->value);
+                    }
+                    else if($mv->meta_field->type == 'Date'){
+                        $val = $mv->value;
+                    }
+                    $body['meta_'.$mv->meta_field_id] = $val;
+                }
             }
             $params = [
                 'index' => $index,
@@ -102,7 +109,8 @@ class RebuildElasticIndex extends Command
                 $response = $client->index($params);
             }
             catch(\Exception $e){
-                //echo $e->getMessage()."\n";
+                echo $e->getMessage()."\n";
+                echo json_encode($params);
                 echo "\nCould not index record - ".$d->id."\n"; 
             }
             //print_r($response);

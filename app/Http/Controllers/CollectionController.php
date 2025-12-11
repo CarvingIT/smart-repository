@@ -837,7 +837,10 @@ use App\UrlSuppression;
     			->download($filename.'.xlsx');
 	}
 
-
+    public function setDocSort(Request $req){
+        Session::put('doc_sort', $req->collection_id.':'.$req->sort_by);
+        return true;
+    }
 
 //Class Ends
 }

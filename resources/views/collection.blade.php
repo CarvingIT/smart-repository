@@ -154,7 +154,17 @@ function randomString(length) {
    return result;
 }
 
-
+function setDocSort(sort_by){
+    $.ajax({
+       url: '/collection/{{ $collection->id }}/set-doc-sort?sort_by='+sort_by,
+       method: 'GET',
+       dataType: "json",
+       success: function(data) {
+            search_val = $('#collection_search').val();
+            oTable.search(search_val).draw();
+       }
+   });
+}
 </script>
 
 <script src="/js/jquery.daterangepicker.min.js"></script>
@@ -263,11 +273,12 @@ function randomString(length) {
                   <button id="doc-sort" class="btn btn-sm btn-primary" title="Sort Documents">
                     <i class="material-icons">sort</i>
                   </button>
-                  <select id="doc-sort-select" style="text-align:right;">
-                     <option value="">Relevance &#x2193;</option> 
+                  <select id="doc-sort-select" style="text-align:right;" onchange="setDocSort(this.options[this.options.selectedIndex].value);">
+                     <option value="relevance">Relevance &#x2193;</option> 
                      <option value="updated_at:desc">Last updated &#x2193;</option> 
+                     <option value="updated_at:asc">Last updated &#x2191;</option> 
                     @foreach($collection->meta_fields as $m)
-    				    @if(in_array($m->id,$column_config_meta_fields))
+    				    @if(!in_array($m->type, ['Text', 'Textarea', 'Select', 'SelectCombo']) && in_array($m->id,$column_config_meta_fields))
                         <option value="meta_{{$m->id}}:asc">{{ $m->label }} &#x2191;</option>
                         <option value="meta_{{$m->id}}:desc">{{ $m->label }} &#x2193;</option>
                         @endif

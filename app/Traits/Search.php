@@ -459,25 +459,26 @@ trait Search{
                 Log::debug('Adding must to extension. Param array is - '. json_encode($params));
             }
             
-            // default sorting if no search is performed
-            //if(empty($request->search['value'])){
-            if(empty($search_term)){
-                $columns = ['type','title', 'size', 'created_at'];
-                // default meta sort field 
-                // get from the collection config and use
-                // to be updated
-	            $sort_column = empty($columns[@$request->order[0]['column']])?'updated_at':$columns[@$request->order[0]['column']];
-	            $sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
-                $params['body']['sort'] = [$sort_column => [ 'order' => $sort_direction]];
+            // sorting
+            $doc_sort = explode(':',Session::get('doc_sort'));
+            if(empty($doc_sort[0]) || $doc_sort[0] != $request->collection_id){
+                $sort_column = 'updated_at';
+                $sort_direction = 'desc';
+                $params['body']['sort'][] = [$sort_column => [ 'order' => $sort_direction]];
+            }
+            else if($doc_sort[1] == 'relevance'){ // sort by relevance
+                // no sorting code here
+            }
+            else{
+                $sort_column = $doc_sort[1];
+                $sort_direction = $doc_sort[2];
+                $params['body']['sort'][] = [$sort_column => [ 'order' => $sort_direction]];
             }
 
 	        $ordered_document_ids = '';
             $scores = [];
             $params['size'] = $length;
             $params['from'] = $start; 
-    	    //$params['size'] = 10000;// set a max size returned by ES
-            //Log::debug(json_encode($params));
-        //} // if search term is entered
             $document_ids = [];
 		    try{
                 Log::debug(json_encode($params));
@@ -507,55 +508,14 @@ trait Search{
 	    if(isset($document_ids)){
 	        Log::debug('Found: '.@count($document_ids));
        	    $documents = \App\Document::whereIn('id', $document_ids);
-            //if(!empty($search_term)) $filtered_count = $documents->count();
 	    }
 
-	if(!empty($search_term)){
-	    // initial sorting is by relevance
+    // initial sorting is by relevance
 	    Log::debug('Collection count: '.$documents->count().' -- Ordered array count: '.count($document_ids));
 	    if(!empty($ordered_document_ids)){
 		    $documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
 	    }
 	    $documents = $documents->get();
-
-        /*
-		$doc_ids = [];
-		foreach($documents as $d){
-			$doc_ids[] = $d->id;
-		}
-		Log::debug('Doc ids in result: '.implode(",", $doc_ids));	
-        */
-		//exit;
-	}
-	else{ // no search
-		if(env('DEFAULT_META_SORT_FIELD',false)){
-            Log::debug('meta sort');
-			$sort_direction = env('DEFAULT_META_SORT_DIRECTION','desc');
-			$mf = MetaField::where('label',env('DEFAULT_META_SORT_FIELD',''))->first();
-
-			$meta_values = MetaFieldValue::where('meta_field_id', $mf->id)
-				->orderBy('value', $sort_direction)
-				->orderBy('document_id', 'desc')
-				->get();	
-			$ordered_document_ids = [];
-			foreach($meta_values as $mv){
-				$ordered_document_ids[] = $mv->document_id;
-			}
-			$doc_id_str = implode(",", $ordered_document_ids);
-
-			$documents = \App\Document::whereIn('id', $ordered_document_ids);
-			$filtered_count = $documents->count();
-			$documents = $documents
-                //->with('meta')
-				->orderByRaw("FIELD(id, $doc_id_str)")
-                ->limit($length)->offset($start)
-                ->get();
-		}
-		else{
-            //Log::debug('ELSE');
-		    $documents = $documents->get();
-		}
-	}
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
 		->where('require_approval','=','1')->get();
