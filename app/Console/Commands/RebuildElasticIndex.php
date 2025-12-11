@@ -91,7 +91,7 @@ class RebuildElasticIndex extends Command
                     if($mv->meta_field->type == 'Numeric') {
                         $val = floatval($mv->value);
                     }
-                    else if($mv->meta_field->type == 'Date'){
+                    else {// for Date/Text/Textarea/Select/....
                         $val = $mv->value;
                     }
                     $body['meta_'.$mv->meta_field_id] = $val;
