@@ -973,14 +973,14 @@ $(document).ready(function() {
             
             // Build metadata HTML
             var metadataHtml = '<div class="tile-metadata"><div class="tile-metadata-content">';
-            metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.title)) + '</span></div>';
+            //metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.title)) + '</span></div>';
             
             @foreach($collection->meta_fields as $m)
-            @if(in_array($m->id,$column_config_meta_fields))
-            if (doc.meta_{{ $m->id }}) {
-                metadataHtml += '<div class="metadata-row"><span class="metadata-label">{{ __($m->label) }}:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.meta_{{ $m->id }})) + '</span></div>';
-            }
-            @endif
+                @if(in_array($m->id,$column_config_meta_fields))
+                if (doc.meta_{{ $m->id }}) {
+                    metadataHtml += '<div class="metadata-row"><span class="metadata-label">{{ __($m->label) }}:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.meta_{{ $m->id }})) + '</span></div>';
+                }
+                @endif
             @endforeach
             
             @if(!$hide_approval_status)
