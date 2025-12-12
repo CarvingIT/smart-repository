@@ -179,6 +179,7 @@ class ImportDocs extends Command
 					for($i=0; $i<count($fields); $i++){
 
                         $values[$i] = trim($values[$i]);
+                        if(empty($values[$i])) continue;
 
 						$key = !empty($field_models[$i]) ? $field_models[$i]->id : $fields[$i];
 						if(preg_match('/title/i',$key)){
