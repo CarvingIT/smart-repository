@@ -73,7 +73,7 @@ $(document).ready(function() {
     "order": [], // initial ordering disabled. Good for sorting by relevance in ES.
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
-    "lengthMenu":[10, 25, 50, 60, 100, 120],
+    //"lengthMenu":[10, 25, 50, 60, 100, 120],
     "language": 
 	{          
 	"processing": "<img src='/i/processing.gif'>",
