@@ -1,7 +1,3 @@
----
-layout: default
-title: Welcome to Smart Repository
----
 ## Welcome to Smart Repository
 
 Smart Repository is a tool for building Knowledge Bases. It is designed to serve as an institutional repository of digital content. Many different kind of files are supported. 
