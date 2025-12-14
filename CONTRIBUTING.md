@@ -1,3 +1,7 @@
+---
+layout: default
+title: Want to contribute? 
+---
 ## Contributing to Smart Repository
 Here are some of the ways you can contribute.
 * Suggest a feature - Go to the list of issues and create a new one. Alternatively, you can send an email to info@carvingit.com.
