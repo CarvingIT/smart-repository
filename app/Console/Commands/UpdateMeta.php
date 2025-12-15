@@ -54,9 +54,10 @@ class UpdateMeta extends Command
         $fields = fgetcsv($handle, null, "\t");
 
         $handle1 = fopen($meta_data_file, "r");
-        $fields1 = fgetcsv($handle1, null, ",");
+        $fields1 = fgetcsv($handle1, null, "\t");
 
 ############ Meta validation code starts here
+        echo "\nValidating the data....\n";
             $validation_error_log = [];
         while(($values = fgetcsv($handle1, null, "\t")) !== FALSE){
 			if(empty($values[0])) continue;
@@ -68,7 +69,9 @@ class UpdateMeta extends Command
 			}
 			echo $doc->title."\n";
 			for($i=1; $i<count($fields1); $i++){
-echo "SKK";
+                // Following fields have been skipped for validation
+                if(preg_match('/Title/i', $fields1[$i]) || preg_match('/Path/i', $fields1[$i]) || preg_match('/Related document IDs/i',$fields1[$i])){ continue; }
+
 				$meta_field = MetaField::where('collection_id', $doc->collection->id)
 					->where('label', ltrim(rtrim($fields1[$i])))->first();
 				if(!$meta_field){
@@ -97,7 +100,7 @@ echo "SKK";
                                     echo "ERROR: For the field ".$meta_field->label." the value is not in valid format. YYYY-MM-DD ".$date."\n";
                                 }
                     }
-echo $meta_field->type."\n";
+
                     if($meta_field->type == 'Numeric'){
                                 if (!filter_var($values[$i], FILTER_VALIDATE_INT)) {
                                     $validation_error_log[] = "ERROR: For the field ".$meta_field->label." the value '".$values[$i]."' is not numeric.";
@@ -142,7 +145,7 @@ echo $meta_field->type."\n";
 ################### Meta validation code ends here
 
 ####################################### Original code starts here
-
+        echo "\nUpdating the data....\n";
         while(($values = fgetcsv($handle, null, "\t")) !== FALSE){
 			if(empty($values[0])) continue;
 			$doc = Document::find($values[0]);
@@ -150,8 +153,24 @@ echo $meta_field->type."\n";
 			echo "Document ID ".$values[0]." was not found. Continuing ..\n";
 			continue;
 			}
-			echo $doc->title."\n";
+			echo $doc->id." ".$doc->title."\n";
 			for($i=1; $i<count($fields); $i++){
+
+                // Following fields have been skipped as they are not Meta Data Fields
+                if(preg_match('/Path/i', $fields1[$i]) || preg_match('/Related document IDs/i',$fields1[$i])){ continue; }
+
+                // Document title update
+                if(preg_match('/Title/i',$fields1[$i]) && $doc->title != $values[$i]){
+                    $doc->title = $values[$i];
+                    $doc->save();
+                    echo "New title - ".$doc->title."\n";
+					continue;
+                }
+                elseif(preg_match('/Title/i',$fields1[$i]) && $doc->title == $values[$i]){
+                    continue;
+                }
+
+                // Updating meta data
 				$meta_field = MetaField::where('collection_id', $doc->collection->id)
 					->where('label', ltrim(rtrim($fields[$i])))->first();
 				if(!$meta_field){
@@ -211,7 +230,7 @@ echo $meta_field->type."\n";
 				// save the meta value
                 //continue;
 				$field_val_model->save();
-			}
+            }
 		}
     }
 }
