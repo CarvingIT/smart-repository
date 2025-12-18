@@ -16,7 +16,6 @@ Route::get('/email/verify', function () {
 })->middleware('auth')->name('verification.notice');
 
 Route::view('/','welcome');
-
 Route::get('/lang/{locale}', function ($locale) {
     App::setLocale($locale);
     return redirect('/');
@@ -36,7 +35,7 @@ Route::get('/dashboard', 'HomeController@index')->name('dashboard')->middleware(
 Route::get('/collections', 'CollectionController@list');
 Route::get('/documents', 'DocumentController@list');
 
-Route::get('/collections/lang', 'CollectionController@selectLanguage');
+Route::get('/lang', 'CollectionController@selectLanguage');
 
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
 Route::get('/collection/{collection_id}/export', 'CollectionController@export')->middleware('maintainer');

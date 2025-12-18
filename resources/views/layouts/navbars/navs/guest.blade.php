@@ -35,7 +35,6 @@ $collections = \App\Collection::all();
     @if(env('AVAILALBLE_LOCALES') != '')
       <span class="howdy" style="top:5px;">
                     @php
-                    $referer = $_SERVER['REQUEST_URI'];
                     if(Session::get('sr_lang'))
                         $sr_lang = Session::get('sr_lang');
                     else
@@ -45,10 +44,10 @@ $collections = \App\Collection::all();
                     <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> LANG
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'en') ? 'active' : '' }}" href="/collections/lang?sr_lang=en&referer={{ $referer }}">
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'en') ? 'active' : '' }}" href="/lang?sr_lang=en">
                         <span style="display: inline-block; width: 35px; color:#000;">Eng</span>
                     </a>
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'mr') ? 'active' : '' }}" href="/collections/lang?sr_lang=mr&referer={{ $referer }}">
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'mr') ? 'active' : '' }}" href="/lang?sr_lang=mr">
                         <span style="display: inline-block; width: 35px; color:#000;">म(mr)</span>
                     </a>
                 </div>

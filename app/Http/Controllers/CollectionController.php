@@ -839,7 +839,8 @@ use App\UrlSuppression;
 
     //Language Selection
     public function selectLanguage(Request $request){
-        //echo $request->sr_lang; echo $request->referer; exit;
+        $referer = $request->header('referer');
+        //echo $request->sr_lang; echo $referer; exit;
         // set language in session
         if(!empty($request->sr_lang)){
         Session::put('sr_lang', $request->sr_lang);
@@ -848,7 +849,7 @@ use App\UrlSuppression;
         else{
         Session::put('sr_lang', 'en');
         }
-        return redirect($request->referer);
+        return redirect($referer);
     }
 
 
