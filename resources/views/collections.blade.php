@@ -27,6 +27,7 @@
             </div>
         </div>
     </div>
+
     <div class="row justify-content-center">
         @foreach ($collections as $c)
 		@if($c->content_type == 'Web resources' && env('SHOW_WEB_RESOURCES') != 1)

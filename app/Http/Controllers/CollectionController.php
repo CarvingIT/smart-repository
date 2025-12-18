@@ -841,6 +841,20 @@ use App\UrlSuppression;
         Session::put('doc_sort', $req->collection_id.':'.$req->sort_by);
         return true;
     }
+    //Language Selection
+    public function selectLanguage(Request $request){
+        $referer = $request->header('referer');
+        //echo $request->sr_lang; echo $referer; exit;
+        // set language in session
+        if(!empty($request->sr_lang)){
+        Session::put('sr_lang', $request->sr_lang);
+        //echo $lang = Session::get('sr_lang')."skk"; exit;
+        }
+        else{
+        Session::put('sr_lang', 'en');
+        }
+        return redirect($referer);
+    }
 
 //Class Ends
 }
