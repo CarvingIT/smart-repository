@@ -35,21 +35,21 @@ $collections = \App\Collection::all();
     @if(env('AVAILALBLE_LOCALES') != '')
       <span class="howdy" style="top:5px;">
                     @php
+                    $languages = explode(",",env('AVAILALBLE_LOCALES'));
                     if(Session::get('sr_lang'))
                         $sr_lang = Session::get('sr_lang');
                     else
                         $sr_lang = 'en';
                 @endphp
                 <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> LANG
+                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> {{ __($sr_lang) }}
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'en') ? 'active' : '' }}" href="/lang?sr_lang=en">
-                        <span style="display: inline-block; width: 35px; color:#000;">Eng</span>
+                    @foreach($languages as $lang)
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == $lang) ? 'active' : '' }}" href="/lang?sr_lang={{ $lang }}">
+                        <span style="display: inline-block; width: 35px; color:#000;">{{ __($lang) }}</span>
                     </a>
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'mr') ? 'active' : '' }}" href="/lang?sr_lang=mr">
-                        <span style="display: inline-block; width: 35px; color:#000;">म(mr)</span>
-                    </a>
+                    @endforeach
                 </div>
         </span>
             @endif
