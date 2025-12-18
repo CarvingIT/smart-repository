@@ -508,12 +508,14 @@ body:not(.tile-view-active) .dataTables_paginate {
     max-width: 400px;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    /*white-space: nowrap;*/
 }
 
 #documents tbody td:nth-child(2):hover {
+    /*
     overflow: visible;
     white-space: normal;
+    */
     word-break: break-word;
 }
 

@@ -837,6 +837,21 @@ use App\UrlSuppression;
     			->download($filename.'.xlsx');
 	}
 
+    //Language Selection
+    public function selectLanguage(Request $request){
+        $referer = $request->header('referer');
+        //echo $request->sr_lang; echo $referer; exit;
+        // set language in session
+        if(!empty($request->sr_lang)){
+        Session::put('sr_lang', $request->sr_lang);
+        //echo $lang = Session::get('sr_lang')."skk"; exit;
+        }
+        else{
+        Session::put('sr_lang', 'en');
+        }
+        return redirect($referer);
+    }
+
 
 
 //Class Ends

@@ -3,6 +3,15 @@
 @section('content')
 @push('js')
 <style>
+a.toggle-highlights{
+    cursor:pointer;
+}
+td.highlights p{
+    white-space:normal;
+}
+.rotate-90{
+    transform: rotate(90deg);
+}
 </style>
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.js" defer></script>
@@ -120,8 +129,29 @@ $(document).ready(function() {
     ],
     });
 
+oTable.on('click', 'tbody td .toggle-highlights', function(e){
+    let tr = e.target.closest('tr');
+    let row = oTable.row(tr);
+ 
+    if (row.child.isShown()) {
+        // This row is already open - close it
+        row.child.hide();
+    }
+    else {
+        // Open this row
+        row.child(formatHighlights(row.data()), 'highlights').show();
+    }
+});
+
 } );
 
+function formatHighlights(d){
+ return (
+        '<p>' +
+        d.highlights.text_content +
+        '</p>'
+    );
+}
 
 function showDeleteDialog(document_id){
 	str = randomString(6);
