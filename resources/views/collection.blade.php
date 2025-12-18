@@ -3,6 +3,9 @@
 @section('content')
 @push('js')
 <style>
+a.toggle-highlights{
+    cursor:pointer;
+}
 td.highlights p{
     white-space:normal;
 }
