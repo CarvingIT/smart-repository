@@ -13,6 +13,12 @@ $activePage = 'ISA-RRR';
 $has_collection_list = env('ENABLE_COLLECTION_LIST');
 $collections = \App\Collection::all();
 @endphp
+<script type="text/javascript">
+function changeLanguage(sr_lang){
+//alert(sr_lang);
+window.location.href="/collections/lang?sr_lang="+sr_lang;
+}
+</script>
 <!-- Navbar -->
 <!--nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top "-->
 <nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
@@ -38,6 +44,34 @@ $collections = \App\Collection::all();
     <span class="navbar-toggler-icon icon-bar"></span>
     </button>
     <div class="collapse navbar-collapse justify-content-end">
+            @if(env('AVAILALBLE_LOCALES') != '')
+	  <span class="howdy" style="top:5px; width:380px;">
+                @php
+                    $referer = $_SERVER['REQUEST_URI'];
+                    if(Session::get('sr_lang'))
+                        $sr_lang = Session::get('sr_lang');
+                    else
+                        $sr_lang = 'en';
+                @endphp
+                    @php
+                    if(Session::get('sr_lang'))
+                        $sr_lang = Session::get('sr_lang');
+                    else
+                        $sr_lang = 'en';
+                @endphp
+                <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> LANG
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'en') ? 'active' : '' }}" href="/collections/lang?sr_lang=en&referer={{ $referer }}">
+                        <span style="display: inline-block; width: 35px; color:#000;">Eng</span>
+                    </a>
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'mr') ? 'active' : '' }}" href="/collections/lang?sr_lang=mr&referer={{ $referer }}">
+                        <span style="display: inline-block; width: 35px; color:#000;">म(mr)</span>
+                    </a>
+                </div>
+        </span>
+            @endif
       <ul class="navbar-nav">
 	@if (env('ENABLE_DASHBOARD_LINK_IN_NAVBAR') == '1')
        <li class="nav-item{{ $activePage == 'dashboard' ? ' active' : '' }}">
@@ -111,30 +145,9 @@ $collections = \App\Collection::all();
 			-->
           </a>
 
-            @if(env('AVAILALBLE_LOCALES') != '')
-	  <span class="howdy" style="width:290px;">
-                @php
-                    if(Session::get('sr_lang'))
-                        $sr_lang = Session::get('sr_lang');
-                    else
-                        $sr_lang = 'en';
-                @endphp
-                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="langDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <!--i class="material-icons" style="font-size: 18px; vertical-align: middle;">settings</i--> LANG
-                </button>
-                <div class="dropdown-menu dropdown-menu-left" aria-labelledby="langDropdown">
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'en') ? 'active' : '' }}" href="/collections/lang?sr_lang=en">
-                        <span style="display: inline-block; width: 40px;">English</span>
-                    </a>
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'mr') ? 'active' : '' }}" href="/collections/lang?sr_lang=mr">
-                        <span style="display: inline-block; width: 40px;">Marathi</span>
-                    </a>
-                </div>
-        </span>
-            @endif
 
-	  <span class="howdy" style="width:200px;">
-            <a href="/dashboard" style="color:inherit !important;">{{ __('Welcome') }} @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
+	  <span class="howdy" style="width:150px;">
+            <a href="/dashboard" style="color:inherit !important;"> @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
 
 
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">

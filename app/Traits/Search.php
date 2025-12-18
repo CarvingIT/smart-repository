@@ -885,8 +885,9 @@ trait Search{
             foreach($record_highlights['text_content'] as $m){
              $content_matches[] = $m; 
             }
+            $title .= '<br /><a class="toggle-highlights"><i class="material-icons rotate-90">highlight</i></a>';
         }
-	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.strip_tags(implode(' ... ', $content_matches), '<em>').'</p>';
+	    //$title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><div class="content-highlights">'.strip_tags(implode(' ... ', $content_matches), '<em>').'</div>';
       
         // Check if file is an image type and display actual image instead of icon
         $image_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml'];

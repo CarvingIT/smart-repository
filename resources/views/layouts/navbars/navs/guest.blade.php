@@ -25,27 +25,6 @@ $collections = \App\Collection::all();
 	@endif
       </a>
     </div>
-        <div class="col-auto">
-            <div class="select-language">
-                @php
-                    if(Session::get('sr_lang'))
-                        $sr_lang = Session::get('sr_lang');
-                    else
-                        $sr_lang = 'en';
-                @endphp
-                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">settings</i> LANG
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'en') ? 'active' : '' }}" href="/collections/lang?sr_lang=en">
-                        <span style="display: inline-block; width: 40px;">English</span>
-                    </a>
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'mr') ? 'active' : '' }}" href="/collections/lang?sr_lang=mr">
-                        <span style="display: inline-block; width: 40px;">Marathi</span>
-                    </a>
-                </div>
-            </div>
-        </div>
 
     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
       <span class="sr-only">Toggle navigation</span>
@@ -53,6 +32,29 @@ $collections = \App\Collection::all();
       <span class="navbar-toggler-icon icon-bar"></span>
       <span class="navbar-toggler-icon icon-bar"></span>
     </button>
+    @if(env('AVAILALBLE_LOCALES') != '')
+      <span class="howdy" style="top:5px;">
+                    @php
+                    $referer = $_SERVER['REQUEST_URI'];
+                    if(Session::get('sr_lang'))
+                        $sr_lang = Session::get('sr_lang');
+                    else
+                        $sr_lang = 'en';
+                @endphp
+                <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> LANG
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'en') ? 'active' : '' }}" href="/collections/lang?sr_lang=en&referer={{ $referer }}">
+                        <span style="display: inline-block; width: 35px; color:#000;">Eng</span>
+                    </a>
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == 'mr') ? 'active' : '' }}" href="/collections/lang?sr_lang=mr&referer={{ $referer }}">
+                        <span style="display: inline-block; width: 35px; color:#000;">म(mr)</span>
+                    </a>
+                </div>
+        </span>
+            @endif
+
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
         <li class="nav-item{{ $activePage == 'home' ? ' active' : '' }}">
