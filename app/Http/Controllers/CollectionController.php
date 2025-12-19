@@ -837,6 +837,10 @@ use App\UrlSuppression;
     			->download($filename.'.xlsx');
 	}
 
+    public function setDocSort(Request $req){
+        Session::put('doc_sort', $req->collection_id.':'.$req->sort_by);
+        return true;
+    }
     //Language Selection
     public function selectLanguage(Request $request){
         $referer = $request->header('referer');
@@ -851,8 +855,6 @@ use App\UrlSuppression;
         }
         return redirect($referer);
     }
-
-
 
 //Class Ends
 }
