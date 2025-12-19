@@ -50,9 +50,22 @@
             </a>
           {% endif %}
 
-          <ul>
-              <li>[Want to contribute ?](CONTRIBUTING.md]</li>
-          </ul>
+          <nav>
+            <ul style="list-style:none;padding:0;margin:0;">
+            {% for item in site.data.navigation %}
+              <li style="margin-bottom:0.5em;">
+                <a href="{{ item.url | relative_url }}">{{ item.title }}</a>
+                {% if item.subitems %}
+                <ul style="list-style:none;padding-left:1em;margin:0.25em 0 0 0;">
+                  {% for sub in item.subitems %}
+                  <li><a href="{{ sub.url | relative_url }}">{{ sub.title }}</a></li>
+                  {% endfor %}
+                </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+            </ul>
+          </nav>
             
           {% if site.github.is_project_page %}
             <p class="repo-owner"><a href="{{ site.github.repository_url }}">Smart Repository</a> is maintained by <a target="_new" href="https://www.carvingit.com">Carving IT</a>.</p>
