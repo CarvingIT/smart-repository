@@ -5,9 +5,9 @@
 
 <link rel="stylesheet" href="/css/jquery.dataTables.min.css" />
 <link rel="stylesheet" href="/css/jquery-ui.css" />
-<script src="/js/jquery-3.5.1.js"></script>
+<script src="/js/jquery.min.js"></script>
 <script src="/js/jquery.dataTables.min.js"></script>
-<script src="/js/jquery-ui.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {

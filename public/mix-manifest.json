@@ -1,0 +1,14 @@
+{
+    "/js/app.js": "/js/app.js",
+    "/css/app.css": "/css/app.css",
+    "/js/jquery.min.js": "/js/jquery.min.js",
+    "/js/jquery-ui.min.js": "/js/jquery-ui.min.js",
+    "/js/moment.min.js": "/js/moment.min.js",
+    "/js/popper.min.js": "/js/popper.min.js",
+    "/js/jquery.dataTables.min.js": "/js/jquery.dataTables.min.js",
+    "/css/jquery.dataTables.min.css": "/css/jquery.dataTables.min.css",
+    "/js/select2.min.js": "/js/select2.min.js",
+    "/css/select2.min.css": "/css/select2.min.css",
+    "/js/daterangepicker.min.js": "/js/daterangepicker.min.js",
+    "/css/daterangepicker.css": "/css/daterangepicker.css"
+}
