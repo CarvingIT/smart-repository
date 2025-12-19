@@ -90,6 +90,10 @@ Route::get('/collection/{collection_id}/meta', 'CollectionController@metaInforma
 Route::get('/collection/{collection_id}/meta/{meta_field_id}', 'CollectionController@metaInformation')->middleware('maintainer');
 Route::post('/collection/{collection_id}/meta', 'CollectionController@saveMeta')->middleware('maintainer');
 Route::get('/collection/{collection_id}/meta/{meta_field_id}/delete', 'CollectionController@deleteMetaField')->middleware('maintainer');
+
+// sorting of documents in a collection
+Route::get('/collection/{collection_id}/set-doc-sort', 'CollectionController@setDocSort');
+
 // column config
 Route::get('/collection/{collection_id}/settings', 'CollectionController@showSettingsForm')->middleware('maintainer');
 Route::post('/collection/{collection_id}/settings', 'CollectionController@saveSettings')->middleware('maintainer');

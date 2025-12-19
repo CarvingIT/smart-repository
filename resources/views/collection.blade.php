@@ -82,6 +82,7 @@ $(document).ready(function() {
     "order": [], // initial ordering disabled. Good for sorting by relevance in ES.
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
+    //"lengthMenu":[10, 25, 50, 60, 100, 120],
     "language": 
 	{          
 	"processing": "<img src='/i/processing.gif'>",
@@ -129,6 +130,16 @@ $(document).ready(function() {
     ],
     });
 
+$('#doc-sort').on('click', function() {
+        // Check if the native showPicker method is available and call it
+        const selectElement = $('#doc-sort-select')[0];
+        if (selectElement && typeof selectElement.showPicker === 'function') {
+            selectElement.showPicker();
+        } else {
+            console.error('showPicker() is not supported in this browser or environment.');
+        }
+    })
+
 oTable.on('click', 'tbody td .toggle-highlights', function(e){
     let tr = e.target.closest('tr');
     let row = oTable.row(tr);
@@ -174,12 +185,47 @@ function randomString(length) {
    return result;
 }
 
+function setDocSort(sort_by){
+    $.ajax({
+       url: '/collection/{{ $collection->id }}/set-doc-sort?sort_by='+sort_by,
+       method: 'GET',
+       dataType: "json",
+       success: function(data) {
+            search_val = $('#collection_search').val();
+            oTable.search(search_val).draw();
+       }
+   });
+}
 </script>
 
 <script src="/js/jquery.daterangepicker.min.js"></script>
 <link rel="stylesheet" href="/js/daterangepicker.css"/>
 <script src="{{ asset("js/favorites.js") }}"></script>
+<style>
+#doc-sort-wrapper {
+  position: relative;
+  display: inline-block;
+}
 
+#doc-sort {
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#doc-sort-select {
+  /* Hide the native select menu's default appearance while keeping it interactive */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  height: 100%;
+  opacity: 0;
+}
+</style>
 @endpush
 	    <div id="deletedialog" style="display:none;">
 		<form name="deletedoc" method="post" action="/document/delete">
@@ -223,11 +269,7 @@ function randomString(length) {
             </div>
         <div class="card-body">
 		<div class="row">
-                  <div class="col-12 text-right">
-                  <!-- View Toggle Button -->
-                  <button id="view-toggle-btn" class="btn btn-sm btn-primary" title="Switch to Tile View">
-                    <i class="material-icons">view_module</i>
-                  </button>
+                  <div class="col-9">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
@@ -250,14 +292,35 @@ function randomString(length) {
                     <a href="/collection/{{ $collection->id }}/metafilters" title="Set Filters" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <!--a href="/collection/{{ $collection->id }}/export" title="Export collection to CSV" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a-->
                     <a href="/collection/{{ $collection->id }}/exportxlsx" title="Export up to 1000 records to XLSX" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
 				  @endif
+                  </div>
+                  <div class="col-3 text-right" id="doc-sort-wrapper">
+                  <!-- View Toggle Button -->
+                  <button id="view-toggle-btn" class="btn btn-sm btn-primary" title="Switch to Tile View" style="z-index:100;">
+                    <i class="material-icons">view_module</i>
+                  </button>
+                  @if(env('SEARCH_MODE', 'db') == 'elastic')
+                  <button id="doc-sort" class="btn btn-sm btn-primary" title="Sort Documents">
+                    <i class="material-icons">sort</i>
+                  </button>
+                  <select id="doc-sort-select" style="text-align:right;" onchange="setDocSort(this.options[this.options.selectedIndex].value);">
+                     <option value="relevance">Relevance &#x2193;</option> 
+                     <option value="updated_at:desc">Last updated &#x2193;</option> 
+                     <option value="updated_at:asc">Last updated &#x2191;</option> 
+                    @foreach($collection->meta_fields as $m)
+    				    @if(!in_array($m->type, ['Text', 'Textarea', 'Select', 'SelectCombo']) && in_array($m->id,$column_config_meta_fields))
+                        <option value="meta_{{$m->id}}:asc">{{ $m->label }} &#x2191;</option>
+                        <option value="meta_{{$m->id}}:desc">{{ $m->label }} &#x2193;</option>
+                        @endif
+                     @endforeach
+                  </select>
+                  @endif
                   </div>
         </div>
 		<div class="row">
 			<div class="col-12">
-            <p>{{ $collection->description }}</p>
+            <!-- <p>{{ $collection->description }}</p> -->
 		<!-- children collections -->		
 			@if ($collection->parent_id) 
 			<div>

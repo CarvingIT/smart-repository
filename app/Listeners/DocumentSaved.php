@@ -66,8 +66,15 @@ class DocumentSaved
             $body = $event->document->toArray();
             $body['text_content'] = $event->document->text_content;
             foreach($event->document->meta as $mv){
-                if(empty($mv->value)) continue;
-                $body['meta_'.$mv->meta_field_id] = $mv->value;
+                if(!empty($mv->value)){
+                    if($mv->meta_field->type == 'Numeric') {
+                        $val = floatval($mv->value);
+                    }
+                    else {// for Date/Text/Textarea/Select/....
+                        $val = $mv->value;
+                    }
+                    $body['meta_'.$mv->meta_field_id] = $val;
+                }
             }
             $del_params = [
                 'index' => 'sr_documents',
