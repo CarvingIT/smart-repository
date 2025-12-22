@@ -153,6 +153,9 @@ oTable.on('click', 'tbody td .toggle-highlights', function(e){
         row.child(formatHighlights(row.data()), 'highlights').show();
     }
 });
+    
+// Initialize view mode
+initializeViewMode();
 
 } );
 
@@ -1215,10 +1218,6 @@ $(document).ready(function() {
         return 'default';
     }
     
-
-    
-    // Initialize view mode
-    initializeViewMode();
 
 	// Save Search functionality
 	@if(Auth::check())
