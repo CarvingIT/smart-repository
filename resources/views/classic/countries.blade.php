@@ -2,11 +2,11 @@
 
 @section('content')
 <!--
-<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.dataTables.min.js"></script>
 -->
 <script src="/js/jquery.dataTables.min.js"></script>
-<script src="/js/jquery-ui.js" defer></script>
+<script src="/js/jquery-ui.min.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
 <script>
 $(document).ready(function() {

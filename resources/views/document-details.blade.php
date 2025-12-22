@@ -11,7 +11,7 @@
 @endphp
 @push('js')
 <link rel="stylesheet" href="/css/jquery-ui.css">
-<script src="/js/jquery-ui.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
 <script>
 /*
  $( function() {

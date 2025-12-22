@@ -14,7 +14,7 @@ td.highlights p{
 }
 </style>
 <script src="/js/jquery.dataTables.min.js"></script>
-<script src="/js/jquery-ui.js" defer></script>
+<script src="/js/jquery-ui.min.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
 <link href="/css/select2.min.css" rel="stylesheet" />
@@ -153,6 +153,9 @@ oTable.on('click', 'tbody td .toggle-highlights', function(e){
         row.child(formatHighlights(row.data()), 'highlights').show();
     }
 });
+    
+// Initialize view mode
+initializeViewMode();
 
 } );
 
@@ -1215,10 +1218,6 @@ $(document).ready(function() {
         return 'default';
     }
     
-
-    
-    // Initialize view mode
-    initializeViewMode();
 
 	// Save Search functionality
 	@if(Auth::check())

@@ -32,7 +32,7 @@ foreach($config as $c){
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     
         <!--   Core JS Files   -->
-        <script src="/js/jquery-3.5.1.js"></script>
+        <script src="/js/jquery.min.js"></script>
         <!--   Core JS Files   -->
         <script src="{{ asset('material') }}/js/core/popper.min.js"></script>
         <script src="{{ asset('material') }}/js/plugins/perfect-scrollbar.jquery.min.js"></script>

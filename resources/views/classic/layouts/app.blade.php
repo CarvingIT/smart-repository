@@ -33,7 +33,7 @@
   <link href="/css/classic/fonts.css" rel="stylesheet">
   <link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
   <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
-  <script src="/js/jquery-3.5.1.js"></script>
+  <script src="/js/jquery.min.js"></script>
   <!--script src="https://code.jquery.com/jquery-3.7.0.min.js" crossorigin="anonymous"></script>-->
   <script src="/js/classic/main.js"></script>
 

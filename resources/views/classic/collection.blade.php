@@ -1,6 +1,6 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
 @push('js')
-<script src="/js/jquery-ui.js" defer></script>
+<script src="/js/jquery-ui.min.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
 <style>
 	.form-check-label{
