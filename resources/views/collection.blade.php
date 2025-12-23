@@ -12,6 +12,13 @@ td.highlights p{
 .rotate-90{
     transform: rotate(90deg);
 }
+@media (min-width: 2000px) {
+    .container.wide-screen-container {
+        max-width: 95% !important;
+        width: 95% !important;
+    }
+}
+
 </style>
 <script src="/js/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.min.js" defer></script>
@@ -260,7 +267,7 @@ function setDocSort(sort_by){
 		</div>
 		@endif
 		<!-- End Save Search Modal -->
-<div class="container">
+<div class="container wide-screen-container">
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
