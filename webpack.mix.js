@@ -17,7 +17,7 @@ mix.js('resources/js/app.js', 'public/js')
 // Copy npm dependencies to public folder
 mix.copy('node_modules/jquery/dist/jquery.min.js', 'public/js/jquery.min.js');
 mix.copy('node_modules/jquery-ui/dist/jquery-ui.min.js', 'public/js/jquery-ui.min.js');
-mix.copy('node_modules/jquery-ui/themes/base/jquery-ui.min.css', 'public/css/jquery-ui.min.css');
+//mix.copy('node_modules/jquery-ui/themes/base/jquery-ui.min.css', 'public/css/jquery-ui.min.css');
 mix.copy('node_modules/moment/min/moment.min.js', 'public/js/moment.min.js');
 mix.copy('node_modules/@popperjs/core/dist/umd/popper.min.js', 'public/js/popper.min.js');
 

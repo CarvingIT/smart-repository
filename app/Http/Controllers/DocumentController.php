@@ -744,7 +744,9 @@ public function downloadFile($doc,$storage_drive,$path_count=null){
 				if($mime != 'application/pdf'){
 					$response['Content-Disposition'] = "attachment; filename={$file_name}";
 				}
-                ob_end_clean();
+                if (ob_get_level()) {
+                    ob_end_clean();
+                }
 
                 return \Response::make(Storage::disk($storage_drive)->get($file_url), 200, $response);
         }
