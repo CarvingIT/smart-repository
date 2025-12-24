@@ -850,6 +850,46 @@ $(document).ready(function() {
     var recordsPerPage = 50;
     var totalRecords = 0;
     var isLoading = false;
+
+    function calculateOptimalPageLength() {
+        var containerWidth = $('#tile-container').width();
+        if (!containerWidth || containerWidth === 0) {
+            containerWidth = $(window).width() - 40; // Approx padding adjustment
+        }
+        
+        var tilesPerRow = Math.floor((containerWidth + 20) / 200);
+        if (tilesPerRow < 1) tilesPerRow = 1;
+        
+        var rows = 3;
+        var optimalLength = tilesPerRow * rows;
+        
+        if (optimalLength < 10) optimalLength = 10;
+        
+        return optimalLength;
+    }
+
+    // Debounce helper
+    function debounce(func, wait) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                func.apply(context, args);
+            }, wait);
+        };
+    }
+
+    // Add resize listener
+    $(window).on('resize', debounce(function() {
+        if (typeof currentViewMode !== 'undefined' && currentViewMode === 'tile' && typeof oTable !== 'undefined') {
+            var newLength = calculateOptimalPageLength();
+            if (oTable.page.len() !== newLength) {
+                console.log('Resize: Updating page length to ' + newLength);
+                oTable.page.len(newLength).draw();
+            }
+        }
+    }, 250));
     
     // Initialize view mode on page load
     function initializeViewMode() {
@@ -974,15 +1014,25 @@ $(document).ready(function() {
         
         // Hide the table but keep DataTable structure intact
         $('.table-responsive table').css('display', 'none');
+
+        // Dynamically calculate optimal page length (3 rows of tiles)
+        var newLength = calculateOptimalPageLength();
         
-        // Use current DataTable data to render tiles
-        var data = oTable.rows({page: 'current'}).data().toArray();
-        renderTiles(data, false);
-        
-        // Move DataTable controls after a short delay to ensure DataTable has rendered
-        setTimeout(function() {
-            moveTileControls();
-        }, 100);
+        // Check if we need to update the length
+        if (oTable.page.len() !== newLength) {
+            console.log('Tile View: Updating page length to ' + newLength);
+            oTable.page.len(newLength).draw();
+            // multiple draws might update the controls automatically via drawCallback
+        } else {
+            // Use current DataTable data to render tiles
+            var data = oTable.rows({page: 'current'}).data().toArray();
+            renderTiles(data, false);
+            
+            // Move DataTable controls after a short delay to ensure DataTable has rendered
+            setTimeout(function() {
+                moveTileControls();
+            }, 100);
+        }
         
         // Restore scroll position to prevent jump
         $(window).scrollTop(scrollPos);
