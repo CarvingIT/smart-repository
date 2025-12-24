@@ -85,7 +85,7 @@ $(document).ready(function() {
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
     "processing":true,
-    //"order": [[ 3, "desc" ]],
+    "dom":'lrtip',
     "order": [], // initial ordering disabled. Good for sorting by relevance in ES.
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',

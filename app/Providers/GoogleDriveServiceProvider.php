@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use Google_Client;
-use Hypweb\Flysystem\GoogleDrive\GoogleDriveAdapter;
+//use Hypweb\Flysystem\GoogleDrive\GoogleDriveAdapter;
+use Masbug\Flysystem\GoogleDrive\GoogleDriveAdapter;
 use Illuminate\Support\ServiceProvider;
 use League\Flysystem\Filesystem;
+use Illuminate\Filesystem\FilesystemAdapter;
 use Storage;
 
 class GoogleDriveServiceProvider extends ServiceProvider
@@ -30,9 +32,14 @@ class GoogleDriveServiceProvider extends ServiceProvider
             }
 
             //$adapter = new GoogleDriveAdapter($service, $config['folderId'], $options);
-            $adapter = new GoogleDriveAdapter($service, $config['folderId']);
+            $adapter = new \Masbug\Flysystem\GoogleDriveAdapter($service, $config['folderId']);
 
-            return new Filesystem($adapter);
+            //return new Filesystem($adapter);
+            return new FilesystemAdapter(
+        new \League\Flysystem\Filesystem($adapter),
+        $adapter,
+        $config
+        );
         });
     }
 

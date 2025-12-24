@@ -206,6 +206,9 @@ class DocumentController extends Controller
 
             if (in_array($driver, $storages_needing_dir_creation)) {
                 $filepath = $request->file('document')[0]->storeAs(null, $new_filename, $storage_drive);
+                $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($filepath);
+                $file_id = $meta['extraMetadata']['id'];
+                $filepath = $file_id;
             } else {
                 $filepath = $request->file('document')[0]->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename, $storage_drive);
             }
@@ -756,24 +759,28 @@ public function downloadFile($doc,$storage_drive,$path_count=null){
 }
 
 public function downloadCloudFile($doc, $storage_drive){
-	$filename = $doc->path;
-	$dir = '/';
-	$recursive = false;
-	$contents = collect(Storage::disk($storage_drive)->listContents($dir, $recursive));
 
-    $file = $contents
-        ->where('type', '=', 'file')
-        ->where('filename', '=', pathinfo($filename, PATHINFO_FILENAME))
-        ->where('extension', '=', pathinfo($filename, PATHINFO_EXTENSION))
-        ->first(); // there can be duplicate file names!
+	$filename = $doc->ori_filename;
+    $fileId = $doc->path;
 
-    //return $file; // array with file info
+    $adapter = Storage::disk($storage_drive)->getAdapter();
 
-    $rawData = Storage::disk($storage_drive)->get($file['path']);
+    // Get the underlying Google_Service_Drive instance
+    $service = $adapter->getService();
+
+    $file = $service->files->get($fileId);
+
+    // Get the filename
+    $fileName = $file->getName();
+
+    // You can also get the MIME type
+    $mimeType = $file->getMimeType();
+
+    $rawData = Storage::disk($storage_drive)->get($fileName);
 
     return response($rawData, 200)
-        ->header('ContentType', $file['mimetype'])
-        ->header('Content-Disposition', "attachment; filename='$filename'");
+        ->header('ContentType', $doc->type)
+        ->header('Content-Disposition', "attachment; filename=".$filename);
 }
 
 public function proofRead($collection_id,$document_id){
