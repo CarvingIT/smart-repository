@@ -19,8 +19,6 @@ use App\ReverseMetaFieldValue;
 use App\Sysconfig;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-use Google\Service\Drive\Drive;
-use Google\Service\Drive\Drive\Model\File;
 
 
 
@@ -207,13 +205,10 @@ class DocumentController extends Controller
             $driver = config("filesystems.disks.{$storage_drive}.driver");
 
             if (in_array($driver, $storages_needing_dir_creation)) {
-                //echo "SKKGoogleDrive".$storage_drive; echo $driver; echo $new_filename; exit;
                 $filepath = $request->file('document')[0]->storeAs(null, $new_filename, $storage_drive);
                 $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($filepath);
                 $file_id = $meta['extraMetadata']['id'];
-//echo $file_id."<br />";
-//print_r($meta); exit;
-    $filepath = $file_id;
+                $filepath = $file_id;
             } else {
                 $filepath = $request->file('document')[0]->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename, $storage_drive);
             }
@@ -780,7 +775,6 @@ public function downloadCloudFile($doc, $storage_drive){
     $mimeType = $file->getMimeType();
 
     $rawData = Storage::disk($storage_drive)->get($fileName);
-//echo $rawData; exit;
 
     return response($rawData, 200)
         ->header('ContentType', $doc->type)
