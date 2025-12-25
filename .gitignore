@@ -1,6 +1,9 @@
 /vendor/
 node_modules/
+*min.css
+*min.js
 npm-debug.log
+mix-manifest.json
 
 # Laravel 4 specific
 bootstrap/compiled.php

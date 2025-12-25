@@ -947,8 +947,9 @@ $(document).ready(function() {
     // Save original positions
     function saveOriginalPositions() {
         if (!originalControlsParent.info || !originalControlsParent.paginate) {
-            var $info = $('.dataTables_info').first();
-            var $paginate = $('.dataTables_paginate').first();
+            var $wrapper = $(oTable.table().container());
+            var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+            var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
             
             // Only save if not already in tile-bottom-controls
             if ($info.length && $info.parent().attr('id') !== 'tile-bottom-controls') {
@@ -964,8 +965,12 @@ $(document).ready(function() {
     
     // Restore controls to original positions
     function restoreOriginalControls() {
-        var $info = $('.dataTables_info').first();
-        var $paginate = $('.dataTables_paginate').first();
+        var $wrapper = $(oTable.table().container());
+        var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+        var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
+        
+        if (!$info.length) $info = $('.dataTables_info, .dt-info').first();
+        if (!$paginate.length) $paginate = $('.dataTables_paginate, .dt-paging').first();
         
         console.log('Restoring controls - Found:', {
             info: $info.length,
@@ -997,8 +1002,12 @@ $(document).ready(function() {
         saveOriginalPositions();
         
         if ($('#tile-container').length && $('#tile-bottom-controls').length) {
-            var $info = $('.dataTables_info').first();
-            var $paginate = $('.dataTables_paginate').first();
+            var $wrapper = $(oTable.table().container());
+            var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+            var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
+             
+            if (!$info.length) $info = $('.dataTables_info, .dt-info').first();
+            if (!$paginate.length) $paginate = $('.dataTables_paginate, .dt-paging').first();
             
             console.log('moveTileControls - Found controls:', {
                 info: $info.length,
@@ -1010,20 +1019,28 @@ $(document).ready(function() {
             // Only move if controls exist and are not already in bottom wrapper
             var $bottomControls = $('#tile-bottom-controls');
             if ($bottomControls.length) {
-                
+                var $originalContainer = $(oTable.table().container());
+                if ($originalContainer.length) {
+                    var originalClasses = $originalContainer.attr('class');
+                    $bottomControls.attr('class', originalClasses);
+                }
+                $bottomControls.attr('id', 'tile-bottom-controls');
+
                 // MOVE (not clone) the actual controls to preserve event handlers
                 if ($info.length && $info.parent().attr('id') !== 'tile-bottom-controls') {
                     $bottomControls.append($info.detach());
-                    $info.attr('style', 'display: block !important'); // Force visible with !important
+                    $info.removeAttr('style'); 
+                    $info.show();
                     console.log('Moved info control');
                 }
                 if ($paginate.length && $paginate.parent().attr('id') !== 'tile-bottom-controls') {
                     $bottomControls.append($paginate.detach());
-                    $paginate.attr('style', 'display: block !important'); // Force visible with !important
+                    $paginate.removeAttr('style');
+                    $paginate.show();
                     console.log('Moved paginate control');
                 }
                 
-                $bottomControls.attr('style', 'display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; flex-wrap: wrap !important;');
+                $bottomControls.show();
                 console.log('Bottom controls wrapper shown');
             }
         }
