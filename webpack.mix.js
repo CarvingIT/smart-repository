@@ -24,6 +24,8 @@ mix.copy('node_modules/@popperjs/core/dist/umd/popper.min.js', 'public/js/popper
 // DataTables
 mix.copy('node_modules/datatables.net/js/dataTables.js', 'public/js/jquery.dataTables.min.js');
 mix.copy('node_modules/datatables.net-dt/css/dataTables.dataTables.min.css', 'public/css/jquery.dataTables.min.css');
+mix.copy('node_modules/datatables.net-fixedcolumns/js/dataTables.fixedColumns.js', 'public/js/dataTables.fixedColumns.min.js');
+mix.copy('node_modules/datatables.net-fixedcolumns-dt/css/fixedColumns.dataTables.min.css', 'public/css/fixedColumns.dataTables.min.css');
 
 // Select2
 mix.copy('node_modules/select2/dist/js/select2.full.min.js', 'public/js/select2.min.js');
