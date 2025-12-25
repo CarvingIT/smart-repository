@@ -1,7 +1,7 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar','title'=>'Manage Storages'])
 
 @section('content')
-<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/node/jquery.dataTables.min.js"></script>
 <script src="/js/jquery-ui.min.js" defer></script>
 <link href="/css/jquery-ui.css" rel="stylesheet">
 

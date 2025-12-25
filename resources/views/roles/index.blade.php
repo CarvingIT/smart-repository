@@ -2,7 +2,7 @@
 
 @section('content')
 <script src="/js/jquery.min.js"></script>
-<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/node/jquery.dataTables.min.js"></script>
 
 <script type="text/javascript">
 $(document).ready(function() {

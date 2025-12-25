@@ -2,13 +2,13 @@
 <head>
 <title>{{ env('APP_NAME', 'Smart Repository') }}::Document Viewer</title>
 <link rel="icon" type="image/png" href="/material/img/favicon.png">
-<link href="/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="/css/node/jquery.dataTables.min.css" rel="stylesheet" />
 <script src="/js/jquery.min.js"></script>
 <script src="/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 <script src="/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
-<link href="/css/select2.min.css" rel="stylesheet" />
+<link href="/css/node/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
-<script src="/js/select2.min.js"></script>
+<script src="/js/node/select2.min.js"></script>
 <script src="/js/select2totree.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
