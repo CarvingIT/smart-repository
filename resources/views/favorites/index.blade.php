@@ -2,8 +2,8 @@
 
 @section('content')
 @push('js')
-<script src="/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" href="/css/jquery.dataTables.min.css" />
+<script src="/js/node/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="/css/node/jquery.dataTables.min.css" />
 <script>
 $(document).ready(function() {
     var table = $('#favorites-table').DataTable({

@@ -12,7 +12,7 @@
 
 
     <!-- jQuery is only used for hide(), show() and slideDown(). All other features use vanilla JS -->
-    <script src="/js/jquery.min.js"></script>
+    <script src="/js/node/jquery.min.js"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="https://fonts.gstatic.com">

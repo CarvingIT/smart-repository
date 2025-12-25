@@ -20,14 +20,14 @@ td.highlights p{
 }
 
 </style>
-<script src="/js/jquery.dataTables.min.js"></script>
-<script src="/js/jquery-ui.min.js" defer></script>
+<script src="/js/node/jquery.dataTables.min.js"></script>
+<script src="/js/node/jquery-ui.min.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
-<link href="/css/jquery-ui.css" rel="stylesheet">
-<link href="/css/select2.min.css" rel="stylesheet" />
+<link href="/css/node/jquery-ui.min.css" rel="stylesheet">
+<link href="/css/node/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
 <link href="/css/tile-view.css" rel="stylesheet" />
-<link href="/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
+<link href="/css/node/fixedColumns.dataTables.min.css" rel="stylesheet" />
 <style>
     .dataTables_paginate {
         float: right !important;
@@ -45,9 +45,9 @@ td.highlights p{
         margin-top: 10px;
     }
 </style>
-<script src="/js/select2.min.js"></script>
+<script src="/js/node/select2.min.js"></script>
 <script src="/js/select2totree.js"></script>
-<script src="/js/dataTables.fixedColumns.min.js"></script>
+<script src="/js/node/dataTables.fixedColumns.min.js"></script>
 @php
 $column_config = json_decode($collection->column_config);
 list($hide_type, $hide_title, $hide_approval_status, $hide_size, $hide_creation_time) = array(false, false, true, false, false);
@@ -235,8 +235,8 @@ function setDocSort(sort_by){
 }
 </script>
 
-<script src="/js/jquery.daterangepicker.min.js"></script>
-<link rel="stylesheet" href="/js/daterangepicker.css"/>
+<script src="/js/node/daterangepicker.min.js"></script>
+<link rel="stylesheet" href="/css/node/daterangepicker.min.css"/>
 <script src="{{ asset("js/favorites.js") }}"></script>
 <style>
 #doc-sort-wrapper {
@@ -310,8 +310,8 @@ function setDocSort(sort_by){
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
-                    <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
-                    <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
+                    <a title="{{ __('Manage meta data fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+                    <a title="{{ __('Settings') }}" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
                     @if(env('ENABLE_CHILD_COLLECTION_LINK') == 1)
                     <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">create_new_folder</i></a>
                     @endif
@@ -320,16 +320,16 @@ function setDocSort(sort_by){
 		    @endif
 		  @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
+                    <a title="{{ __('New Document') }}" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
                     @if(env('ENABLE_IMPORT_LINK') == 1)
                     <a title="Import via URL" href="/collection/{{ $collection->id }}/url-import" class="btn btn-sm btn-primary"><i class="material-icons">link</i></a>
                     @endif
 		  @endif
                   @if(count($collection->meta_fields)>0 && env('ENABLE_FILTER_LINK') == 1)
-                    <a href="/collection/{{ $collection->id }}/metafilters" title="Set Filters" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
+                    <a href="/collection/{{ $collection->id }}/metafilters" title="{{ __('Set Filters') }}" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="Export up to 1000 records to XLSX" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
+                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="{{ __('Export up to 1000 records to XLSX') }}" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
 				  @endif
                   </div>
                   <div class="col-3 text-right" id="doc-sort-wrapper">
@@ -947,8 +947,9 @@ $(document).ready(function() {
     // Save original positions
     function saveOriginalPositions() {
         if (!originalControlsParent.info || !originalControlsParent.paginate) {
-            var $info = $('.dataTables_info').first();
-            var $paginate = $('.dataTables_paginate').first();
+            var $wrapper = $(oTable.table().container());
+            var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+            var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
             
             // Only save if not already in tile-bottom-controls
             if ($info.length && $info.parent().attr('id') !== 'tile-bottom-controls') {
@@ -964,8 +965,12 @@ $(document).ready(function() {
     
     // Restore controls to original positions
     function restoreOriginalControls() {
-        var $info = $('.dataTables_info').first();
-        var $paginate = $('.dataTables_paginate').first();
+        var $wrapper = $(oTable.table().container());
+        var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+        var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
+        
+        if (!$info.length) $info = $('.dataTables_info, .dt-info').first();
+        if (!$paginate.length) $paginate = $('.dataTables_paginate, .dt-paging').first();
         
         console.log('Restoring controls - Found:', {
             info: $info.length,
@@ -997,8 +1002,12 @@ $(document).ready(function() {
         saveOriginalPositions();
         
         if ($('#tile-container').length && $('#tile-bottom-controls').length) {
-            var $info = $('.dataTables_info').first();
-            var $paginate = $('.dataTables_paginate').first();
+            var $wrapper = $(oTable.table().container());
+            var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+            var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
+             
+            if (!$info.length) $info = $('.dataTables_info, .dt-info').first();
+            if (!$paginate.length) $paginate = $('.dataTables_paginate, .dt-paging').first();
             
             console.log('moveTileControls - Found controls:', {
                 info: $info.length,
@@ -1010,20 +1019,28 @@ $(document).ready(function() {
             // Only move if controls exist and are not already in bottom wrapper
             var $bottomControls = $('#tile-bottom-controls');
             if ($bottomControls.length) {
-                
+                var $originalContainer = $(oTable.table().container());
+                if ($originalContainer.length) {
+                    var originalClasses = $originalContainer.attr('class');
+                    $bottomControls.attr('class', originalClasses);
+                }
+                $bottomControls.attr('id', 'tile-bottom-controls');
+
                 // MOVE (not clone) the actual controls to preserve event handlers
                 if ($info.length && $info.parent().attr('id') !== 'tile-bottom-controls') {
                     $bottomControls.append($info.detach());
-                    $info.attr('style', 'display: block !important'); // Force visible with !important
+                    $info.removeAttr('style'); 
+                    $info.show();
                     console.log('Moved info control');
                 }
                 if ($paginate.length && $paginate.parent().attr('id') !== 'tile-bottom-controls') {
                     $bottomControls.append($paginate.detach());
-                    $paginate.attr('style', 'display: block !important'); // Force visible with !important
+                    $paginate.removeAttr('style');
+                    $paginate.show();
                     console.log('Moved paginate control');
                 }
                 
-                $bottomControls.attr('style', 'display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; flex-wrap: wrap !important;');
+                $bottomControls.show();
                 console.log('Bottom controls wrapper shown');
             }
         }

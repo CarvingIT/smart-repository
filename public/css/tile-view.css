@@ -292,6 +292,8 @@
 /* Hide the original info and paginate controls in tile view (we show cloned ones at bottom) */
 .tile-view-active .table-responsive + .row .dataTables_info,
 .tile-view-active .table-responsive + .row .dataTables_paginate,
+.tile-view-active .table-responsive + .row .dt-info,
+.tile-view-active .table-responsive + .row .dt-paging,
 .tile-view-active
     .dataTables_wrapper
     .row:has(.dataTables_info)
@@ -299,7 +301,17 @@
 .tile-view-active
     .dataTables_wrapper
     .row:has(.dataTables_paginate)
-    .dataTables_paginate {
+    .dataTables_paginate,
+.tile-view-active
+    .dataTables_wrapper
+    .row:has(.dt-info)
+    .dt-info,
+.tile-view-active
+    .dataTables_wrapper
+    .row:has(.dt-paging)
+    .dt-paging,
+.tile-view-active .dt-info,
+.tile-view-active .dt-paging {
     display: none !important;
 }
 
@@ -311,19 +323,24 @@
 /* Ensure controls are visible in list view */
 body:not(.tile-view-active) .dataTables_length,
 body:not(.tile-view-active) .dataTables_info,
-body:not(.tile-view-active) .dataTables_paginate {
+body:not(.tile-view-active) .dataTables_paginate,
+body:not(.tile-view-active) .dt-length,
+body:not(.tile-view-active) .dt-info,
+body:not(.tile-view-active) .dt-paging {
     display: block !important;
 }
 
 /* Show entries dropdown in tile view */
-.tile-view-active .dataTables_length {
+.tile-view-active .dataTables_length,
+.tile-view-active .dt-length {
     text-align: left;
     margin-bottom: 15px;
     padding: 10px 0;
 }
 
 /* Ensure length dropdown is at top in list view */
-.dataTables_length {
+.dataTables_length,
+.dt-length {
     order: -1;
 }
 
@@ -347,20 +364,23 @@ body:not(.tile-view-active) .dataTables_paginate {
 }
 
 /* Keep default DataTable styling for controls in tile view */
-#tile-bottom-controls .dataTables_info {
+#tile-bottom-controls .dataTables_info,
+#tile-bottom-controls .dt-info {
     margin: 0 !important;
     padding: 0 !important;
     display: block !important;
 }
 
-#tile-bottom-controls .dataTables_paginate {
+#tile-bottom-controls .dataTables_paginate,
+#tile-bottom-controls .dt-paging {
     margin: 0 !important;
     padding: 0 !important;
     margin-left: auto !important;
     display: block !important;
 }
 
-#tile-bottom-controls .dataTables_paginate .pagination {
+#tile-bottom-controls .dataTables_paginate .pagination,
+#tile-bottom-controls .dt-paging .pagination {
     display: flex !important;
 }
 
