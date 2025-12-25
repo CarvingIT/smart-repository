@@ -70,7 +70,7 @@
     "Scope of full-text search:": "पूर्ण-मजकूर शोधाची व्याप्ती:",
     "Title and Content": "शीर्षक आणि सामग्री",
     "Title only": "फक्त शीर्षक",
-    "Fuzzy search": "अस्पष्ट शोध",
+    "Fuzzy search": "अस्पष्ट शोध ( जवळपासचा शब्द )",
     "Title contains": "शीर्षकात आहे",
     "remove": "काढा",
     "Remove all filters": "सर्व फिल्टर काढा",
@@ -109,7 +109,7 @@
     "Deleted Documents": "हटवलेली दस्तऐवज",
     "Log out": "लॉग आउट",
     "Welcome": "स्वागत आहे",
-    "Global Document Search": "जागतिक दस्तऐवज शोध",
+    "Global Document Search": "संग्रहांमधील दस्तऐवज शोध",
     "Search across collections for any document!": "कोणत्याही दस्तऐवजासाठी संग्रहांमध्ये शोधा!",
     "Search all collections": "सर्व संग्रहांमध्ये शोधा",
     "Clear": "साफ करा",
@@ -323,5 +323,11 @@
     "Usage": "वापर",
     "Critical": "गंभीर",
     "Warning": "चेतावणी",
-    "Caution": "सावधगिरी"
+    "Caution": "सावधगिरी",
+    "Manage users of this collection": "या संग्रहाच्या वापरकर्त्यांचे व्यवस्थापन",
+    "Manage meta data fields of this collection": "या संग्रहाचे माहिती मापदंड व्यवस्थापन",
+    "Settings":"मांडणी / व्यवस्था",
+    "New Document":"नवीन दस्तऐवज / कागदपत्र",
+    "New Child Collection" : "नवीन उप संग्रह",
+    "Export up to 1000 records to XLSX":"XLSX वर १००० पर्यंत रेकॉर्ड निर्यात करा"
 }
