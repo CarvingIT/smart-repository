@@ -1,7 +1,7 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar'])
 @section('content')
 @push('js')
-<script src="/js/jquery.min.js"></script>
+<script src="/js/node/jquery.min.js"></script>
 <script src="/js/node/jquery.dataTables.min.js"></script>
 <script>
 $(document).ready(function() {

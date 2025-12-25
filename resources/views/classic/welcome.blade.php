@@ -2,8 +2,8 @@
 
 @section('content')
 @push('js')
-<script src="/js/jquery-ui.min.js" defer></script>
-<link href="/css/jquery-ui.css" rel="stylesheet">
+<script src="/js/node/jquery-ui.min.js" defer></script>
+<link href="/css/node/jquery-ui.min.css" rel="stylesheet">
 <script>
 	@if(env('SEARCH_MODE') == 'elastic')
 	$(document).ready(function() {

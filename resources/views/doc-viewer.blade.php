@@ -2,7 +2,7 @@
 <head>
 <title>{{ env('APP_NAME', 'Smart Repository') }}::Document Viewer</title>
 <link rel="icon" type="image/png" href="/material/img/favicon.png">
-<script src="/js/jquery.min.js"></script>
+<script src="/js/node/jquery.min.js"></script>
 @php
     // Document model is passed directly from the controller as $doc
     $collection = \App\Collection::find($collection_id);

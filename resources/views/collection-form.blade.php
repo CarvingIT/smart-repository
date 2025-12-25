@@ -2,7 +2,7 @@
 
 @section('content')
 
-<script src="/js/jquery-ui.min.js"></script>
+<script src="/js/node/jquery-ui.min.js"></script>
 @push('js')
 <script type="text/javascript">
 $(document).ready(function() {

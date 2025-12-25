@@ -1,7 +1,7 @@
 @extends('layouts.app', ['activePage' => 'user-management', 'titlePage' => __('User Management')])
 
 @section('content')
-<script src="/js/jquery.min.js"></script>
+<script src="/js/node/jquery.min.js"></script>
 <script src="/js/node/jquery.dataTables.min.js"></script>
 
 

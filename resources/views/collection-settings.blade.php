@@ -1,8 +1,8 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar', 'activePage'=>'column-config'])
 
 @push('js')
- <link rel="stylesheet" href="/css/jquery-ui.css">
-  <script src="/js/jquery-ui.min.js"></script>
+ <link rel="stylesheet" href="/css/node/jquery-ui.min.css">
+  <script src="/js/node/jquery-ui.min.js"></script>
   <script>
   $( function() {
 	  $( "#accordion" ).accordion({

@@ -3,9 +3,9 @@
 @section('content')
 @push('js')
 <script src="/js/node/jquery.dataTables.min.js"></script>
-<script src="/js/jquery-ui.min.js" defer></script>
+<script src="/js/node/jquery-ui.min.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
-<link href="/css/jquery-ui.css" rel="stylesheet">
+<link href="/css/node/jquery-ui.min.css" rel="stylesheet">
 <script>
 var deldialog;
 $(document).ready(function() {

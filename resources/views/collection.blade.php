@@ -23,7 +23,7 @@ td.highlights p{
 <script src="/js/node/jquery.dataTables.min.js"></script>
 <script src="/js/node/jquery-ui.min.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
-<link href="/css/jquery-ui.css" rel="stylesheet">
+<link href="/css/node/jquery-ui.min.css" rel="stylesheet">
 <link href="/css/node/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
 <link href="/css/tile-view.css" rel="stylesheet" />
