@@ -146,6 +146,19 @@ $(document).ready(function() {
 				@endforeach
 				</select>
 		   </div>
+           <div class="col-md-12"><hr /></div>
+           <div class="col-md-3">
+               {{ __('Fixed Columns Left') }}
+           </div>
+           <div class="col-md-3">
+               <input class="form-control" type="number" name="fixed_columns_left" value="{{ @$column_config->fixed_columns_left ?? 0 }}" min="0" />
+           </div>
+           <div class="col-md-3">
+               {{ __('Fixed Columns Right') }}
+           </div>
+           <div class="col-md-3">
+               <input class="form-control" type="number" name="fixed_columns_right" value="{{ @$column_config->fixed_columns_right ?? 0 }}" min="0" />
+           </div>
 		</div>
 
 		<h4>{{__('Document Approval')}}</h4>

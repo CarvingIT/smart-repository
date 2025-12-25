@@ -27,8 +27,27 @@ td.highlights p{
 <link href="/css/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
 <link href="/css/tile-view.css" rel="stylesheet" />
+<link href="/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dataTables_paginate {
+        float: right !important;
+        text-align: right;
+    }
+    .dataTables_wrapper .row {
+        align-items: center;
+    }
+    
+    .dataTables_bottom_controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-top: 10px;
+    }
+</style>
 <script src="/js/select2.min.js"></script>
 <script src="/js/select2totree.js"></script>
+<script src="/js/dataTables.fixedColumns.min.js"></script>
 @php
 $column_config = json_decode($collection->column_config);
 list($hide_type, $hide_title, $hide_approval_status, $hide_size, $hide_creation_time) = array(false, false, true, false, false);
@@ -85,7 +104,15 @@ $(document).ready(function() {
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
     "processing":true,
-    "dom":'lrtip',
+    "processing":true,
+    "dom":'lrt<"dataTables_bottom_controls"ip>',
+    @if(!empty($column_config->fixed_columns_left) || !empty($column_config->fixed_columns_right))
+    "scrollX": true,
+    "fixedColumns": {
+        "start": {{ !empty($column_config->fixed_columns_left) ? $column_config->fixed_columns_left : 0 }},
+        "end": {{ !empty($column_config->fixed_columns_right) ? $column_config->fixed_columns_right : 0 }}
+    },
+    @endif
     "order": [], // initial ordering disabled. Good for sorting by relevance in ES.
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
@@ -618,8 +645,8 @@ function setDocSort(sort_by){
         </p>
 		</div>
 		<!-- display of applied filters ends -->
-		   <div class="table-responsive">
-                    <table id="documents" class="table">
+		    <div class="table-responsive" @if(!empty($column_config->fixed_columns_left) || !empty($column_config->fixed_columns_right)) style="overflow: visible;" @endif>
+                    <table id="documents" class="table" style="width:100%">
                         <thead class="text-primary">
                             <tr>
                             <th>{{ __('Type')}}</th>
@@ -996,7 +1023,7 @@ $(document).ready(function() {
                     console.log('Moved paginate control');
                 }
                 
-                $bottomControls.attr('style', 'display: flex !important');
+                $bottomControls.attr('style', 'display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; flex-wrap: wrap !important;');
                 console.log('Bottom controls wrapper shown');
             }
         }
@@ -1012,13 +1039,17 @@ $(document).ready(function() {
         $('#view-toggle-btn').html('<i class="material-icons">view_list</i>');
         $('#view-toggle-btn').attr('title', 'Switch to List View');
         
-        // Hide the table but keep DataTable structure intact
-        $('.table-responsive table').css('display', 'none');
+        var $scrollWrapper = $('.dataTables_scroll');
+        if ($scrollWrapper.length) {
+            $scrollWrapper.hide();
+        } else {
+            $('#documents').hide();
+        }
+        
+        $('.table-responsive').show();
 
-        // Dynamically calculate optimal page length (3 rows of tiles)
         var newLength = calculateOptimalPageLength();
         
-        // Check if we need to update the length
         if (oTable.page.len() !== newLength) {
             console.log('Tile View: Updating page length to ' + newLength);
             oTable.page.len(newLength).draw();
@@ -1052,8 +1083,16 @@ $(document).ready(function() {
             console.log('Switching to list view - restoring controls');
             restoreOriginalControls();
             
-            // Show the table with proper display
-            $('.table-responsive table').css('display', 'table');
+            // Show the table content
+            var $scrollWrapper = $('.dataTables_scroll');
+            if ($scrollWrapper.length) {
+                $scrollWrapper.show();
+            } else {
+                $('#documents').show();
+            }
+            
+            // Show the table wrapper
+            $('.table-responsive').show();
             
             // Force DataTable to recalculate column widths WITHOUT redrawing
             oTable.columns.adjust();

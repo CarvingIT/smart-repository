@@ -25,6 +25,8 @@
     "vue-loader": "^17.0.0",
     "datatables.net": "^2.3.5",
     "datatables.net-dt": "^2.3.5",
+    "datatables.net-fixedcolumns": "^5.0.4",
+    "datatables.net-fixedcolumns-dt": "^5.0.4",
     "select2": "^4.0.13",
     "daterangepicker": "^3.1.0",
     "moment": "^2.30.1"
