@@ -235,8 +235,8 @@ function setDocSort(sort_by){
 }
 </script>
 
-<script src="/js/node/daterangepicker.min.js"></script>
-<link rel="stylesheet" href="/css/node/daterangepicker.min.css"/>
+<script src="/js/node/jquery.daterangepicker.min.js"></script>
+<link rel="stylesheet" href="/css/node/jquery.daterangepicker.min.css"/>
 <script src="{{ asset("js/favorites.js") }}"></script>
 <style>
 #doc-sort-wrapper {
