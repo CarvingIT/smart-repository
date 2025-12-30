@@ -325,8 +325,8 @@
     "Settings":"मांडणी / व्यवस्था",
     "New Document":"नवीन दस्तऐवज / कागदपत्र",
     "New Child Collection" : "नवीन उप संग्रह",
-    "Switch to List View":"दस्तऐवज यादी स् स्वरूपात",
-    "Switch to Tile View":"दस्तऐवज यादी चौकोनी स्वरूपास्वरूपात",
+    "Switch to List View":"यादी मांडणी",
+    "Switch to Tile View":"टाइल मांडणी",
     "Relevance":"समर्पकता",
     "Last updated":"शेवटचे अपडेट केलेले",
     "Select Department":"विभाग निवडा",
@@ -336,7 +336,7 @@
     "Query":"प्रश्न ",
     "Disk":"माहिती साठवण्याची जागा",
     "System Configuration":"प्रणालीची मांडणी  ",
-    "Logo URL":"व्यावसायिक संस्थेच्या चिन्हाचा पत्ता",
-    "Favicon URL":"व्यावसायिक संस्थेच्या लहान चिन्हाचा पत्ता",
+    "Logo URL":"मानचिन्ह",
+    "Favicon URL":"फेव्हिकॉन",
     "Export up to 1000 records to XLSX":"XLSX वर १००० पर्यंत रेकॉर्ड निर्यात करा"
 }
