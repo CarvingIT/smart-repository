@@ -193,7 +193,7 @@ function randomString(length) {
 				<a href="/collection/{{ $child->id }}">
 					<i class="material-icons">folder</i>
 					{{ $child->name }}
-					@if(count($child->documents) == 0 && count($child->children) == 0)<a href="#" onClick="showSubCollectionDeleteDialog({{ $child->id }});"><i class="material-icons">delete</i> </a>@endif
+					@if(count($child->documents) == 0 && count($child->children) == 0 && Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))<a href="#" onClick="showSubCollectionDeleteDialog({{ $child->id }});"><i class="material-icons">delete</i> </a>@endif
 				</a>
 				</div>
 				@endforeach
