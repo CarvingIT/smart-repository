@@ -32,6 +32,6 @@ mix.copy('node_modules/select2/dist/js/select2.full.min.js', 'public/js/node/sel
 mix.copy('node_modules/select2/dist/css/select2.min.css', 'public/css/node/select2.min.css');
 
 // DateRangePicker
-mix.copy('resources/js/vendor/jquery.daterangepicker.min.js', 'public/js/node/jquery.daterangepicker.min.js');
-mix.copy('resources/css/vendor/daterangepicker.min.css', 'public/css/node/jquery.daterangepicker.min.css');
+mix.copy('node_modules/jquery-date-range-picker/dist/jquery.daterangepicker.min.js', 'public/js/node/jquery.daterangepicker.min.js');
+mix.copy('node_modules/jquery-date-range-picker/dist/daterangepicker.min.css', 'public/css/node/jquery.daterangepicker.min.css');
 
