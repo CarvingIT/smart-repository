@@ -368,7 +368,7 @@ function setDocSort(sort_by){
                      <option value="updated_at:desc">Last updated &#x2193;</option> 
                      <option value="updated_at:asc">Last updated &#x2191;</option> 
                     @foreach($collection->meta_fields as $m)
-    				    @if(!in_array($m->type, ['Text', 'Textarea', 'Select', 'SelectCombo']) && in_array($m->id,$column_config_meta_fields))
+    				    @if(in_array($m->type, ['Numeric', 'Date']) && in_array($m->id,$column_config_meta_fields))
                         <option value="meta_{{$m->id}}:asc">{{ $m->label }} &#x2191;</option>
                         <option value="meta_{{$m->id}}:desc">{{ $m->label }} &#x2193;</option>
                         @endif
