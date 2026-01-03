@@ -66,6 +66,11 @@ $collections = \App\Collection::all();
         </span>
             @endif
       <ul class="navbar-nav">
+        <li class="nav-item{{ $activePage == 'home' ? ' active' : '' }}">
+          <a href="/" class="nav-link">
+            <i class="material-icons">home</i> {{ __('Home') }}
+          </a>
+        </li>
 	@if (env('ENABLE_DASHBOARD_LINK_IN_NAVBAR') == '1')
        <li class="nav-item{{ $activePage == 'dashboard' ? ' active' : '' }}">
           <a href="/dashboard" class="nav-link">
