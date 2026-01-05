@@ -85,20 +85,19 @@ class BuildCollectionFromGoogleDrive extends Command
 
         /* Get the files using the actual $folderId */
         //$filesWithMetadata = Storage::disk($storage_drive)->allFiles('1Xfjckwnut4gyqejVlLErog_gknBj10SW',true);
-        $filesWithMetadata = Storage::disk($storage_drive)->allFiles($folderId,true);
+        $filesWithMetadata = Storage::disk($storage_drive)->allFiles($folderId);
 
         foreach($filesWithMetadata as $file){
             echo $file."\n";
             $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($file);
             //print_r($meta);
+            //echo $file."\n";
                 $filepath = $fileId = $meta['extraMetadata']['id'];
                 $file_name = $meta['extraMetadata']['name'];
                 $file_ext = $meta['extraMetadata']['extension'];
                 $file_virtual_path = $meta['extraMetadata']['virtual_path'];
                 $file_display_path = $meta['extraMetadata']['display_path'];
                 $file_title = $meta['extraMetadata']['filename'];
-                $filesize = $meta['fileSize'];
-                $fileType = $meta['type'];
                 $mimetype = $meta['mimeType']; 
                 $new_filename = '1_' . time() . '_' . $file_name;
 
@@ -115,14 +114,17 @@ class BuildCollectionFromGoogleDrive extends Command
                 $d->title = $file_title;
                 $d->collection_id = $collection_id;
                 $d->created_by = 1;
-                $d->size = $filesize;
-                $d->type = $mimetype;
-                $d->path = $filepath;
+                $d->size = $meta['fileSize'];
+                $d->type = $meta['mimeType'];
+                //$d->path = $filepath;
+                $d->path = $meta['path'];
                 $d->ori_filename = $file_name;
                 $text_content = '';
 
                 // Saved locally for text extraction
-                $rawData = Storage::disk($storage_drive)->get($file_name);
+                $rawData = Storage::disk($storage_drive)->get($meta['path']);
+                if(empty($rawData)){ echo "File is empty.".$file_name."\n"; exit;}
+
                 Storage::disk('local')->put('smartarchive_assets/'.$collection_id.'/'.'1'.'/'.$new_filename , $rawData);
                 $local_filepath = storage_path("app/smartarchive_assets/".$collection_id."/"."1"."/".$new_filename);
 

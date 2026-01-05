@@ -208,7 +208,8 @@ class DocumentController extends Controller
                 $filepath = $request->file('document')[0]->storeAs(null, $new_filename, $storage_drive);
                 $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($filepath);
                 $file_id = $meta['extraMetadata']['id'];
-                $filepath = $file_id;
+                //$filepath = $file_id;
+                $filepath = $meta['path'];
             } else {
                 $filepath = $request->file('document')[0]->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename, $storage_drive);
             }
@@ -763,20 +764,8 @@ public function downloadCloudFile($doc, $storage_drive){
 	$filename = $doc->ori_filename;
     $fileId = $doc->path;
 
-    $adapter = Storage::disk($storage_drive)->getAdapter();
-
-    // Get the underlying Google_Service_Drive instance
-    $service = $adapter->getService();
-
-    $file = $service->files->get($fileId);
-
-    // Get the filename
-    $fileName = $file->getName();
-
-    // You can also get the MIME type
-    $mimeType = $file->getMimeType();
-
-    $rawData = Storage::disk($storage_drive)->get($fileName);
+    $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($fileId);
+    $rawData = Storage::disk($storage_drive)->get($meta['path']);
 
     return response($rawData, 200)
         ->header('ContentType', $doc->type)
