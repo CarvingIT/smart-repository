@@ -220,13 +220,8 @@ $(document).ready(function()
                     <div class="col-md-12">
                         <span id="doc-title" class="col-md-12">
 				@if($document->type == 'application/pdf')
-					@if(env('ENABLE_PDF_READER') == 1)
-					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
-            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader" target="_new">
-					@else
-					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
-            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}" target="_new">
-					@endif
+					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/doc-viewer" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;
+            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/doc-viewer" target="_new">
 				@elseif($document->type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation')
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($document->path) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}">
 				@elseif(preg_match('/^audio/',$document->type) || preg_match('/^video/',$document->type))
@@ -270,17 +265,10 @@ $(document).ready(function()
                     <div class="col-md-12">
                         <span id="doc-title" class="col-md-12">
 				@if(preg_match('/\.pdf$/',$item))
-				    @if(env('ENABLE_PDF_READER') == 1)
                             <p>
-					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;margin-right:1%;"></a>
-            		        <a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/pdf-reader/{{ $path_count }}" target="_new">{{ $document_names[$path_count] }}</a>
+					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/doc-viewer/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;margin-right:1%;"></a>
+            		        <a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/doc-viewer/{{ $path_count }}" target="_new">{{ $document_names[$path_count] }}</a>
                             </p>
-					@else
-                            <p>
-					        <a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_new"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;
-            				<a title="Read online" href="/collection/{{ $document->collection_id }}/document/{{ $document->id }}/details/{{ $path_count }}" target="_new">{{ $document_names[$path_count] }}</a>
-                            </p>
-					@endif
 				@elseif(preg_match('/\.ppt$|\.pptx$/i',$item))
                     <p>
 					<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}"><img class="file-icon" src="/i/file-types/{{ $document->icon($item) }}.png" style="float:left;"></a>&nbsp;<a href="/collection/{{ $c->id }}/document/{{ $document->id }}/details/{{ $path_count }}">{{ $document_names[$path_count] }}</a>
