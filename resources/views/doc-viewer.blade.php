@@ -110,7 +110,12 @@ h4{
                 onFlip: function(flipbook) {
                     console.log("DearFlip: Page flipped");
                 },
+                //enableDownload: {{ empty($column_config->document_viewer_download) ? 'false' : 'true' }}
+                @if(auth()->user() && auth()->user()->hasPermission($collection_id,'MAINTAINER'))
+                enableDownload: {{ 'true' }}
+                @else
                 enableDownload: {{ empty($column_config->document_viewer_download) ? 'false' : 'true' }}
+                @endif
             };
             
             console.log("DearFlip: Creating flipbook with options:", options);
