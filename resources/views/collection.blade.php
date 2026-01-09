@@ -503,8 +503,8 @@ function setDocSort(sort_by){
 			<script>
                 @php
                     $extra_attributes = @json_decode($m->extra_attributes);
-                    $min_year = $extra_attributes->min_year_setting;
-                    $max_year = $extra_attributes->max_year_setting;
+                    $min_year = @$extra_attributes->min_year_setting;
+                    $max_year = @$extra_attributes->max_year_setting;
                 @endphp
 				$('#meta_{{ $m->id }}_search').dateRangePicker({
                   monthSelect: true,
