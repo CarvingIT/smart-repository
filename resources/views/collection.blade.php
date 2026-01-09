@@ -501,9 +501,15 @@ function setDocSort(sort_by){
 		   	<input type="hidden" name="operator[]" value="between" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			<script>
+                @php
+                    $extra_attributes = @json_decode($m->extra_attributes);
+                    $min_year = $extra_attributes->min_year_setting;
+                    $max_year = $extra_attributes->max_year_setting;
+                @endphp
 				$('#meta_{{ $m->id }}_search').dateRangePicker({
                   monthSelect: true,
-                  yearSelect: [1900, moment().get('year')]
+                  yearSelect: [ @if($min_year) {{ $min_year }} @else 1900 @endif, 
+                                @if($max_year) {{ $max_year }} @else moment().get('year') @endif ]
                 })
                 .bind('datepicker-change', function(event, obj){
                     this.form.submit();
