@@ -457,6 +457,8 @@ $j++;
 			$extra_attributes['width_on_info_page'] = $request->input('width_on_info_page');
 			$extra_attributes['numeric_min_value'] = $request->input('numeric_min_value');
 			$extra_attributes['numeric_max_value'] = $request->input('numeric_max_value');
+			$extra_attributes['min_year_setting'] = $request->input('min_year_setting');
+			$extra_attributes['max_year_setting'] = $request->input('max_year_setting');
 			$extra_attributes['show_on_details_page'] = $request->input('show_on_details_page');
 			$extra_attributes['show_parents'] = $request->input('show_parents');
 			$extra_attributes['results_classname'] = $request->input('results_classname');
