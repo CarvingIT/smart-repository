@@ -30,7 +30,7 @@ Route::middleware('auth:sanctum')->get('/collection/{collection_id}/meta-informa
 	return $collection->meta_fields()->orderby('display_order','ASC')->get();
 }); 
 
-Route::middleware('auth:sanctum')->get('/collection/{collection_id}/document/{document_id}/details', function ($document_id, Request $request){
+Route::middleware('auth:sanctum')->get('/collection/{collection_id}/document/{document_id}/meta-values', function ($document_id, Request $request){
 	$document = Document::find($document_id);
 	return $document->meta;
 }); 
