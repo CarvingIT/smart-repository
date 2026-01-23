@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Collection;
+use App\Document;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,9 +25,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware(['auth:sanctum','document_view']);
 
-Route::middleware('auth:api')->get('/collection/{collection_id}/meta-information', function ($collection_id, Request $request){
+Route::middleware('auth:sanctum')->get('/collection/{collection_id}/meta-information', function ($collection_id, Request $request){
 	$collection = Collection::find($collection_id);
 	return $collection->meta_fields()->orderby('display_order','ASC')->get();
+}); 
+
+Route::middleware('auth:sanctum')->get('/collection/{collection_id}/document/{document_id}/details', function ($document_id, Request $request){
+	$document = Document::find($document_id);
+	return $document->meta;
 }); 
 
 Route::middleware('auth:api')->post('/collection/{collection_id}/upload', 'DocumentController@uploadFile');
