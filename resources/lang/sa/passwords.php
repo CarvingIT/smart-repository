@@ -13,10 +13,10 @@ return [
     |
     */
 
-    'password' => 'Passwords must be at least eight characters and match the confirmation.',
-    'reset' => 'Your password has been reset!',
-    'sent' => 'We have e-mailed your password reset link!',
-    'token' => 'This password reset token is invalid.',
-    'user' => "We can't find a user with that e-mail address.",
+    'password' => 'गुप्तशब्दाः न्यूनातिन्यूनं अष्टवर्णाः भवेयुः, पुष्टिकरणेन सह मेलनं च भवितुमर्हति ।',
+    'reset' => 'भवतः गुप्तशब्दः पुनः सेट् कृतः अस्ति!',
+    'sent' => 'वयं भवतः गुप्तशब्दपुनर्स्थापनलिङ्कं ई-मेलद्वारा प्रेषितवन्तः!',
+    'token' => 'इदं गुप्तशब्दपुनर्स्थापनटोकनं अमान्यम् अस्ति ।',
+    'user' => "वयं तत् ई-मेल-सङ्केतं उपयोक्तारं न प्राप्नुमः ।",
 
 ];
