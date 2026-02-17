@@ -67,7 +67,7 @@ class DocumentSaved
             $body['text_content'] = $event->document->text_content;
             foreach($event->document->meta as $mv){
                 if(!empty($mv->value)){
-                    if($mv->meta_field->type == 'Numeric') {
+                    if(@$mv->meta_field->type == 'Numeric') {
                         $val = floatval($mv->value);
                     }
                     else {// for Date/Text/Textarea/Select/....
