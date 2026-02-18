@@ -114,6 +114,9 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 Route::get('/collection/{collection_id}/removetitlefilter', 'CollectionController@removeTitleFilter');
 Route::get('/collection/{collection_id}/removeextensionfilter', 'CollectionController@removeExtensionFilter');
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllFilters');
+// AJAX routes for filtering without page refresh
+Route::post('/collection/{collection_id}/ajax-set-extension-filter', 'CollectionController@ajaxSetExtensionFilter');
+Route::post('/collection/{collection_id}/ajax-clear-all-filters', 'CollectionController@ajaxClearAllFilters');
 // media route; just like the document download route
 Route::get('/media/i/{filename}', 'MediaController@loadImage');
 

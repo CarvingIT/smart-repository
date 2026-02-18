@@ -27,6 +27,13 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
+		
+		// Set up theme-based view fallback mechanism
+		// If THEME=classic, add classic views path before default views path
+		if (env('THEME') == 'classic') {
+			$this->app['view']->getFinder()->prependLocation(resource_path('views/classic'));
+		}
+		
 		try{
             $this->app->useStoragePath(env("LOCAL_STORAGE_PATH",storage_path()));
 			$config_disks = config('filesystems.disks');	

@@ -537,6 +537,35 @@ $j++;
         return redirect('/collection/'.$collection_id);
 	}
 
+	/**
+     * AJAX method to set extension filter without page refresh
+     */
+    public function ajaxSetExtensionFilter(Request $request){
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$request->collection_id] = $request->extension_filter;
+        Session::put('extension_filter', $extension_filter);
+        return response()->json(['success' => true, 'message' => 'Filter applied successfully']);
+    }
+
+    /**
+     * AJAX method to clear all filters without page refresh
+     */
+    public function ajaxClearAllFilters($collection_id){
+        $title_filter = Session::get('title_filter');
+        $title_filter[$collection_id] = null;
+        Session::put('title_filter', $title_filter);
+        
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$collection_id] = null;
+        Session::put('extension_filter', $extension_filter);
+        
+        $all_meta_filters = Session::get('meta_filters');
+        $all_meta_filters[$collection_id] = null;
+        Session::put('meta_filters', $all_meta_filters);
+        
+        return response()->json(['success' => true, 'message' => 'All filters cleared successfully']);
+    }
+
 
     public function deleteCollection(Request $request){
         $collection = \App\Collection::find($request->collection_id);

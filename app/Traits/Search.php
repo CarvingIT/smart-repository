@@ -1029,8 +1029,8 @@ trait Search{
 
 	//public function isaCollectionDocumentSearch(Request $request){
 	public function searchResults(Request $request){
-		//$collection_id = $request->collection_id;
-		//$collection = \App\Collection::find($collection_id);
+		$collection_id = $request->collection_id;
+		$collection = \App\Collection::find($collection_id);
 		//$analyzer = $request->analyzer;
 		$keywords = $request->isa_search_parameter;
 		$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
@@ -1060,7 +1060,7 @@ trait Search{
 		$highlights = json_decode(json_encode(@$search_results->highlights, true), true);
 		//Log::debug($highlights);exit;
         return view('search-results',[
-            //'collection'=>$collection, 
+            'collection'=>$collection, 
 			'results'=>$search_results->data,
 			'highlights'=> $highlights,  
 			'filtered_results_count'=>$filtered_results_count,

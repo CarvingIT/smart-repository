@@ -2,6 +2,11 @@
 @push('js')
 <script src="/js/node/jquery-ui.min.js" defer></script>
 <link href="/css/node/jquery-ui.min.css" rel="stylesheet">
+<link href="/css/classic/main.css" rel="stylesheet">
+<link href="/css/classic/fonts.css" rel="stylesheet">
+<!-- Font Awesome for icons - Load from multiple CDNs for redundancy -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css" />
 <style>
 	.form-check-label{
 		display:inline-block;
@@ -10,7 +15,7 @@
 .loader {
   margin:0 auto;
   border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #f05a22; /* Orange */
+  border-top: 16px solid #9c27b0; /* Theme primary color */
   border-radius: 50%;
   width: 120px;
   height: 120px;
@@ -31,11 +36,87 @@
     color: #888;
     font-size: 16px;
   }
+
+/* Ensure filter links are styled properly */
+.services-list a {
+	display: block;
+	line-height: 1;
+	padding: 8px 0 8px 15px;
+	border-left: 3px solid #c2cbdf;
+	margin: 20px 0;
+	color: #444;
+	transition: 0.3s;
+	text-decoration: none;
+}
+
+.services-list a.active {
+	font-weight: 700;
+	border-color: #9c27b0;
+}
+
+.services-list a:hover {
+	border-color: #9c27b0;
+}
+
+/* Fix clear filter icon */
+.services-list h5 i.fas {
+	font-family: 'Font Awesome 6 Free' !important;
+	font-weight: 900 !important;
+	display: inline-block !important;
+	font-style: normal !important;
+}
+
+/* Ensure all Font Awesome icons display properly */
+.fa, .fas, .far, .fal, .fad, .fab, .fa-solid, .fa-regular, .fa-light, .fa-duotone, .fa-brands {
+	font-family: 'Font Awesome 6 Free', 'Font Awesome 6 Brands' !important;
+	font-weight: 900 !important;
+	display: inline-block !important;
+	font-style: normal !important;
+	font-variant: normal !important;
+	text-rendering: auto !important;
+	line-height: 1 !important;
+	-webkit-font-smoothing: antialiased !important;
+	-moz-osx-font-smoothing: grayscale !important;
+}
+
+.fa-brands, .fab {
+	font-family: 'Font Awesome 6 Brands' !important;
+	font-weight: 400 !important;
+}
+
+/* Clear filter button icon */
+.fa-broom:before {
+	content: "\f51a" !important;
+}
+
+/* Search clear icon */
+.fa-xmark:before, .fa-times:before {
+	content: "\f00d" !important;
+}
+
+/* File icons */
+.fa-file-alt:before {
+	content: "\f15c" !important;
+}
+
+.fa-external-link-alt:before {
+	content: "\f35d" !important;
+}
 </style>
 <script>
 $(document).ready(function() {
-  $(window).keydown(function(event){
+  // Allow Enter key to trigger search in the search box
+  $('#collection_search').keydown(function(event){
     if(event.keyCode == 13) {
+      event.preventDefault();
+      reloadSearchResults();
+      return false;
+    }
+  });
+  
+  // Prevent Enter key on other form elements
+  $(window).keydown(function(event){
+    if(event.keyCode == 13 && event.target.id !== 'collection_search') {
       event.preventDefault();
       return false;
     }
@@ -56,7 +137,7 @@ $(document).ready(function() {
 	}	
 
 
-	$url = '/collection/1/search-results?analyzer='.request()->get('analyzer').'&isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
+	$url = '/collection/{{ $collection->id }}/search-results?analyzer='.request()->get('analyzer').'&isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
 @endphp
 $(document).ready(function() {
 	//$("#search-results").load('{{ $url }}');
@@ -64,27 +145,40 @@ $(document).ready(function() {
 });
 
 function clearFilters(){
-	// clear checkboxes
-	$('input[type="checkbox"]').each(function() {
-			this.checked = false;
+	// Use AJAX to clear all filters without page refresh
+	$.ajax({
+		url: '/collection/{{ $collection->id }}/ajax-clear-all-filters',
+		method: 'POST',
+		data: {
+			_token: '{{ csrf_token() }}'
+		},
+		success: function(response) {
+			// Clear the file type filter dropdown
+			$('#file_type_filter').val('');
+			// Uncheck all taxonomy checkboxes
+			$('input[type="checkbox"][name^="meta_"]').prop('checked', false);
+			// Reset all numeric range sliders
+			@foreach ($filters as $f)
+			@if ($f->type == 'Numeric')
+			@php
+				$extra_attributes = empty($f->extra_attributes)? null : json_decode($f->extra_attributes);
+				$numeric_min_value = @$extra_attributes->numeric_min_value;
+				$numeric_max_value = @$extra_attributes->numeric_max_value;
+			@endphp
+			$('#meta_{{ $f->id }}_lower_slider').val('{{ $numeric_min_value }}');
+			$('#meta_{{ $f->id }}_upper_slider').val('{{ $numeric_max_value }}');
+			$('#start_meta_{{ $f->id }}').val('{{ $numeric_min_value }}');
+			$('#end_meta_{{ $f->id }}').val('{{ $numeric_max_value }}');
+			@endif
+			@endforeach
+			// Reload search results
+			reloadSearchResults();
+		},
+		error: function(xhr, status, error) {
+			console.error('Error clearing filters:', error);
+			alert('Failed to clear filters. Please try again.');
+		}
 	});
-	// reset range filter
-   @foreach ($filters as $f)
-	   @php
-              $extra_attributes = empty($f->extra_attributes)? null : json_decode($f->extra_attributes);
-              $numeric_min_value = @$extra_attributes->numeric_min_value;
-              $numeric_max_value = @$extra_attributes->numeric_max_value;
-           @endphp
-
-   @if ($f->type == 'Numeric')
-	//$('#meta_{{ $f->id }}_lower_slider').val(1950);
-	//$('#meta_{{ $f->id }}_upper_slider').val(2023);
-	$('#meta_{{ $f->id }}_lower_slider').val({{ $numeric_min_value }});
-	$('#meta_{{ $f->id }}_upper_slider').val({{ $numeric_max_value }});
-   @endif
-   @endforeach
-	
-	reloadSearchResults();
 }
 
 function reloadSearchResults(){
@@ -97,7 +191,7 @@ function reloadSearchResults(){
 function loadSearchResults(){
 	var queryString = $('#isa_search').serialize();
 	//alert(queryString);
-	var url = '/collection/1/search-results?'+queryString;
+	var url = '/collection/{{ $collection->id }}/search-results?'+queryString;
 	$("#search-results").load(url);
 	return false;
 }
@@ -235,58 +329,189 @@ function goToPage(page){
         <div class="col-md-12">
             <div class="card">
 				<div class="card-header card-header-primary">
-                	<h6 class="card-title ">{{ __('Database') }}</h6>
+                	<h4 class="card-title" style="color: white; font-weight: 600; margin: 0;">
+                		@if(env('ENABLE_COLLECTION_LIST') == 1)<a href="/collections" style="color: white; text-decoration: none;">{{ __('Collections') }}</a> ::@endif {{ $collection->name }}
+                	</h4>
             	</div>
 			<div class="card-body">
 			<div class="row">
-                  <div class="col-12 text-right">
+                  <div class="col-12">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    	@if($collection->content_type == 'Uploaded documents')	
-                    <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+                    <a title="{{ __('Manage meta data fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+                    <a title="{{ __('Settings') }}" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
+                    @if(env('ENABLE_CHILD_COLLECTION_LINK') == 1)
                     <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">create_new_folder</i></a>
-                     @elseif($collection->content_type == 'Web resources')	
+                    @endif
+		    	@elseif($collection->content_type == 'Web resources')	
                     <a title="Manage Sites for this collection" href="/collection/{{ $collection->id }}/save_exclude_sites" class="btn btn-sm btn-primary"><i class="material-icons">insert_link</i></a>
-		    @endif
-		  @endif
+		    	@endif
+		  	  @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
+                    <a title="{{ __('New Document') }}" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
+                    @if(env('ENABLE_IMPORT_LINK') == 1)
                     <a title="Import via URL" href="/collection/{{ $collection->id }}/url-import" class="btn btn-sm btn-primary"><i class="material-icons">link</i></a>
-		  @endif
-                  @if(count($collection->meta_fields)>0)
-                    <a href="/collection/{{ $collection->id }}/metafilters" title="Set Filters" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
+                    @endif
+		  		  @endif
+                  @if(count($collection->meta_fields)>0 && env('ENABLE_FILTER_LINK') == 1)
+                    <a href="/collection/{{ $collection->id }}/metafilters" title="{{ __('Set Filters') }}" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <!--a href="/collection/{{ $collection->id }}/export" title="Export collection to CSV" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a-->
-                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="Export collection to XLSX" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
+                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="{{ __('Export up to 1000 records to XLSX') }}" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
 				  @endif
-                 
                   </div>
 		        </div>
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="search-container-classic">
+						<div class="search-box-classic">
+							<input type="text" class="search-field" id="collection_search" name="isa_search_parameter" 
+								value="{{ $search_query }}" 
+								placeholder="Search Data e.g. Laws, Publications and Technical Standards"/>
+							<input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
+							<div class="buttonSide-classic">
+								<div class="tooltip-classic">
+								<span class="closeIcon-classic" onclick="clearSearchInput()" style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf00d;</span>
+									<span class="tooltiptext-classic">Clear</span>
+								</div>
+								<div class="line-classic">
+									<p>line</p>
+								</div>
+								<button type="button" class="btn btn-primary search-btn-classic" onclick="reloadSearchResults()">Search</button>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-	
-			<div class="col-10">
-			</div>
-			<div class="col-2 text-right">
-			</div>
-		<div class="row text-center">
-		   <div class="col-lg-12">
-			<div class="float-container" style="width:100%;">
-			<!--
-			<label for="collection_search">{{ __('Search data') }}</label>
-			-->
-<span class="search-clear-btn" onclick="document.getElementById('collection_search').value = ''">×</span>
-		    <input type="text" class="search-field" id="collection_search" name="isa_search_parameter" value="{{ $search_query }}" placeholder="Enter keywords and press SEARCH."/>
-		    <input type="hidden" class="search-field" id="collection_id" name="collection_id" value="{{ $collection->id }}" />
-			<input type="button" value="Search" name="isa_search" class="btn btn-sm btn-primary search" onclick="reloadSearchResults()">
+
 			<style>
 			.dataTables_filter {
-			display: none;
+				display: none;
+			}
+			
+			.search-container-classic {
+				text-align: center;
+				margin: 15px 0;
+				width: 100%;
+			}
+			
+			.search-box-classic {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				width: 100%;
+				border-radius: 10px;
+				background: #fff;
+				box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+				padding-right: 5px;
+			}
+			
+			.search-box-classic input.search-field {
+				border: none;
+				border-radius: 10px;
+				background: #fff;
+				width: 80% !important;
+				padding: 12px 15px;
+				font-size: 14px;
+				outline: none;
+			}
+			
+			.search-box-classic input.search-field:focus {
+				outline: none;
+			}
+			
+			.buttonSide-classic {
+				gap: 10px;
+				display: flex;
+				align-items: center;
+				padding: 0 5px;
+			}
+			
+			.closeIcon-classic {
+				color: black;
+				cursor: pointer;
+				font-size: 18px !important;
+			}
+			
+			.closeIcon-classic:hover {
+				color: #9c27b0;
+			}
+			
+			.line-classic {
+				width: 0.5px;
+				height: 30px;
+				background-color: #adb5bd;
+			}
+			
+			.line-classic p {
+				opacity: 0;
+			}
+			
+			.tooltip-classic {
+				position: relative;
+				margin-bottom: 7px;
+				z-index: 0;
+				display: inline-block;
+				cursor: pointer;
+				border-bottom: none;
+			}
+			
+			.tooltip-classic .tooltiptext-classic {
+				visibility: hidden;
+				width: 70px;
+				font-size: 13px;
+				background-color: black;
+				border: 2px solid white;
+				color: #fff;
+				text-align: center;
+				border-radius: 6px;
+				padding: 5px 0;
+				position: absolute;
+				top: 154%;
+				left: 50%;
+				margin-left: -35px;
+				box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+			}
+			
+			.tooltip-classic .tooltiptext-classic::after {
+				content: "";
+				position: absolute;
+				bottom: 100%;
+				border: 2px solid white;
+				left: 50%;
+				margin-left: -5px;
+				border-width: 5px;
+				border-style: solid;
+				border-color: transparent transparent black transparent;
+			}
+			
+			.tooltip-classic:hover .tooltiptext-classic {
+				visibility: visible;
+			}
+			
+			.search-btn-classic {
+				padding: 0.40625rem 1.25rem !important;
+				background-color: #9c27b0;
+				border: none;
+				color: white;
+				cursor: pointer;
+				transition: background-color 0.3s ease;
+				white-space: nowrap;
+			}
+			
+			.search-btn-classic:hover {
+				background-color: #7b1fa2;
 			}
 			</style>
-		   </div>
-		  </div>
-		</div>
+			
+			<script>
+			function clearSearchInput() {
+				const searchInput = document.getElementById('collection_search');
+				searchInput.value = '';
+				reloadSearchResults(); // Clear the results and show all documents
+			}
+			</script>
 		
 <!-- End Breadcrumbs -->
 
@@ -304,8 +529,8 @@ foreach($tags as $t){
   <div class="container">
 	<div class="row gy-4">
 	  <div class="col-lg-3" style="margin-top:0;">
-		<div class="services-list">
-			<h5>Filter By <div style="float:right; cursor:pointer; border:1px solid #f05a22; padding:2px;border-radius:5px; background-color:#eee;" href="#" onclick="clearFilters();" title="Clear all filters"><i class="fa-solid fa-broom"></i></div></h5>
+		<div class="services-list" style="padding: 10px 5px; border: 1px solid #d3dff3; margin-bottom: 20px; background-color: #fff;">
+			<h5 style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e8e8e8;">Filter By <div style="float:right; cursor:pointer; border:1px solid #9c27b0; padding:4px 8px;border-radius:5px; background-color:#eee; font-size: 14px;" onclick="clearFilters();" title="Clear all filters"><span style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf51a;</span> Clear</div></h5>
 				@php
 				foreach($filters as $f){
 					if($f->type == 'TaxonomyTree'){
@@ -359,6 +584,13 @@ foreach($tags as $t){
 					}
 				}
 				@endphp
+				<!-- File Type Filter -->
+				<a href="javascript:return false;" onclick="$('#filter_file_type').toggle()">{{ __('File Type') }}</a>
+				<div id="filter_file_type" style="display:none; margin-left: 15px; margin-top: 5px;">
+					<select name="extension_filter" id="file_type_filter" class="form-control" onchange="applyFileTypeFilter()" style="border: 2px solid #9c27b0; padding: 5px 10px; font-size: 13px; border-radius: 5px; width: auto; max-width: 200px;">
+						<option value="">{{ __('All File Types') }}</option>
+					</select>
+				</div>
 <script>
  @foreach ($filters as $f)
  @if ($f->type == 'Numeric')
@@ -439,6 +671,78 @@ foreach($tags as $t){
 </main><!-- End #main -->
 
 <script>
+	// Load file types for the dropdown
+	$(document).ready(function() {
+		$.ajax({
+			url: '/collection/{{$collection->id}}/extensions',
+			method: 'GET',
+			success: function(response) {
+				var fileTypeSelect = $('#file_type_filter');
+				response.extensions.forEach(function(type) {
+					// Create user-friendly label
+					var label = getFriendlyLabel(type);
+					fileTypeSelect.append('<option value="' + type + '">' + label + '</option>');
+				});
+				
+				// Pre-select if filter is active
+				@php
+					$extension_filter = Session::get('extension_filter');
+					$selected_type = !empty($extension_filter[$collection->id]) ? $extension_filter[$collection->id] : '';
+				@endphp
+				@if(!empty($selected_type))
+					fileTypeSelect.val('{{ $selected_type }}');
+					$('#filter_file_type').show(); // Show the filter if a type is selected
+				@endif
+			}
+		});
+	});
+	
+	// Helper function to create friendly labels
+	function getFriendlyLabel(mimeType) {
+		var friendlyNames = {
+			'application/pdf': 'PDF',
+			'application/msword': 'DOC',
+			'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+			'application/vnd.ms-excel': 'XLS',
+			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'XLSX',
+			'application/vnd.ms-powerpoint': 'PPT',
+			'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PPTX',
+			'image/jpeg': 'JPEG',
+			'image/png': 'PNG',
+			'image/gif': 'GIF',
+			'text/plain': 'TXT',
+			'text/csv': 'CSV',
+			'application/zip': 'ZIP',
+			'video/mp4': 'MP4',
+			'audio/mpeg': 'MP3'
+		};
+		
+		var shortName = friendlyNames[mimeType] || mimeType.split('/')[1].toUpperCase();
+		return shortName + ' (' + mimeType + ')';
+	}
+	
+	// Apply file type filter
+	function applyFileTypeFilter() {
+		var selectedType = $('#file_type_filter').val();
+		$.ajax({
+			url: '/collection/{{$collection->id}}/ajax-set-extension-filter',
+			method: 'POST',
+			data: {
+				_token: '{{ csrf_token() }}',
+				collection_id: '{{$collection->id}}',
+				extension_filter: selectedType
+			},
+			success: function(response) {
+				// Reload search results without page refresh
+				reloadSearchResults();
+			},
+			error: function(xhr, status, error) {
+				console.error('Error applying filter:', error);
+				alert('Failed to apply filter. Please try again.');
+			}
+		});
+	}
+
 	@if(env('SEARCH_MODE') == 'elastic')
 	$(document).ready(function() {
         //alert("js is working");
@@ -467,4 +771,20 @@ foreach($tags as $t){
     });
 	@endif
 </script>
+
+<style>
+/* Remove orange footer line */
+footer {
+	border-top: none !important;
+	background-color: transparent !important;
+}
+.wrapper {
+	border-bottom: none !important;
+}
+main#main {
+	margin-bottom: 0 !important;
+	padding-bottom: 20px;
+}
+</style>
+
 @endsection

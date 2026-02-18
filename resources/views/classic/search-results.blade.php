@@ -1,20 +1,121 @@
-<div class="row gy-4 pricing-item" data-aos-delay="100">
-	<div class="col-lg-12 text-right">
-	</div>
+<!-- Font Awesome for icons - Load from multiple CDNs for redundancy -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css" />
+<div class="search-results-container">
 <style>
-	.tag{
-		display:inline-block;
-		margin-top:2px;
-		background-color:#ccc;
-		margin-right:5px;
-		padding:3px;
-  		border-top-left-radius: 10px;
-  		border-bottom-left-radius: 10px;
+	.search-result-item {
+		padding: 15px 0;
+		border-bottom: 1px solid #e8e8e8;
+		margin-bottom: 20px;
 	}
-	.parent-tag{
-		background-color:#aaa;
+	.search-result-item:last-child {
+		border-bottom: none;
+	}
+	.result-title {
+		font-size: 20px;
+		line-height: 1.3;
+		margin-bottom: 5px;
+	}
+	.result-title a {
+		color: #f05a22;
+		text-decoration: none;
+		font-weight: 500;
+	}
+	.result-title a:hover {
+		text-decoration: underline;
+	}
+	.result-url {
+		color: #006621;
+		font-size: 14px;
+		margin-bottom: 5px;
+	}
+	.result-meta-info {
+		color: #5f6368;
+		font-size: 13px;
+		margin-bottom: 8px;
+	}
+	.result-meta-info span {
+		margin-right: 15px;
+	}
+	.result-description {
+		color: #4d5156;
+		font-size: 14px;
+		line-height: 1.6;
+		margin-bottom: 10px;
+	}
+	.result-description strong {
+		font-weight: 600;
+		color: #202124;
+		background-color: #ffeb3b;
+		padding: 2px 0;
+	}
+	.result-title .highlight {
+		background-color: #ffeb3b;
+		font-weight: 600;
+		padding: 2px 0;
+	}
+	.result-tags {
+		margin-top: 8px;
+	}
+	.tag {
+		display: inline-block;
+		background-color: #f0f0f0;
+		color: #5f6368;
+		padding: 4px 10px;
+		margin: 3px 5px 3px 0;
+		border-radius: 3px;
+		font-size: 12px;
+		border: 1px solid #dadce0;
+	}
+	.tag:hover {
+		background-color: #e8e8e8;
+	}
+	.file-type-icon {
+		color: #f05a22 !important;
+		margin-right: 8px;
+		font-size: 18px !important;
+		display: inline-block !important;
+		font-family: 'Font Awesome 6 Free' !important;
+		font-weight: 900 !important;
+		font-style: normal !important;
+		font-variant: normal !important;
+		text-rendering: auto !important;
+		line-height: 1 !important;
+		-webkit-font-smoothing: antialiased !important;
+		-moz-osx-font-smoothing: grayscale !important;
+	}
+	
+	/* Ensure all Font Awesome icons display */
+	.fa, .fas, .far, .fal, .fad, .fab {
+		font-family: 'Font Awesome 6 Free' !important;
+		font-weight: 900 !important;
+		display: inline-block !important;
+		font-style: normal !important;
+		font-variant: normal !important;
+		text-rendering: auto !important;
+		line-height: 1 !important;
+		-webkit-font-smoothing: antialiased !important;
+		-moz-osx-font-smoothing: grayscale !important;
+	}
+	
+	/* Specific icon unicode values */
+	.fa-file-alt:before {
+		content: "\f15c" !important;
+	}
+	
+	.fa-external-link-alt:before {
+		content: "\f35d" !important;
+	}
+	
+	.fa-search:before {
+		content: "\f002" !important;
+	}
+	
+	.fa-clock-o:before, .fa-clock:before {
+		content: "\f017" !important;
 	}
 </style>
+
 	@if (!empty($results))
 	@php
 	$template_code = \App\SRTemplate::
@@ -22,20 +123,13 @@
 		->where('template_name','Search Result')
 		->first();
 	if(!empty($template_code->html_code)){
-	$html_code = $template_code->html_code;
+		$html_code = $template_code->html_code;
 	}		
 	@endphp
 	@foreach($results as $result)
 		@php 
 			$document = \App\Document::find($result->id);
 			$meta_fields = $document->collection->meta_fields;
-			$abstract_field_id = null;
-			$country_field_id = null;
-			$year_field_id = null;
-			$govt_agency_field_id = null;
-			$theme_field_id = null;
-			$author_field_id = null;
-			$serial_num_field_id = null;
 			
 			$highlight = @$highlights[$document->id];
 			$highlight_serialized = serialize($highlight);
@@ -47,104 +141,207 @@
 
 			$collection_config = json_decode($document->collection->column_config);
 			$result_title = empty($collection_config->replace_title_with_meta) ? $document->title : $document->meta_value($collection_config->replace_title_with_meta);
+			
+			// Extract description snippet from text content
+			$description = '';
+			if (!empty($document->text_content)) {
+				$description = strip_tags($document->text_content);
+				// Limit to first 300 characters
+				if (strlen($description) > 300) {
+					$description = mb_substr($description, 0, 300) . '...';
+				}
+			}
 		@endphp
-		<div class="row">
-		<h4>
-		@if (@$result->type == 'url')
-		<!--a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-external-link" aria-hidden="true"></i>&nbsp;{!! strip_tags($result_title) !!}</a-->
-		@else
-		<!--a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details"><i class="fa fa-file-text" aria-hidden="true"></i>&nbsp;{!! strip_tags($result_title) !!}</a-->
-		@endif
-		</h4>
-		</div>
-		<div class="row">
+		
+		<div class="search-result-item">
 			@if(!empty($html_code))
-				@php $display_meta = [];@endphp
-			   @foreach ($meta_fields as $m)
 				@php 
-					$placeholder = strtolower($m->placeholder);
-					$meta_placeholder = preg_replace("/ /","-",$placeholder);
-					$display_meta[$meta_placeholder]=$document->meta_value($m->id);
-				@endphp
-			   @endforeach		
-				@php
+					$display_meta = [];
+					foreach ($meta_fields as $m) {
+						$placeholder = strtolower($m->placeholder);
+						$meta_placeholder = preg_replace("/ /","-",$placeholder);
+						$display_meta[$meta_placeholder] = $document->meta_value($m->id);
+					}
 					$result_title = strip_tags($result_title);
 					$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code, $result_title, $collection->id, $result->id, @$result->type);	
 					echo $formatted_data;
 				@endphp
 			@else
-			   @foreach ($meta_fields as $m)
-				@if (empty($m->results_display_order)) 
-					@continue
-				@else
-					@php
-						$extra_attributes = json_decode($m->extra_attributes);
-						$w = @$extra_attributes->width_on_info_page;
-						$classname = @$extra_attributes->results_classname;
-					@endphp
-					@if (!empty($document->meta_value($m->id)))
-					{{-- $m->label--}}
-					<div class="col-lg-{{ $w }}">
-					<div class="{{ $classname }}">&nbsp;</div>
-						@if ($m->type == 'Textarea')
-						{{ $document->meta_value($m->id) }}
-						@else
-						<strong>{{ $document->meta_value($m->id) }}</strong>
-						@endif
-					</div>
+				<!-- Title -->
+				<div class="result-title">
+					@if (@$result->type == 'url')
+						<span class="file-type-icon" aria-hidden="true" style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf35d;</span>
+					@else
+						<span class="file-type-icon" aria-hidden="true" style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf15c;</span>
 					@endif
+					@php
+						// Highlight keywords in title
+						$highlighted_title = strip_tags($result_title);
+						if (!empty($search_query)) {
+							foreach ($highlight_keywords as $keyword) {
+								if (!empty($keyword)) {
+									$highlighted_title = preg_replace('/(' . preg_quote($keyword, '/') . ')/i', '<span class="highlight">$1</span>', $highlighted_title);
+								}
+							}
+						}
+					@endphp
+					<a href="/collection/{{ $collection->id }}/document/{{ $result->id }}/details">{!! $highlighted_title !!}</a>
+				</div>
+				
+				<!-- URL/Path -->
+				<div class="result-url">
+					@if (@$result->type == 'url')
+						{{ $document->path }}
+					@else
+						{{ env('APP_URL') }}/collection/{{ $collection->id }}/document/{{ $result->id }}/details
+					@endif
+				</div>
+				
+				<!-- Meta Information -->
+				<div class="result-meta-info">
+					@foreach ($meta_fields as $m)
+						@if (!empty($m->results_display_order) && !empty($document->meta_value($m->id)))
+							@php
+								$meta_value = strip_tags($document->meta_value($m->id));
+								if (!empty($search_query)) {
+									foreach ($highlight_keywords as $keyword) {
+										if (!empty($keyword)) {
+											$meta_value = preg_replace('/(' . preg_quote($keyword, '/') . ')/i', '<span class="highlight">$1</span>', $meta_value);
+										}
+									}
+								}
+							@endphp
+							<span><strong>{{ $m->label }}:</strong> {!! $meta_value !!}</span>
+						@endif
+					@endforeach
+					@if (!empty($document->updated_at))
+						<span><span style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 400;">&#xf017;</span> {{ date('d M Y', strtotime($document->updated_at)) }}</span>
+					@endif
+				</div>
+				
+				<!-- Description/Snippet -->
+				@if (!empty($search_query) && !empty($document->text_content))
+					<div class="result-description">
+						@php
+							// Get contextual snippet where keyword appears
+							$full_text = strip_tags($document->text_content);
+							$content_snippet = '';
+							$snippet_found = false;
+							
+							// Find the first occurrence of any keyword in the text
+							$keyword_position = -1;
+							$found_keyword = '';
+							
+							foreach ($highlight_keywords as $keyword) {
+								if (!empty($keyword) && strlen($keyword) > 2) {
+									$pos = stripos($full_text, $keyword);
+									if ($pos !== false && ($keyword_position == -1 || $pos < $keyword_position)) {
+										$keyword_position = $pos;
+										$found_keyword = $keyword;
+										$snippet_found = true;
+									}
+								}
+							}
+							
+							if ($snippet_found && $keyword_position !== -1) {
+								// Extract context around the keyword (150 chars before and after)
+								$context_length = 150;
+								$start = max(0, $keyword_position - $context_length);
+								$length = min(strlen($full_text) - $start, $context_length * 2 + strlen($found_keyword));
+								
+								$content_snippet = mb_substr($full_text, $start, $length);
+								
+								// Add ellipsis if we're not at the start/end
+								if ($start > 0) {
+									$content_snippet = '... ' . $content_snippet;
+								}
+								if ($start + $length < strlen($full_text)) {
+									$content_snippet = $content_snippet . ' ...';
+								}
+							} else {
+								// Fallback: show first 300 characters if keyword not found
+								$content_snippet = mb_substr($full_text, 0, 300);
+								if (strlen($full_text) > 300) {
+									$content_snippet .= ' ...';
+								}
+							}
+							
+							// Highlight all keywords in the snippet
+							foreach ($highlight_keywords as $keyword) {
+								if (!empty($keyword) && strlen($keyword) > 1) {
+									$content_snippet = preg_replace('/(' . preg_quote($keyword, '/') . ')/iu', '<strong>$1</strong>', $content_snippet);
+								}
+							}
+						@endphp
+						{!! $content_snippet !!}
+					</div>
+				@elseif (!empty($description))
+					<div class="result-description">
+						{{ $description }}
+					</div>
 				@endif
-			   @endforeach
+				
+				<!-- Tags (if meta fields have specific display) -->
+				<div class="result-tags">
+					@foreach ($meta_fields as $m)
+						@if ($m->type == 'TaxonomyTree' && !empty($document->meta_value($m->id)))
+							@php
+								$tag_values = explode(',', strip_tags($document->meta_value($m->id)));
+								foreach($tag_values as $tag_val) {
+									$tag_val = trim($tag_val);
+									if(!empty($tag_val)) {
+										echo '<span class="tag">' . $tag_val . '</span>';
+									}
+								}
+							@endphp
+						@endif
+					@endforeach
+				</div>
 			@endif
-					<div>&nbsp;</div>
-		</div><!-- row -->
-
-		<div class="row">
-		<div class="col-lg-12">
-			@if (!empty($search_query))
-			{!! implode('', App\Util::highlightKeywords($document->text_content, implode(' ',$highlight_keywords))) !!}		
-			@endif
-		</div>
 		</div>
 	@endforeach
-		<div class="row">
-
-<nav aria-label="Page navigation" style="text-align:center; width:100%;">
-<div class="pagination">Filtered {{ $filtered_results_count }} of {{ $total_results_count }}</div>
-<ul class="pagination">
-@php
-//$total_results_count=0;
-$length=10;
-$start = empty(Request::get('start'))? 0 : Request::get('start');
-if(empty(Request::get('meta'))){
-$taxonomies = '';
-}
-$collection_id = $collection->id;
-
-$total_pages = ($filtered_results_count / 10) + (($filtered_results_count%10 === 0) ? 0 : 1);
-@endphp
-@if($start > 0)
-<li class="page-item disabled">
-  <a class="services-pagination" href="javascript:void(0);" onclick="previousPage()" tabindex="-1" aria-disabled="true">&laquo;</a>
-</li>
-@endif
-@for ($p=1; $p<=$total_pages; $p++)
-<li class="page-item @if (($start+10)/10 == $p) {{ 'current-page' }} @endif">
-  <a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $p }})">{{ $p }}</a>
-</li>
-@endfor
-@if($start < ($filtered_results_count - 10) && count($results) >= 10 )
-<li class="page-item">
-  <a class="services-pagination" href="javascript:void(0);" onclick="nextPage()">&raquo;</a>
-</li>
-@endif
-</ul>
-</nav>
-</div>
+	
+	<!-- Pagination -->
+	<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e8e8e8;">
+		<nav aria-label="Page navigation" style="text-align:center; width:100%;">
+			<div style="color: #5f6368; margin-bottom: 15px; font-size: 14px;">
+				Showing {{ $filtered_results_count }} results
+			</div>
+			<ul class="pagination" style="justify-content: center;">
+				@php
+				$length = 10;
+				$start = empty(Request::get('start')) ? 0 : Request::get('start');
+				$total_pages = ceil($filtered_results_count / 10);
+				$current_page = ($start / 10) + 1;
+				@endphp
+				
+				@if($start > 0)
+				<li class="page-item">
+					<a class="services-pagination" href="javascript:void(0);" onclick="previousPage()" tabindex="-1">&laquo; Previous</a>
+				</li>
+				@endif
+				
+				@for ($p = 1; $p <= $total_pages; $p++)
+				<li class="page-item @if ($current_page == $p) {{ 'active' }} @endif">
+					<a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $p }})">{{ $p }}</a>
+				</li>
+				@endfor
+				
+				@if($start < ($filtered_results_count - 10) && count($results) >= 10)
+				<li class="page-item">
+					<a class="services-pagination" href="javascript:void(0);" onclick="nextPage()">Next &raquo;</a>
+				</li>
+				@endif
+			</ul>
+		</nav>
+	</div>
 	@else
-		{{ __('No results found') }}
-		
+		<div style="text-align: center; padding: 40px 20px; color: #5f6368;">
+			<span style="font-size: 48px; color: #dadce0; margin-bottom: 15px; font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf002;</span>
+			<h3 style="color: #202124; font-size: 20px; margin-bottom: 10px;">{{ __('No results found') }}</h3>
+			<p style="font-size: 14px;">Try different keywords or remove search filters</p>
+		</div>
 	@endif
 
-	</div>
+</div>
 
