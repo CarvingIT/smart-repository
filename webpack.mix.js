@@ -35,3 +35,9 @@ mix.copy('node_modules/select2/dist/css/select2.min.css', 'public/css/node/selec
 mix.copy('resources/js/vendor/jquery.daterangepicker.min.js', 'public/js/node/jquery.daterangepicker.min.js');
 mix.copy('resources/css/vendor/daterangepicker.min.css', 'public/css/node/jquery.daterangepicker.min.css');
 
+// PDF.js viewer - copy from pdfjs-dist npm package
+mix.copyDirectory('node_modules/pdfjs-dist/build', 'public/js/pdfjs-viewer/build');
+mix.copyDirectory('node_modules/pdfjs-dist/web', 'public/js/pdfjs-viewer/web');
+mix.copyDirectory('node_modules/pdfjs-dist/cmaps', 'public/js/pdfjs-viewer/cmaps');
+mix.copyDirectory('node_modules/pdfjs-dist/standard_fonts', 'public/js/pdfjs-viewer/standard_fonts');
+
