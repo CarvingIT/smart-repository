@@ -130,6 +130,9 @@ $(document).ready(function() {
                 <input type="radio" name="pdf_viewer" value="dearflip" id="viewer_dearflip" style="margin-left: 15px;"
                     @if(@$column_config->pdf_viewer == 'dearflip') checked @endif />
                 <label for="viewer_dearflip">{{ __('DearFlip (Flip Book)') }}</label>
+                <input type="radio" name="pdf_viewer" value="pdfjs" id="viewer_pdfjs" style="margin-left: 15px;"
+                    @if(@$column_config->pdf_viewer == 'pdfjs') checked @endif />
+                <label for="viewer_pdfjs">{{ __('PDF.js (Modern)') }}</label>
             </div>
         </div>
 
