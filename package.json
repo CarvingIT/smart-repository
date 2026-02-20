@@ -32,7 +32,7 @@
   },
   "dependencies": {
     "material-design-icons": "^3.0.1",
-    "pdfjs-dist": "^5.4.624",
+    "pdfjs-dist": "4.0.379",
     "puppeteer": "^5.3.1"
   }
 }
