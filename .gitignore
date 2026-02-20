@@ -23,3 +23,11 @@ Homestead.json
 
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
 .rocketeer/
+
+# PDF.js viewer - large generated/binary assets (not essential to track)
+public/js/pdfjs-viewer/cmaps/
+public/js/pdfjs-viewer/standard_fonts/
+public/js/pdfjs-viewer/locale/
+public/js/pdfjs-viewer/build/*.map
+public/js/pdfjs-viewer/viewer.mjs.map
+public/js/pdfjs-viewer/compressed.tracemonkey-pldi-09.pdf
