@@ -10,28 +10,29 @@
     "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --config=node_modules/laravel-mix/setup/webpack.config.js"
   },
   "devDependencies": {
+    "@popperjs/core": "^2.11.8",
     "axios": "^1.7.8",
     "bootstrap": "^5.3.3",
     "cross-env": "^5.1",
-    "jquery": "^3.7.1",
-    "jquery-ui": "^1.14.1",
-    "laravel-mix": "^6.0.49",
-    "lodash": "^4.17.21",
-    "@popperjs/core": "^2.11.8",
-    "resolve-url-loader": "^5.0.0",
-    "sass": "^1.15.2",
-    "sass-loader": "^7.1.0",
-    "vue": "^3.5.13",
-    "vue-loader": "^17.0.0",
     "datatables.net": "^2.3.5",
     "datatables.net-dt": "^2.3.5",
     "datatables.net-fixedcolumns": "^5.0.4",
     "datatables.net-fixedcolumns-dt": "^5.0.4",
+    "jquery": "^3.7.1",
+    "jquery-ui": "^1.14.1",
+    "laravel-mix": "^6.0.49",
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
+    "resolve-url-loader": "^5.0.0",
+    "sass": "^1.15.2",
+    "sass-loader": "^7.1.0",
     "select2": "^4.0.13",
-    "moment": "^2.30.1"
+    "vue": "^3.5.13",
+    "vue-loader": "^17.0.0"
   },
   "dependencies": {
     "material-design-icons": "^3.0.1",
+    "pdfjs-dist": "^5.4.624",
     "puppeteer": "^5.3.1"
   }
 }
