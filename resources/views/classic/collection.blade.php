@@ -89,6 +89,18 @@
 	content: "\f51a" !important;
 }
 
+/* Classic Theme: collapsible taxonomy parent accordion */
+.taxonomy-parent-accordion {
+	margin-bottom: 2px;
+}
+.taxonomy-parent-label {
+	user-select: none;
+	transition: background 0.15s;
+}
+.taxonomy-parent-label:hover {
+	background: #ede7f6 !important;
+}
+
 /* Search clear icon */
 .fa-xmark:before, .fa-times:before {
 	content: "\f00d" !important;
@@ -142,6 +154,15 @@ $(document).ready(function() {
 $(document).ready(function() {
 	//$("#search-results").load('{{ $url }}');
 	reloadSearchResults();
+	@php
+		$_all_mf = Session::get('meta_filters');
+		$_coll_mf = !empty($_all_mf[$collection->id]) ? $_all_mf[$collection->id] : [];
+		$_has_created = !empty(array_filter($_coll_mf, function($f){ return $f['field_id'] == 'created_at' && $f['operator'] !== '!='; }));
+	@endphp
+	@if($_has_created)
+	// show Record Created section open if a filter is active
+	$('#filter_record_created').show();
+	@endif
 });
 
 function clearFilters(){
@@ -171,6 +192,10 @@ function clearFilters(){
 			$('#end_meta_{{ $f->id }}').val('{{ $numeric_max_value }}');
 			@endif
 			@endforeach
+			// Clear record created filter UI
+			$('#record_created_value').val('');
+			$('#created_filter_tags_container').html('');
+			$('#date-facets-container').html('');
 			// Reload search results
 			reloadSearchResults();
 		},
@@ -181,19 +206,117 @@ function clearFilters(){
 	});
 }
 
-function reloadSearchResults(){
+function reloadSearchResults(callback){
 	showSpinner();
 	// go to the first page
 	$('#search-results-start').val(0);
-	loadSearchResults();
+	loadSearchResults(callback);
 }
 
-function loadSearchResults(){
+function loadSearchResults(callback){
 	var queryString = $('#isa_search').serialize();
-	//alert(queryString);
 	var url = '/collection/{{ $collection->id }}/search-results?'+queryString;
-	$("#search-results").load(url);
+	$("#search-results").load(url, function(){
+		updateFilterTagCount();
+		loadDateFacets();
+		if(typeof callback === 'function') callback();
+	});
 	return false;
+}
+
+function updateFilterTagCount(){
+	var count = $('#filtered-results-count').text().trim();
+	if(count !== ''){
+		$('.filter-tag-count').html('<span style="font-size:11px; font-weight:600; color:#666;">' + count + ' results<\/span>');
+	}
+}
+
+function renderCreatedFilterTag(operator, value, filterId){
+	var opLabel = operator === '>=' ? '{{ __('On or after') }}' : (operator === '<=' ? '{{ __('On or before') }}' : '{{ __('On') }}');
+	var parts = value.split('-');
+	var displayDate = parts.length === 3 ? parts[2]+'-'+parts[1]+'-'+parts[0] : value;
+	return '<div class="created-filter-tag" data-filter-id="' + filterId + '" data-operator="' + operator + '" '
+		+ 'style="background:#f0e6f6; border:1px solid #9c27b0; border-radius:6px; padding:6px 8px; margin-top:8px;">'
+		+ '<div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">'
+		+ '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">'
+		+ '<span style="font-size:12px; font-weight:700; color:#222;">' + opLabel + ' ' + displayDate + '<\/span>'
+		+ '<span class="filter-tag-count" style="font-size:11px; font-weight:600; color:#666;"><\/span>'
+		+ '<\/div>'
+		+ '<a href="javascript:void(0);" onclick="removeCreatedFilter(this, \'' + filterId + '\'); return false;" '
+		+ 'style="display:inline-flex; align-items:center; gap:2px; color:#c62828; text-decoration:none; font-size:11px; font-weight:700; '
+		+ 'border:1px solid #c62828; border-radius:4px; padding:2px 6px; white-space:nowrap; flex-shrink:0; background:#fff3f3;" '
+		+ 'title="{{ __('Remove') }}"><i class="material-icons" style="font-size:12px;">close<\/i> clear<\/a>'
+		+ '<\/div>'
+		+ '<\/div>';
+}
+
+function removeCreatedFilter(el, filterId){
+	$.ajax({
+		url: '/collection/{{ $collection->id }}/ajax-remove-filter/' + filterId,
+		method: 'POST',
+		data: { _token: '{{ csrf_token() }}' },
+		success: function(){
+			$(el).closest('.created-filter-tag').remove();
+			$('#date-facets-container').html('');
+			reloadSearchResults();
+		},
+		error: function(){
+			window.location.href = '/collection/{{ $collection->id }}/removefilter/' + filterId;
+		}
+	});
+}
+
+function loadDateFacets(){
+	// Only show date facets when a created_at range/date filter is active
+	if($('#created_filter_tags_container .created-filter-tag').length === 0){
+		$('#date-facets-container').html('');
+		return;
+	}
+	// If the active filter is an exact "On" (=) date, date facets would duplicate the same box — skip them
+	if($('#created_filter_tags_container .created-filter-tag[data-operator="="]').length > 0){
+		$('#date-facets-container').html('');
+		return;
+	}
+	var queryString = $('#isa_search').serialize();
+	$.getJSON('/collection/{{ $collection->id }}/date-facets?' + queryString, function(data){
+		var html = '';
+		if(!data || data.length === 0){
+			$('#date-facets-container').html('');
+			return;
+		}
+		$.each(data, function(i, item){
+			html += '<div class="date-facet-chip" data-date="'+item.raw_date+'"'
+				+ ' style="background:#f0e6f6; border:1px solid #9c27b0; border-radius:6px;'
+				+ ' padding:6px 8px; margin-top:6px;">'
+				+ '<div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">'
+				+ '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">'
+				+ '<span style="font-size:12px; font-weight:700; color:#222;">'+ item.formatted +'<\/span>'
+				+ '<span style="font-size:11px; font-weight:600; color:#666;">'+ item.count +' documents<\/span>'
+				+ '<\/div>'
+				+ '<a href="javascript:void(0);" onclick="excludeDate(this, \''+item.raw_date+'\'); return false;"'
+				+ ' style="display:inline-flex; align-items:center; gap:2px; color:#c62828; text-decoration:none; font-size:11px; font-weight:700;'
+				+ ' border:1px solid #c62828; border-radius:4px; padding:2px 6px; white-space:nowrap; flex-shrink:0; background:#fff3f3;"'
+				+ ' title="{{ __('Remove this date') }}">'
+				+ '<i class="material-icons" style="font-size:12px;">close<\/i> clear'
+				+ '<\/a><\/div><\/div>';
+		});
+		$('#date-facets-container').html(html);
+	});
+}
+
+function excludeDate(el, date){
+	$.ajax({
+		url: '/collection/{{ $collection->id }}/ajax-exclude-date',
+		method: 'POST',
+		data: { _token: '{{ csrf_token() }}', date: date },
+		success: function(){
+			$(el).closest('.date-facet-chip').fadeOut(200, function(){ $(this).remove(); });
+			reloadSearchResults();
+		},
+		error: function(){
+			alert('{{ __('Failed to exclude date. Please try again.') }}');
+		}
+	});
 }
 
 function drillDown(checkbox_filter){
@@ -207,6 +330,16 @@ function drillDown(checkbox_filter){
 		$('.ch-child-of-'+checkbox_filter.value).prop('checked', false);
 	}
 	reloadSearchResults();
+}
+
+// Classic Theme: toggle collapsible parent taxonomy accordion
+function classicToggleTaxParent(uid) {
+	var container = document.getElementById(uid);
+	var arrow = document.getElementById(uid + '_arrow');
+	if (!container) return;
+	var isHidden = (container.style.display === 'none');
+	container.style.display = isHidden ? '' : 'none';
+	if (arrow) arrow.innerHTML = isHidden ? '&#9660;' : '&#9654;';
 }
 
 function showSpinner(){
@@ -273,7 +406,7 @@ function goToPage(page){
 
 	$search_query = Request::get('isa_search_parameter');
 
-	function getTree($children, $rmfv_map, $parent_id = null, $meta_id=null, $show_filters=false){
+	function getTree($children, $rmfv_map, $parent_id = null, $meta_id=null, $show_filters=false, $depth=0){
 		 $display = '';
 		 if(!$show_filters){
 			$display = ' style="display:none;"';
@@ -289,28 +422,47 @@ function goToPage(page){
 				$display = '';
 	 		}
         	if(!empty($children['parent_'.$t->id]) && count($children['parent_'.$t->id]) > 0){
-				if(empty($t->parent_id)){
-					echo "By ".$t->label."<br /><br />";
+				if($depth == 0){
+					// --- Classic Theme: render first-level parents as collapsible accordion headers ---
+					// Check if any direct child is currently selected (to keep accordion open)
+					$anySelected = false;
+					$req_meta = Request::get('meta_'.$meta_id);
+					if(!empty($req_meta)){
+						foreach($children['parent_'.$t->id] as $child){
+							if(in_array($child->id, $req_meta)){ $anySelected = true; break; }
+						}
+					}
+					$childContainerDisplay = $anySelected ? '' : 'display:none;';
+					$arrowChar = $anySelected ? '&#9660;' : '&#9654;';
+					$uid = 'tax_acc_'.$meta_id.'_'.$t->id;
+					echo '<div class="taxonomy-parent-accordion" style="margin-top:4px;">';
+					echo '<div class="taxonomy-parent-label" onclick="classicToggleTaxParent(\''.$uid.'\')" style="cursor:pointer; display:flex; align-items:center; gap:5px; padding:6px 8px; background:#f5f0fa; border-radius:5px; font-weight:600; font-size:13px; color:#444; margin-bottom:2px;">';
+					echo '<span id="'.$uid.'_arrow" style="font-size:10px; min-width:14px; text-align:center; color:#9c27b0;">'.$arrowChar.'</span>';
+					echo '<span>'.$t->label.'</span>';
+					echo '</div>';
+					echo '<div id="'.$uid.'" style="'.$childContainerDisplay.' margin-left:14px; margin-top:2px; padding-bottom:4px; border-left:2px solid #e8d5f5; padding-left:8px;">';
+					getTree($children, $rmfv_map, $t->id, $meta_id, true, $depth+1);
+					echo '</div>';
+					echo '</div>';
 				}
 				else{
+					// Original behavior for deeper levels: checkbox with drillDown
 					$tid = $t->id;
-					// get compare with query string parameter to mark as checked
 					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
                 	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 					echo '</div>';
+					getTree($children, $rmfv_map, $t->id, $meta_id, false, $depth+1);
 				}
-          		getTree($children, $rmfv_map, $t->id, $meta_id);
           }
           else{
 				$checked = '';
-				if(!$show_filters){
+				if(!$show_filters && $depth > 0){
 					$display = ' style="display:none;"';
 				}
 				if(!empty(Request::get('meta_'.$meta_id)) && in_array($t->id, Request::get('meta_'.$meta_id))){
 					$checked = "checked";
 					$display = '';
 				}
-				//echo '<div class="form-check ct-sub child-of-'.$parent_id.'" '.$display.'>';
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
                 echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
@@ -531,14 +683,35 @@ foreach($tags as $t){
 	  <div class="col-lg-3" style="margin-top:0;">
 		<div class="services-list" style="padding: 10px 5px; border: 1px solid #d3dff3; margin-bottom: 20px; background-color: #fff;">
 			<h5 style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e8e8e8;">Filter By <div style="float:right; cursor:pointer; border:1px solid #9c27b0; padding:4px 8px;border-radius:5px; background-color:#eee; font-size: 14px;" onclick="clearFilters();" title="Clear all filters"><span style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf51a;</span> Clear</div></h5>
+				<!-- File Type Filter (shown first) -->
+				<a href="javascript:return false;" onclick="$('#filter_file_type').toggle()">{{ __('File Type') }}</a>
+				<div id="filter_file_type" style="display:none; margin-left: 15px; margin-top: 5px;">
+					<select name="extension_filter" id="file_type_filter" class="form-control" onchange="applyFileTypeFilter()" style="border: 2px solid #9c27b0; padding: 5px 10px; font-size: 13px; border-radius: 5px; width: auto; max-width: 200px;">
+						<option value="">{{ __('All File Types') }}</option>
+					</select>
+				</div>
 				@php
-				foreach($filters as $f){
-					if($f->type == 'TaxonomyTree'){
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
-						echo '<div id="filter_'.$f->id.'">';
-						getTree($children, $rmfv_map, $f->options, $f->id, true);
-						echo "</div>\n";
+				// Taxonomy filters (shown below File Type)
+				$taxonomy_filters = array_filter($filters, function($f){ return $f->type == 'TaxonomyTree'; });
+				// Also include any TaxonomyTree meta fields that don't have is_filter set
+				$shown_ids = array_map(function($f){ return $f->id; }, $taxonomy_filters);
+				foreach($collection->meta_fields as $mf){
+					if($mf->type == 'TaxonomyTree' && !in_array($mf->id, $shown_ids)){
+						$taxonomy_filters[] = $mf;
 					}
+				}
+				foreach($taxonomy_filters as $f){
+					// Keep outer section open if any child is already checked (active filter)
+					$_taxOpenByDefault = !empty(Request::get('meta_'.$f->id));
+					$_taxOuterDisplay = $_taxOpenByDefault ? '' : 'display:none;';
+					echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()" style="margin-top:8px; display:block;">'.$f->label.'</a>';
+					echo '<div id="filter_'.$f->id.'" style="'.$_taxOuterDisplay.'">';
+					getTree($children, $rmfv_map, $f->options, $f->id, true);
+					echo "</div>\n";
+				}
+				// Other filters (Numeric, Select)
+				foreach($filters as $f){
+					if($f->type == 'TaxonomyTree') continue; // already shown above
 					else if($f->type == 'Numeric'){
               				$extra_attributes = empty($f->extra_attributes)? null : json_decode($f->extra_attributes);
               				$numeric_min_value = @$extra_attributes->numeric_min_value;
@@ -584,14 +757,82 @@ foreach($tags as $t){
 					}
 				}
 				@endphp
-				<!-- File Type Filter -->
-				<a href="javascript:return false;" onclick="$('#filter_file_type').toggle()">{{ __('File Type') }}</a>
-				<div id="filter_file_type" style="display:none; margin-left: 15px; margin-top: 5px;">
-					<select name="extension_filter" id="file_type_filter" class="form-control" onchange="applyFileTypeFilter()" style="border: 2px solid #9c27b0; padding: 5px 10px; font-size: 13px; border-radius: 5px; width: auto; max-width: 200px;">
-						<option value="">{{ __('All File Types') }}</option>
-					</select>
-				</div>
+
+				<!-- Record Created Filter (shown below Taxonomy) -->
+				<a href="javascript:return false;" onclick="$('#filter_record_created').toggle()" style="margin-top:8px; display:block;">{{ __('Record Created') }}</a>
+				<div id="filter_record_created" style="display:none; margin-left: 5px; margin-top: 5px;">
+					<div style="margin-bottom:5px;">
+						<select id="record_created_operator" class="form-control" style="font-size:13px; padding:4px 6px; margin-bottom:5px;">
+							<option value=">=">{{ __('On or after') }}</option>
+							<option value="<=">{{ __('On or before') }}</option>
+							<option value="=">{{ __('On') }}</option>
+						</select>
+						<input type="date" id="record_created_value" class="form-control" style="font-size:13px; padding:4px 6px; margin-bottom:5px;" />
+						<button type="button" class="btn btn-sm btn-primary" onclick="applyRecordCreatedFilter()" style="width:100%; font-size:13px;">{{ __('Apply') }}</button>
+					</div>
+					@php
+						$all_session_filters = Session::get('meta_filters');
+						$session_filters_for_coll = !empty($all_session_filters[$collection->id]) ? $all_session_filters[$collection->id] : [];
+					// Only show the main date range/exact filters (not the != date exclusions)
+					$created_at_filters = array_filter($session_filters_for_coll, function($f){
+						return $f['field_id'] == 'created_at' && $f['operator'] !== '!=';
+					});
+					@endphp
+				<div id="created_filter_tags_container">
+				@foreach($created_at_filters as $cf)
+				<div class="created-filter-tag" data-filter-id="{{ $cf['filter_id'] }}" data-operator="{{ $cf['operator'] }}"
+						style="background:#f0e6f6; border:1px solid #9c27b0; border-radius:6px; padding:6px 8px; margin-top:8px;">
+						<div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
+							<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+								<span style="font-size:12px; font-weight:700; color:#222;">
+									{{ $cf['operator'] == '>=' ? __('On or after') : ($cf['operator'] == '<=' ? __('On or before') : __('On')) }}
+									{{ \Carbon\Carbon::parse($cf['value'])->format('d-m-Y') }}
+								</span>
+								<span class="filter-tag-count" style="font-size:11px; font-weight:600; color:#666;"></span>
+							</div>
+							<a href="javascript:void(0);"
+								onclick="removeCreatedFilter(this, '{{ $cf['filter_id'] }}'); return false;"
+								style="display:inline-flex; align-items:center; gap:2px; color:#c62828; text-decoration:none; font-size:11px; font-weight:700; border:1px solid #c62828; border-radius:4px; padding:2px 6px; white-space:nowrap; flex-shrink:0; background:#fff3f3;"
+								title="{{ __('Remove') }}">
+								<i class="material-icons" style="font-size:12px;">close</i> clear
+							</a>
+						</div>
+					</div>
+				@endforeach
+				</div>			<div id="date-facets-container" style="margin-top:4px;"></div>				</div>
+
 <script>
+function applyRecordCreatedFilter(){
+	var operator = $('#record_created_operator').val();
+	var value = $('#record_created_value').val();
+	if(!value){ alert('{{ __("Please select a date") }}'); return; }
+	$.ajax({
+		url: '/collection/{{ $collection->id }}/ajax-add-created-filter',
+		method: 'POST',
+		data: {
+			_token: '{{ csrf_token() }}',
+			collection_id: '{{ $collection->id }}',
+			meta_field: 'created_at',
+			operator: operator,
+			meta_value: value
+		},
+		success: function(response){
+			if(response && response.success){
+				var filterId = response.filter_id;
+				// Replace existing tag and add new one without page reload
+				$('#created_filter_tags_container').html(renderCreatedFilterTag(operator, value, filterId));
+				// Reload results without page reload, then update count in tag
+				reloadSearchResults();
+			}
+		},
+		error: function(xhr){
+			console.error('Failed to apply date filter', xhr);
+			alert('{{ __("Failed to apply filter. Please try again.") }}');
+		}
+	});
+}
+</script>
+
  @foreach ($filters as $f)
  @if ($f->type == 'Numeric')
     var lowerSlider_meta_{{ $f->id }} = document.getElementById('meta_{{ $f->id }}_lower_slider');

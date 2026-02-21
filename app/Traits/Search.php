@@ -144,7 +144,9 @@ trait Search{
         foreach($meta_filters as $mf){
 			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filters like created_at, created_by
 				if($mf['field_id'] == 'created_at'){
-					$documents = $documents->where('created_at', $mf['operator'], $mf['value']);
+					// Use whereDate() so a plain date string like '2026-02-17' matches
+					// datetime values correctly (avoids '=' never matching or '<=' cutting off same-day records)
+					$documents = $documents->whereDate('created_at', $mf['operator'], $mf['value']);
 				}	
 			continue;// no need to proceed further
 			}

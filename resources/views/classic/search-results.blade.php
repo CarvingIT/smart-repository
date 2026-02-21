@@ -305,7 +305,7 @@
 	<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e8e8e8;">
 		<nav aria-label="Page navigation" style="text-align:center; width:100%;">
 			<div style="color: #5f6368; margin-bottom: 15px; font-size: 14px;">
-				Showing {{ $filtered_results_count }} results
+					Showing <span id="filtered-results-count">{{ $filtered_results_count }}</span> results
 			</div>
 			<ul class="pagination" style="justify-content: center;">
 				@php
