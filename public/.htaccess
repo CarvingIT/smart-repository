@@ -1,3 +1,9 @@
+# Fix MIME type for ES module files (.mjs) required by PDF.js viewer
+<IfModule mod_mime.c>
+    AddType application/javascript .mjs
+    AddType application/javascript .js
+</IfModule>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

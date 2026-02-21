@@ -744,6 +744,10 @@ public function downloadFile($doc,$storage_drive,$path_count=null){
                 'Content-Description' => 'File Transfer',
                 //'Content-Disposition' => "attachment; filename={$file_name}",
                 'Content-Transfer-Encoding' => 'binary',
+                'Accept-Ranges' => 'bytes',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Range',
                 ];
 				if($mime != 'application/pdf'){
 					$response['Content-Disposition'] = "attachment; filename={$file_name}";
