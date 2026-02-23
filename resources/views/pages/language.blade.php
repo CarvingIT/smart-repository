@@ -10,12 +10,18 @@
       {{ __(env('APP_NAME','Smart Repository')) }}
   </title>
   <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no' name='viewport' />
-  <!--     Fonts and icons     -->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+  <!--     Fonts and icons - served locally via npm     -->
+  <!-- Roboto + Material Icons -->
+  <link rel="stylesheet" href="/vendor/fontsource/roboto/300.css" />
+  <link rel="stylesheet" href="/vendor/fontsource/roboto/400.css" />
+  <link rel="stylesheet" href="/vendor/fontsource/roboto/500.css" />
+  <link rel="stylesheet" href="/vendor/fontsource/roboto/700.css" />
+  <link href="/vendor/material-icons/material-icons.css" rel="stylesheet">
+  <!-- Font Awesome (@fortawesome/fontawesome-free) -->
+  <link rel="stylesheet" href="/vendor/font-awesome/css/all.min.css">
 
-  <!-- Markazi Text font include just for persian demo purpose, don't include it in your project -->
-  <link href="https://fonts.googleapis.com/css?family=Cairo&amp;subset=arabic" rel="stylesheet">
+  <!-- Cairo font for Arabic - served locally via npm (@fontsource/cairo) -->
+  <link rel="stylesheet" href="/vendor/fontsource/cairo/400.css">
 
   <!-- CSS Files -->
   <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />

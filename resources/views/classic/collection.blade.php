@@ -4,9 +4,8 @@
 <link href="/css/node/jquery-ui.min.css" rel="stylesheet">
 <link href="/css/classic/main.css" rel="stylesheet">
 <link href="/css/classic/fonts.css" rel="stylesheet">
-<!-- Font Awesome for icons - Load from multiple CDNs for redundancy -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css" />
+<!-- Font Awesome - served locally via npm (@fortawesome/fontawesome-free) -->
+<link rel="stylesheet" href="/vendor/font-awesome/css/all.min.css" />
 <style>
 	.form-check-label{
 		display:inline-block;

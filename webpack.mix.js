@@ -81,3 +81,29 @@ mix.copy(
 mix.copyDirectory('node_modules/pdfjs-dist/build', 'public/js/pdfjs-viewer/build');
 mix.copyDirectory('node_modules/pdfjs-dist/cmaps', 'public/js/pdfjs-viewer/cmaps');
 mix.copyDirectory('node_modules/pdfjs-dist/standard_fonts', 'public/js/pdfjs-viewer/standard_fonts');
+
+// Font Awesome (serves CSS + webfonts locally; CSS uses ../webfonts/ relative path)
+mix.copyDirectory(
+    "node_modules/@fortawesome/fontawesome-free",
+    "public/vendor/font-awesome",
+);
+
+// Material Icons (iconfont CSS uses relative paths for font files - copy whole folder)
+mix.copyDirectory(
+    "node_modules/material-design-icons/iconfont",
+    "public/vendor/material-icons",
+);
+
+// Fontsource fonts (self-contained: CSS references ./files/* relative paths)
+mix.copyDirectory(
+    "node_modules/@fontsource/nunito",
+    "public/vendor/fontsource/nunito",
+);
+mix.copyDirectory(
+    "node_modules/@fontsource/roboto",
+    "public/vendor/fontsource/roboto",
+);
+mix.copyDirectory(
+    "node_modules/@fontsource/cairo",
+    "public/vendor/fontsource/cairo",
+);

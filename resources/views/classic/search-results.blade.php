@@ -1,6 +1,5 @@
-<!-- Font Awesome for icons - Load from multiple CDNs for redundancy -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.4.0/css/all.css" />
+<!-- Font Awesome - served locally via npm (@fortawesome/fontawesome-free) -->
+<link rel="stylesheet" href="/vendor/font-awesome/css/all.min.css" />
 <div class="search-results-container">
 <style>
 	.search-result-item {
