@@ -14,12 +14,13 @@
     <!-- jQuery is only used for hide(), show() and slideDown(). All other features use vanilla JS -->
     <script src="/js/node/jquery.min.js"></script>
 
-    <!-- Font Awesome - served locally via npm (@fortawesome/fontawesome-free) -->
-    <link href="/vendor/font-awesome/css/all.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
 
-    <!-- Nunito font - served locally via npm (@fontsource/nunito) -->
-    <link rel="stylesheet" href="/vendor/fontsource/nunito/400.css">
-    <link rel="stylesheet" href="/vendor/fontsource/nunito/700.css">
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito" crossorigin="anonymous">
 
     <!-- Styles -->
     {{--    @if(file_exists(public_path("binshopsblog_admin_css.css")))--}}
@@ -27,6 +28,7 @@
     {{--    @else--}}
     {{--        <link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
     {{--Edited your css/app.css file? Uncomment these lines to use plain bootstrap:--}}
+    {{--<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">--}}
     {{--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">--}}
     {{--    @endif--}}
 
