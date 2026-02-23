@@ -144,7 +144,9 @@ trait Search{
         foreach($meta_filters as $mf){
 			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filters like created_at, created_by
 				if($mf['field_id'] == 'created_at'){
-					$documents = $documents->where('created_at', $mf['operator'], $mf['value']);
+					// Use whereDate() so a plain date string like '2026-02-17' matches
+					// datetime values correctly (avoids '=' never matching or '<=' cutting off same-day records)
+					$documents = $documents->whereDate('created_at', $mf['operator'], $mf['value']);
 				}	
 			continue;// no need to proceed further
 			}
@@ -1029,8 +1031,8 @@ trait Search{
 
 	//public function isaCollectionDocumentSearch(Request $request){
 	public function searchResults(Request $request){
-		//$collection_id = $request->collection_id;
-		//$collection = \App\Collection::find($collection_id);
+		$collection_id = $request->collection_id;
+		$collection = \App\Collection::find($collection_id);
 		//$analyzer = $request->analyzer;
 		$keywords = $request->isa_search_parameter;
 		$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
@@ -1060,7 +1062,7 @@ trait Search{
 		$highlights = json_decode(json_encode(@$search_results->highlights, true), true);
 		//Log::debug($highlights);exit;
         return view('search-results',[
-            //'collection'=>$collection, 
+            'collection'=>$collection, 
 			'results'=>$search_results->data,
 			'highlights'=> $highlights,  
 			'filtered_results_count'=>$filtered_results_count,

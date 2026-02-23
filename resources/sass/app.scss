@@ -1,8 +1,9 @@
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+// Fonts - loaded locally via @fontsource (managed by npm, not from CDN)
+@import "~@fontsource/nunito/400.css";
+@import "~@fontsource/nunito/700.css";
 
 // Variables
-@import 'variables';
+@import "variables";
 
 // Bootstrap
-@import '~bootstrap/scss/bootstrap';
+@import "~bootstrap/scss/bootstrap";

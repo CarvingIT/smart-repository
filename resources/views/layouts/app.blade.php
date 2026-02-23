@@ -29,7 +29,8 @@ foreach($config as $c){
     <link href="/css/node/jquery.dataTables.min.css" rel="stylesheet" />
     <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
     
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Material Icons served locally via npm (material-design-icons) -->
+    <link href="/vendor/material-icons/material-icons.css" rel="stylesheet">
     
         <!--   Core JS Files   -->
         <script src="/js/node/jquery.min.js"></script>
