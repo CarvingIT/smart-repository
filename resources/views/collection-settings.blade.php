@@ -12,6 +12,17 @@
   	});
   } );
   </script>
+<script>
+$(document).ready(function() {
+    $('input[name="use_custom_template"]').on('change', function() {
+        if ($(this).val() === '1') {
+            $('#template-editors').slideDown();
+        } else {
+            $('#template-editors').slideUp();
+        }
+    });
+});
+</script>
 <!--link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/node/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/node/select2.min.js"></script-->
 <link href="/css/node/select2.min.css" rel="stylesheet" />
@@ -136,34 +147,6 @@ $(document).ready(function() {
             </div>
         </div>
 
-		<h4>{{__('Display of search results')}}</h4>
-		<div class="form-group row">
-           <div class="col-md-3">
-				{{ __('Title replacement') }}
-		   </div>
-           <div class="col-md-9">
-				<select class="form-control1" name="replace_title_with_meta">
-					<option value="">{{ __("Don't replace with any meta value") }}</option>
-				@foreach ($collection->meta_fields as $m)
-					<option value="{{ $m->id }}" @if (@$column_config->replace_title_with_meta == $m->id) {{ 'selected' }} @endif >{{ $m->label }}</option>
-				@endforeach
-				</select>
-		   </div>
-           <div class="col-md-12"><hr /></div>
-           <div class="col-md-3">
-               {{ __('Fixed Columns Left') }}
-           </div>
-           <div class="col-md-3">
-               <input class="form-control" type="number" name="fixed_columns_left" value="{{ @$column_config->fixed_columns_left ?? 0 }}" min="0" />
-           </div>
-           <div class="col-md-3">
-               {{ __('Fixed Columns Right') }}
-           </div>
-           <div class="col-md-3">
-               <input class="form-control" type="number" name="fixed_columns_right" value="{{ @$column_config->fixed_columns_right ?? 0 }}" min="0" />
-           </div>
-		</div>
-
 		<h4>{{__('Document Approval')}}</h4>
 		<div class="form-group row">
                   <div class="col-md-12"><input type="checkbox" id="display_unapproved_docs" name="display_unapproved_docs" value="1"
@@ -195,44 +178,6 @@ $(document).ready(function() {
 				@endforeach
 			</select>
             </div>
-		</div>
-
-		<h4>{{__('Info page')}}</h4>
-		<div class="form-group row">
-           <div class="col-md-3"><input name="show_word_cloud" type="checkbox" value="1" 
-			@if(!empty($column_config->show_word_cloud) && $column_config->show_word_cloud == 1) checked="checked" @endif /> {{ __('Show word cloud') }}</div>
-           <div class="col-md-3"><input name="show_audit_trail" type="checkbox" value="1" 
-			@if(!empty($column_config->show_audit_trail) && $column_config->show_audit_trail == 1) checked="checked" @endif /> {{ __('Show audit trail') }}</div>
-			<hr />
-           <div class="col-md-12 row">
-			<div class="col-md-5"><h5>{{ __('Current label') }}</h5></div>
-			<div class="col-md-2"><h5>{{ __('Hide Label?') }}</h5></div>
-			<div class="col-md-2"><h5>{{ __('Hide Field?') }}</h5></div>
-			<div class="col-md-3"><h5>{{ __('Label override') }}</h5></div>
-			</div>
-			
-			@foreach($collection->meta_fields as $m)
-           <div class="col-md-12 row">
-			<div class="col-md-5">{{ $m->label }}</div>
-			@php 
-				$display_label = 'meta_display_label_'.$m->id;
-			@endphp
-			<div class="col-md-2">
-			<input name="meta_hide_label[]" type="checkbox" value="{{$m->id}}" 
-			@if(is_array(@$column_config->meta_hide_label) && in_array($m->id, @$column_config->meta_hide_label)) checked="checked" @endif />
-			</div>
-
-			<div class="col-md-2">
-			<input name="meta_hide_field[]" type="checkbox" value="{{$m->id}}" 
-			@if(is_array(@$column_config->meta_hide_field) && in_array($m->id, @$column_config->meta_hide_field)) checked="checked" @endif />
-			</div>
-
-			<div class="col-md-3">
-			<input name="meta_display_label_{{ $m->id }}" type="text" value="{{ @$column_config->{$display_label} }}" placeholder="{{ __('Label for display') }}" />
-			</div>
-
-			</div>
-			@endforeach
 		</div>
 
 		<h4>{{__('Notifications')}}</h4>
@@ -312,6 +257,66 @@ $(document).ready(function() {
 				</div>
 			</div>
 			<div class="row">
+			</div>
+		</div>
+
+
+		<h4>{{ __('Display Templates') }}</h4>
+		<div class="form-group row">
+			<div class="col-md-12" style="margin-bottom:10px;">
+				<strong>{{ __('Template Display Mode') }}</strong><br />
+				<label style="margin-right:20px;">
+					<input type="radio" name="use_custom_template" value="0"
+						@if(empty($column_config->use_custom_template) || $column_config->use_custom_template == 0) checked @endif />
+					{{ __('Default display') }}
+				</label>
+				<label>
+					<input type="radio" name="use_custom_template" value="1"
+						@if(!empty($column_config->use_custom_template) && $column_config->use_custom_template == 1) checked @endif />
+					{{ __('Custom template display') }}
+				</label>
+				<p class="text-muted" style="font-size:0.85em; margin-top:5px;">
+					{{ __('Default display applies for new collections. Switch to custom template to control the HTML layout of search results and document detail pages.') }}
+				</p>
+			</div>
+
+			<div class="col-md-12" id="template-editors" style="@if(empty($column_config->use_custom_template) || $column_config->use_custom_template == 0) display:none; @endif">
+				<div class="row" style="margin-bottom:15px;">
+					<div class="col-md-12">
+						<label><strong>{{ __('Search Result Template') }}</strong></label>
+						<p class="text-muted" style="font-size:0.85em;">
+							{{ __('HTML template for each row in the search results list.') }}<br />
+							{{ __('Available tokens:') }}
+					<code>@{{title}}</code>,
+					<code>@{{type}}</code>,
+					<code>@{{size}}</code>,
+					<code>@{{date}}</code>,
+					<code>@{{link}}</code>,
+					<code>@{{icon_url}}</code>,
+					<code>@{{meta_FIELDLABEL}}</code>
+						</p>
+						<textarea name="search_result_template_html" class="form-control" rows="8"
+						placeholder="e.g. &lt;div class=&quot;sr-item&quot;&gt;&lt;a href=&quot;@{{link}}&quot;&gt;&lt;strong&gt;@{{title}}&lt;/strong&gt;&lt;/a&gt;&lt;span class=&quot;meta&quot;&gt;@{{date}}&lt;/span&gt;&lt;/div&gt;">{{ !empty($search_result_template) ? $search_result_template->html_code : '' }}</textarea>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<label><strong>{{ __('Details Page Template') }}</strong></label>
+						<p class="text-muted" style="font-size:0.85em;">
+							{{ __('HTML template for the document details page showing meta information and the download link.') }}<br />
+							{{ __('Available tokens:') }}
+					<code>@{{title}}</code>,
+					<code>@{{type}}</code>,
+					<code>@{{size}}</code>,
+					<code>@{{date}}</code>,
+					<code>@{{link}}</code>,
+					<code>@{{icon_url}}</code>,
+					<code>@{{meta_FIELDLABEL}}</code>
+						</p>
+						<textarea name="details_page_template_html" class="form-control" rows="8"
+						placeholder="e.g. &lt;div class=&quot;doc-detail&quot;&gt;&lt;h2&gt;@{{title}}&lt;/h2&gt;&lt;p&gt;@{{meta_Description}}&lt;/p&gt;&lt;a href=&quot;@{{link}}&quot;&gt;Download&lt;/a&gt;&lt;/div&gt;">{{ !empty($details_page_template) ? $details_page_template->html_code : '' }}</textarea>
+					</div>
+				</div>
 			</div>
 		</div>
 

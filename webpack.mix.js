@@ -78,9 +78,18 @@ mix.copy(
 
 // PDF.js viewer - copy large binary assets from pdfjs-dist npm package
 // (viewer UI files like viewer.html, images/ are committed to git)
-mix.copyDirectory('node_modules/pdfjs-dist/build', 'public/js/pdfjs-viewer/build');
-mix.copyDirectory('node_modules/pdfjs-dist/cmaps', 'public/js/pdfjs-viewer/cmaps');
-mix.copyDirectory('node_modules/pdfjs-dist/standard_fonts', 'public/js/pdfjs-viewer/standard_fonts');
+mix.copyDirectory(
+    "node_modules/pdfjs-dist/build",
+    "public/js/pdfjs-viewer/build",
+);
+mix.copyDirectory(
+    "node_modules/pdfjs-dist/cmaps",
+    "public/js/pdfjs-viewer/cmaps",
+);
+mix.copyDirectory(
+    "node_modules/pdfjs-dist/standard_fonts",
+    "public/js/pdfjs-viewer/standard_fonts",
+);
 
 // Font Awesome (serves CSS + webfonts locally; CSS uses ../webfonts/ relative path)
 mix.copyDirectory(

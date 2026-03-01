@@ -21,6 +21,7 @@ use App\DocumentApproval;
 use App\Document;
 use Illuminate\Support\Facades\Log;
 use App\Synonyms;
+use App\SRTemplate;
 use App\Traits\Search;
 
 class CollectionController extends Controller
@@ -804,15 +805,48 @@ use App\UrlSuppression;
 	public function showSettingsForm(Request $request){
 		$collection = Collection::find($request->collection_id);
 		$roles = Role::all();
-        return view('collection-settings', ['collection'=>$collection, 'roles'=>$roles,
-			'mailbox'=>CollectionMailbox::where('collection_id', $collection->id)->first()]);
+		$search_result_template = SRTemplate::where('collection_id', $collection->id)
+			->where('template_type', 'search_result')->first();
+		$details_page_template = SRTemplate::where('collection_id', $collection->id)
+			->where('template_type', 'details_page')->first();
+        return view('collection-settings', [
+			'collection' => $collection,
+			'roles' => $roles,
+			'mailbox' => CollectionMailbox::where('collection_id', $collection->id)->first(),
+			'search_result_template' => $search_result_template,
+			'details_page_template' => $details_page_template,
+		]);
 	}
 	
 	public function saveSettings(Request $request){
 		$collection = Collection::find($request->collection_id);
-		$col_config = $request->all();
+		$col_config = $request->except(['search_result_template_html', 'details_page_template_html']);
 		$collection->column_config = json_encode($col_config);
 		$collection->save();
+
+		// Save search result template
+		$sr_template = SRTemplate::where('collection_id', $collection->id)
+			->where('template_type', 'search_result')->first();
+		if(empty($sr_template)){
+			$sr_template = new SRTemplate();
+			$sr_template->collection_id = $collection->id;
+			$sr_template->template_type = 'search_result';
+			$sr_template->template_name = 'Search Result - '.$collection->name;
+		}
+		$sr_template->html_code = $request->input('search_result_template_html', '');
+		$sr_template->save();
+
+		// Save details page template
+		$details_template = SRTemplate::where('collection_id', $collection->id)
+			->where('template_type', 'details_page')->first();
+		if(empty($details_template)){
+			$details_template = new SRTemplate();
+			$details_template->collection_id = $collection->id;
+			$details_template->template_type = 'details_page';
+			$details_template->template_name = 'Details Page - '.$collection->name;
+		}
+		$details_template->html_code = $request->input('details_page_template_html', '');
+		$details_template->save();
 		// configuration of mapping of mailbox
 		$mailbox = CollectionMailbox::where('collection_id', $collection->id)->first();
 		if(empty($mailbox)){
