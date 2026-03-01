@@ -11,6 +11,7 @@ npm-debug.log
 /public/vendor/font-awesome/
 /public/vendor/fontsource/
 /public/vendor/material-icons/
+/public/fonts/vendor/
 
 # Laravel 4 specific
 bootstrap/compiled.php
