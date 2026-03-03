@@ -901,6 +901,7 @@ trait Search{
 					}
 				}
 			}
+		}
 
 			// Apply search result template if custom template mode is enabled
 			if (!empty($column_config->use_custom_template) && $column_config->use_custom_template == 1) {

@@ -117,13 +117,18 @@
 
 	@if (!empty($results))
 	@php
-	$template_code = \App\SRTemplate::
-		where('collection_id',$collection->id)
-		->where('template_name','Search Result')
-		->first();
-	if(!empty($template_code->html_code)){
-		$html_code = $template_code->html_code;
-	}		
+	$collection_config = json_decode($collection->column_config);
+	$use_custom_template = !empty($collection_config->use_custom_template) && $collection_config->use_custom_template == 1;
+	// When custom template is active, load the Search Result template
+	if($use_custom_template){
+		$template_code = \App\SRTemplate::
+			where('collection_id',$collection->id)
+			->where('template_name','Search Result')
+			->first();
+		if(!empty($template_code->html_code)){
+			$html_code = $template_code->html_code;
+		}
+	}
 	@endphp
 	@foreach($results as $result)
 		@php 

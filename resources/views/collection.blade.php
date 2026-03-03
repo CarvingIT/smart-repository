@@ -58,14 +58,6 @@ if(!empty($collection->column_config)){
 	if(@$column_config->size != 1) $hide_size = true;
 	if(@$column_config->creation_time != 1) $hide_creation_time = true;
 }
-$use_custom_template = !empty($column_config->use_custom_template) && $column_config->use_custom_template == 1;
-// When custom template is active, hide all standard columns except the template title column
-if($use_custom_template){
-    $hide_type = true;
-    $hide_approval_status = true;
-    $hide_size = true;
-    $hide_creation_time = true;
-}
 // search scope and fuzzy search
 $fuzzy = Session::get('fuzzy');
 $full_text_scope = Session::get('full_text_scope');
@@ -99,7 +91,7 @@ $(document).ready(function() {
 			foreach($column_config_meta_fields as $m_id){
 				$m = \App\MetaField::find($m_id);
 				$visible = 'false';
-				if(!$use_custom_template && in_array(@$m->id, $column_config_meta_fields)){
+				if(in_array(@$m->id, $column_config_meta_fields)){
 				$visible = 'true';
 			    }
 			    echo '{ "targets":['.$i.'], "className":"text-right", "sortable":false, "visible":'.$visible.' },';
@@ -149,20 +141,13 @@ $(document).ready(function() {
           }
        },
        {data:"title", render: function(data, type, row){
-@if($use_custom_template)
-            if (row.template_html) return row.template_html;
-@endif
             return data;
        }},
 		@foreach($column_config_meta_fields as $m_id)
 			@php
 			$m = \App\MetaField::find($m_id);
 			@endphp
-		@if($use_custom_template)
-		{data:"meta_{{@$m->id}}", "visible": false},
-		@else
 		{data:"meta_{{@$m->id}}"},
-		@endif
 		@endforeach
        {data:"approval_status"},
        {data:"size",
@@ -696,7 +681,7 @@ function setDocSort(sort_by){
                         <thead class="text-primary">
                             <tr>
                             <th>{{ __('Type')}}</th>
-                            <th>@if($use_custom_template){{ __('Results') }}@else{{ __('Title') }}@endif</th>
+                            <th>{{ __('Title')}}</th>
 			<!-- meta fields -->
 				@foreach($collection->meta_fields as $m)
 				@if(in_array($m->id,$column_config_meta_fields))
