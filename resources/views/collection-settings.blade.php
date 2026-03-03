@@ -320,6 +320,36 @@ $(document).ready(function() {
 			</div>
 		</div>
 
+		<h4>{{ __('Display of search results') }}</h4>
+		<div class="form-group row">
+			<div class="col-md-4 text-right">
+				<label for="fixed_columns_left" class="col-form-label">{{ __('Fixed columns left') }}</label>
+			</div>
+			<div class="col-md-3">
+				<input type="number" class="form-control" name="fixed_columns_left" id="fixed_columns_left" min="0" value="{{ @$column_config->fixed_columns_left ?? 0 }}" />
+			</div>
+			<div class="col-md-4 text-right">
+				<label for="fixed_columns_right" class="col-form-label">{{ __('Fixed columns right') }}</label>
+			</div>
+			<div class="col-md-3">
+				<input type="number" class="form-control" name="fixed_columns_right" id="fixed_columns_right" min="0" value="{{ @$column_config->fixed_columns_right ?? 0 }}" />
+			</div>
+		</div>
+
+		<h4>{{ __('Info page') }}</h4>
+		<div class="form-group row">
+			<div class="col-md-12">
+				<input type="checkbox" name="show_word_cloud" id="show_word_cloud" value="1"
+					@if(!empty($column_config->show_word_cloud)) checked="checked" @endif />
+				<label for="show_word_cloud">{{ __('Show word cloud') }}</label>
+			</div>
+			<div class="col-md-12">
+				<input type="checkbox" name="show_audit_trail" id="show_audit_trail" value="1"
+					@if(!empty($column_config->show_audit_trail)) checked="checked" @endif />
+				<label for="show_audit_trail">{{ __('Show audit trail') }}</label>
+			</div>
+		</div>
+
 		</div>
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
