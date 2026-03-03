@@ -321,14 +321,14 @@ $(document).ready(function() {
 		</div>
 
 		<h4>{{ __('Display of search results') }}</h4>
-		<div class="form-group row">
-			<div class="col-md-4 text-right">
+		<div class="form-group row align-items-center">
+			<div class="col-md-3 text-right">
 				<label for="fixed_columns_left" class="col-form-label">{{ __('Fixed columns left') }}</label>
 			</div>
 			<div class="col-md-3">
 				<input type="number" class="form-control" name="fixed_columns_left" id="fixed_columns_left" min="0" value="{{ @$column_config->fixed_columns_left ?? 0 }}" />
 			</div>
-			<div class="col-md-4 text-right">
+			<div class="col-md-3 text-right">
 				<label for="fixed_columns_right" class="col-form-label">{{ __('Fixed columns right') }}</label>
 			</div>
 			<div class="col-md-3">

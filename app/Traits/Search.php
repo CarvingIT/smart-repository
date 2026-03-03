@@ -913,7 +913,6 @@ trait Search{
 					);
 				}
 			}
-		}
 		$results_data[] = $result;
 		} // foreach ends
         return $results_data;
