@@ -230,4 +230,33 @@ class Util{
         }
         return $text;
     }
+
+    /**
+     * Render an SRTemplate HTML string by replacing {{ }} tokens with document values.
+     *
+     * Supported tokens: {{title}}, {{type}}, {{size}}, {{date}}, {{link}},
+     *                   {{icon_url}}, {{meta_FIELDLABEL}}
+     */
+    public static function renderDocumentTemplate(string $template_html, $document, $collection): string
+    {
+        $link     = url('/collection/'.$document->collection_id.'/document/'.$document->id.'/details');
+        $icon_url = url('/i/file-types/'.$document->icon().'.png');
+        $date     = date(env('DATE_FORMAT', 'Y-M-d'), strtotime($document->updated_at));
+        $size     = $document->human_filesize();
+        $type     = $document->type ?? '';
+        $title    = $document->title;
+
+        $html = str_replace(
+            ['{{title}}', '{{type}}', '{{size}}', '{{date}}', '{{link}}', '{{icon_url}}'],
+            [e($title),   e($type),   e($size),   e($date),   $link,      $icon_url],
+            $template_html
+        );
+
+        // Replace {{meta_FIELDLABEL}} tokens
+        foreach ($collection->meta_fields as $m) {
+            $html = str_replace('{{meta_'.$m->label.'}}', e($document->meta_value($m->id) ?? ''), $html);
+        }
+
+        return $html;
+    }
 }// class ends

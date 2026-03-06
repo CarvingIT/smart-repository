@@ -902,56 +902,9 @@ trait Search{
 				}
 			}
 		}
-
-			// Apply search result template if custom template mode is enabled
-			if (!empty($column_config->use_custom_template) && $column_config->use_custom_template == 1) {
-				$sr_template = \App\SRTemplate::where('collection_id', $collection->id)
-					->where('template_type', 'search_result')->first();
-				if ($sr_template && !empty($sr_template->html_code)) {
-					$result['template_html'] = $this->renderDocumentTemplate(
-						$sr_template->html_code, $d, $collection, $result
-					);
-				}
-			}
 		$results_data[] = $result;
 		} // foreach ends
         return $results_data;
-    }
-
-    /**
-     * Render an SRTemplate HTML string by replacing tokens with document values.
-     *
-     * Supported tokens: {{title}}, {{type}}, {{size}}, {{date}}, {{link}},
-     *                   {{icon_url}}, {{meta_FIELDLABEL}}
-     *
-     * @param  string      $template_html  Raw HTML with {{ }} tokens
-     * @param  \App\Document $document
-     * @param  \App\Collection $collection
-     * @param  array        $result        Pre-built result row (already has meta_ values)
-     * @return string
-     */
-    private function renderDocumentTemplate(string $template_html, $document, $collection, array $result): string
-    {
-        $link  = url('/collection/'.$document->collection_id.'/document/'.$document->id.'/details');
-        $icon_url = url('/i/file-types/'.$document->icon().'.png');
-        $date  = date(env('DATE_FORMAT', 'Y-M-d'), strtotime($document->updated_at));
-        $size  = $document->human_filesize();
-        $type  = $document->type ?? '';
-        $title = $document->title;
-
-        $html = str_replace(
-            ['{{title}}', '{{type}}', '{{size}}', '{{date}}', '{{link}}', '{{icon_url}}'],
-            [e($title),   e($type),   e($size),   e($date),   $link,      $icon_url],
-            $template_html
-        );
-
-        // Replace {{meta_FIELDLABEL}} tokens
-        foreach ($collection->meta_fields as $m) {
-            $raw_value = $result['meta_'.$m->id] ?? $document->meta_value($m->id);
-            $html = str_replace('{{meta_'.$m->label.'}}', e($raw_value ?? ''), $html);
-        }
-
-        return $html;
     }
 
     public function logSearchQuery($data){
