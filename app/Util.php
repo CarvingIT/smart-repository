@@ -239,8 +239,11 @@ class Util{
      */
     public static function renderDocumentTemplate(string $template_html, $document, $collection): string
     {
-        $link     = url('/collection/'.$document->collection_id.'/document/'.$document->id.'/details');
-        $icon_url = url('/i/file-types/'.$document->icon().'.png');
+        // Templates may be saved with '@{{token}}' (Blade-escape style). Strip the '@' so tokens resolve correctly.
+        $template_html = preg_replace('/@(\{\{[^}]+\}\})/', '$1', $template_html);
+
+        $link     = '/collection/'.$document->collection_id.'/document/'.$document->id.'/details';
+        $icon_url = '/i/file-types/'.$document->icon().'.png';
         $date     = date(env('DATE_FORMAT', 'Y-M-d'), strtotime($document->updated_at));
         $size     = $document->human_filesize();
         $type     = $document->type ?? '';
