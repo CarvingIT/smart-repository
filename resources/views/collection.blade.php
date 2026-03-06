@@ -947,7 +947,9 @@ $(document).ready(function() {
                 docId = doc.document_id;
             }
             
-            var docUrl = '/collection/{{ $collection->id }}/document/' + docId + '/doc-viewer';
+            var docUrl = (filetype === 'pdf')
+                ? '/collection/{{ $collection->id }}/document/' + docId + '/doc-viewer'
+                : '/collection/{{ $collection->id }}/document/' + docId;
             
             if (index === 0) {
                 console.log('Tile view: Document data', doc);
