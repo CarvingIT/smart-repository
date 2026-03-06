@@ -140,7 +140,9 @@ $(document).ready(function() {
             'sort':'filetype'
           }
        },
-       {data:"title"},
+       {data:"title", render: function(data, type, row){
+            return data;
+       }},
 		@foreach($column_config_meta_fields as $m_id)
 			@php
 			$m = \App\MetaField::find($m_id);
@@ -679,7 +681,7 @@ function setDocSort(sort_by){
                         <thead class="text-primary">
                             <tr>
                             <th>{{ __('Type')}}</th>
-                            <th>{{__('Title')}}</th>
+                            <th>{{ __('Title')}}</th>
 			<!-- meta fields -->
 				@foreach($collection->meta_fields as $m)
 				@if(in_array($m->id,$column_config_meta_fields))

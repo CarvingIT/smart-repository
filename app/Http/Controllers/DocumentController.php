@@ -661,7 +661,19 @@ class DocumentController extends Controller
 	}
 
 	$comments = \App\DocumentComment::where('document_id',$document_id)->orderByDesc('created_at')->get();
-        return view('document-details', ['document'=>$d, 'collection'=>$c, 'comments'=>$comments, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
+	$col_config = json_decode($c->column_config);
+	$details_page_template = null;
+	if(!empty($col_config->use_custom_template) && $col_config->use_custom_template == 1){
+		$details_page_template = \App\SRTemplate::where('collection_id', $collection_id)
+			->where('template_type', 'details_page')->first();
+	}
+        return view('document-details', [
+		'document'  => $d,
+		'collection' => $c,
+		'comments'  => $comments,
+		'word_weights' => \App\Curation::getWordWeights($d->text_content),
+		'details_page_template' => $details_page_template,
+	]);
     }
 
     public function showRevisionDiff($document_id, $rev1_id, $rev2_id){

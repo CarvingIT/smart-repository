@@ -117,13 +117,18 @@
 
 	@if (!empty($results))
 	@php
-	$template_code = \App\SRTemplate::
-		where('collection_id',$collection->id)
-		->where('template_name','Search Result')
-		->first();
-	if(!empty($template_code->html_code)){
-		$html_code = $template_code->html_code;
-	}		
+	$collection_config = json_decode($collection->column_config);
+	$use_custom_template = !empty($collection_config->use_custom_template) && $collection_config->use_custom_template == 1;
+	// When custom template is active, load the Search Result template (classic theme only)
+	if($use_custom_template){
+		$template_code = \App\SRTemplate::
+			where('collection_id',$collection->id)
+			->where('template_type','search_result')
+			->first();
+		if(!empty($template_code->html_code)){
+			$html_code = $template_code->html_code;
+		}
+	}
 	@endphp
 	@foreach($results as $result)
 		@php 
@@ -154,17 +159,7 @@
 		
 		<div class="search-result-item">
 			@if(!empty($html_code))
-				@php 
-					$display_meta = [];
-					foreach ($meta_fields as $m) {
-						$placeholder = strtolower($m->placeholder);
-						$meta_placeholder = preg_replace("/ /","-",$placeholder);
-						$display_meta[$meta_placeholder] = $document->meta_value($m->id);
-					}
-					$result_title = strip_tags($result_title);
-					$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code, $result_title, $collection->id, $result->id, @$result->type);	
-					echo $formatted_data;
-				@endphp
+				{!! \App\Util::renderDocumentTemplate($html_code, $document, $collection) !!}
 			@else
 				<!-- Title -->
 				<div class="result-title">
