@@ -1189,7 +1189,7 @@ $(document).ready(function() {
             
             var docUrl = (filetype === 'pdf')
                 ? '/collection/{{ $collection->id }}/document/' + docId + '/doc-viewer'
-                : '/collection/{{ $collection->id }}/document/' + docId;
+                : '/collection/{{ $collection->id }}/document/' + docId + '/details';
             
             if (index === 0) {
                 console.log('Tile view: Document data', doc);
