@@ -864,7 +864,9 @@ public function titleSuggest(Request $request){
     Session::put('full_text_scope', 'title');
     Session::put('search_query', $term);
     $request->merge(['search'=>['value'=>$term], 'length'=>100, 'return_format'=>'raw']);
-    $search_results = json_decode($this->search($request));
+    if(!empty($term) && strlen($term)>2){
+        $search_results = json_decode($this->search($request));
+    }
     
 	$suggestions = [];
     if($search_results->recordsTotal > 100){
