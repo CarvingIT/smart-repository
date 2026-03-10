@@ -159,15 +159,6 @@ function clearSearchBar(){
 		<div class="card">
 			<div class="card-header card-header-primary"><h4 class="card-title">{{ __(env('APP_NAME')) }}</h4></div>
 			<div class="card-body">
-				<div class="row justify-content-center">
-				@if(!empty($settings['banner_image_1']))
-				@endif
-				</div>
-				@if(!empty($settings['home_page']))
-				{!! $settings['home_page'] !!}
-				@endif
-			</div>
-			<div class="card-body">
                 <h4 class="text-center" data-aos="fade-up">{{ __('Global Document Search') }}</h4>
                 <p class="text-center" data-aos="fade-up" data-aos-delay="100">{{ __('Search across collections for any document!') }}</p>
           <form action="/global-search" class="form-search d-flex align-items-stretch mb-4 aos-init aos-animate" data-aos="fade-up" data-aos-delay="200" method="get">
@@ -190,6 +181,13 @@ function clearSearchBar(){
                 </div><!-- search-container -->
           </form>
 
+			</div>
+			<div class="card-body">
+				@if(!empty($settings['home_page']))
+                <p style="text-align:justify">
+				{!! $settings['home_page'] !!}
+                </p>
+				@endif
 			</div>
 		</div>
       </div>

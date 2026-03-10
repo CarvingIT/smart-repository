@@ -30,6 +30,7 @@ $collections = \App\Collection::all();
 	@endif
 	</a>
     </div>
+
     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
     <span class="sr-only">Toggle navigation</span>
     <span class="navbar-toggler-icon icon-bar"></span>
@@ -37,7 +38,39 @@ $collections = \App\Collection::all();
     <span class="navbar-toggler-icon icon-bar"></span>
     </button>
     <div class="collapse navbar-collapse justify-content-end">
+            @if(env('AVAILALBLE_LOCALES') != '')
+	  <span class="howdy" style="top:5px; width:380px;">
+                @php
+                    $languages = explode(",",env('AVAILALBLE_LOCALES'));
+                    if(Session::get('sr_lang'))
+                        $sr_lang = Session::get('sr_lang');
+                    else
+                        $sr_lang = 'en';
+                @endphp
+                    @php
+                    if(Session::get('sr_lang'))
+                        $sr_lang = Session::get('sr_lang');
+                    else
+                        $sr_lang = 'en';
+                @endphp
+                <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> {{ __($sr_lang) }} 
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
+                    @foreach($languages as $lang)
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == $lang) ? 'active' : '' }}" href="/lang?sr_lang={{ $lang }}">
+                        <span style="display: inline-block; width: 35px; color:#000;">{{ __($lang) }}</span>
+                    </a>
+                    @endforeach
+                </div>
+        </span>
+            @endif
       <ul class="navbar-nav">
+        <li class="nav-item{{ $activePage == 'home' ? ' active' : '' }}">
+          <a href="/" class="nav-link">
+            <i class="material-icons">home</i> {{ __('Home') }}
+          </a>
+        </li>
 	@if (env('ENABLE_DASHBOARD_LINK_IN_NAVBAR') == '1')
        <li class="nav-item{{ $activePage == 'dashboard' ? ' active' : '' }}">
           <a href="/dashboard" class="nav-link">
@@ -109,13 +142,22 @@ $collections = \App\Collection::all();
             </p>
 			-->
           </a>
-	  <span class="howdy" style="width:200px;"><a href="/dashboard" style="color:inherit !important;">{{ __('Welcome') }} @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
+
+
+	  <span class="howdy" style="width:150px;">
+            <a href="/dashboard" style="color:inherit !important;"> @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
+
+
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
             <a class="dropdown-item" href="/profile">{{ __('Profile') }}</a>
             <a class="dropdown-item" href="/dashboard">{{ __('Dashboard') }}</a>
+            @if(env('ENABLE_FAVORITES',0) == 1)
             <a class="dropdown-item" href="{{ route('favorites.index') }}">{{ __('Favourites') }}</a>
-            <a class="dropdown-item" href="{{ route('saved-searches.index') }}">{{ __('Saved Searches') }}</a>
+            @endif
+            @if(env('ENABLE_SHARING',0) == 1)
             <a class="dropdown-item" href="{{ route('shared-links.index') }}">{{ __('Shared Links') }}</a>
+            @endif
+            <a class="dropdown-item" href="{{ route('saved-searches.index') }}">{{ __('Saved Searches') }}</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>

@@ -64,7 +64,7 @@ class Document extends Model implements Auditable
 	        'm4a'=>'m4a',
             'csv'=>'csv',
         );
-        $path = empty($path) ? $this->path : $path;
+        $path = empty($path) ? $this->ori_filename : $path;
         //get extension
         $path_fields = explode(".", $path);
         $cnt = count($path_fields);

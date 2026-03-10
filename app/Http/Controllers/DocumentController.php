@@ -206,6 +206,10 @@ class DocumentController extends Controller
 
             if (in_array($driver, $storages_needing_dir_creation)) {
                 $filepath = $request->file('document')[0]->storeAs(null, $new_filename, $storage_drive);
+                $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($filepath);
+                $file_id = $meta['extraMetadata']['id'];
+                //$filepath = $file_id;
+                $filepath = $meta['path'];
             } else {
                 $filepath = $request->file('document')[0]->storeAs('smartarchive_assets/' . $request->input('collection_id') . '/' . \Auth::user()->id, $new_filename, $storage_drive);
             }
@@ -657,7 +661,19 @@ class DocumentController extends Controller
 	}
 
 	$comments = \App\DocumentComment::where('document_id',$document_id)->orderByDesc('created_at')->get();
-        return view('document-details', ['document'=>$d, 'collection'=>$c, 'comments'=>$comments, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
+	$col_config = json_decode($c->column_config);
+	$details_page_template = null;
+	if(!empty($col_config->use_custom_template) && $col_config->use_custom_template == 1){
+		$details_page_template = \App\SRTemplate::where('collection_id', $collection_id)
+			->where('template_type', 'details_page')->first();
+	}
+        return view('document-details', [
+		'document'  => $d,
+		'collection' => $c,
+		'comments'  => $comments,
+		'word_weights' => \App\Curation::getWordWeights($d->text_content),
+		'details_page_template' => $details_page_template,
+	]);
     }
 
     public function showRevisionDiff($document_id, $rev1_id, $rev2_id){
@@ -740,11 +756,17 @@ public function downloadFile($doc,$storage_drive,$path_count=null){
                 'Content-Description' => 'File Transfer',
                 //'Content-Disposition' => "attachment; filename={$file_name}",
                 'Content-Transfer-Encoding' => 'binary',
+                'Accept-Ranges' => 'bytes',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Range',
                 ];
 				if($mime != 'application/pdf'){
 					$response['Content-Disposition'] = "attachment; filename={$file_name}";
 				}
-                ob_end_clean();
+                if (ob_get_level()) {
+                    ob_end_clean();
+                }
 
                 return \Response::make(Storage::disk($storage_drive)->get($file_url), 200, $response);
         }
@@ -754,24 +776,16 @@ public function downloadFile($doc,$storage_drive,$path_count=null){
 }
 
 public function downloadCloudFile($doc, $storage_drive){
-	$filename = $doc->path;
-	$dir = '/';
-	$recursive = false;
-	$contents = collect(Storage::disk($storage_drive)->listContents($dir, $recursive));
 
-    $file = $contents
-        ->where('type', '=', 'file')
-        ->where('filename', '=', pathinfo($filename, PATHINFO_FILENAME))
-        ->where('extension', '=', pathinfo($filename, PATHINFO_EXTENSION))
-        ->first(); // there can be duplicate file names!
+	$filename = $doc->ori_filename;
+    $fileId = $doc->path;
 
-    //return $file; // array with file info
-
-    $rawData = Storage::disk($storage_drive)->get($file['path']);
+    $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($fileId);
+    $rawData = Storage::disk($storage_drive)->get($meta['path']);
 
     return response($rawData, 200)
-        ->header('ContentType', $file['mimetype'])
-        ->header('Content-Disposition', "attachment; filename='$filename'");
+        ->header('ContentType', $doc->type)
+        ->header('Content-Disposition', "attachment; filename=".$filename);
 }
 
 public function proofRead($collection_id,$document_id){
@@ -846,10 +860,14 @@ public function approveDocument(Request $request){
 
 public function titleSuggest(Request $request){
 	$term = $request->input('term');
-	$docs = Document::where('title','like','%'.$term.'%')->get();
+	$docs = Document::where('title','like','%'.$term.'%')->orderBy('updated_at','desc')->take(100);
 	$suggestions = [];
-	foreach($docs as $d){
-		$suggestions[] = ['id'=>$d->id,'title'=>$d->title];
+    if($docs->count() > 100){
+		$suggestions[] = ['id'=>null,'title'=>'Too many results; narrow down.'];
+    }
+    $doc_models = $docs->get();
+	foreach($doc_models as $d){
+	    $suggestions[] = ['id'=>$d->id,'title'=>$d->title];
 	}
 	return $suggestions;
 }

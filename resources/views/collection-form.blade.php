@@ -2,8 +2,7 @@
 
 @section('content')
 
-<link rel="stylesheet"  href="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.min.css" type="text/css">
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<script src="/js/node/jquery-ui.min.js"></script>
 @push('js')
 <script type="text/javascript">
 $(document).ready(function() {

@@ -8,8 +8,13 @@ $( document ).ready(function() {
 	if(options_field_val != 'Select' && options_field_val != 'SelectCombo' && options_field_val != 'MultiSelect'){
     	$("#options-field").hide();
 	}
+
 	if(options_field_val != 'TaxonomyTree'){
 		$("#taxonomy-tree-selection").hide();
+	}
+
+	if(options_field_val != 'Date'){
+		$("#min-max-year-setting").hide();
 	}
 
   $("#type").change(function() {
@@ -50,6 +55,13 @@ $( document ).ready(function() {
    else{
 	$("#rich_text_editor").hide();
    }
+
+   if(val == 'Date'){
+	$("#min-max-year-setting").show();
+    }
+    else{
+	$("#min-max-year-setting").hide();
+    }
 
   });
 
@@ -177,16 +189,30 @@ function showMetaFieldForm(){
 					</select>
                     </div>
                    </div>
+			@php
+	                  $extra_attributes = empty($edit_field->extra_attributes)? null : json_decode($edit_field->extra_attributes);
+                          $numeric_min_value = @$extra_attributes->numeric_min_value;
+                          $numeric_max_value = @$extra_attributes->numeric_max_value;
+                          $min_year_setting = @$extra_attributes->min_year_setting;
+                          $max_year_setting = @$extra_attributes->max_year_setting;
+            @endphp
+
+                   <div class="form-group row" id="min-max-year-setting">
+		   			<div class="col-md-4">
+                   <label for="tax-sel" class="col-md-12 col-form-label text-md-right">{{ __('Set min/max year for the date-range filter') }}</label> 
+                   </div>
+                    <div class="col-md-4">
+                    <input type="number" step="1" name="min_year_setting" id="min_year_setting" class="form-control" placeholder="{{ __('1800') }}" value="{{ $min_year_setting}}" />
+                    </div>
+                    <div class="col-md-4">
+                    <input type="number" step="1" name="max_year_setting" id="max_year_setting" class="form-control" placeholder="{{ __('2030') }}" value="{{ $max_year_setting}}" />
+                    </div>
+                   </div>
 			@if($edit_field->type =='Numeric')
 	           <div id="numeric_values_div" style="display:block;">	
 			@else
 	           <div id="numeric_values_div" style="display:none;">	
 		        @endif
-			@php
-	                  $extra_attributes = empty($edit_field->extra_attributes)? null : json_decode($edit_field->extra_attributes);
-                          $numeric_min_value = @$extra_attributes->numeric_min_value;
-                          $numeric_max_value = @$extra_attributes->numeric_max_value;
-                        @endphp
 
                    <div class="form-group row">
 		   			<div class="col-md-4">

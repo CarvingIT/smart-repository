@@ -25,12 +25,35 @@ $collections = \App\Collection::all();
 	@endif
       </a>
     </div>
+
     <button class="navbar-toggler" type="button" data-toggle="collapse" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
       <span class="sr-only">Toggle navigation</span>
       <span class="navbar-toggler-icon icon-bar"></span>
       <span class="navbar-toggler-icon icon-bar"></span>
       <span class="navbar-toggler-icon icon-bar"></span>
     </button>
+    @if(env('AVAILALBLE_LOCALES') != '')
+      <span class="howdy" style="top:5px;">
+                    @php
+                    $languages = explode(",",env('AVAILALBLE_LOCALES'));
+                    if(Session::get('sr_lang'))
+                        $sr_lang = Session::get('sr_lang');
+                    else
+                        $sr_lang = 'en';
+                @endphp
+                <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> {{ __($sr_lang) }}
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
+                    @foreach($languages as $lang)
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == $lang) ? 'active' : '' }}" href="/lang?sr_lang={{ $lang }}">
+                        <span style="display: inline-block; width: 35px; color:#000;">{{ __($lang) }}</span>
+                    </a>
+                    @endforeach
+                </div>
+        </span>
+            @endif
+
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
         <li class="nav-item{{ $activePage == 'home' ? ' active' : '' }}">

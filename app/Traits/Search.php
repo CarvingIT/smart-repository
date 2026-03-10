@@ -144,7 +144,9 @@ trait Search{
         foreach($meta_filters as $mf){
 			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filters like created_at, created_by
 				if($mf['field_id'] == 'created_at'){
-					$documents = $documents->where('created_at', $mf['operator'], $mf['value']);
+					// Use whereDate() so a plain date string like '2026-02-17' matches
+					// datetime values correctly (avoids '=' never matching or '<=' cutting off same-day records)
+					$documents = $documents->whereDate('created_at', $mf['operator'], $mf['value']);
 				}	
 			continue;// no need to proceed further
 			}
@@ -459,25 +461,26 @@ trait Search{
                 Log::debug('Adding must to extension. Param array is - '. json_encode($params));
             }
             
-            // default sorting if no search is performed
-            //if(empty($request->search['value'])){
-            if(empty($search_term)){
-                $columns = ['type','title', 'size', 'created_at'];
-                // default meta sort field 
-                // get from the collection config and use
-                // to be updated
-	            $sort_column = empty($columns[@$request->order[0]['column']])?'updated_at':$columns[@$request->order[0]['column']];
-	            $sort_direction = @empty($request->order[0]['dir'])?'desc':$request->order[0]['dir'];
-                $params['body']['sort'] = [$sort_column => [ 'order' => $sort_direction]];
+            // sorting
+            $doc_sort = explode(':',Session::get('doc_sort'));
+            if(empty($doc_sort[0]) || $doc_sort[0] != $request->collection_id){
+                $sort_column = 'updated_at';
+                $sort_direction = 'desc';
+                $params['body']['sort'][] = [$sort_column => [ 'order' => $sort_direction]];
+            }
+            else if($doc_sort[1] == 'relevance'){ // sort by relevance
+                // no sorting code here
+            }
+            else{
+                $sort_column = $doc_sort[1];
+                $sort_direction = $doc_sort[2];
+                $params['body']['sort'][] = [$sort_column => [ 'order' => $sort_direction]];
             }
 
 	        $ordered_document_ids = '';
             $scores = [];
             $params['size'] = $length;
             $params['from'] = $start; 
-    	    //$params['size'] = 10000;// set a max size returned by ES
-            //Log::debug(json_encode($params));
-        //} // if search term is entered
             $document_ids = [];
 		    try{
                 Log::debug(json_encode($params));
@@ -507,55 +510,14 @@ trait Search{
 	    if(isset($document_ids)){
 	        Log::debug('Found: '.@count($document_ids));
        	    $documents = \App\Document::whereIn('id', $document_ids);
-            //if(!empty($search_term)) $filtered_count = $documents->count();
 	    }
 
-	if(!empty($search_term)){
-	    // initial sorting is by relevance
+    // initial sorting is by relevance
 	    Log::debug('Collection count: '.$documents->count().' -- Ordered array count: '.count($document_ids));
 	    if(!empty($ordered_document_ids)){
 		    $documents = $documents->orderByRaw("FIELD(id, $ordered_document_ids)");
 	    }
 	    $documents = $documents->get();
-
-        /*
-		$doc_ids = [];
-		foreach($documents as $d){
-			$doc_ids[] = $d->id;
-		}
-		Log::debug('Doc ids in result: '.implode(",", $doc_ids));	
-        */
-		//exit;
-	}
-	else{ // no search
-		if(env('DEFAULT_META_SORT_FIELD',false)){
-            Log::debug('meta sort');
-			$sort_direction = env('DEFAULT_META_SORT_DIRECTION','desc');
-			$mf = MetaField::where('label',env('DEFAULT_META_SORT_FIELD',''))->first();
-
-			$meta_values = MetaFieldValue::where('meta_field_id', $mf->id)
-				->orderBy('value', $sort_direction)
-				->orderBy('document_id', 'desc')
-				->get();	
-			$ordered_document_ids = [];
-			foreach($meta_values as $mv){
-				$ordered_document_ids[] = $mv->document_id;
-			}
-			$doc_id_str = implode(",", $ordered_document_ids);
-
-			$documents = \App\Document::whereIn('id', $ordered_document_ids);
-			$filtered_count = $documents->count();
-			$documents = $documents
-                //->with('meta')
-				->orderByRaw("FIELD(id, $doc_id_str)")
-                ->limit($length)->offset($start)
-                ->get();
-		}
-		else{
-            //Log::debug('ELSE');
-		    $documents = $documents->get();
-		}
-	}
 
 	$has_approval = \App\Collection::where('id','=',$request->collection_id)
 		->where('require_approval','=','1')->get();
@@ -819,12 +781,14 @@ trait Search{
 			$fav_title = $is_favorited ? 'Remove from favourites' : 'Add to favourites';
 			$fav_pressed = $is_favorited ? 'true' : 'false';
 
+            if(env('ENABLE_FAVORITES',0)){
 			$action_icons .= '<button type="button" class="btn btn-primary btn-link js-fav-toggle-ui" data-doc-id="'.$d->id.'" aria-pressed="'.$fav_pressed.'" title="'.$fav_title.'">';
 			$action_icons .= '<i class="material-icons fav-icon">'.$fav_icon.'</i>';
 			$action_icons .= '</button>';
+            }
 			
 			// Share button - check if user can share this document
-			if(Auth::user()->canShareDocument($d->id)){
+			if(env('ENABLE_SHARING',0) && Auth::user()->canShareDocument($d->id)){
 				$action_icons .= '<a class="btn btn-primary btn-link" href="/document/'.$d->id.'/share" title="Share document"><i class="material-icons">share</i></a>';
 			}
 		}		
@@ -883,8 +847,9 @@ trait Search{
             foreach($record_highlights['text_content'] as $m){
              $content_matches[] = $m; 
             }
+            $title .= '<br /><a class="toggle-highlights"><i class="material-icons rotate-90">highlight</i></a>';
         }
-	    $title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><p>'.strip_tags(implode(' ... ', $content_matches), '<em>').'</p>';
+	    //$title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><div class="content-highlights">'.strip_tags(implode(' ... ', $content_matches), '<em>').'</div>';
       
         // Check if file is an image type and display actual image instead of icon
         $image_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml'];
@@ -1066,8 +1031,8 @@ trait Search{
 
 	//public function isaCollectionDocumentSearch(Request $request){
 	public function searchResults(Request $request){
-		//$collection_id = $request->collection_id;
-		//$collection = \App\Collection::find($collection_id);
+		$collection_id = $request->collection_id;
+		$collection = \App\Collection::find($collection_id);
 		//$analyzer = $request->analyzer;
 		$keywords = $request->isa_search_parameter;
 		$request->merge(['search'=>['value'=>$keywords], 'return_format'=>'raw']);
@@ -1097,7 +1062,7 @@ trait Search{
 		$highlights = json_decode(json_encode(@$search_results->highlights, true), true);
 		//Log::debug($highlights);exit;
         return view('search-results',[
-            //'collection'=>$collection, 
+            'collection'=>$collection, 
 			'results'=>$search_results->data,
 			'highlights'=> $highlights,  
 			'filtered_results_count'=>$filtered_results_count,

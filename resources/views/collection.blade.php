@@ -3,16 +3,51 @@
 @section('content')
 @push('js')
 <style>
+a.toggle-highlights{
+    cursor:pointer;
+}
+td.highlights p{
+    white-space:normal;
+}
+.rotate-90{
+    transform: rotate(90deg);
+}
+@media (min-width: 2000px) {
+    .container.wide-screen-container {
+        max-width: 95% !important;
+        width: 95% !important;
+    }
+}
+
 </style>
-<script src="/js/jquery.dataTables.min.js"></script>
-<script src="/js/jquery-ui.js" defer></script>
+<script src="/js/node/jquery.dataTables.min.js"></script>
+<script src="/js/node/jquery-ui.min.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
-<link href="/css/jquery-ui.css" rel="stylesheet">
-<link href="/css/select2.min.css" rel="stylesheet" />
+<link href="/css/node/jquery-ui.min.css" rel="stylesheet">
+<link href="/css/node/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
 <link href="/css/tile-view.css" rel="stylesheet" />
-<script src="/js/select2.min.js"></script>
+<link href="/css/node/fixedColumns.dataTables.min.css" rel="stylesheet" />
+<style>
+    .dataTables_paginate {
+        float: right !important;
+        text-align: right;
+    }
+    .dataTables_wrapper .row {
+        align-items: center;
+    }
+    
+    .dataTables_bottom_controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        margin-top: 10px;
+    }
+</style>
+<script src="/js/node/select2.min.js"></script>
 <script src="/js/select2totree.js"></script>
+<script src="/js/node/dataTables.fixedColumns.min.js"></script>
 @php
 $column_config = json_decode($collection->column_config);
 list($hide_type, $hide_title, $hide_approval_status, $hide_size, $hide_creation_time) = array(false, false, true, false, false);
@@ -69,10 +104,19 @@ $(document).ready(function() {
 		{ "targets":[{{ $i }}], "visible":true, "sortable":false, "className":'td-actions text-right dt-nowrap'},
      ],
     "processing":true,
-    //"order": [[ 3, "desc" ]],
+    "processing":true,
+    "dom":'lrt<"dataTables_bottom_controls"ip>',
+    @if(!empty($column_config->fixed_columns_left) || !empty($column_config->fixed_columns_right))
+    "scrollX": true,
+    "fixedColumns": {
+        "start": {{ !empty($column_config->fixed_columns_left) ? $column_config->fixed_columns_left : 0 }},
+        "end": {{ !empty($column_config->fixed_columns_right) ? $column_config->fixed_columns_right : 0 }}
+    },
+    @endif
     "order": [], // initial ordering disabled. Good for sorting by relevance in ES.
     "serverSide":true,
     "ajax":'/collection/{{$collection->id}}/search',
+    //"lengthMenu":[10, 25, 50, 60, 100, 120],
     "language": 
 	{          
 	"processing": "<img src='/i/processing.gif'>",
@@ -96,7 +140,9 @@ $(document).ready(function() {
             'sort':'filetype'
           }
        },
-       {data:"title"},
+       {data:"title", render: function(data, type, row){
+            return data;
+       }},
 		@foreach($column_config_meta_fields as $m_id)
 			@php
 			$m = \App\MetaField::find($m_id);
@@ -120,8 +166,42 @@ $(document).ready(function() {
     ],
     });
 
+$('#doc-sort').on('click', function() {
+        // Check if the native showPicker method is available and call it
+        const selectElement = $('#doc-sort-select')[0];
+        if (selectElement && typeof selectElement.showPicker === 'function') {
+            selectElement.showPicker();
+        } else {
+            console.error('showPicker() is not supported in this browser or environment.');
+        }
+    })
+
+oTable.on('click', 'tbody td .toggle-highlights', function(e){
+    let tr = e.target.closest('tr');
+    let row = oTable.row(tr);
+ 
+    if (row.child.isShown()) {
+        // This row is already open - close it
+        row.child.hide();
+    }
+    else {
+        // Open this row
+        row.child(formatHighlights(row.data()), 'highlights').show();
+    }
+});
+    
+// Initialize view mode
+initializeViewMode();
+
 } );
 
+function formatHighlights(d){
+ return (
+        '<p>' +
+        d.highlights.text_content +
+        '</p>'
+    );
+}
 
 function showDeleteDialog(document_id){
 	str = randomString(6);
@@ -131,6 +211,17 @@ function showDeleteDialog(document_id){
         deldialog = $( "#deletedialog" ).dialog({
 		title: 'Are you sure ?',
 		resizable: true
+        });
+}
+
+function showSubCollectionDeleteDialog(collection_id){
+        str = randomString(6);
+        $('#text_subcollection_captcha').text(str);
+        $('#hidden_subcollection_captcha').val(str);
+        $('#delete_subcollection_id').val(collection_id);
+        deldialog = $( "#deletesubcollectiondialog" ).dialog({
+                title: 'Are you sure ?',
+                resizable: true
         });
 }
 
@@ -144,13 +235,59 @@ function randomString(length) {
    return result;
 }
 
+function setDocSort(sort_by){
+    $.ajax({
+       url: '/collection/{{ $collection->id }}/set-doc-sort?sort_by='+sort_by,
+       method: 'GET',
+       dataType: "json",
+       success: function(data) {
+            search_val = $('#collection_search').val();
+            oTable.search(search_val).draw();
+       }
+   });
+}
 </script>
 
-<script src="/js/jquery.daterangepicker.min.js"></script>
-<link rel="stylesheet" href="/js/daterangepicker.css"/>
+<script src="/js/node/jquery.daterangepicker.min.js"></script>
+<link rel="stylesheet" href="/css/node/jquery.daterangepicker.min.css"/>
 <script src="{{ asset("js/favorites.js") }}"></script>
+<style>
+#doc-sort-wrapper {
+  position: relative;
+  display: inline-block;
+}
 
+#doc-sort {
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#doc-sort-select {
+  /* Hide the native select menu's default appearance while keeping it interactive */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: absolute;
+  top: 0;
+  right: 1rem;
+  height: 100%;
+  opacity: 0;
+}
+</style>
 @endpush
+        <div id="deletesubcollectiondialog" style="display:none;">
+                <form name="deletesubcollection" method="post" action="/collection/subcollection/delete">
+                @csrf
+                <p>Enter <span id="text_subcollection_captcha"></span> to delete</p>
+                <input type="text" name="delete_subcollection_captcha" value="" />
+                <input type="hidden" id="hidden_subcollection_captcha" name="hidden_subcollection_captcha" value="" />
+                <input type="hidden" id="delete_subcollection_id" name="collection_id" value="" />
+                <button class="btn btn-danger" type="submit" value="delete">Delete</button>
+                </form>
+        </div>
+
 	    <div id="deletedialog" style="display:none;">
 		<form name="deletedoc" method="post" action="/document/delete">
 		@csrf
@@ -181,7 +318,7 @@ function randomString(length) {
 		</div>
 		@endif
 		<!-- End Save Search Modal -->
-<div class="container">
+<div class="container wide-screen-container">
 <div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -193,16 +330,12 @@ function randomString(length) {
             </div>
         <div class="card-body">
 		<div class="row">
-                  <div class="col-12 text-right">
-                  <!-- View Toggle Button -->
-                  <button id="view-toggle-btn" class="btn btn-sm btn-primary" title="Switch to Tile View">
-                    <i class="material-icons">view_module</i>
-                  </button>
+                  <div class="col-9">
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
                     <a title="{{ __('Manage users of this collection') }}" href="/collection/{{ $collection->id }}/users" class="btn btn-sm btn-primary"><i class="material-icons">people</i></a>
 		    @if($collection->content_type == 'Uploaded documents')	
-                    <a title="{{ __('Manage cataloging fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
-                    <a title="Settings" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
+                    <a title="{{ __('Manage meta data fields of this collection') }}" href="/collection/{{ $collection->id }}/meta" class="btn btn-sm btn-primary"><i class="material-icons">label</i></a>
+                    <a title="{{ __('Settings') }}" href="/collection/{{ $collection->id }}/settings" class="btn btn-sm btn-primary"><i class="material-icons">settings</i></a>
                     @if(env('ENABLE_CHILD_COLLECTION_LINK') == 1)
                     <a title="{{__('New Child Collection')}}" href="/collection/{{ $collection->id }}/child-collection/new" class="btn btn-sm btn-primary"><i class="material-icons">create_new_folder</i></a>
                     @endif
@@ -211,23 +344,44 @@ function randomString(length) {
 		    @endif
 		  @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'CREATE') && $collection->content_type == 'Uploaded documents')
-                    <a title="New Document" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
+                    <a title="{{ __('New Document') }}" href="/collection/{{ $collection->id }}/upload" class="btn btn-sm btn-primary"><i class="material-icons">file_upload</i></a>
                     @if(env('ENABLE_IMPORT_LINK') == 1)
                     <a title="Import via URL" href="/collection/{{ $collection->id }}/url-import" class="btn btn-sm btn-primary"><i class="material-icons">link</i></a>
                     @endif
 		  @endif
                   @if(count($collection->meta_fields)>0 && env('ENABLE_FILTER_LINK') == 1)
-                    <a href="/collection/{{ $collection->id }}/metafilters" title="Set Filters" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
+                    <a href="/collection/{{ $collection->id }}/metafilters" title="{{ __('Set Filters') }}" class="btn btn-sm btn-primary"><i class="material-icons">filter_list</i></a>
                   @endif
                   @if(Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))
-                    <!--a href="/collection/{{ $collection->id }}/export" title="Export collection to CSV" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a-->
-                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="Export up to 1000 records to XLSX" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
+                    <a href="/collection/{{ $collection->id }}/exportxlsx" title="{{ __('Export up to 1000 records to XLSX') }}" class="btn btn-sm btn-primary"><i class="material-icons">file_download</i></a>
 				  @endif
+                  </div>
+                  <div class="col-3 text-right" id="doc-sort-wrapper">
+                  <!-- View Toggle Button -->
+                  <button id="view-toggle-btn" class="btn btn-sm btn-primary" title="Switch to Tile View" style="z-index:100;">
+                    <i class="material-icons">view_module</i>
+                  </button>
+                  @if(env('SEARCH_MODE', 'db') == 'elastic')
+                  <button id="doc-sort" class="btn btn-sm btn-primary" title="Sort Documents">
+                    <i class="material-icons">sort</i>
+                  </button>
+                  <select id="doc-sort-select" style="text-align:right;" onchange="setDocSort(this.options[this.options.selectedIndex].value);">
+                     <option value="relevance">Relevance &#x2193;</option> 
+                     <option value="updated_at:desc">Last updated &#x2193;</option> 
+                     <option value="updated_at:asc">Last updated &#x2191;</option> 
+                    @foreach($collection->meta_fields as $m)
+    				    @if(in_array($m->type, ['Numeric', 'Date']) && in_array($m->id,$column_config_meta_fields))
+                        <option value="meta_{{$m->id}}:asc">{{ $m->label }} &#x2191;</option>
+                        <option value="meta_{{$m->id}}:desc">{{ $m->label }} &#x2193;</option>
+                        @endif
+                     @endforeach
+                  </select>
+                  @endif
                   </div>
         </div>
 		<div class="row">
 			<div class="col-12">
-            <p>{{ $collection->description }}</p>
+            <!-- <p>{{ $collection->description }}</p> -->
 		<!-- children collections -->		
 			@if ($collection->parent_id) 
 			<div>
@@ -242,6 +396,7 @@ function randomString(length) {
 				<a href="/collection/{{ $child->id }}">
 					<i class="material-icons">folder</i>
 					{{ $child->name }}
+                    @if(count($child->documents) == 0 && count($child->children) == 0 && Auth::user() && Auth::user()->hasPermission($collection->id, 'MAINTAINER'))<a href="#" onClick="showSubCollectionDeleteDialog({{ $child->id }});"><i class="material-icons">delete</i> </a>@endif
 				</a>
 				</div>
 				@endforeach
@@ -348,9 +503,15 @@ function randomString(length) {
 		   	<input type="hidden" name="operator[]" value="between" />
 		   	<input type="hidden" name="meta_type[]" value="{{ $m->type }}" />
 			<script>
+                @php
+                    $extra_attributes = @json_decode($m->extra_attributes);
+                    $min_year = @$extra_attributes->min_year_setting;
+                    $max_year = @$extra_attributes->max_year_setting;
+                @endphp
 				$('#meta_{{ $m->id }}_search').dateRangePicker({
                   monthSelect: true,
-                  yearSelect: [1900, moment().get('year')]
+                  yearSelect: [ @if($min_year) {{ $min_year }} @else 1900 @endif, 
+                                @if($max_year) {{ $max_year }} @else moment().get('year') @endif ]
                 })
                 .bind('datepicker-change', function(event, obj){
                     this.form.submit();
@@ -515,12 +676,12 @@ function randomString(length) {
         </p>
 		</div>
 		<!-- display of applied filters ends -->
-		   <div class="table-responsive">
-                    <table id="documents" class="table">
+		    <div class="table-responsive" @if(!empty($column_config->fixed_columns_left) || !empty($column_config->fixed_columns_right)) style="overflow: visible;" @endif>
+                    <table id="documents" class="table" style="width:100%">
                         <thead class="text-primary">
                             <tr>
                             <th>{{ __('Type')}}</th>
-                            <th>{{__('Title')}}</th>
+                            <th>{{ __('Title')}}</th>
 			<!-- meta fields -->
 				@foreach($collection->meta_fields as $m)
 				@if(in_array($m->id,$column_config_meta_fields))
@@ -747,6 +908,46 @@ $(document).ready(function() {
     var recordsPerPage = 50;
     var totalRecords = 0;
     var isLoading = false;
+
+    function calculateOptimalPageLength() {
+        var containerWidth = $('#tile-container').width();
+        if (!containerWidth || containerWidth === 0) {
+            containerWidth = $(window).width() - 40; // Approx padding adjustment
+        }
+        
+        var tilesPerRow = Math.floor((containerWidth + 20) / 200);
+        if (tilesPerRow < 1) tilesPerRow = 1;
+        
+        var rows = 3;
+        var optimalLength = tilesPerRow * rows;
+        
+        if (optimalLength < 10) optimalLength = 10;
+        
+        return optimalLength;
+    }
+
+    // Debounce helper
+    function debounce(func, wait) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+                func.apply(context, args);
+            }, wait);
+        };
+    }
+
+    // Add resize listener
+    $(window).on('resize', debounce(function() {
+        if (typeof currentViewMode !== 'undefined' && currentViewMode === 'tile' && typeof oTable !== 'undefined') {
+            var newLength = calculateOptimalPageLength();
+            if (oTable.page.len() !== newLength) {
+                console.log('Resize: Updating page length to ' + newLength);
+                oTable.page.len(newLength).draw();
+            }
+        }
+    }, 250));
     
     // Initialize view mode on page load
     function initializeViewMode() {
@@ -777,8 +978,9 @@ $(document).ready(function() {
     // Save original positions
     function saveOriginalPositions() {
         if (!originalControlsParent.info || !originalControlsParent.paginate) {
-            var $info = $('.dataTables_info').first();
-            var $paginate = $('.dataTables_paginate').first();
+            var $wrapper = $(oTable.table().container());
+            var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+            var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
             
             // Only save if not already in tile-bottom-controls
             if ($info.length && $info.parent().attr('id') !== 'tile-bottom-controls') {
@@ -794,8 +996,12 @@ $(document).ready(function() {
     
     // Restore controls to original positions
     function restoreOriginalControls() {
-        var $info = $('.dataTables_info').first();
-        var $paginate = $('.dataTables_paginate').first();
+        var $wrapper = $(oTable.table().container());
+        var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+        var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
+        
+        if (!$info.length) $info = $('.dataTables_info, .dt-info').first();
+        if (!$paginate.length) $paginate = $('.dataTables_paginate, .dt-paging').first();
         
         console.log('Restoring controls - Found:', {
             info: $info.length,
@@ -827,8 +1033,12 @@ $(document).ready(function() {
         saveOriginalPositions();
         
         if ($('#tile-container').length && $('#tile-bottom-controls').length) {
-            var $info = $('.dataTables_info').first();
-            var $paginate = $('.dataTables_paginate').first();
+            var $wrapper = $(oTable.table().container());
+            var $info = $wrapper.find('.dataTables_info, .dt-info').first();
+            var $paginate = $wrapper.find('.dataTables_paginate, .dt-paging').first();
+             
+            if (!$info.length) $info = $('.dataTables_info, .dt-info').first();
+            if (!$paginate.length) $paginate = $('.dataTables_paginate, .dt-paging').first();
             
             console.log('moveTileControls - Found controls:', {
                 info: $info.length,
@@ -840,20 +1050,28 @@ $(document).ready(function() {
             // Only move if controls exist and are not already in bottom wrapper
             var $bottomControls = $('#tile-bottom-controls');
             if ($bottomControls.length) {
-                
+                var $originalContainer = $(oTable.table().container());
+                if ($originalContainer.length) {
+                    var originalClasses = $originalContainer.attr('class');
+                    $bottomControls.attr('class', originalClasses);
+                }
+                $bottomControls.attr('id', 'tile-bottom-controls');
+
                 // MOVE (not clone) the actual controls to preserve event handlers
                 if ($info.length && $info.parent().attr('id') !== 'tile-bottom-controls') {
                     $bottomControls.append($info.detach());
-                    $info.attr('style', 'display: block !important'); // Force visible with !important
+                    $info.removeAttr('style'); 
+                    $info.show();
                     console.log('Moved info control');
                 }
                 if ($paginate.length && $paginate.parent().attr('id') !== 'tile-bottom-controls') {
                     $bottomControls.append($paginate.detach());
-                    $paginate.attr('style', 'display: block !important'); // Force visible with !important
+                    $paginate.removeAttr('style');
+                    $paginate.show();
                     console.log('Moved paginate control');
                 }
                 
-                $bottomControls.attr('style', 'display: flex !important');
+                $bottomControls.show();
                 console.log('Bottom controls wrapper shown');
             }
         }
@@ -869,17 +1087,31 @@ $(document).ready(function() {
         $('#view-toggle-btn').html('<i class="material-icons">view_list</i>');
         $('#view-toggle-btn').attr('title', 'Switch to List View');
         
-        // Hide the table but keep DataTable structure intact
-        $('.table-responsive table').css('display', 'none');
+        var $scrollWrapper = $('.dataTables_scroll');
+        if ($scrollWrapper.length) {
+            $scrollWrapper.hide();
+        } else {
+            $('#documents').hide();
+        }
         
-        // Use current DataTable data to render tiles
-        var data = oTable.rows({page: 'current'}).data().toArray();
-        renderTiles(data, false);
+        $('.table-responsive').show();
+
+        var newLength = calculateOptimalPageLength();
         
-        // Move DataTable controls after a short delay to ensure DataTable has rendered
-        setTimeout(function() {
-            moveTileControls();
-        }, 100);
+        if (oTable.page.len() !== newLength) {
+            console.log('Tile View: Updating page length to ' + newLength);
+            oTable.page.len(newLength).draw();
+            // multiple draws might update the controls automatically via drawCallback
+        } else {
+            // Use current DataTable data to render tiles
+            var data = oTable.rows({page: 'current'}).data().toArray();
+            renderTiles(data, false);
+            
+            // Move DataTable controls after a short delay to ensure DataTable has rendered
+            setTimeout(function() {
+                moveTileControls();
+            }, 100);
+        }
         
         // Restore scroll position to prevent jump
         $(window).scrollTop(scrollPos);
@@ -899,8 +1131,16 @@ $(document).ready(function() {
             console.log('Switching to list view - restoring controls');
             restoreOriginalControls();
             
-            // Show the table with proper display
-            $('.table-responsive table').css('display', 'table');
+            // Show the table content
+            var $scrollWrapper = $('.dataTables_scroll');
+            if ($scrollWrapper.length) {
+                $scrollWrapper.show();
+            } else {
+                $('#documents').show();
+            }
+            
+            // Show the table wrapper
+            $('.table-responsive').show();
             
             // Force DataTable to recalculate column widths WITHOUT redrawing
             oTable.columns.adjust();
@@ -975,14 +1215,14 @@ $(document).ready(function() {
             
             // Build metadata HTML
             var metadataHtml = '<div class="tile-metadata"><div class="tile-metadata-content">';
-            metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.title)) + '</span></div>';
+            //metadataHtml += '<div class="metadata-row"><span class="metadata-label">Title:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.title)) + '</span></div>';
             
             @foreach($collection->meta_fields as $m)
-            @if(in_array($m->id,$column_config_meta_fields))
-            if (doc.meta_{{ $m->id }}) {
-                metadataHtml += '<div class="metadata-row"><span class="metadata-label">{{ __($m->label) }}:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.meta_{{ $m->id }})) + '</span></div>';
-            }
-            @endif
+                @if(in_array($m->id,$column_config_meta_fields))
+                if (doc.meta_{{ $m->id }}) {
+                    metadataHtml += '<div class="metadata-row"><span class="metadata-label">{{ __($m->label) }}:</span><span class="metadata-value">' + escapeHtml(stripHtml(doc.meta_{{ $m->id }})) + '</span></div>';
+                }
+                @endif
             @endforeach
             
             @if(!$hide_approval_status)
@@ -1124,10 +1364,6 @@ $(document).ready(function() {
         return 'default';
     }
     
-
-    
-    // Initialize view mode
-    initializeViewMode();
 
 	// Save Search functionality
 	@if(Auth::check())

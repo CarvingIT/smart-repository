@@ -33,7 +33,7 @@
 		  
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="logo_url" class="col-md-12 col-form-label text-md-right">{{ __('Logo URL') }}</label> 
+                   <label for="logo_url" class="col-md-12 col-form-label text-md-right">{{ __('Logo') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <!--input type="text" name="logo_url" id="logo_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['logo_url'])) {{$sysconfig['logo_url'] }} @endif" /-->
@@ -44,7 +44,7 @@
 
                    <div class="form-group row">
                    <div class="col-md-3">
-                   <label for="favicon_url" class="col-md-12 col-form-label text-md-right">{{ __('Favicon URL') }}</label> 
+                   <label for="favicon_url" class="col-md-12 col-form-label text-md-right">{{ __('Favicon') }}</label> 
 		           </div>
                     <div class="col-md-9">
                     <!--input type="text" name="favicon_url" id="favicon_url" class="form-control" placeholder="http://domain.com/i/logo.png" value="@if(!empty($sysconfig['favicon_url'])) {{$sysconfig['favicon_url'] }} @endif" /-->

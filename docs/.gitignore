@@ -1,0 +1,13 @@
+# Jekyll generated site
+_site/
+
+# Bundler
+vendor/
+.bundle/
+
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.swp

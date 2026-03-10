@@ -7,7 +7,7 @@
         <div class="col-auto">
             <div class="dropdown">
                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">settings</i> SORT
+                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">sort</i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
                     <a class="dropdown-item {{ (isset($sort_by) && $sort_by == 'name_asc') ? 'active' : '' }}" href="/collections?sort_by=name_asc">
@@ -27,6 +27,7 @@
             </div>
         </div>
     </div>
+
     <div class="row justify-content-center">
         @foreach ($collections as $c)
 		@if($c->content_type == 'Web resources' && env('SHOW_WEB_RESOURCES') != 1)

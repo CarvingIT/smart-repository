@@ -16,7 +16,6 @@ Route::get('/email/verify', function () {
 })->middleware('auth')->name('verification.notice');
 
 Route::view('/','welcome');
-
 Route::get('/lang/{locale}', function ($locale) {
     App::setLocale($locale);
     return redirect('/');
@@ -35,6 +34,8 @@ Route::get('/faq', function () {
 Route::get('/dashboard', 'HomeController@index')->name('dashboard')->middleware(['auth','verified']);
 Route::get('/collections', 'CollectionController@list');
 Route::get('/documents', 'DocumentController@list');
+
+Route::get('/lang', 'CollectionController@selectLanguage');
 
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
 Route::get('/collection/{collection_id}/export', 'CollectionController@export')->middleware('maintainer');
@@ -61,6 +62,7 @@ Route::get('/collection/{collection_id}/user', 'CollectionController@showCollect
 // child-collection
 Route::get('/collection/{collection_id}/child-collection/{child_collection_id}', 'CollectionController@showChildCollectionForm')->middleware('maintainer');
 Route::post('/collection/{collection_id}/save-child-collection', 'CollectionController@saveChildCollection')->middleware('maintainer');
+Route::post('/collection/subcollection/delete','CollectionController@deleteSubCollection')->middleware('maintainer');
 
 // Collection-user management
 Route::get('/collection/{collection_id}/save_exclude_sites', 'CollectionController@collectionUrls')->middleware('maintainer');
@@ -89,12 +91,17 @@ Route::get('/collection/{collection_id}/meta', 'CollectionController@metaInforma
 Route::get('/collection/{collection_id}/meta/{meta_field_id}', 'CollectionController@metaInformation')->middleware('maintainer');
 Route::post('/collection/{collection_id}/meta', 'CollectionController@saveMeta')->middleware('maintainer');
 Route::get('/collection/{collection_id}/meta/{meta_field_id}/delete', 'CollectionController@deleteMetaField')->middleware('maintainer');
+
+// sorting of documents in a collection
+Route::get('/collection/{collection_id}/set-doc-sort', 'CollectionController@setDocSort');
+
 // column config
 Route::get('/collection/{collection_id}/settings', 'CollectionController@showSettingsForm')->middleware('maintainer');
 Route::post('/collection/{collection_id}/settings', 'CollectionController@saveSettings')->middleware('maintainer');
 
 Route::get('/collection/{collection_id}/metafilters', 'CollectionController@metaFiltersForm');
 Route::post('/collection/{collection_id}/metafilters', 'CollectionController@addMetaFilter');
+Route::post('/collection/{collection_id}/ajax-add-created-filter', 'CollectionController@ajaxAddCreatedFilter');
 Route::post('/collection/{collection_id}/quickmetafilters', 'CollectionController@replaceMetaFilter');
 Route::post('/collection/{collection_id}/quicktitlefilter', 'CollectionController@replaceTitleFilter');
 Route::post('/collection/{collection_id}/quickextensionfilter', 'CollectionController@replaceExtensionFilter');
@@ -108,6 +115,12 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 Route::get('/collection/{collection_id}/removetitlefilter', 'CollectionController@removeTitleFilter');
 Route::get('/collection/{collection_id}/removeextensionfilter', 'CollectionController@removeExtensionFilter');
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllFilters');
+// AJAX routes for filtering without page refresh
+Route::post('/collection/{collection_id}/ajax-set-extension-filter', 'CollectionController@ajaxSetExtensionFilter');
+Route::post('/collection/{collection_id}/ajax-clear-all-filters', 'CollectionController@ajaxClearAllFilters');
+Route::post('/collection/{collection_id}/ajax-remove-filter/{filter_id}', 'CollectionController@ajaxRemoveFilter');
+Route::get('/collection/{collection_id}/date-facets', 'CollectionController@dateFacets');
+Route::post('/collection/{collection_id}/ajax-exclude-date', 'CollectionController@ajaxExcludeDate');
 // media route; just like the document download route
 Route::get('/media/i/{filename}', 'MediaController@loadImage');
 

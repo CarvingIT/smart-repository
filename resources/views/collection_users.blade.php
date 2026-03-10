@@ -2,7 +2,7 @@
 
 @section('content')
 @push('js')
-<script src="/js/jquery.dataTables.min.js"></script>
+<script src="/js/node/jquery.dataTables.min.js"></script>
 <script>
 $(document).ready(function() {
     $('#collection_users').DataTable({
@@ -58,6 +58,9 @@ $(document).ready(function() {
                         </thead>
                         <tbody>
                     @foreach($collection_users as $user_id=>$perms)
+                    @if(!$perms[0]->user) 
+                        @continue
+                    @endif
                     <tr>
                         <td>
                         {{ ($perms[0]->user)->email }}

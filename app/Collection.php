@@ -15,6 +15,8 @@ class Collection extends Model
 
 	protected $fillable = ["document_count", "size_active", "size_revisions", "size_deleted"];
 
+    protected $hidden = ['column_config'];
+
     public function documents(){
         return $this->hasMany('App\Document');
     }

@@ -2,7 +2,7 @@
 <head>
 <title>{{ env('APP_NAME', 'Smart Repository') }}::Document Viewer</title>
 <link rel="icon" type="image/png" href="/material/img/favicon.png">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/js/node/jquery.min.js"></script>
 @php
     // Document model is passed directly from the controller as $doc
     $collection = \App\Collection::find($collection_id);
@@ -109,7 +109,13 @@ h4{
                 },
                 onFlip: function(flipbook) {
                     console.log("DearFlip: Page flipped");
-                }
+                },
+                //enableDownload: {{ empty($column_config->document_viewer_download) ? 'false' : 'true' }}
+                @if(auth()->user() && auth()->user()->hasPermission($collection_id,'MAINTAINER'))
+                enableDownload: {{ 'true' }}
+                @else
+                enableDownload: {{ empty($column_config->document_viewer_download) ? 'false' : 'true' }}
+                @endif
             };
             
             console.log("DearFlip: Creating flipbook with options:", options);
@@ -119,6 +125,13 @@ h4{
         }
     });
     </script>
+@elseif($pdf_viewer === 'pdfjs')
+    @php
+        $pdfPath = !is_null($path_count) 
+            ? '/collection/'.$collection_id.'/document/'.$doc->id.'/details/'.$path_count 
+            : '/collection/'.$collection_id.'/document/'.$doc->id;
+    @endphp
+    <iframe id="pdfreader" class="pdf" src="/js/pdfjs-viewer/viewer.html?file={{ urlencode($pdfPath) }}" width="100%" height="100%"></iframe>
 @else
     @if(!is_null($path_count))
     <iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $doc->id }}/details/{{ $path_count }}" width="100%" height="100%"></iframe>
@@ -136,7 +149,7 @@ h4{
         });
     @endphp 
 	@foreach($meta_info as $m)
-        @if(!$m->meta_field || empty(strip_tags($m->value))) @continue @endif
+        @if(!$m->meta_field || (empty(strip_tags($m->value)) && !@$column_config->document_viewer_empty_fields)) @continue @endif
 
 		@if(@$m->meta_field->type == 'Date')
 		<p><label>{{ @$m->meta_field->label }}</label><br />

@@ -6,23 +6,23 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header card-header-primary">
-                    <h4 class="card-title">System Information</h4>
-                    <p class="card-category">System health and configuration details</p>
+                    <h4 class="card-title">{{ __('System Information') }}</h4>
+                    <p class="card-category">{{ __('System health and configuration details') }}</p>
                 </div>
                 <div class="card-body">
                     
                     {{-- Permissions Section --}}
-                    <h5 class="mt-4 mb-3"><i class="material-icons">folder</i> Directory Permissions</h5>
+                    <h5 class="mt-4 mb-3"><i class="material-icons">folder</i> {{ __('Directory Permissions') }}</h5>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Directory</th>
-                                    <th>Path</th>
-                                    <th>Exists</th>
-                                    <th>Readable</th>
-                                    <th>Writable</th>
-                                    <th>Status</th>
+                                    <th>{{ __('Directory') }}</th>
+                                    <th>{{ __('Path') }}</th>
+                                    <th>{{ __('Exists') }}</th>
+                                    <th>{{ __('Readable') }}</th>
+                                    <th>{{ __('Writable') }}</th>
+                                    <th>{{ __('Status') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -32,30 +32,30 @@
                                     <td>{{ $details['path'] }}</td>
                                     <td>
                                         @if($details['exists'])
-                                            <span class="badge badge-success">✓ Yes</span>
+                                            <span class="badge badge-success">✓ {{ __('Yes') }}</span>
                                         @else
-                                            <span class="badge badge-danger">✗ No</span>
+                                            <span class="badge badge-danger">✗ {{ __('No') }}</span>
                                         @endif
                                     </td>
                                     <td>
                                         @if($details['readable'])
-                                            <span class="badge badge-success">✓ Yes</span>
+                                            <span class="badge badge-success">✓ {{ __('Yes') }}</span>
                                         @else
-                                            <span class="badge badge-danger">✗ No</span>
+                                            <span class="badge badge-danger">✗ {{ __('No') }}</span>
                                         @endif
                                     </td>
                                     <td>
                                         @if($details['writable'])
-                                            <span class="badge badge-success">✓ Yes</span>
+                                            <span class="badge badge-success">✓ {{ __('Yes') }}</span>
                                         @else
-                                            <span class="badge badge-danger">✗ No</span>
+                                            <span class="badge badge-danger">✗ {{ __('No') }}</span>
                                         @endif
                                     </td>
                                     <td>
                                         @if($details['exists'] && $details['readable'] && $details['writable'])
-                                            <span class="badge badge-success">OK</span>
+                                            <span class="badge badge-success">{{ __('OK') }}</span>
                                         @else
-                                            <span class="badge badge-danger">ISSUE</span>
+                                            <span class="badge badge-danger">{{ __('ISSUE') }}</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -65,16 +65,16 @@
                     </div>
 
                     {{-- Dependencies Section --}}
-                    <h5 class="mt-5 mb-3"><i class="material-icons">build</i> System Dependencies</h5>
+                    <h5 class="mt-5 mb-3"><i class="material-icons">build</i> {{ __('System Dependencies') }}</h5>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Command</th>
-                                    <th>Description</th>
-                                    <th>Package</th>
-                                    <th>Required</th>
-                                    <th>Status</th>
+                                    <th>{{ __('Command') }}</th>
+                                    <th>{{ __('Description') }}</th>
+                                    <th>{{ __('Package') }}</th>
+                                    <th>{{ __('Required') }}</th>
+                                    <th>{{ __('Status') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,19 +85,19 @@
                                     <td>{{ $details['package'] }}</td>
                                     <td>
                                         @if($details['required'])
-                                            <span class="badge badge-warning">Required</span>
+                                            <span class="badge badge-warning">{{ __('Required') }}</span>
                                         @else
-                                            <span class="badge badge-info">Optional</span>
+                                            <span class="badge badge-info">{{ __('Optional') }}</span>
                                         @endif
                                     </td>
                                     <td>
                                         @if($details['installed'])
-                                            <span class="badge badge-success">✓ Installed</span>
+                                            <span class="badge badge-success">✓ {{ __('Installed') }}</span>
                                         @else
                                             @if($details['required'])
-                                                <span class="badge badge-danger">✗ Missing</span>
+                                                <span class="badge badge-danger">✗ {{ __('Missing') }}</span>
                                             @else
-                                                <span class="badge badge-warning">Not Installed</span>
+                                                <span class="badge badge-warning">{{ __('Not Installed') }}</span>
                                             @endif
                                         @endif
                                     </td>
@@ -111,61 +111,61 @@
                     <div class="row mt-5">
                         <div class="col-md-6">
                             {{-- Elasticsearch Section --}}
-                            <h5 class="mb-3"><i class="material-icons">search</i> Elasticsearch</h5>
+                            <h5 class="mb-3"><i class="material-icons">search</i> {{ __('Elasticsearch') }}</h5>
                             <div class="table-responsive">
                                 <table class="table table-bordered">
                                     <tbody>
                                         <tr>
-                                            <th width="150">Configured</th>
+                                            <th width="150">{{ __('Configured') }}</th>
                                             <td>
                                                 @if($systemInfo['elasticsearch']['configured'])
-                                                    <span class="badge badge-success">✓ Yes</span>
+                                                    <span class="badge badge-success">✓ {{ __('Yes') }}</span>
                                                 @else
-                                                    <span class="badge badge-warning">✗ No</span>
+                                                    <span class="badge badge-warning">✗ {{ __('No') }}</span>
                                                 @endif
                                             </td>
                                         </tr>
                                         @if($systemInfo['elasticsearch']['configured'])
                                         <tr>
-                                            <th>Running</th>
+                                            <th>{{ __('Running') }}</th>
                                             <td>
                                                 @if($systemInfo['elasticsearch']['running'])
-                                                    <span class="badge badge-success">✓ Yes</span>
+                                                    <span class="badge badge-success">✓ {{ __('Yes') }}</span>
                                                 @else
-                                                    <span class="badge badge-danger">✗ No</span>
+                                                    <span class="badge badge-danger">✗ {{ __('No') }}</span>
                                                 @endif
                                             </td>
                                         </tr>
                                         @if($systemInfo['elasticsearch']['running'])
                                         <tr>
-                                            <th>Version</th>
+                                            <th>{{ __('Version') }}</th>
                                             <td>{{ $systemInfo['elasticsearch']['version'] }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Cluster Name</th>
+                                            <th>{{ __('Cluster Name') }}</th>
                                             <td>{{ $systemInfo['elasticsearch']['cluster_name'] }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Cluster Health</th>
+                                            <th>{{ __('Cluster Health') }}</th>
                                             <td>
                                                 @if($systemInfo['elasticsearch']['cluster_health'] === 'green')
-                                                    <span class="badge badge-success">Green (Healthy)</span>
+                                                    <span class="badge badge-success">{{ __('Green (Healthy)') }}</span>
                                                 @elseif($systemInfo['elasticsearch']['cluster_health'] === 'yellow')
-                                                    <span class="badge badge-warning">Yellow (Warning)</span>
+                                                    <span class="badge badge-warning">{{ __('Yellow (Warning)') }}</span>
                                                 @else
-                                                    <span class="badge badge-danger">Red (Unhealthy)</span>
+                                                    <span class="badge badge-danger">{{ __('Red (Unhealthy)') }}</span>
                                                 @endif
                                             </td>
                                         </tr>
                                         @if(!empty($systemInfo['elasticsearch']['indices']))
                                         <tr>
-                                            <th>Indices</th>
+                                            <th>{{ __('Indices') }}</th>
                                             <td>{{ implode(', ', $systemInfo['elasticsearch']['indices']) }}</td>
                                         </tr>
                                         @endif
                                         @else
                                         <tr>
-                                            <th>Error</th>
+                                            <th>{{ __('Error') }}</th>
                                             <td><span class="text-danger">{{ $systemInfo['elasticsearch']['error'] }}</span></td>
                                         </tr>
                                         @endif
@@ -177,15 +177,15 @@
 
                         <div class="col-md-6">
                             {{-- Version Information Section --}}
-                            <h5 class="mb-3"><i class="material-icons">info</i> Version Information</h5>
+                            <h5 class="mb-3"><i class="material-icons">info</i> {{ __('Version Information') }}</h5>
                             <table class="table table-bordered">
                                 <tbody>
                                     <tr>
-                                        <th width="150">PHP Version</th>
+                                        <th width="150">{{ __('PHP Version') }}</th>
                                         <td>{{ $systemInfo['versions']['php']['version'] }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Laravel Version</th>
+                                        <th>{{ __('Laravel Version') }}</th>
                                         <td>{{ $systemInfo['versions']['laravel']['version'] }}</td>
                                     </tr>
                                 </tbody>
@@ -194,35 +194,35 @@
                     </div>
 
                     {{-- OCR Libraries Section --}}
-                    <h5 class="mt-5 mb-3"><i class="material-icons">text_fields</i> OCR Libraries</h5>
+                    <h5 class="mt-5 mb-3"><i class="material-icons">text_fields</i> {{ __('OCR Libraries') }}</h5>
                     <div class="row">
                         <div class="col-md-6">
-                            <h6>TESSERACT OCR</h6>
+                            <h6>{{ __('TESSERACT OCR') }}</h6>
                             <table class="table table-sm table-bordered">
                                 <tbody>
                                     <tr>
-                                        <th width="150">Installed</th>
+                                        <th width="150">{{ __('Installed') }}</th>
                                         <td>
                                             @if($systemInfo['ocr']['tesseract']['installed'])
-                                                <span class="badge badge-success">✓ Yes</span>
+                                                <span class="badge badge-success">✓ {{ __('Yes') }}</span>
                                             @else
-                                                <span class="badge badge-danger">✗ No</span>
+                                                <span class="badge badge-danger">✗ {{ __('No') }}</span>
                                             @endif
                                         </td>
                                     </tr>
                                     @if($systemInfo['ocr']['tesseract']['installed'])
                                     <tr>
-                                        <th>Version</th>
+                                        <th>{{ __('Version') }}</th>
                                         <td>{{ $systemInfo['ocr']['tesseract']['version'] }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Path</th>
+                                        <th>{{ __('Path') }}</th>
                                         <td>{{ $systemInfo['ocr']['tesseract']['path'] }}</td>
                                     </tr>
                                     <tr>
-                                        <th>Languages</th>
+                                        <th>{{ __('Languages') }}</th>
                                         <td>
-                                            <span class="badge badge-info">{{ $systemInfo['ocr']['tesseract']['language_count'] }} languages</span>
+                                            <span class="badge badge-info">{{ $systemInfo['ocr']['tesseract']['language_count'] }} {{ __('languages') }}</span>
                                             <br>{{ implode(', ', $systemInfo['ocr']['tesseract']['languages']) }}
                                         </td>
                                     </tr>
@@ -231,22 +231,22 @@
                             </table>
                         </div>
                         <div class="col-md-6">
-                            <h6>OCRMYPDF</h6>
+                            <h6>{{ __('OCRMYPDF') }}</h6>
                             <table class="table table-sm table-bordered">
                                 <tbody>
                                     <tr>
-                                        <th width="150">Installed</th>
+                                        <th width="150">{{ __('Installed') }}</th>
                                         <td>
                                             @if($systemInfo['ocr']['ocrmypdf']['installed'])
-                                                <span class="badge badge-success">✓ Yes</span>
+                                                <span class="badge badge-success">✓ {{ __('Yes') }}</span>
                                             @else
-                                                <span class="badge badge-warning">✗ No</span>
+                                                <span class="badge badge-warning">✗ {{ __('No') }}</span>
                                             @endif
                                         </td>
                                     </tr>
                                     @if($systemInfo['ocr']['ocrmypdf']['installed'])
                                     <tr>
-                                        <th>Path</th>
+                                        <th>{{ __('Path') }}</th>
                                         <td>{{ $systemInfo['ocr']['ocrmypdf']['path'] }}</td>
                                     </tr>
                                     @endif
@@ -256,14 +256,14 @@
                     </div>
 
                     @if(!empty($systemInfo['versions']['packages']) && !isset($systemInfo['versions']['packages']['error']))
-                    <h6 class="mt-4 mb-3"><i class="material-icons">inventory</i> Key Package Versions</h6>
+                    <h6 class="mt-4 mb-3"><i class="material-icons">inventory</i> {{ __('Key Package Versions') }}</h6>
                     <div class="table-responsive">
                         <table class="table table-striped table-sm">
                             <thead>
                                 <tr>
-                                    <th>Package</th>
-                                    <th>Version</th>
-                                    <th>Description</th>
+                                    <th>{{ __('Package') }}</th>
+                                    <th>{{ __('Version') }}</th>
+                                    <th>{{ __('Description') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -280,23 +280,23 @@
                     @endif
 
                     {{-- Database Information Section --}}
-                    <h5 class="mt-5 mb-3"><i class="material-icons">storage</i> Database Information</h5>
+                    <h5 class="mt-5 mb-3"><i class="material-icons">storage</i> {{ __('Database Information') }}</h5>
                     <div class="table-responsive">
                         @if($systemInfo['database']['configured'])
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Connection Type</th>
+                                        <th>{{ __('Connection Type') }}</th>
                                         @if($systemInfo['database']['connection_type'] !== 'sqlite')
-                                        <th>Host</th>
-                                        <th>Port</th>
-                                        <th>Database Name</th>
-                                        <th>Username</th>
+                                        <th>{{ __('Host') }}</th>
+                                        <th>{{ __('Port') }}</th>
+                                        <th>{{ __('Database Name') }}</th>
+                                        <th>{{ __('Username') }}</th>
                                         @else
-                                        <th>Database File</th>
+                                        <th>{{ __('Database File') }}</th>
                                         @endif
-                                        <th>Version</th>
-                                        <th>Connection Status</th>
+                                        <th>{{ __('Version') }}</th>
+                                        <th>{{ __('Connection Status') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -313,9 +313,9 @@
                                         <td>{{ $systemInfo['database']['version'] }}</td>
                                         <td>
                                             @if($systemInfo['database']['connected'])
-                                                <span class="badge badge-success">✓ Connected</span>
+                                                <span class="badge badge-success">✓ {{ __('Connected') }}</span>
                                             @else
-                                                <span class="badge badge-danger">✗ Failed to Connect</span>
+                                                <span class="badge badge-danger">✗ {{ __('Failed to Connect') }}</span>
                                             @endif
                                         </td>
                                     </tr>
@@ -324,24 +324,24 @@
                         @else
                             <div class="alert alert-warning">
                                 <i class="material-icons">warning</i>
-                                No database configured
+                                {{ __('No database configured') }}
                             </div>
                         @endif
                     </div>
 
                     {{-- Disk Space Section --}}
-                    <h5 class="mt-5 mb-3"><i class="material-icons">save</i> Disk Space Usage</h5>
+                    <h5 class="mt-5 mb-3"><i class="material-icons">save</i> {{ __('Disk Space Usage') }}</h5>
                     <div class="table-responsive">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th>Location</th>
-                                    <th>Path</th>
-                                    <th>Total</th>
-                                    <th>Used</th>
-                                    <th>Free</th>
-                                    <th>Usage</th>
-                                    <th>Status</th>
+                                    <th>{{ __('Location') }}</th>
+                                    <th>{{ __('Path') }}</th>
+                                    <th>{{ __('Total') }}</th>
+                                    <th>{{ __('Used') }}</th>
+                                    <th>{{ __('Free') }}</th>
+                                    <th>{{ __('Usage') }}</th>
+                                    <th>{{ __('Status') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -371,13 +371,13 @@
                                     </td>
                                     <td>
                                         @if($info['status'] === 'critical')
-                                            <span class="badge badge-danger">⚠ Critical</span>
+                                            <span class="badge badge-danger">⚠ {{ __('Critical') }}</span>
                                         @elseif($info['status'] === 'warning')
-                                            <span class="badge badge-danger">Warning</span>
+                                            <span class="badge badge-danger">{{ __('Warning') }}</span>
                                         @elseif($info['status'] === 'caution')
-                                            <span class="badge badge-warning">Caution</span>
+                                            <span class="badge badge-warning">{{ __('Caution') }}</span>
                                         @else
-                                            <span class="badge badge-success">OK</span>
+                                            <span class="badge badge-success">{{ __('OK') }}</span>
                                         @endif
                                     </td>
                                 </tr>
