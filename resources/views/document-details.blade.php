@@ -54,7 +54,8 @@ $(document).ready(function() {
                     method: 'GET',
                     dataType: "json",
                     data: {
-                        term : request.term
+                        term : request.term,
+                        collection_id : {{ $c->id }}
                     },
                     success: function(data) {
                         if(data.length > 0)
@@ -138,9 +139,11 @@ $(document).ready(function()
                         <i class="material-icons">share</i>
                         </a>
                         @endif
+                        @if(Auth::user() && Auth::user()->hasPermission($c->id, 'MAINTAINER'))
                         <a href="#" onclick="$('#related_document_form').show(); return false;" class="btn btn-sm btn-primary" title="Related Documents">
                         <i class="material-icons">playlist_add</i>
                         </a>
+                        @endif
                         <a href="/collection/{{ $c->id }}" class="btn btn-sm btn-primary" title="Back">
                         <i class="material-icons">arrow_back</i>
                         </a>
@@ -169,7 +172,7 @@ $(document).ready(function()
 				<input type="hidden" id="related_document_id" name="related_document_id" value="" />
 				<div class="row">
                     <div class="col-md-2">
-		   				<label for="title-autocomplete" class="col-md-12 col-form-label text-md-right">Search title</label>
+		   				<label for="title-autocomplete" class="col-md-12 col-form-label text-md-right">Search</label>
 					</div>
                     <div class="col-md-8">
                     <input class="form-control" type="text" id="title-autocomplete" name="title-autocomplete"/> 
