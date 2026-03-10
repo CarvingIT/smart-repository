@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use NlpTools\Similarity\CosineSimilarity;
 use App\Curation;
-// use Session;
 use App\Collection;
 use Spatie\PdfToText\Pdf;
 use mishagp\OCRmyPDF\OCRmyPDF;
@@ -19,12 +18,12 @@ use App\ReverseMetaFieldValue;
 use App\Sysconfig;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-
+use App\Traits\Search;
 
 
 class DocumentController extends Controller
 {
-
+    use Search; 
     public function list(Request $request){
         return view('all_documents');
 	}
@@ -860,13 +859,18 @@ public function approveDocument(Request $request){
 
 public function titleSuggest(Request $request){
 	$term = $request->input('term');
-	$docs = Document::where('title','like','%'.$term.'%')->orderBy('updated_at','desc')->take(100);
+	$collection_id = $request->input('collection_id');
+
+    Session::put('full_text_scope', 'title');
+    Session::put('search_query', $term);
+    $request->merge(['search'=>['value'=>$term], 'length'=>100, 'return_format'=>'raw']);
+    $search_results = json_decode($this->search($request));
+    
 	$suggestions = [];
-    if($docs->count() > 100){
+    if($search_results->recordsTotal > 100){
 		$suggestions[] = ['id'=>null,'title'=>'Too many results; narrow down.'];
     }
-    $doc_models = $docs->get();
-	foreach($doc_models as $d){
+	foreach($search_results->data as $d){
 	    $suggestions[] = ['id'=>$d->id,'title'=>$d->title];
 	}
 	return $suggestions;
