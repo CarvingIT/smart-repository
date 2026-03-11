@@ -139,6 +139,7 @@ class UpdateMeta extends Command
 		}
 
          if(!empty($validation_error_log)){
+                    print_r($validation_error_log);
                     exit;
          }
 
