@@ -42,15 +42,13 @@ class HomeController extends Controller
 	}
 	$count = $this->documentsAwaitingApprovalsCount();
 	$blogs = \App\BinshopsPost::all();
-	$downloads = \App\DocumentDownload::where('user_id',auth()->user()->id)
-		->orderBy('id','DESC')->limit(10)->get();
-	$searches = \App\Searches::where('user_id',auth()->user()->id)
-		->orderBy('id','DESC')->limit(10)->get();
+	$shared_docs = auth()->user()->sharedLinks->take(10);
+	$searches = auth()->user()->savedSearches->take(10);
 	return view('dashboard',['collections'=>$collections, 	
 		'documents'=>$documents,
 		'awaiting_count'=>$count,
 		'blogs'=>$blogs,
-		'user_downloads'=>$downloads,
+		'shared_docs'=>$shared_docs,
 		'user_searches'=>$searches
 		]);
     }
