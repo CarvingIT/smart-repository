@@ -23,3 +23,10 @@ Homestead.json
 
 # Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
 .rocketeer/
+
+# Ignore vendor/frontend asset bundles copied under public
+/public/fonts/vendor/
+/public/js/pdfjs-viewer/
+/public/vendor/font-awesome/
+/public/vendor/fontsource/
+/public/vendor/material-icons/

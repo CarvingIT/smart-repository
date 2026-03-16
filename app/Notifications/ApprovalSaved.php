@@ -46,15 +46,16 @@ class ApprovalSaved extends Notification
     public function toMail($notifiable)
     {
 		Log::debug('Sending awaiting-approval notification by email');
-        // check the type of the approvable
         $approvable = $this->approval->approvable;
-        if($approvable instanceof Document && $this->approval->wasRecentlyCreated){
+        if ($approvable instanceof Document) {
             return (new MailMessage)
                 ->subject(env('APP_NAME','Smart Repository'). ': Awaiting approval')
                 ->line('A document "'.$approvable->title.'" is awaiting your approval.')
                 ->action('Check', url('/document/'.$approvable->id.'/approval'));
-                //->line('Smart Repository');
         }
+        return (new MailMessage)
+            ->subject(env('APP_NAME','Smart Repository'). ': Awaiting approval')
+            ->line('An item is awaiting your approval.');
     }
 
     /**

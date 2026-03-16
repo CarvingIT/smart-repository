@@ -708,25 +708,27 @@ trait Search{
 			return $documents;
 		}
 		$collection = Collection::find($collection_id);
+		if (!$collection) return $documents;
 		if($collection->content_type == 'Web resources'){
 			// all
 			return $documents;
 		}
 		else if($collection->content_type == 'Uploaded documents'){
             $column_config = json_decode($collection->column_config);
-			if($collection->require_approval == 1){ 
+			if($collection->require_approval == 1){
                 if(!empty($column_config->display_unapproved_docs) && $column_config->display_unapproved_docs == 1){
                     return $documents;
                 }
                 else{
-					$documents = $documents->whereNotNull('approved_on');	
+					$documents = $documents->whereNotNull('approved_on');
 					return $documents;
                 }
 			}
-			else{ 
+			else{
 				return $documents;
 			}
 		}
+		return $documents;
 		/*
 	    $doc_col = $documents->get();
 	    $filtered_docs = $doc_col->filter(function($d, $key){

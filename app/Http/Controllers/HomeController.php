@@ -75,7 +75,7 @@ class HomeController extends Controller
 		}
 		foreach($all_docs as $collection_id => $doc){
                 $collection_role_sequence = \App\Collection::find($collection_id);
-                $role_sequence[$collection->id] = json_decode($collection_role_sequence->column_config)->approved_by;
+                $role_sequence[$collection_id] = json_decode($collection_role_sequence->column_config)->approved_by;
                         foreach($role_sequence as $s => $v){
                                 $role_index = array_search($role_id,$v);
                                 foreach($doc as $d){
@@ -111,7 +111,7 @@ class HomeController extends Controller
                                 }
                         }
                 }
-		$awaiting_approvals_docs = array_unique($awaiting_approvals_docs);
+		$awaiting_approvals_docs = collect($awaiting_approvals_docs)->unique('id')->values()->all();
 	   }#if ends for role_id empty
 		return count($awaiting_approvals_docs);
         }

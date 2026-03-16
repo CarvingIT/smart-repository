@@ -18,15 +18,14 @@ class ApprovalsController extends Controller
 	public function docApprovalForm($document_id)
     	{
             $document = \App\Document::find($document_id);
+            if (!$document) abort(404);
             $collection_id = $document->collection_id;
 	    $collection = \App\Collection::find($collection_id);
-	    $doc_approvals = \App\DocumentApproval::all();
-                return view('document_approval', ['collection'=>$collection, 'document'=>$document,'doc_approvals'=>$doc_approvals,
+                return view('document_approval', ['collection'=>$collection, 'document'=>$document,
                                 'activePage'=>'Document Approval Form','titlePage'=>'Document Approval']);
         }
 
 	public function saveApprovalStatus($approvable, $approvable_id, Request $request){
-//echo $approvable_id; exit;
 		$user_roles = [];
 		foreach(auth()->user()->roles as $r){
 			$user_roles[] = $r->role_id;
@@ -35,7 +34,17 @@ class ApprovalsController extends Controller
 		$approval = Approval::where('approvable_id', $approvable_id)
 			->where('approvable_type', $approvable_type)
 			->whereIn('approved_by_role', $user_roles)
+			->whereNull('approval_status')
 			->orderBy('id', 'DESC')->first();
+
+		if (!$approval) {
+			Session::flash('alert-danger', 'No pending approval found for your role.');
+			if($approvable=='blog'){
+				return redirect('/en/'.$approvable.'/'.$request->slug);
+			}
+			return redirect('/'.$approvable.'/'.$approvable_id.'/approval');
+		}
+
 	   try{
 		$approval->approved_by = auth()->user()->id;
 		$approval->comments = $request->comments;
@@ -56,11 +65,11 @@ class ApprovalsController extends Controller
 	}
 
 	public function nextApproval($approval_model){
-		if(!$approval_model->approval_status){
-			// don't proceed if the current status is rejected
+		if($approval_model->approval_status != 1){
+			// don't proceed if the current status is not approved
 			return false;
 		}
-		
+
 		$user_roles = [];
 		foreach(auth()->user()->roles as $r){
 			$user_roles[] = (int) $r->role_id;
@@ -70,21 +79,32 @@ class ApprovalsController extends Controller
 			$collection_config = json_decode($approval_model->approvable->collection->column_config);
 		}
 		else{
-			// this is for blog posts
-			// take config from collection/1
-			$collection = Collection::find(1);
+			// this is for blog posts — use the approvable's collection or fall back to config
+			$collection = Collection::find(config('app.blog_approval_collection_id', 1));
+			if (!$collection) return false;
 			$collection_config = json_decode($collection->column_config);
 		}
+
+		if (empty($collection_config) || empty($collection_config->approved_by)) return false;
+
 		$last_approver_role =(int) end($collection_config->approved_by);
-		if(in_array($last_approver_role, $user_roles)){
+		if($approval_model->approved_by_role == $last_approver_role){
 			// publish the approvable
 			$approval_model->approvable->publish();
 		}
 		else{
 			// send for next approval
 			$index = array_search($approval_model->approved_by_role, $collection_config->approved_by);
+			if ($index === false) {
+				\Log::error('Approval role not found in chain: '.$approval_model->approved_by_role);
+				return false;
+			}
 			$approver_roles = $collection_config->approved_by;
 			$index++;
+			if (!isset($approver_roles[$index])) {
+				\Log::error('No next approver role defined at index '.$index);
+				return false;
+			}
 			$next_approver_role = $approver_roles[$index];
 			$new_approval = new Approval(['approved_by_role'=>$next_approver_role]);
 			$approval_model->approvable->approvals()->save($new_approval);

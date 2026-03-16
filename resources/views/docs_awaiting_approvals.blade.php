@@ -1,6 +1,5 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar'])
 
-@section('content')
 @push('js')
 <script src="/js/node/jquery.min.js"></script>
 <script src="/js/node/jquery.dataTables.min.js"></script>
@@ -16,6 +15,7 @@ $(document).ready(function() {
 </script>
 @endpush
 
+@section('content')
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -56,7 +56,7 @@ $(document).ready(function() {
                         <tr>
                                 <td>{{ $doc->title }}</td>
                                 <td>{{ $doc->collection->name }}</td>
-                                <td>{{ $doc->owner->name }}</td>
+                                <td>{{ $doc->owner->name ?? 'Unknown' }}</td>
                                 <td>{{ $doc->created_at }}</td>
                         	<td class="td-actions text-right">
 					<a href="/collection/{{ $doc->collection_id }}/document/{{ $doc->id }}/details" title="View Document"><i class="material-icons">visibility</i></a>
