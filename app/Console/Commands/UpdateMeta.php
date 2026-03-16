@@ -63,7 +63,7 @@ class UpdateMeta extends Command
 			if(empty($values[0])) continue;
 			$doc = Document::find($values[0]);
 			if(!$doc){
-            $validation_error_log[] = "Document ID ".$values[0]." was not found. Continuing ..";
+            $validation_error_log[] = "Document ID ".$values[0]." was not found.";
 			echo "Document ID ".$values[0]." was not found. Continuing ..\n";
 			continue;
 			}
@@ -139,6 +139,7 @@ class UpdateMeta extends Command
 		}
 
          if(!empty($validation_error_log)){
+                    print_r($validation_error_log);
                     exit;
          }
 

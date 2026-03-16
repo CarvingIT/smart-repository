@@ -101,6 +101,7 @@ Route::post('/collection/{collection_id}/settings', 'CollectionController@saveSe
 
 Route::get('/collection/{collection_id}/metafilters', 'CollectionController@metaFiltersForm');
 Route::post('/collection/{collection_id}/metafilters', 'CollectionController@addMetaFilter');
+Route::post('/collection/{collection_id}/ajax-add-created-filter', 'CollectionController@ajaxAddCreatedFilter');
 Route::post('/collection/{collection_id}/quickmetafilters', 'CollectionController@replaceMetaFilter');
 Route::post('/collection/{collection_id}/quicktitlefilter', 'CollectionController@replaceTitleFilter');
 Route::post('/collection/{collection_id}/quickextensionfilter', 'CollectionController@replaceExtensionFilter');
@@ -114,6 +115,12 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 Route::get('/collection/{collection_id}/removetitlefilter', 'CollectionController@removeTitleFilter');
 Route::get('/collection/{collection_id}/removeextensionfilter', 'CollectionController@removeExtensionFilter');
 Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController@removeAllFilters');
+// AJAX routes for filtering without page refresh
+Route::post('/collection/{collection_id}/ajax-set-extension-filter', 'CollectionController@ajaxSetExtensionFilter');
+Route::post('/collection/{collection_id}/ajax-clear-all-filters', 'CollectionController@ajaxClearAllFilters');
+Route::post('/collection/{collection_id}/ajax-remove-filter/{filter_id}', 'CollectionController@ajaxRemoveFilter');
+Route::get('/collection/{collection_id}/date-facets', 'CollectionController@dateFacets');
+Route::post('/collection/{collection_id}/ajax-exclude-date', 'CollectionController@ajaxExcludeDate');
 // media route; just like the document download route
 Route::get('/media/i/{filename}', 'MediaController@loadImage');
 

@@ -86,53 +86,51 @@
           <div class="card card-chart">
             <div class="card-header card-header-warning">
                 <h4 class="card-title">
-				{{ __('Searches') }}
+				{{ __('Saved Searches') }}
 		</h4>
             </div>
             <div class="card-body">
-				@if (count($user_searches) == 0)
-				<p>{{ __('Your last 10 searches will appear here.') }}</p>
+				@if (!$user_searches)
+				<p>{{ __('Your saved searches will appear here.') }}</p>
 				@endif
 				<ul>
 					@foreach ($user_searches as $s)
-					<li><a href="#">{{ $s->search_query }}</a></li>
+					<li><a href="/saved-searches/{{ $s->id }}/apply">{{ $s->name }}</a></li>
 					@endforeach	
 				</ul>
 	    	</div>
-			<!--
+            @if($user_searches)
             <div class="card-footer">
               <div class="stats">
-				<i class="material-icons">show_chart</i> View More
+				<i class="material-icons">list</i><a href="/saved-searches">View All</a>
               </div>
             </div>
-			-->
+            @endif
           </div>
         </div>
         <div class="col-md-4">
           <div class="card card-chart">
             <div class="card-header card-header-success">
               <h4 class="card-title">
-				{{ __('Downloads') }}
+				{{ __('Shared Documents') }}
               </h4>
               <!--div class="ct-chart" id="dailySalesChart"></div-->
             </div>
 			<div class="card-body">
-				@if (count($user_downloads) == 0)
-				<p>{{ __('Your last 10 downloads will appear here.') }}</p>
+				@if (!$shared_docs)
+				<p>{{ __('Documents you share will appear here.') }}</p>
 				@endif
 				<ul>
-						@foreach ($user_downloads as $d)
+						@foreach ($shared_docs as $d)
 						<li><a href="/collection/{{ @$d->document->collection_id }}/document/{{ @$d->document->id }}/details">{{ @$d->document->title }}</a></li>
 					@endforeach	
 				</ul>
 			</div>
-			<!--
             <div class="card-footer">
               <div class="stats">
-                <i class="material-icons">show_chart</i> View More
+                <i class="material-icons">list</i><a href="/shared-links">View All</a>
               </div>
             </div>
-			-->
           </div>
         </div>
         <div class="col-md-4">

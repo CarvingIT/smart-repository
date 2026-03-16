@@ -8,6 +8,9 @@
         $meta_labels[$mf->id] = @$mf->label;
     }
 	$col_config = json_decode($c->column_config);
+	// $details_page_template is injected by DocumentController when custom templates are active;
+	// default to null for backward compatibility.
+	$details_page_template = $details_page_template ?? null;
 @endphp
 @push('js')
 <link rel="stylesheet" href="/css/node/jquery-ui.min.css">
@@ -51,7 +54,8 @@ $(document).ready(function() {
                     method: 'GET',
                     dataType: "json",
                     data: {
-                        term : request.term
+                        term : request.term,
+                        collection_id : {{ $c->id }}
                     },
                     success: function(data) {
                         if(data.length > 0)
@@ -135,9 +139,11 @@ $(document).ready(function()
                         <i class="material-icons">share</i>
                         </a>
                         @endif
+                        @if(Auth::user() && Auth::user()->hasPermission($c->id, 'MAINTAINER'))
                         <a href="#" onclick="$('#related_document_form').show(); return false;" class="btn btn-sm btn-primary" title="Related Documents">
                         <i class="material-icons">playlist_add</i>
                         </a>
+                        @endif
                         <a href="/collection/{{ $c->id }}" class="btn btn-sm btn-primary" title="Back">
                         <i class="material-icons">arrow_back</i>
                         </a>
@@ -166,7 +172,7 @@ $(document).ready(function()
 				<input type="hidden" id="related_document_id" name="related_document_id" value="" />
 				<div class="row">
                     <div class="col-md-2">
-		   				<label for="title-autocomplete" class="col-md-12 col-form-label text-md-right">Search title</label>
+		   				<label for="title-autocomplete" class="col-md-12 col-form-label text-md-right">Search</label>
 					</div>
                     <div class="col-md-8">
                     <input class="form-control" type="text" id="title-autocomplete" name="title-autocomplete"/> 
@@ -205,12 +211,30 @@ $(document).ready(function()
                         <span id="doc-title" class="col-md-12">
                     -->
 			@php
-        $template_code = \App\SRTemplate::
-                where('collection_id',$collection->id)
-                ->where('template_name','Document Details')
-                ->first();
-        if(!empty($template_code->html_code)){
-        $html_code = $template_code->html_code;
+        // Use the per-collection details_page template (passed from controller) if available,
+        // otherwise fall back to the legacy global 'Document Details' template.
+        $html_code = null;
+        if(!empty($details_page_template) && !empty($details_page_template->html_code)){
+            // Render the per-collection template with token replacement
+            $link = url('/collection/'.$c->id.'/document/'.$document->id);
+            $icon_url = url('/i/file-types/'.$document->icon($document->path).'.png');
+            $date = date(env('DATE_FORMAT','Y-M-d'), strtotime($document->updated_at));
+            $tpl = $details_page_template->html_code;
+            $tpl = str_replace(['{{title}}','{{type}}','{{size}}','{{date}}','{{link}}','{{icon_url}}'],
+                [e($document->title), e($document->type), e($document->human_filesize()), e($date), $link, $icon_url],
+                $tpl);
+            foreach($document->collection->meta_fields as $_mf){
+                $tpl = str_replace('{{meta_'.$_mf->label.'}}', e($document->meta_value($_mf->id) ?? ''), $tpl);
+            }
+            $html_code = $tpl;
+        } else {
+            $legacy_tpl = \App\SRTemplate::
+                    where('collection_id',$collection->id)
+                    ->where('template_name','Document Details')
+                    ->first();
+            if(!empty($legacy_tpl->html_code)){
+                $html_code = $legacy_tpl->html_code;
+            }
         }
         @endphp
 
@@ -324,6 +348,11 @@ $(document).ready(function()
 				<div class="col-md-12 row">
 			@endif
 				@if(!empty($html_code))
+				@if(!empty($details_page_template) && !empty($details_page_template->html_code))
+					{{-- Per-collection custom template (already token-replaced) --}}
+					{!! $html_code !!}
+				@else
+					{{-- Legacy global template (uses Util::replacePlaceHolder) --}}
 					@php $display_meta = [];@endphp
 					@foreach($document->collection->meta_fields as $meta_field)
 						@php
@@ -331,12 +360,12 @@ $(document).ready(function()
                                         		$meta_placeholder = preg_replace("/ /","-",$placeholder);
                                         		$display_meta[$meta_placeholder]=$document->meta_value($meta_field->id);
                                 		@endphp
-
 					@endforeach
 					@php
                                         	$formatted_data = \App\Util::replacePlaceHolder($display_meta, $html_code);
                                         	echo $formatted_data;
                                 	@endphp
+				@endif
 
 				@else
 				   @foreach($document->collection->meta_fields as $meta_field)

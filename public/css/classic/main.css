@@ -2857,3 +2857,127 @@ column-count: 1;
 .row{
 	width:100%;
 }
+
+/* Form check improvements for filters */
+.form-check {
+padding-left: 1.5em;
+margin-bottom: 0.5rem;
+}
+
+.form-check input[type="checkbox"] {
+width: 16px;
+height: 16px;
+margin-top: 0.15em;
+vertical-align: top;
+border: 2px solid #dadce0;
+border-radius: 3px;
+transition: all 0.2s;
+}
+
+.form-check input[type="checkbox"]:checked {
+background-color: #f05a22;
+border-color: #f05a22;
+}
+
+.form-check input[type="checkbox"]:hover {
+border-color: #f05a22;
+}
+
+.form-check-label {
+cursor: pointer;
+user-select: none;
+color: #5f6368;
+transition: color 0.2s;
+}
+
+.form-check:hover .form-check-label {
+color: #202124;
+}
+
+/* Range slider improvements */
+.filter-range {
+border: none;
+padding: 12px;
+margin: 0;
+}
+
+.range-field {
+position: relative;
+height: 32px;
+margin-bottom: 12px;
+}
+
+.range-field input[type="range"] {
+position: absolute;
+width: 100%;
+height: 4px;
+background: transparent;
+pointer-events: none;
+-webkit-appearance: none;
+}
+
+.range-field input[type="range"]::-webkit-slider-thumb {
+height: 16px;
+width: 16px;
+border-radius: 50%;
+background: #f05a22;
+pointer-events: auto;
+-webkit-appearance: none;
+cursor: pointer;
+box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.range-field input[type="range"]::-moz-range-thumb {
+height: 16px;
+width: 16px;
+border-radius: 50%;
+background: #f05a22;
+pointer-events: auto;
+cursor: pointer;
+box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+border: none;
+}
+
+.range-wrap {
+display: flex;
+align-items: center;
+gap: 8px;
+margin-top: 8px;
+}
+
+.range-wrap input {
+width: 70px;
+padding: 6px 8px;
+border: 1px solid #dadce0;
+border-radius: 4px;
+font-size: 13px;
+text-align: center;
+}
+
+.range-wrap input:focus {
+outline: none;
+border-color: #f05a22;
+box-shadow: 0 0 0 2px rgba(240, 90, 34, 0.1);
+}
+
+.range-wrap_line {
+color: #5f6368;
+font-weight: 500;
+}
+
+/* Filter icon rotation animation */
+.filter-icon-classic.rotate-icon {
+transform: rotate(180deg);
+}
+
+/* Smooth transitions */
+* {
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+}
+
+/* Container improvements */
+.container-fluid {
+max-width: 1400px;
+margin: 0 auto;
+}

@@ -21,6 +21,7 @@ use App\DocumentApproval;
 use App\Document;
 use Illuminate\Support\Facades\Log;
 use App\Synonyms;
+use App\SRTemplate;
 use App\Traits\Search;
 
 class CollectionController extends Controller
@@ -247,6 +248,36 @@ class CollectionController extends Controller
         }
         Session::put('meta_filters', $meta_filters);
         return redirect('/collection/'.$request->collection_id.'/metafilters');
+    }
+
+    /**
+     * AJAX-friendly version of addMetaFilter that returns JSON instead of a redirect.
+     * Used by the "Record Created" date filter on the classic collection view.
+     * Replaces any existing created_at filter instead of stacking duplicates.
+     */
+    public function ajaxAddCreatedFilter(Request $request, $collection_id){
+        $meta_filters = Session::get('meta_filters');
+        if(!empty($request->meta_value)){
+            // Remove any existing filters for the same field to avoid duplicates
+            $field = $request->meta_field;
+            if(!empty($meta_filters[$collection_id])){
+                $meta_filters[$collection_id] = array_values(
+                    array_filter($meta_filters[$collection_id], function($f) use($field){
+                        return $f['field_id'] !== $field;
+                    })
+                );
+            }
+            $new_filter_id = \Uuid::generate()->string;
+            $meta_filters[$collection_id][] = array(
+                'filter_id'=>$new_filter_id,
+                'field_id'=>$field,
+                'operator'=>$request->operator,
+                'value'=>$request->meta_value
+            );
+            Session::put('meta_filters', $meta_filters);
+            return response()->json(['success' => true, 'filter_id' => $new_filter_id]);
+        }
+        return response()->json(['success' => false]);
     }
 
     public function replaceMetaFilter(Request $request){
@@ -537,6 +568,96 @@ $j++;
         return redirect('/collection/'.$collection_id);
 	}
 
+	/**
+     * AJAX method to set extension filter without page refresh
+     */
+    public function ajaxSetExtensionFilter(Request $request){
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$request->collection_id] = $request->extension_filter;
+        Session::put('extension_filter', $extension_filter);
+        return response()->json(['success' => true, 'message' => 'Filter applied successfully']);
+    }
+
+    /**
+     * AJAX method to clear all filters without page refresh
+     */
+    /**
+     * Returns date-grouped document counts for current filtered results.
+     * Used by the classic view to display upload-date breakdown chips.
+     */
+    public function dateFacets(Request $request, $collection_id){
+        $request->merge(['collection_id' => $collection_id]);
+        $documents = \App\Document::where('collection_id', $collection_id);
+        $documents = $this->getMetaFilteredDocuments($request, $documents);
+        $documents = $this->getTitleFilteredDocuments($request, $documents);
+        $documents = $this->getExtensionFilteredDocuments($request, $documents);
+        $facets = $documents
+            ->selectRaw('DATE(created_at) as upload_date, COUNT(*) as doc_count')
+            ->groupBy('upload_date')
+            ->orderBy('upload_date', 'desc')
+            ->get();
+        $result = [];
+        foreach($facets as $f){
+            $result[] = [
+                'formatted' => date('d-m-Y', strtotime($f->upload_date)),
+                'raw_date'  => $f->upload_date,
+                'count'     => (int)$f->doc_count
+            ];
+        }
+        return response()->json($result);
+    }
+
+    /**
+     * AJAX: adds a created_at != date exclusion filter to session.
+     */
+    public function ajaxExcludeDate(Request $request, $collection_id){
+        $date = $request->date;
+        if(!$date) return response()->json(['success' => false]);
+        $meta_filters = Session::get('meta_filters') ?? [];
+        if(empty($meta_filters[$collection_id])) $meta_filters[$collection_id] = [];
+        $filter_id = \Uuid::generate()->string;
+        $meta_filters[$collection_id][] = [
+            'filter_id' => $filter_id,
+            'field_id'  => 'created_at',
+            'operator'  => '!=',
+            'value'     => $date
+        ];
+        Session::put('meta_filters', $meta_filters);
+        return response()->json(['success' => true, 'filter_id' => $filter_id]);
+    }
+
+    /**
+     * AJAX method to remove a single meta filter by filter_id without page refresh.
+     */
+    public function ajaxRemoveFilter($collection_id, $filter_id){
+        $all_meta_filters = Session::get('meta_filters');
+        if(!empty($all_meta_filters[$collection_id])){
+            $all_meta_filters[$collection_id] = array_values(
+                array_filter($all_meta_filters[$collection_id], function($f) use($filter_id){
+                    return $f['filter_id'] !== $filter_id;
+                })
+            );
+            Session::put('meta_filters', $all_meta_filters);
+        }
+        return response()->json(['success' => true]);
+    }
+
+    public function ajaxClearAllFilters($collection_id){
+        $title_filter = Session::get('title_filter');
+        $title_filter[$collection_id] = null;
+        Session::put('title_filter', $title_filter);
+        
+        $extension_filter = Session::get('extension_filter');
+        $extension_filter[$collection_id] = null;
+        Session::put('extension_filter', $extension_filter);
+        
+        $all_meta_filters = Session::get('meta_filters');
+        $all_meta_filters[$collection_id] = null;
+        Session::put('meta_filters', $all_meta_filters);
+        
+        return response()->json(['success' => true, 'message' => 'All filters cleared successfully']);
+    }
+
 
     public function deleteCollection(Request $request){
         $collection = \App\Collection::find($request->collection_id);
@@ -684,15 +805,48 @@ use App\UrlSuppression;
 	public function showSettingsForm(Request $request){
 		$collection = Collection::find($request->collection_id);
 		$roles = Role::all();
-        return view('collection-settings', ['collection'=>$collection, 'roles'=>$roles,
-			'mailbox'=>CollectionMailbox::where('collection_id', $collection->id)->first()]);
+		$search_result_template = SRTemplate::where('collection_id', $collection->id)
+			->where('template_type', 'search_result')->first();
+		$details_page_template = SRTemplate::where('collection_id', $collection->id)
+			->where('template_type', 'details_page')->first();
+        return view('collection-settings', [
+			'collection' => $collection,
+			'roles' => $roles,
+			'mailbox' => CollectionMailbox::where('collection_id', $collection->id)->first(),
+			'search_result_template' => $search_result_template,
+			'details_page_template' => $details_page_template,
+		]);
 	}
 	
 	public function saveSettings(Request $request){
 		$collection = Collection::find($request->collection_id);
-		$col_config = $request->all();
+		$col_config = $request->except(['search_result_template_html', 'details_page_template_html']);
 		$collection->column_config = json_encode($col_config);
 		$collection->save();
+
+		// Save search result template
+		$sr_template = SRTemplate::where('collection_id', $collection->id)
+			->where('template_type', 'search_result')->first();
+		if(empty($sr_template)){
+			$sr_template = new SRTemplate();
+			$sr_template->collection_id = $collection->id;
+			$sr_template->template_type = 'search_result';
+			$sr_template->template_name = 'Search Result - '.$collection->name;
+		}
+		$sr_template->html_code = $request->input('search_result_template_html', '');
+		$sr_template->save();
+
+		// Save details page template
+		$details_template = SRTemplate::where('collection_id', $collection->id)
+			->where('template_type', 'details_page')->first();
+		if(empty($details_template)){
+			$details_template = new SRTemplate();
+			$details_template->collection_id = $collection->id;
+			$details_template->template_type = 'details_page';
+			$details_template->template_name = 'Details Page - '.$collection->name;
+		}
+		$details_template->html_code = $request->input('details_page_template_html', '');
+		$details_template->save();
 		// configuration of mapping of mailbox
 		$mailbox = CollectionMailbox::where('collection_id', $collection->id)->first();
 		if(empty($mailbox)){

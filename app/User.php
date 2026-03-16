@@ -199,11 +199,11 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function sharedLinks(){
-        return $this->hasMany(SharedLink::class);
+        return $this->hasMany(SharedLink::class)->orderBy('created_at', 'desc');
     }
 
     public function savedSearches(){
-        return $this->hasMany(SavedSearch::class);
+        return $this->hasMany(SavedSearch::class)->orderBy('created_at','desc');
     }
 
 ///// 

@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Validator;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use NlpTools\Similarity\CosineSimilarity;
 use App\Curation;
-// use Session;
 use App\Collection;
 use Spatie\PdfToText\Pdf;
 use mishagp\OCRmyPDF\OCRmyPDF;
@@ -19,12 +18,12 @@ use App\ReverseMetaFieldValue;
 use App\Sysconfig;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
-
+use App\Traits\Search;
 
 
 class DocumentController extends Controller
 {
-
+    use Search; 
     public function list(Request $request){
         return view('all_documents');
 	}
@@ -661,7 +660,19 @@ class DocumentController extends Controller
 	}
 
 	$comments = \App\DocumentComment::where('document_id',$document_id)->orderByDesc('created_at')->get();
-        return view('document-details', ['document'=>$d, 'collection'=>$c, 'comments'=>$comments, 'word_weights'=>\App\Curation::getWordWeights($d->text_content)]);
+	$col_config = json_decode($c->column_config);
+	$details_page_template = null;
+	if(!empty($col_config->use_custom_template) && $col_config->use_custom_template == 1){
+		$details_page_template = \App\SRTemplate::where('collection_id', $collection_id)
+			->where('template_type', 'details_page')->first();
+	}
+        return view('document-details', [
+		'document'  => $d,
+		'collection' => $c,
+		'comments'  => $comments,
+		'word_weights' => \App\Curation::getWordWeights($d->text_content),
+		'details_page_template' => $details_page_template,
+	]);
     }
 
     public function showRevisionDiff($document_id, $rev1_id, $rev2_id){
@@ -744,6 +755,10 @@ public function downloadFile($doc,$storage_drive,$path_count=null){
                 'Content-Description' => 'File Transfer',
                 //'Content-Disposition' => "attachment; filename={$file_name}",
                 'Content-Transfer-Encoding' => 'binary',
+                'Accept-Ranges' => 'bytes',
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => 'GET, HEAD, OPTIONS',
+                'Access-Control-Allow-Headers' => 'Range',
                 ];
 				if($mime != 'application/pdf'){
 					$response['Content-Disposition'] = "attachment; filename={$file_name}";
@@ -844,13 +859,20 @@ public function approveDocument(Request $request){
 
 public function titleSuggest(Request $request){
 	$term = $request->input('term');
-	$docs = Document::where('title','like','%'.$term.'%')->orderBy('updated_at','desc')->take(100);
+	$collection_id = $request->input('collection_id');
+
+    Session::put('full_text_scope', 'title');
+    Session::put('search_query', $term);
+    $request->merge(['search'=>['value'=>$term], 'length'=>100, 'return_format'=>'raw']);
+    if(!empty($term) && strlen($term)>2){
+        $search_results = json_decode($this->search($request));
+    }
+    
 	$suggestions = [];
-    if($docs->count() > 100){
+    if($search_results->recordsTotal > 100){
 		$suggestions[] = ['id'=>null,'title'=>'Too many results; narrow down.'];
     }
-    $doc_models = $docs->get();
-	foreach($doc_models as $d){
+	foreach($search_results->data as $d){
 	    $suggestions[] = ['id'=>$d->id,'title'=>$d->title];
 	}
 	return $suggestions;

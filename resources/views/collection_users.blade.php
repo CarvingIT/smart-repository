@@ -58,6 +58,9 @@ $(document).ready(function() {
                         </thead>
                         <tbody>
                     @foreach($collection_users as $user_id=>$perms)
+                    @if(!$perms[0]->user) 
+                        @continue
+                    @endif
                     <tr>
                         <td>
                         {{ ($perms[0]->user)->email }}
