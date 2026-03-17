@@ -198,5 +198,9 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(SavedSearch::class)->orderBy('created_at','desc');
     }
 
+    public function alerts(){
+        return $this->hasMany(Alert::class, 'user_id');
+    }
+
 ///// 
 } // End of the class
