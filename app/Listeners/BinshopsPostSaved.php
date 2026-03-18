@@ -36,6 +36,10 @@ class BinshopsPostSaved
 			$approval_record->approved_by_role=$approvers[0];
 			$approval_record->approvable_id=$event->binshopsBlogPost->id;
 			$approval_record->approvable_type='App\BinshopsPost';
+			
+			// Initialize approval_statuses with all roles in the workflow
+			$approval_record->initializeApprovalStatuses($approvers);
+			
 			$approval_record->save();
 		//}
     }

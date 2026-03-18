@@ -58,6 +58,10 @@ class DocumentSaved
 				if (!empty($col_conf) && !empty($col_conf->approved_by)) {
 					$approvers = $col_conf->approved_by;
 					$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
+					
+					// Initialize approval_statuses with all roles in the workflow
+					$approval_record->initializeApprovalStatuses($approvers);
+					
 					$event->document->approvals()->save($approval_record);
 				}
 			}

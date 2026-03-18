@@ -49,6 +49,10 @@ class ApprovalsController extends Controller
 		$approval->approved_by = auth()->user()->id;
 		$approval->comments = $request->comments;
 		$approval->approval_status = $request->approval_status;
+		
+		// Update the approval_statuses array for this role
+		$approval->updateApprovalStatus($approval->approved_by_role, $request->approval_status, auth()->user()->id);
+		
 		$approval->save();
 		$this->nextApproval($approval);
 	   	Session::flash('alert-success','Approval details have been saved successfully.');
@@ -107,6 +111,10 @@ class ApprovalsController extends Controller
 			}
 			$next_approver_role = $approver_roles[$index];
 			$new_approval = new Approval(['approved_by_role'=>$next_approver_role]);
+			
+			// Initialize approval_statuses with all roles in the workflow
+			$new_approval->initializeApprovalStatuses($approver_roles);
+			
 			$approval_model->approvable->approvals()->save($new_approval);
 		}
 	}
