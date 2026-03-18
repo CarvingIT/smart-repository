@@ -20,6 +20,7 @@ use Rap2hpoutre\FastExcel\FastExcel;
 use App\DocumentApproval;
 use App\Document;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Synonyms;
 use App\SRTemplate;
 use App\Traits\Search;
@@ -89,6 +90,12 @@ class CollectionController extends Controller
     }
 
     public function save(Request $request){
+            $request->validate([
+                'collection_name' => 'required|string|max:255',
+                'description' => 'required|string',
+                'representative_image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:5120',
+            ]);
+
          if(empty($request->input('collection_id'))){
             $c = new \App\Collection;
             $c->storage_drive = $request->input('storage_drive');
@@ -106,6 +113,20 @@ class CollectionController extends Controller
          $col_config->pdf_viewer = $request->input('pdf_viewer', 'viewerjs');
          $c->column_config = json_encode($col_config);
          $c->user_id = Auth::user()->id;
+
+            if ($request->hasFile('representative_image')) {
+                $oldImagePath = $c->representative_image;
+                $c->representative_image = $request->file('representative_image')->store('collection-images', 'public');
+                if (!empty($oldImagePath) && Storage::disk('public')->exists($oldImagePath)) {
+                     Storage::disk('public')->delete($oldImagePath);
+                }
+            } elseif ($request->input('remove_representative_image') == '1' && !empty($c->representative_image)) {
+                if (Storage::disk('public')->exists($c->representative_image)) {
+                    Storage::disk('public')->delete($c->representative_image);
+                }
+                $c->representative_image = null;
+            }
+
          try{
             $c->save();
             Session::flash('alert-success', 'Collection saved successfully!');

@@ -46,6 +46,23 @@
             </span>
             </div>
                   <div class="card-body">
+                    {{-- Representative image tile: portrait 3:4 aspect ratio --}}
+                    <a href="/collection/{{ $c->id }}" style="display:block; text-decoration:none;">
+                    <div class="mb-3" style="position:relative; width:100%; padding-bottom:133%; border-radius:8px; overflow:hidden; background:#2c3e50;">
+                    @if(!empty($c->representative_image))
+                        <img src="{{ asset('storage/'.$c->representative_image) }}" alt="{{ $c->name }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;" />
+                    @else
+                        <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(160deg, #1a2a3a 0%, #2d4a6b 50%, #1a2a3a 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">
+                            <div style="border:2px solid rgba(255,255,255,0.4); border-radius:4px; width:80%; padding:20px 12px; text-align:center; background:rgba(255,255,255,0.07);">
+                                <div style="font-size:11px; letter-spacing:3px; color:rgba(255,255,255,0.6); text-transform:uppercase; margin-bottom:12px;">Collection</div>
+                                <div style="font-size:15px; font-weight:700; color:#fff; line-height:1.3; word-break:break-word;">{{ $c->name }}</div>
+                                <div style="width:40px; height:2px; background:rgba(255,255,255,0.4); margin:12px auto;"></div>
+                                <div style="font-size:10px; color:rgba(255,255,255,0.5); letter-spacing:1px;">SMART REPOSITORY</div>
+                            </div>
+                        </div>
+                    @endif
+                    </div>
+                    </a>
                     <div class="row justify-content-center">
                     <div class="col-sm-12 col-md-4 text-center stats-on-card document-count">
                         {{ (int)@$stats[$c->id]->cnt }}

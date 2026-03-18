@@ -68,7 +68,7 @@ else{
                         </div>
                     @endif
 
-                   <form method="post" action="/admin/savecollection">
+                   <form method="post" action="/admin/savecollection" enctype="multipart/form-data">
                     @csrf()
                     <input type="hidden" name="collection_id" value="{{$collection->id}}" />
                    <div class="form-group row">
@@ -85,6 +85,32 @@ else{
 			</div>
                     <div class="col-md-8">
                     <textarea name="description" id="description" class="form-control" value="" placeholder="{{ __('Description') }}" required >{{ $collection->description }}</textarea>
+                    </div>
+                   </div>
+                   @if(!empty($collection->representative_image))
+                   <div class="form-group row">
+                    <div class="col-md-4">
+                        <label class="col-md-12 col-form-label text-md-right">{{ __('Current Image') }}</label>
+                    </div>
+                    <div class="col-md-8">
+                        <div style="display:inline-block; border:1px solid #ddd; border-radius:6px; overflow:hidden; background:#f8f9fa; width:60px;">
+                            <img src="{{ asset('storage/'.$collection->representative_image) }}" alt="{{ __('Representative image') }}" style="display:block; width:60px; height:80px; object-fit:cover;" />
+                        </div>
+                        <div class="mt-2">
+                            <input type="checkbox" id="remove_representative_image" name="remove_representative_image" value="1" />
+                            <label for="remove_representative_image" class="text-danger mb-0">{{ __('Remove current image') }}</label>
+                        </div>
+                        <p class="mt-1 mb-0"><small class="text-muted">{{ __('Or upload a new image below to replace this.') }}</small></p>
+                    </div>
+                   </div>
+                   @endif
+                   <div class="form-group row mb-3">
+                    <div class="col-md-4">
+                    <label for="representative_image" class="col-md-12 col-form-label text-md-right">{{ __('Representative Image') }}</label>
+                    </div>
+                    <div class="col-md-8">
+                    <input type="file" name="representative_image" id="representative_image" class="form-control" accept="image/*" />
+                    <small class="form-text text-muted">{{ __('Optional. jpg/jpeg/png/gif/webp, max 5 MB.') }}</small>
                     </div>
                    </div>
                    <div class="form-group row">
