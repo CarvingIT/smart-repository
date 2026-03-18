@@ -1,5 +1,4 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar'])
-@section('content')
 @push('js')
 <script src="/js/node/jquery.min.js"></script>
 <script src="/js/node/jquery.dataTables.min.js"></script>
@@ -16,6 +15,7 @@ $(document).ready(function() {
 </script>
 @endpush
 
+@section('content')
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -51,7 +51,7 @@ $(document).ready(function() {
 					@endphp
 				@endif	
                         <tr>
-                                <td>@if($item->approvable_type == 'App\BinshopsPost'){{ $post->defaultTitle() }}@else {{ @$item->approvable->title }}@endif</td>
+                                <td>@if($item->approvable_type == 'App\BinshopsPost'){{ $post->defaultTitle() }}@else {{ $item->approvable?->title ?? '(deleted)' }}@endif</td>
                                 <td>{{ $item->comments }}</td>
                                 <td>{{ $item->created_at }}</td>
                         <td class="td-actions text-right">

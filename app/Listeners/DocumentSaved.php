@@ -75,13 +75,23 @@ class DocumentSaved
 
         // add a record in the approvals table
         if($event->document->collection->require_approval == 1
+		// add a record in the approvals table only on first save (not on every edit)
+		if($event->document->collection->require_approval == 1
            && empty($event->document->approved_on)){
-			// get the first role id from approval workflow
-			$collection_config = $event->document->collection->column_config;	
-			$col_conf = json_decode($collection_config);
-			$approvers = $col_conf->approved_by;
-			$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
-			$event->document->approvals()->save($approval_record);
+			// only create an approval record if no pending one already exists
+			$already_has_pending = $event->document->approvals()
+				->whereNull('approval_status')
+				->exists();
+			if (!$already_has_pending) {
+				// get the first role id from approval workflow
+				$collection_config = $event->document->collection->column_config;
+				$col_conf = json_decode($collection_config);
+				if (!empty($col_conf) && !empty($col_conf->approved_by)) {
+					$approvers = $col_conf->approved_by;
+					$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
+					$event->document->approvals()->save($approval_record);
+				}
+			}
 		}
 
 	    // Update elasticsearch index 
