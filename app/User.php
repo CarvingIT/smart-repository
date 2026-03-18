@@ -154,13 +154,21 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function canApproveDocument($document_id, $user_role=null){
         $document = \App\Document::find($document_id);
+        if (!$document) return false;
         $collection_id = $document->collection_id;
 	$collection_details = \App\Collection::find($collection_id);
+	if (!$collection_details) return false;
 	$approval_roles = json_decode($collection_details->column_config);
-	
-        if($this->hasPermission($collection_id, 'MAINTAINER') || 
-            //($this->hasPermission($collection_id, 'APPROVE') && $document->created_by == $this->id) || 
-			($collection_details->require_approval && $approval_roles && in_array($user_role,$approval_roles->approved_by))){
+	if (!$approval_roles) return false;
+
+	// collect all roles for this user to support multi-role users
+	$all_user_role_ids = $this->roles->pluck('role_id')->toArray();
+	$user_role_to_check = $user_role ?? (count($all_user_role_ids) ? $all_user_role_ids[0] : null);
+
+        if($this->hasPermission($collection_id, 'MAINTAINER') ||
+            ($collection_details->require_approval && !empty($approval_roles->approved_by) &&
+            (in_array($user_role_to_check, $approval_roles->approved_by) ||
+             count(array_intersect($all_user_role_ids, (array)$approval_roles->approved_by)) > 0))){
             return true;
         }
         return false;
