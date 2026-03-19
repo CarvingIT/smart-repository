@@ -1,4 +1,4 @@
-<html>
+<!DOCTYPE html>
 <head>
 <title>{{ env('APP_NAME', 'Smart Repository') }}::Document Viewer</title>
 <link rel="icon" type="image/png" href="/material/img/favicon.png">
@@ -131,7 +131,8 @@ h4{
             ? '/collection/'.$collection_id.'/document/'.$doc->id.'/details/'.$path_count 
             : '/collection/'.$collection_id.'/document/'.$doc->id;
     @endphp
-    <iframe id="pdfreader" class="pdf" src="/js/pdfjs-viewer/viewer.html?file={{ urlencode($pdfPath) }}" width="100%" height="100%"></iframe>
+    <!--iframe id="pdfreader" class="pdf" src="/js/pdfjs-viewer/viewer.html?file={{ urlencode($pdfPath) }}" width="100%" height="100%"></iframe-->
+    <iframe id="pdfreader" class="pdf" src="/pdfjsviewer?file={{ urlencode($pdfPath) }}&collection_id={{ $collection_id }}" width="100%" height="100%"></iframe>
 @else
     @if(!is_null($path_count))
     <iframe id="pdfreader" class="pdf" src="/js/ViewerJS/?zoom=page-width&title={{ $doc->title }}#../../collection/{{ $collection_id }}/document/{{ $doc->id }}/details/{{ $path_count }}" width="100%" height="100%"></iframe>

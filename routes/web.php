@@ -128,6 +128,8 @@ Route::get('/media/i/{filename}', 'MediaController@loadImage');
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/doc-viewer', 'DocumentController@docViewer')->middleware('document_view');
+Route::view('/pdfjsviewer', 'pdfjsviewer');
+
 Route::get('/c-{collection_id}/doc-viewer.css',function($collection_id){
     return response(view('doc-viewer-style',['collection_id'=>$collection_id]))
         ->header('Content-Type', 'text/css');
