@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\ApprovalSaved as ApprovalSavedNotification;
 use App\Document;
+use App\Services\UserAlertService;
 
 class ApprovalSaved
 {
@@ -40,6 +41,29 @@ class ApprovalSaved
 		    catch(\Exception $e){
 		    	Log::error($e->getMessage());
 		    }
+
+            if (is_null($event->approval->approval_status) && !empty($event->approval->approved_by_role)) {
+                try {
+                    $alertService = new UserAlertService();
+                    $alertTitle = 'Approval required';
+                    $alertMessage = 'Document "'.$approvable->title.'" is awaiting your approval.';
+                    $alertUrl = '/document/'.$approvable->id.'/approval';
+                    $alertService->createForRole(
+                        (int) $event->approval->approved_by_role,
+                        $alertTitle,
+                        $alertMessage,
+                        $alertUrl,
+                        [
+                            'type' => 'approval',
+                            'approvable_type' => 'document',
+                            'approvable_id' => $approvable->id,
+                        ]
+                    );
+                }
+                catch(\Exception $e){
+                    Log::warning('Unable to create approval alert: '.$e->getMessage());
+                }
+            }
         }
         else{
 		   	Log::debug(get_class($approvable));

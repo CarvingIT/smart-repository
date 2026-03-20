@@ -335,6 +335,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('shared-links', 'SharedLinkController')->except(['show']);
     Route::get('/document/{document}/share', 'SharedLinkController@create')->name('shared-links.create');
 });
+
+// User Alerts
+Route::group(['middleware' => 'auth'], function () {
+	Route::get('/alerts', 'AlertController@index')->name('alerts.index');
+	Route::get('/alerts/{alert}/open', 'AlertController@open')->name('alerts.open');
+	Route::post('/alerts/{alert}/read', 'AlertController@markRead')->name('alerts.read');
+	Route::post('/alerts/{alert}/unread', 'AlertController@markUnread')->name('alerts.unread');
+});
+
 Route::get('/shared/{token}', 'SharedLinkController@publicView')->name('shared-links.public-view');
 Route::post('/shared/{token}/verify', 'SharedLinkController@verifyPassword')->name('shared-links.verify-password');
 Route::get('/shared/{token}/download', 'SharedLinkController@download')->name('shared-links.download');
