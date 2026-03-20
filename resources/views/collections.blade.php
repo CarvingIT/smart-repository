@@ -1,6 +1,69 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar', 'title' => 'Collections'])
 
 @section('content')
+<style>
+    .collection-card-sm {
+        max-width: 280px;
+        margin: 0 auto;
+    }
+
+    .collection-cover-frame {
+        position: relative;
+        width: 100%;
+        padding-bottom: 133%;
+        border-radius: 8px;
+        overflow: hidden;
+        background: #2c3e50;
+    }
+
+    .collection-cover-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+        background: #1f2a36;
+    }
+
+    .collection-card-sm .card-header {
+        padding: 0.7rem 0.9rem;
+    }
+
+    .collection-card-sm .card-body {
+        padding: 0.75rem 0.8rem 0.45rem;
+    }
+
+    .collection-card-sm .collection-stats-row {
+        margin-top: 0.25rem;
+        margin-bottom: 0;
+    }
+
+    .collection-card-sm .stats-on-card {
+        padding-top: 32px;
+        padding-bottom: 2px;
+        line-height: 1.15;
+        font-size: 1rem;
+    }
+
+    .collection-card-sm .document-count {
+        background-size: 26px;
+        background-position: center 4px;
+    }
+
+    .collection-card-sm .user-count,
+    .collection-card-sm .space-utilization {
+        background-size: 22px;
+        background-position: center 5px;
+    }
+
+    @media (max-width: 576px) {
+        .collection-card-sm {
+            max-width: 100%;
+        }
+    }
+</style>
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-end mb-3">
@@ -33,8 +96,8 @@
 		@if($c->content_type == 'Web resources' && env('SHOW_WEB_RESOURCES') != 1)
 			@continue
 		@endif
-        <div class="col-sm-12 col-md-4">
-            <div class="card">
+        <div class="col-sm-12 col-md-6 col-lg-4">
+            <div class="card collection-card-sm">
             <div class="card-header card-header-primary">
                   @if ($c->type == 'Members Only')
                     <i class="material-icons">lock</i>
@@ -48,9 +111,9 @@
                   <div class="card-body">
                     {{-- Representative image tile: portrait 3:4 aspect ratio --}}
                     <a href="/collection/{{ $c->id }}" style="display:block; text-decoration:none;">
-                    <div class="mb-3" style="position:relative; width:100%; padding-bottom:133%; border-radius:8px; overflow:hidden; background:#2c3e50;">
+                    <div class="mb-2 collection-cover-frame">
                     @if(!empty($c->representative_image))
-                        <img src="{{ asset('storage/'.$c->representative_image) }}" alt="{{ $c->name }}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;" />
+                        <img src="{{ asset('storage/'.$c->representative_image) }}" alt="{{ $c->name }}" class="collection-cover-image" />
                     @else
                         <div style="position:absolute; top:0; left:0; width:100%; height:100%; background:linear-gradient(160deg, #1a2a3a 0%, #2d4a6b 50%, #1a2a3a 100%); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; box-sizing:border-box;">
                             <div style="border:2px solid rgba(255,255,255,0.4); border-radius:4px; width:80%; padding:20px 12px; text-align:center; background:rgba(255,255,255,0.07);">
@@ -63,7 +126,7 @@
                     @endif
                     </div>
                     </a>
-                    <div class="row justify-content-center">
+                    <div class="row justify-content-center collection-stats-row">
                     <div class="col-sm-12 col-md-4 text-center stats-on-card document-count">
                         {{ (int)@$stats[$c->id]->cnt }}
                     </div>
