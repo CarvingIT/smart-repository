@@ -73,7 +73,10 @@ class DocumentSaved
                     else {// for Date/Text/Textarea/Select/....
                         $val = $mv->value;
                     }
-                    $body['meta_'.$mv->meta_fi
+                    $body['meta_'.$mv->meta_field_id] = $val;
+                }
+            }
+
             $del_params = [
                 'index' => 'sr_documents',
                 'id'    => $event->document->id
