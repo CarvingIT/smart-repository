@@ -178,6 +178,21 @@ $(document).ready(function() {
 				@endforeach
 			</select>
             </div>
+			<div class="col-md-12" style="margin-top: 12px;">
+				<strong>{{ __('Approval Status Labels') }}</strong>
+				@php
+					$approvalStatusLabels = '';
+					if (!empty($column_config->approval_status_labels) && is_array($column_config->approval_status_labels)) {
+						$approvalStatusLabels = implode("\n", array_map(function ($label) {
+							return is_null($label) ? '' : $label;
+						}, $column_config->approval_status_labels));
+					}
+				@endphp
+				<textarea class="form-control" name="approval_status_labels_text" rows="4" placeholder="Submitted&#10;Awaiting HoD's approval&#10;Awaiting final approval">{{ $approvalStatusLabels }}</textarea>
+				<small class="form-text text-muted">
+					{{ __('Add one status label per line in the same order as the workflow roles above. Leave blank to use default labels.') }}
+				</small>
+			</div>
 		</div>
 
 		<h4>{{__('Notifications')}}</h4>
