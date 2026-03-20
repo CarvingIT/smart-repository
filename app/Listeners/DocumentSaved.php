@@ -73,10 +73,8 @@ class DocumentSaved
             Log::warning('Unable to create document alert: '.$e->getMessage());
         }
 
-        // add a record in the approvals table
+        // add a record in the approvals table only on first save (not on every edit)
         if($event->document->collection->require_approval == 1
-		// add a record in the approvals table only on first save (not on every edit)
-		if($event->document->collection->require_approval == 1
            && empty($event->document->approved_on)){
 			// only create an approval record if no pending one already exists
 			$already_has_pending = $event->document->approvals()
