@@ -115,6 +115,7 @@ class DocumentSaved
                     $body['meta_'.$mv->meta_field_id] = $val;
                 }
             }
+
             $del_params = [
                 'index' => 'sr_documents',
                 'id'    => $event->document->id

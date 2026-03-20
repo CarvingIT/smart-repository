@@ -5,6 +5,10 @@
     .collection-card-sm {
         max-width: 280px;
         margin: 0 auto;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
 
     .collection-cover-frame {
@@ -29,15 +33,36 @@
 
     .collection-card-sm .card-header {
         padding: 0.7rem 0.9rem;
+        min-height: 56px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .collection-card-sm .card-title {
+        display: block;
+        line-height: 1.25;
     }
 
     .collection-card-sm .card-body {
         padding: 0.75rem 0.8rem 0.45rem;
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
     }
 
     .collection-card-sm .collection-stats-row {
         margin-top: 0.25rem;
         margin-bottom: 0;
+    }
+
+    .collection-grid-col {
+        display: flex;
+        margin-bottom: 2.4rem;
+    }
+
+    .collections-sort-row {
+        margin-bottom: 2rem;
     }
 
     .collection-card-sm .stats-on-card {
@@ -66,7 +91,7 @@
 </style>
 <div class="container">
 <div class="container-fluid">
-    <div class="row justify-content-end mb-3">
+    <div class="row justify-content-end collections-sort-row">
         <div class="col-auto">
             <div class="dropdown">
                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -96,7 +121,7 @@
 		@if($c->content_type == 'Web resources' && env('SHOW_WEB_RESOURCES') != 1)
 			@continue
 		@endif
-        <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="col-sm-12 col-md-6 col-lg-4 collection-grid-col">
             <div class="card collection-card-sm">
             <div class="card-header card-header-primary">
                   @if ($c->type == 'Members Only')
