@@ -15,13 +15,43 @@ use Session;
 class ApprovalsController extends Controller
 {
     //
-	public function docApprovalForm($document_id)
+	public function docApprovalForm(Request $request, $document_id)
     	{
             $document = \App\Document::find($document_id);
             $collection_id = $document->collection_id;
 	    $collection = \App\Collection::find($collection_id);
 	    $doc_approvals = \App\DocumentApproval::all();
+
+		$user_roles = [];
+		foreach(auth()->user()->roles as $r){
+			$user_roles[] = $r->role_id;
+		}
+
+		$current_approval = null;
+		$approval_id = $request->query('approval_id');
+
+		if(!empty($approval_id)){
+			$current_approval = Approval::where('id', $approval_id)
+				->where('approvable_id', $document_id)
+				->where('approvable_type', 'App\\Document')
+				->whereIn('approved_by_role', $user_roles)
+				->first();
+		}
+
+		if(empty($current_approval)){
+			$current_approval = Approval::where('approvable_id', $document_id)
+				->where('approvable_type', 'App\\Document')
+				->whereIn('approved_by_role', $user_roles)
+				->orderBy('id', 'DESC')
+				->first();
+		}
+
+		$current_approval_status = !empty($current_approval) ? $current_approval->approval_status : null;
+		$current_approval_comments = !empty($current_approval) ? $current_approval->comments : '';
+
                 return view('document_approval', ['collection'=>$collection, 'document'=>$document,'doc_approvals'=>$doc_approvals,
+								'current_approval_status'=>$current_approval_status,
+								'current_approval_comments'=>$current_approval_comments,
                                 'activePage'=>'Document Approval Form','titlePage'=>'Document Approval']);
         }
 
