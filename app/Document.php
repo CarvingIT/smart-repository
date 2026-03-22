@@ -161,7 +161,7 @@ class Document extends Model implements Auditable
     }
     
     public function publish(){
-	    $this->approved_by = auth()->user()->id;
+	    $this->approved_by = auth()->check() ? auth()->user()->id : null;
 	    $this->approved_on = Carbon::now()->toDateTimeString();
         $this->locked = 1; // lock after publishing
 	    $this->save();
@@ -189,7 +189,7 @@ class Document extends Model implements Auditable
         if(!empty($this->approved_on)){
             return "Approved";
         }
-        else{    
+        else{
             $latest_stage = $this->approvals;
             $latest_approval_record = $latest_stage->sortByDesc('id')->first();
             $approved_by_role = @$latest_approval_record->approver_role->name;
@@ -211,6 +211,10 @@ class Document extends Model implements Auditable
             }
 
             return "Approval pending at ".ucfirst($approved_by_role);
+            if (!$latest_approval_record || !$latest_approval_record->approver_role) {
+                return "Approval pending (role not assigned)";
+            }
+            return "Approval pending at ".ucfirst($latest_approval_record->approver_role->name);
         }
     }
 

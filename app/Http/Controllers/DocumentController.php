@@ -820,11 +820,155 @@ public function proofRead($collection_id,$document_id){
 }
 
 public function move(Request $req){
-	// the user needs to be maintainer of both the collections
-	$document = Document::find($req->document_id);
-	$document->collection_id = $req->collection_id;
-	$document->save();
-	return redirect('/collection/'.$req->collection_id.'/document/'.$document->id.'/details');
+    // the user needs to be maintainer of both the collections
+    $document = Document::find($req->document_id);
+    if(empty($document) || empty($req->collection_id)){
+        return redirect('/');
+    }
+
+    $source_collection_id = $document->collection_id;
+    $target_collection_id = (int) $req->collection_id;
+    if($source_collection_id == $target_collection_id){
+        return redirect('/collection/'.$target_collection_id.'/document/'.$document->id.'/details');
+    }
+
+    $source_fields = \App\MetaField::where('collection_id', $source_collection_id)->get()->keyBy('id');
+    $target_fields = \App\MetaField::where('collection_id', $target_collection_id)->get();
+    $target_fields_by_label = [];
+    foreach($target_fields as $target_field){
+        $target_fields_by_label[$this->normalizeMetaLabel($target_field->label)] = $target_field;
+    }
+
+    $source_meta_values = MetaFieldValue::where('document_id', $document->id)->get();
+    $mapped_meta_data = [];
+    foreach($source_meta_values as $source_meta_value){
+        $source_field = @$source_fields[$source_meta_value->meta_field_id];
+        if(empty($source_field)) continue;
+
+        $target_field = @$target_fields_by_label[$this->normalizeMetaLabel($source_field->label)];
+        if(empty($target_field)) continue;
+
+        $mapped_value = $this->mapMetaValueForTargetField($source_meta_value->value, $source_field, $target_field);
+        if($mapped_value === null) continue;
+
+        $mapped_meta_data[] = [
+            'field_id' => $target_field->id,
+            'field_value' => $mapped_value,
+        ];
+    }
+
+    $document->collection_id = $target_collection_id;
+    $document->save();
+
+    MetaFieldValue::where('document_id', $document->id)->delete();
+    $this->saveMetaData($document->id, $mapped_meta_data);
+
+    return redirect('/collection/'.$target_collection_id.'/document/'.$document->id.'/details');
+}
+
+private function normalizeMetaLabel($label){
+    return strtolower(trim((string) $label));
+}
+
+private function parseMetaValueToArray($value){
+    if(is_array($value)) return $value;
+    if(!is_string($value)) return [];
+
+    $value = trim($value);
+    if($value === '') return [];
+
+    if(preg_match('/^\[.*\]$/', $value)){
+        $decoded = json_decode($value, true);
+        if(is_array($decoded)) return array_values($decoded);
+    }
+
+    return [$value];
+}
+
+private function mapMetaValueForTargetField($source_value, $source_field, $target_field){
+    $source_values = $this->parseMetaValueToArray($source_value);
+    $target_type = $target_field->type;
+
+    if($target_type == 'TaxonomyTree'){
+        $mapped_taxonomy_ids = $this->mapTaxonomyValuesByLabel($source_values, $target_field);
+        return empty($mapped_taxonomy_ids) ? null : $mapped_taxonomy_ids;
+    }
+
+    if($target_type == 'Select' || $target_type == 'MultiSelect'){
+        $allowed_options = array_filter(array_map('trim', explode(',', (string) $target_field->options)));
+        if(empty($allowed_options)) return null;
+
+        $allowed_map = [];
+        foreach($allowed_options as $opt){
+            $allowed_map[strtolower($opt)] = $opt;
+        }
+
+        $mapped_options = [];
+        foreach($source_values as $source_option){
+            $key = strtolower(trim((string) $source_option));
+            if(isset($allowed_map[$key])){
+                $mapped_options[] = $allowed_map[$key];
+            }
+        }
+        $mapped_options = array_values(array_unique($mapped_options));
+        if(empty($mapped_options)) return null;
+
+        if($target_type == 'Select'){
+            return $mapped_options[0];
+        }
+        return $mapped_options;
+    }
+
+    if($target_type == 'SelectCombo'){
+        if(empty($source_values)) return null;
+        return trim((string) $source_values[0]);
+    }
+
+    if($target_type == 'Numeric'){
+        if(empty($source_values)) return null;
+        $v = trim((string) $source_values[0]);
+        if(!is_numeric($v)) return null;
+        return $v;
+    }
+
+    if($target_type == 'Date'){
+        if(empty($source_values)) return null;
+        $v = trim((string) $source_values[0]);
+        if(!preg_match('/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $v)){
+            return null;
+        }
+        return $v;
+    }
+
+    if(empty($source_values)) return null;
+    return trim((string) $source_values[0]);
+}
+
+private function mapTaxonomyValuesByLabel($source_values, $target_field){
+    $target_root_id = (int) $target_field->options;
+    if(empty($target_root_id)) return [];
+
+    $target_root = \App\Taxonomy::find($target_root_id);
+    if(empty($target_root)) return [];
+
+    $target_family = $target_root->createFamily();
+    $target_by_label = [];
+    foreach($target_family as $taxonomy){
+        if($taxonomy->id == $target_root_id) continue;
+        $target_by_label[strtolower(trim($taxonomy->label))] = $taxonomy->id;
+    }
+
+    $mapped_ids = [];
+    foreach($source_values as $source_taxonomy_value){
+        $source_taxonomy_model = \App\Taxonomy::find($source_taxonomy_value);
+        $label = empty($source_taxonomy_model) ? trim((string) $source_taxonomy_value) : trim($source_taxonomy_model->label);
+        $key = strtolower($label);
+        if(isset($target_by_label[$key])){
+            $mapped_ids[] = (string) $target_by_label[$key];
+        }
+    }
+
+    return array_values(array_unique($mapped_ids));
 }
 
 public function duplicateDocumentMetadata($master_doc_id, $target_doc_id){

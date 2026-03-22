@@ -128,6 +128,8 @@ Route::get('/media/i/{filename}', 'MediaController@loadImage');
 // Document routes
 Route::get('/collection/{collection_id}/document/{document_id}', 'DocumentController@loadDocument')->middleware('document_view');
 Route::get('/collection/{collection_id}/document/{document_id}/doc-viewer', 'DocumentController@docViewer')->middleware('document_view');
+Route::view('/pdfjsviewer', 'pdfjsviewer');
+
 Route::get('/c-{collection_id}/doc-viewer.css',function($collection_id){
     return response(view('doc-viewer-style',['collection_id'=>$collection_id]))
         ->header('Content-Type', 'text/css');
@@ -147,7 +149,6 @@ Route::post('/document/{document_id}/lock-unlock', 'DocumentController@lockUnloc
 Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 Route::get('/document/{document_id}/revisions', 'DocumentController@documentRevisions')->middleware('document_view');
 Route::get('/document-revision/{revision_id}', 'DocumentController@loadRevision');//->middleware('revision_view');
-Route::post('/document/delete', 'DocumentController@deleteDocument')->middleware('document_delete');
 // Upload documents with same meta-data
 Route::get('/collection/{collection_id}/document/{document_id}/same-meta-upload', 'DocumentController@sameMetaUpload')->middleware('document_add');
 // Document details (meta)
@@ -161,12 +162,12 @@ Route::get('/document/{document_id}/revision-diff/{rev1_id}/{rev2_id}', 'Documen
 Route::get('/user/{user_id}/mydocs', 'DocumentController@listMyDocuments');
 
 // user downloads
-Route::get('/user/downloads','ReportsController@userDownloads')->middleware(['auth','verfified']);
+Route::get('/user/downloads','ReportsController@userDownloads')->middleware(['auth','verified']);
 // Approvals
-Route::get('/document/{document_id}/approval', 'ApprovalsController@docApprovalForm');
-Route::post('/approvals/{approvable}/{approvable_id}/save_status', 'ApprovalsController@saveApprovalStatus');
+Route::get('/document/{document_id}/approval', 'ApprovalsController@docApprovalForm')->middleware(['auth','verified']);
+Route::post('/approvals/{approvable}/{approvable_id}/save_status', 'ApprovalsController@saveApprovalStatus')->middleware(['auth','verified']);
 //Documents Approved by Me
-Route::get('/approvals/{approvable}/{status}', 'ApprovalsController@listByStatus');
+Route::get('/approvals/{approvable}/{status}', 'ApprovalsController@listByStatus')->middleware(['auth','verified']);
 
 // reports
 Route::get('/reports', 'ReportsController@index')->middleware('admin');
@@ -336,6 +337,15 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('shared-links', 'SharedLinkController')->except(['show']);
     Route::get('/document/{document}/share', 'SharedLinkController@create')->name('shared-links.create');
 });
+
+// User Alerts
+Route::group(['middleware' => 'auth'], function () {
+	Route::get('/alerts', 'AlertController@index')->name('alerts.index');
+	Route::get('/alerts/{alert}/open', 'AlertController@open')->name('alerts.open');
+	Route::post('/alerts/{alert}/read', 'AlertController@markRead')->name('alerts.read');
+	Route::post('/alerts/{alert}/unread', 'AlertController@markUnread')->name('alerts.unread');
+});
+
 Route::get('/shared/{token}', 'SharedLinkController@publicView')->name('shared-links.public-view');
 Route::post('/shared/{token}/verify', 'SharedLinkController@verifyPassword')->name('shared-links.verify-password');
 Route::get('/shared/{token}/download', 'SharedLinkController@download')->name('shared-links.download');

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\DocumentSaved as DocumentSavedNotification;
 use App\Approval;
 use App\Services\ThumbnailService;
+use App\Services\UserAlertService;
 
 class DocumentSaved
 {
@@ -44,15 +45,51 @@ class DocumentSaved
 		    }
         }
 
-		// add a record in the approvals table
-		if($event->document->collection->require_approval == 1  
+        try {
+            $status = empty($event->document->approved_on) ? 'updated' : 'published';
+            if ($event->document->wasRecentlyCreated) {
+                $status = 'created';
+            }
+
+            $alertTitle = 'Document '.$status;
+            $alertMessage = 'Document "'.$event->document->title.'" in collection "'.$event->document->collection->name.'" was '.$status.'.';
+            $alertUrl = '/collection/'.$event->document->collection->id.'/document/'.$event->document->id.'/details';
+
+            $alertService = new UserAlertService();
+            $alertService->createForCollectionUsers(
+                $event->document->collection,
+                $alertTitle,
+                $alertMessage,
+                $alertUrl,
+                [
+                    'type' => 'document_saved',
+                    'document_id' => $event->document->id,
+                    'collection_id' => $event->document->collection->id,
+                    'status' => $status,
+                ]
+            );
+        }
+        catch(\Exception $e){
+            Log::warning('Unable to create document alert: '.$e->getMessage());
+        }
+
+        // add a record in the approvals table only on first save (not on every edit)
+        if($event->document->collection->require_approval == 1
            && empty($event->document->approved_on)){
-			// get the first role id from approval workflow
-			$collection_config = $event->document->collection->column_config;	
-			$col_conf = json_decode($collection_config);
-			$approvers = $col_conf->approved_by;
-			$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
-			$event->document->approvals()->save($approval_record);
+			// only create an approval record if no pending one already exists
+			$already_has_pending = $event->document->approvals()
+				->whereNull('approval_status')
+				->exists();
+			if (!$already_has_pending) {
+				// get the first role id from approval workflow
+				$collection_config = $event->document->collection->column_config;
+				$col_conf = json_decode($collection_config);
+				if (!empty($col_conf) && !empty($col_conf->approved_by)) {
+					$approvers = $col_conf->approved_by;
+					$approval_record = new Approval(['approved_by_role'=>$approvers[0]]);
+					$event->document->approvals()->save($approval_record);
+				}
+			}
 		}
 
 	    // Update elasticsearch index 

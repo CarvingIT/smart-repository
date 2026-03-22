@@ -18,6 +18,7 @@ $(document).ready(function() {
                 columnDefs: [
                         { width: '20%', targets: 0 },
                     { "orderable": false, targets: 3 }
+                        { "orderable": false, targets: 3 }
                 ],
                 "lengthMenu": [ 100, 500, 1000 ],
                 "pageLength": 100,
@@ -119,6 +120,8 @@ $(document).ready(function() {
 			<td>{{ @$d_a->approver->name }}</td>
             <td>@if((int)$d_a->approval_status === 1) {{ __('Approved') }} @elseif ((int)$d_a->approval_status === 0) {{ __('Rejected') }} @else {{ 'Awaiting approval' }} @endif</td>
 			<td>{!! $d_a->comments !!}</td>
+			<td>@if($d_a->approval_status == 1) {{ __('Approved') }} @elseif ($d_a->approval_status === 0) {{ __('Rejected') }} @else {{ 'Awaiting approval' }} @endif</td>
+			<td>{{ $d_a->comments }}</td>
 			</tr>
 			@endforeach
 			</tbody>

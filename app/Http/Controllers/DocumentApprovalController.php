@@ -15,10 +15,10 @@ class DocumentApprovalController extends Controller
 	public function docApprovalForm($document_id)
     	{
             $document = \App\Document::find($document_id);
+            if (!$document) abort(404);
             $collection_id = $document->collection_id;
 	    $collection = \App\Collection::find($collection_id);
-	    $doc_approvals = \App\DocumentApproval::all();
-                return view('document_approval', ['collection'=>$collection, 'document'=>$document,'doc_approvals'=>$doc_approvals,
+                return view('document_approval', ['collection'=>$collection, 'document'=>$document,
                                 'activePage'=>'Document Approval Form','titlePage'=>'Document Approval']);
         }
 
@@ -54,7 +54,7 @@ class DocumentApprovalController extends Controller
 				->first();
 		if(!empty($document_approval)){
 			$document_details = Document::find($request->document_id);
-			$document_details->approved_by = auth()->user()->userrole(auth()->user()->id);
+			$document_details->approved_by = auth()->user()->id;
 			$document_details->approved_on = now();
 			$document_details->save();
 		}
@@ -102,7 +102,7 @@ class DocumentApprovalController extends Controller
 
 		foreach($all_docs as $collection_id => $doc){
 		$collection_role_sequence = \App\Collection::find($collection_id);
-		$role_sequence[$collection->id] = json_decode($collection_role_sequence->column_config)->approved_by;
+		$role_sequence[$collection_id] = json_decode($collection_role_sequence->column_config)->approved_by;
 			foreach($role_sequence as $s => $v){
 				$role_index = array_search($role_id,$v);
 				foreach($doc as $d){
@@ -138,7 +138,7 @@ class DocumentApprovalController extends Controller
 				}
 			}
 		}
-		$awaiting_approvals_docs = array_unique($awaiting_approvals_docs);
+		$awaiting_approvals_docs = collect($awaiting_approvals_docs)->unique('id')->values()->all();
 	    }# if ends for role_id empty
         	return view('docs_awaiting_approvals',['collections'=>$collections, 'awaiting_approvals_docs'=>$awaiting_approvals_docs,
 				'activePage'=>'Awaiting Approval Documents','titlePage'=>'Awaiting Approval Documents']);

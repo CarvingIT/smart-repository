@@ -128,6 +128,9 @@ $collections = \App\Collection::all();
           </a>
         </li>
 	@endif
+  @php
+    $unread_alert_count = Auth::user()->alerts()->unread()->count();
+  @endphp
 
         <li class="nav-item dropdown">
           <a class="nav-link" title="" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -136,6 +139,9 @@ $collections = \App\Collection::all();
 			@else
             <i class="material-icons">person</i>
 			@endif
+      @if($unread_alert_count > 0)
+      <span class="notification">{{ $unread_alert_count }}</span>
+      @endif
 			<!--
             <p class="d-lg-none d-md-block">
               {{ __('Account') }}
@@ -158,6 +164,7 @@ $collections = \App\Collection::all();
             <a class="dropdown-item" href="{{ route('shared-links.index') }}">{{ __('Shared Links') }}</a>
             @endif
             <a class="dropdown-item" href="{{ route('saved-searches.index') }}">{{ __('Saved Searches') }}</a>
+            <a class="dropdown-item" href="{{ route('alerts.index') }}">{{ __('Alerts') }} @if($unread_alert_count > 0) ({{ $unread_alert_count }}) @endif</a>
             @if(Auth::user()->hasRole('admin'))
             <a class="dropdown-item" href="/admin/usermanagement">{{ __('Manage Users') }}</a>
             <a class="dropdown-item" href="/admin/collectionmanagement">{{ __('Manage Collections') }}</a>
