@@ -17,6 +17,7 @@ $(document).ready(function() {
                 "scrollX": true,
                 columnDefs: [
                         { width: '20%', targets: 0 },
+                    { "orderable": false, targets: 3 }
                         { "orderable": false, targets: 3 }
                 ],
                 "lengthMenu": [ 100, 500, 1000 ],
@@ -77,8 +78,8 @@ $(document).ready(function() {
                    <div class="col-md-9">
                    <select id="approval_status" name="approval_status" class="selectpicker" required>
 			<option value="">Select Status</option>
-			<option value="1">Approved</option>
-			<option value="0">Rejected</option>
+            <option value="1" @if(isset($current_approval_status) && (int)$current_approval_status === 1) selected @endif>Approved</option>
+            <option value="0" @if(isset($current_approval_status) && (int)$current_approval_status === 0) selected @endif>Rejected</option>
 		   </select>
                    </div>
                 </div>
@@ -87,7 +88,7 @@ $(document).ready(function() {
                    <label for="approved" class="col-md-12 col-form-label text-md-right">Comments</label>
                    </div>
                    <div class="col-md-9">
-                   <textarea class="form-control" id="approval_comment" name="comments"></textarea> 
+                         <textarea class="form-control" id="approval_comment" name="comments">{{ old('comments', $current_approval_comments ?? '') }}</textarea> 
                    </div>
                 </div>
 
@@ -117,6 +118,8 @@ $(document).ready(function() {
 			<tr>
 			<td>{{ $d_a->created_at }}</td>
 			<td>{{ @$d_a->approver->name }}</td>
+            <td>@if((int)$d_a->approval_status === 1) {{ __('Approved') }} @elseif ((int)$d_a->approval_status === 0) {{ __('Rejected') }} @else {{ 'Awaiting approval' }} @endif</td>
+			<td>{!! $d_a->comments !!}</td>
 			<td>@if($d_a->approval_status == 1) {{ __('Approved') }} @elseif ($d_a->approval_status === 0) {{ __('Rejected') }} @else {{ 'Awaiting approval' }} @endif</td>
 			<td>{{ $d_a->comments }}</td>
 			</tr>

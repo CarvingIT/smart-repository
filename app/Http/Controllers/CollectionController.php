@@ -841,7 +841,29 @@ use App\UrlSuppression;
 	
 	public function saveSettings(Request $request){
 		$collection = Collection::find($request->collection_id);
-		$col_config = $request->except(['search_result_template_html', 'details_page_template_html']);
+        $col_config = $request->except(['search_result_template_html', 'details_page_template_html', 'approval_status_labels_text']);
+
+        $approvalRoles = $request->input('approved_by', []);
+        $approvalStatusLabelsText = trim((string) $request->input('approval_status_labels_text', ''));
+        if ($approvalStatusLabelsText === '') {
+            unset($col_config['approval_status_labels']);
+        } else {
+            $approvalStatusLabels = preg_split('/\r\n|\r|\n/', $approvalStatusLabelsText);
+            $approvalStatusLabels = array_map('trim', $approvalStatusLabels);
+
+            if (count($approvalStatusLabels) !== count($approvalRoles)) {
+                Session::flash('alert-danger', 'The number of approval status labels must match the number of workflow roles.');
+                return redirect()->back()->withInput();
+            }
+
+            if (in_array('', $approvalStatusLabels, true)) {
+                Session::flash('alert-danger', 'Approval status labels cannot be empty when labels are provided.');
+                return redirect()->back()->withInput();
+            }
+
+            $col_config['approval_status_labels'] = array_values($approvalStatusLabels);
+        }
+
 		$collection->column_config = json_encode($col_config);
 		$collection->save();
 

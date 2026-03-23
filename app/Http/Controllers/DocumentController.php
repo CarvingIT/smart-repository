@@ -298,7 +298,11 @@ class DocumentController extends Controller
                 $current_encoding = mb_detect_encoding($text_content, 'auto');
                 $d->text_content = mb_convert_encoding($text_content, "UTF-8");
                 $d->save();
-                $messages[] = 'Document uploaded successfully!';
+                if ((int) $collection->require_approval === 1) {
+                    $messages[] = 'Document uploaded successfully! The document will be visible after approval.';
+                } else {
+                    $messages[] = 'Document uploaded successfully!';
+                }
             } catch (\Exception $e) {
                 return ['status' => 'failure', 'errors' => [$e->getMessage()]];
             }

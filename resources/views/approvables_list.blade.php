@@ -58,7 +58,7 @@ $(document).ready(function() {
 				@if($item->approvable_type == 'App\BinshopsPost')
                             <a rel="tooltip" class="btn btn-success btn-link" href="/en/blog/{{ @$post->slug}}" data-original-title="" title="">
 				@else
-                            <a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $item->approvable_id }}/approval" data-original-title="" title="">
+                <a rel="tooltip" class="btn btn-success btn-link" href="/document/{{ $item->approvable_id }}/approval?approval_id={{ $item->id }}" data-original-title="" title="">
 				@endif
                                     <i class="material-icons">edit</i>
                                     <div class="ripple-container"></div>

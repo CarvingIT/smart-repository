@@ -192,6 +192,25 @@ class Document extends Model implements Auditable
         else{
             $latest_stage = $this->approvals;
             $latest_approval_record = $latest_stage->sortByDesc('id')->first();
+            $approved_by_role = @$latest_approval_record->approver_role->name;
+
+            // Allow per-role pending labels configured in collection settings.
+            $columnConfig = json_decode(@$this->collection->column_config);
+            $approvalRoles = $columnConfig->approved_by ?? [];
+            $approvalStatusLabels = $columnConfig->approval_status_labels ?? [];
+            if (
+                !empty($latest_approval_record->approved_by_role)
+                && is_array($approvalRoles)
+                && is_array($approvalStatusLabels)
+                && count($approvalRoles) === count($approvalStatusLabels)
+            ) {
+                $pendingRoleIndex = array_search((string) $latest_approval_record->approved_by_role, array_map('strval', $approvalRoles), true);
+                if ($pendingRoleIndex !== false && !empty($approvalStatusLabels[$pendingRoleIndex])) {
+                    return $approvalStatusLabels[$pendingRoleIndex];
+                }
+            }
+
+            return "Approval pending at ".ucfirst($approved_by_role);
             if (!$latest_approval_record || !$latest_approval_record->approver_role) {
                 return "Approval pending (role not assigned)";
             }
