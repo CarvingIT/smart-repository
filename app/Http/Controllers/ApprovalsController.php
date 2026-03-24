@@ -36,6 +36,7 @@ class ApprovalsController extends Controller
 				->where('approvable_id', $document_id)
 				->where('approvable_type', 'App\\Document')
 				->whereIn('approved_by_role', $user_roles)
+				->whereNull('approval_status')
 				->first();
 		}
 
@@ -43,6 +44,7 @@ class ApprovalsController extends Controller
 			$current_approval = Approval::where('approvable_id', $document_id)
 				->where('approvable_type', 'App\\Document')
 				->whereIn('approved_by_role', $user_roles)
+				->whereNull('approval_status')
 				->orderBy('id', 'DESC')
 				->first();
 		}

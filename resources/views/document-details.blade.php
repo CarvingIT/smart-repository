@@ -554,7 +554,7 @@ $(document).ready(function()
                                  <tr>
                                  <td>{{ $d_a->created_at }}</td>
                                  <td>{{ @$d_a->approver->name }}</td>
-                                 <td>@if($d_a->approval_status == 1) {{ __('Approved') }} @elseif ($d_a->approval_status === 0) {{ __('Rejected') }} @else {{ 'Awaiting approval' }} @endif</td>
+                                 <td>@if($d_a->approval_status === 1) {{ __('Approved') }} @elseif ($d_a->approval_status === 0) {{ __('Rejected') }} @else {{ 'Awaiting approval' }} @endif</td>
                                  <td>{!! $d_a->comments !!}</td>
                                  </tr>
                                         @endforeach
