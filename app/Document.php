@@ -189,33 +189,58 @@ class Document extends Model implements Auditable
         if(!empty($this->approved_on)){
             return "Approved";
         }
-        else{
-            $latest_stage = $this->approvals;
-            $latest_approval_record = $latest_stage->sortByDesc('id')->first();
-            $approved_by_role = @$latest_approval_record->approver_role->name;
 
-            // Allow per-role pending labels configured in collection settings.
-            $columnConfig = json_decode(@$this->collection->column_config);
-            $approvalRoles = $columnConfig->approved_by ?? [];
-            $approvalStatusLabels = $columnConfig->approval_status_labels ?? [];
-            if (
-                !empty($latest_approval_record->approved_by_role)
-                && is_array($approvalRoles)
-                && is_array($approvalStatusLabels)
-                && count($approvalRoles) === count($approvalStatusLabels)
-            ) {
-                $pendingRoleIndex = array_search((string) $latest_approval_record->approved_by_role, array_map('strval', $approvalRoles), true);
-                if ($pendingRoleIndex !== false && !empty($approvalStatusLabels[$pendingRoleIndex])) {
-                    return $approvalStatusLabels[$pendingRoleIndex];
-                }
-            }
-
-            return "Approval pending at ".ucfirst($approved_by_role);
-            if (!$latest_approval_record || !$latest_approval_record->approver_role) {
-                return "Approval pending (role not assigned)";
-            }
-            return "Approval pending at ".ucfirst($latest_approval_record->approver_role->name);
+        $latest_approval_record = $this->approvals()->orderByDesc('id')->first();
+        if (empty($latest_approval_record)) {
+            return "Awaiting";
         }
+
+        // Check status strictly to differentiate NULL (pending) from 0 (rejected) from 1 (approved)
+        if ($latest_approval_record->approval_status === 0) {
+            return "Rejected";
+        }
+
+        if ($latest_approval_record->approval_status === 1) {
+            return "Approved";
+        }
+
+        // Pending status (approval_status is NULL): prefer per-role labels configured in collection settings.
+        $columnConfig = json_decode(@$this->collection->column_config);
+        $approvalRoles = $columnConfig->approved_by ?? [];
+        $approvalStatusLabels = $columnConfig->approval_status_labels ?? [];
+        if (
+            !empty($latest_approval_record->approved_by_role)
+            && is_array($approvalRoles)
+            && is_array($approvalStatusLabels)
+            && count($approvalRoles) === count($approvalStatusLabels)
+        ) {
+            $pendingRoleIndex = array_search((string) $latest_approval_record->approved_by_role, array_map('strval', $approvalRoles), true);
+            if ($pendingRoleIndex !== false && !empty($approvalStatusLabels[$pendingRoleIndex])) {
+                return $approvalStatusLabels[$pendingRoleIndex];
+            }
+        }
+
+        $approved_by_role = @$latest_approval_record->approver_role->name;
+        if (empty($approved_by_role)) {
+            return "Awaiting";
+        }
+
+        return "Approval pending at ".ucfirst($approved_by_role);
+    }
+
+    public function getDocumentApprovalByAttribute(){
+        $latest_approval_record = $this->approvals()->orderByDesc('id')->first();
+        if (empty($latest_approval_record)) {
+            return '-';
+        }
+
+        if (is_null($latest_approval_record->approval_status)) {
+            return optional($latest_approval_record->approver_role)->name ?? '-';
+        }
+
+        return optional($latest_approval_record->approver)->name
+            ?? optional($latest_approval_record->approver_role)->name
+            ?? '-';
     }
 
     /**
