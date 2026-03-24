@@ -50,11 +50,15 @@ class ApprovalsController extends Controller
 		$current_approval_status = !empty($current_approval) ? $current_approval->approval_status : null;
 		$current_approval_comments = !empty($current_approval) ? $current_approval->comments : '';
 
-                return view('document_approval', ['collection'=>$collection, 'document'=>$document,'doc_approvals'=>$doc_approvals,
-								'current_approval_status'=>$current_approval_status,
-								'current_approval_comments'=>$current_approval_comments,
-                return view('document_approval', ['collection'=>$collection, 'document'=>$document,
-                                'activePage'=>'Document Approval Form','titlePage'=>'Document Approval']);
+                return view('document_approval', [
+								'collection' => $collection,
+								'document' => $document,
+								'doc_approvals' => $doc_approvals,
+								'current_approval_status' => $current_approval_status,
+								'current_approval_comments' => $current_approval_comments,
+								'activePage' => 'Document Approval Form',
+								'titlePage' => 'Document Approval'
+							]);
         }
 
 	public function saveApprovalStatus($approvable, $approvable_id, Request $request){
