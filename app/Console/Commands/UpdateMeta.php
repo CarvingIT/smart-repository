@@ -69,6 +69,8 @@ class UpdateMeta extends Command
 			}
 			echo $doc->title."\n";
 			for($i=1; $i<count($fields1); $i++){
+                if(empty($values[$i])) continue; //If the meta-value is empty then continue
+
                 // Following fields have been skipped for validation
                 if(preg_match('/Title/i', $fields1[$i]) || preg_match('/Path/i', $fields1[$i]) || preg_match('/Related document IDs/i',$fields1[$i])){ continue; }
 
@@ -83,7 +85,6 @@ class UpdateMeta extends Command
 				// check type of the meta field
                     if($meta_field->type == 'Date'){
                                 $date = $values[$i];
-                                
                                 if(preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
                                     $date_details = explode("-",$date);
                                     $d_y = trim($date_details[0]);
@@ -156,6 +157,7 @@ class UpdateMeta extends Command
 			}
 			echo $doc->id." ".$doc->title."\n";
 			for($i=1; $i<count($fields); $i++){
+                if(empty($values[$i])) continue; //If the meta-value is empty then continue
 
                 // Following fields have been skipped as they are not Meta Data Fields
                 if(preg_match('/Path/i', $fields1[$i]) || preg_match('/Related document IDs/i',$fields1[$i])){ continue; }
