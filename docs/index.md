@@ -25,22 +25,6 @@ title: Smart Repository – Digital Asset Management System
 
 ---
 
-## Get Started
-
-```bash
-git clone https://github.com/CarvingIT/smart-repository.git
-cd smart-repository
-composer install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-php artisan serve
-```
-
-Visit [http://localhost:8000](http://localhost:8000) to see it in action.
-
----
-
 ## Explore Features
 
 Check out the [Features]({{ site.baseurl }}/features/) section for detailed descriptions and screenshots.
@@ -50,7 +34,7 @@ Check out the [Features]({{ site.baseurl }}/features/) section for detailed desc
 ## Support & Contact
 
 - **Email:** [info@carvingit.com](mailto:info@carvingit.com)
-- **Phone:** +91 94201 21704
+- **Phone:** +91 94201 21704, +91 86057 89833
 - **GitHub Issues:** [Open an issue](https://github.com/CarvingIT/smart-repository/issues)
 
 ---
