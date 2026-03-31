@@ -16,7 +16,7 @@ class AlertController extends Controller
     {
         $alerts = auth()->user()->alerts()
             ->orderBy('created_at', 'DESC')
-            ->paginate(25);
+            ->simplePaginate(10);
 
         return view('alerts.index', [
             'alerts' => $alerts,
