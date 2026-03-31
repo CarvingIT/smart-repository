@@ -56,6 +56,7 @@ class DocumentSaved
             $alertUrl = '/collection/'.$event->document->collection->id.'/document/'.$event->document->id.'/details';
 
             $alertService = new UserAlertService();
+            /*
             $alertService->createForCollectionUsers(
                 $event->document->collection,
                 $alertTitle,
@@ -68,6 +69,7 @@ class DocumentSaved
                     'status' => $status,
                 ]
             );
+            */
         }
         catch(\Exception $e){
             Log::warning('Unable to create document alert: '.$e->getMessage());

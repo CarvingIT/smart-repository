@@ -145,7 +145,6 @@
                                 <div style="font-size:11px; letter-spacing:3px; color:rgba(255,255,255,0.6); text-transform:uppercase; margin-bottom:12px;">Collection</div>
                                 <div style="font-size:15px; font-weight:700; color:#fff; line-height:1.3; word-break:break-word;">{{ $c->name }}</div>
                                 <div style="width:40px; height:2px; background:rgba(255,255,255,0.4); margin:12px auto;"></div>
-                                <div style="font-size:10px; color:rgba(255,255,255,0.5); letter-spacing:1px;">SMART REPOSITORY</div>
                             </div>
                         </div>
                     @endif
