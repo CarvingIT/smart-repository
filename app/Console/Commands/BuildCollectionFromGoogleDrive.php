@@ -87,21 +87,40 @@ class BuildCollectionFromGoogleDrive extends Command
         //$filesWithMetadata = Storage::disk($storage_drive)->allFiles('1Xfjckwnut4gyqejVlLErog_gknBj10SW',true);
         $filesWithMetadata = Storage::disk($storage_drive)->allFiles($folderId);
 
+        //$maxFileSize = 10*1024*1024; //10,485,760 bytes
+        $maxFileSize = 10485760; //10,485,760 bytes
         foreach($filesWithMetadata as $file){
             echo $file."\n";
             $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($file);
             //print_r($meta);
-//exit;
             //echo $file."\n";
-                $filepath = $fileId = $meta['extraMetadata']['id'];
+//exit;
+                if($meta['fileSize'] >= $maxFileSize){
+                echo "- Can not import. The file size is greater than 10MB. File Size - ".$meta['fileSize']."\n\n";
+                continue;
+                }     
+
+                $filepath = $meta['path'];
+                $fileId = $meta['extraMetadata']['id'];
                 $file_name = $meta['extraMetadata']['name'];
+/*
+if(preg_match('/Grade 9 Conciousness and Curriculum/', $file_name)){ 
+    print_r($meta);
+    echo $file."\n";
+    echo $meta['fileSize'];echo "\n"; echo $meta['mimeType'];echo "\n"; 
+    $expected_mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
+    $rawData = $content = $response->getBody()->getContents();
+    exit;
+}
+*/
+
                 $file_ext = $meta['extraMetadata']['extension'];
                 $file_virtual_path = $meta['extraMetadata']['virtual_path'];
                 $file_display_path = $meta['extraMetadata']['display_path'];
                 $file_title = $meta['extraMetadata']['filename'];
                 $mimetype = $meta['mimeType']; 
                 $new_filename = '1_' . time() . '_' . $file_name;
-
 
                 /* Save document */
                 $d = \App\Document::where('path',$filepath)->first();
@@ -127,7 +146,12 @@ class BuildCollectionFromGoogleDrive extends Command
                     $rawData = Storage::disk($storage_drive)->get($meta['path']);
                 }
                 else{
-                    $expected_mimeType = 'application/pdf'; // or 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' for .docx
+                    if($meta['mimeType'] == 'application/vnd.google-apps.document'){
+                    $expected_mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';//for .docx
+                    }
+                    else{
+                    $expected_mimeType = 'application/pdf'; 
+                    }
                     $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
                     $rawData = $content = $response->getBody()->getContents();
                 }
