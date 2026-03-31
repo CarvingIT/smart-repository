@@ -19,6 +19,7 @@ use App\Sysconfig;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Traits\Search;
+use Google\Service\Drive;
 
 
 class DocumentController extends Controller
@@ -782,11 +783,25 @@ public function downloadFile($doc,$storage_drive,$path_count=null){
 public function downloadCloudFile($doc, $storage_drive){
 
 	$filename = $doc->ori_filename;
-    $fileId = $doc->path;
+    $filePath = $doc->path;
 
-    $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($fileId);
-    $rawData = Storage::disk($storage_drive)->get($meta['path']);
+    $adapter = Storage::disk($storage_drive)->getAdapter();
+    $service = $adapter->getService();
 
+    $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($filePath);
+    $fileId = $meta['extraMetadata']['id'];
+
+    if(!preg_match('/application\/vnd.google-apps.*/',$meta['mimeType'])){
+        $rawData = Storage::disk($storage_drive)->get($meta['path']);
+    }
+    else{
+        $expected_mimeType = 'application/pdf'; // or 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' for .docx
+        $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
+        $rawData = $content = $response->getBody()->getContents();
+    }
+
+    //$rawData = Storage::disk($storage_drive)->get($meta['path']); //Original Line
+    //echo $doc->type; exit;
     return response($rawData, 200)
         ->header('ContentType', $doc->type)
         ->header('Content-Disposition', "attachment; filename=".$filename);
