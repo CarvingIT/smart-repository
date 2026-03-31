@@ -91,6 +91,7 @@ class BuildCollectionFromGoogleDrive extends Command
             echo $file."\n";
             $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($file);
             //print_r($meta);
+//exit;
             //echo $file."\n";
                 $filepath = $fileId = $meta['extraMetadata']['id'];
                 $file_name = $meta['extraMetadata']['name'];
@@ -122,7 +123,14 @@ class BuildCollectionFromGoogleDrive extends Command
                 $text_content = '';
 
                 // Saved locally for text extraction
-                $rawData = Storage::disk($storage_drive)->get($meta['path']);
+                if(!preg_match('/application\/vnd.google-apps.*/',$meta['mimeType'])){
+                    $rawData = Storage::disk($storage_drive)->get($meta['path']);
+                }
+                else{
+                    $expected_mimeType = 'application/pdf'; // or 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' for .docx
+                    $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
+                    $rawData = $content = $response->getBody()->getContents();
+                }
                 if(empty($rawData)){ echo "File is empty.".$file_name."\n"; exit;}
 
                 Storage::disk('local')->put('smartarchive_assets/'.$collection_id.'/'.'1'.'/'.$new_filename , $rawData);
