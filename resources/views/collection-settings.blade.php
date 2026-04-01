@@ -48,7 +48,7 @@ $(document).ready(function() {
     <div class="row justify-content-center">
         <div class="col-md-9">
             <div class="card">
-                <div class="card-header card-header-primary"><h4 class="card-title">{{ __('Database')}} :: {{ __('Configuration') }}</h4></div>
+                <div class="card-header card-header-primary"><h4 class="card-title">{{ $collection->name }} :: {{ __('Configuration') }}</h4></div>
                 <div class="col-md-12 text-right">
                 <a href="javascript:window.history.back();" class="btn btn-sm btn-primary" title="Back"><i class="material-icons">arrow_back</i></a>
                 </div>
