@@ -147,6 +147,18 @@ $(document).ready(function() {
             </div>
         </div>
 
+		<h4>{{ __('Security') }}</h4>
+		<div class="form-group row">
+			<div class="col-md-12">
+				<input name="require_two_factor" id="require_two_factor" type="checkbox" value="1"
+				@if(!empty($column_config->require_two_factor) && (int)$column_config->require_two_factor === 1) checked="checked" @endif />
+				<label for="require_two_factor">{{ __('Require TOTP (Authy/Authenticator app) verification before accessing this collection') }}</label>
+			</div>
+			<div class="col-md-12">
+				<small class="form-text text-muted">{{ __('When enabled, users must verify with their 2FA code once per session for this collection.') }}</small>
+			</div>
+		</div>
+
 		<h4>{{__('Document Approval')}}</h4>
 		<div class="form-group row">
                   <div class="col-md-12"><input type="checkbox" id="display_unapproved_docs" name="display_unapproved_docs" value="1"

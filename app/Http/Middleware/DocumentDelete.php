@@ -6,6 +6,8 @@ use Closure;
 
 class DocumentDelete
 {
+    use EnforcesCollectionTwoFactor;
+
     /**
      * Handle an incoming request.
      *
@@ -18,6 +20,15 @@ class DocumentDelete
         if(!$request->user() || !$request->user()->canDeleteDocument($request->document_id)){
 		abort(403, 'Forbidden');
         }
+
+        $document = \App\Document::find($request->document_id);
+        if ($document) {
+            $twoFactorRedirect = $this->enforceCollectionTwoFactor($request, (int) $document->collection_id);
+            if ($twoFactorRedirect) {
+                return $twoFactorRedirect;
+            }
+        }
+
         return $next($request);
     }
 }

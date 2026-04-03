@@ -6,6 +6,8 @@ use Closure;
 
 class DocumentAdd
 {
+    use EnforcesCollectionTwoFactor;
+
     /**
      * Handle an incoming request.
      *
@@ -25,6 +27,12 @@ class DocumentAdd
         ){
 		abort(403, 'Forbidden');
         }
+
+        $twoFactorRedirect = $this->enforceCollectionTwoFactor($request, (int) $request->collection_id);
+        if ($twoFactorRedirect) {
+            return $twoFactorRedirect;
+        }
+
         return $next($request);
     }
 }

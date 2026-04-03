@@ -127,6 +127,65 @@
 
       <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <h4 class="card-title">{{ __('Two-Factor Authentication (TOTP)') }}</h4>
+            </div>
+            <div class="card-body">
+              <p>{{ __('Use an authenticator app like Authy to generate 6-digit verification codes for sensitive collections.') }}</p>
+
+              @if(auth()->user()->hasTwoFactorEnabled())
+                <div class="alert alert-success">
+                  {{ __('2FA is currently enabled on your account.') }}
+                </div>
+                <form method="post" action="{{ route('profile.twofactor.disable') }}" class="form-horizontal">
+                  @csrf
+                  <button type="submit" class="btn btn-danger">{{ __('Disable 2FA') }}</button>
+                </form>
+              @else
+                <div class="alert alert-warning">
+                  {{ __('2FA is currently disabled.') }}
+                </div>
+
+                @if(empty($twoFactorSecret))
+                  <form method="post" action="{{ route('profile.twofactor.setup') }}" class="form-horizontal">
+                    @csrf
+                    <button type="submit" class="btn btn-primary">{{ __('Generate QR') }}</button>
+                  </form>
+                @else
+                  <div class="row">
+                    <div class="col-md-6 text-center">
+                      <img src="{{ $twoFactorQrCodeUrl }}" alt="{{ __('2FA QR code') }}" style="max-width:220px; width:100%; border:1px solid #ddd; padding:8px;" />
+                    </div>
+                    <div class="col-md-6">
+                      <p><strong>{{ __('Manual setup key:') }}</strong></p>
+                      <p style="word-break:break-all;">{{ $twoFactorSecret }}</p>
+                      <small class="text-muted">{{ __('If QR scan does not work, add account manually using this key and 30-second TOTP.') }}</small>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <form method="post" action="{{ route('profile.twofactor.enable') }}" class="form-horizontal">
+                    @csrf
+                    <div class="form-group{{ $errors->has('code') ? ' has-danger' : '' }}">
+                      <label for="two_factor_code">{{ __('Enter 6-digit code from app') }}</label>
+                      <input class="form-control{{ $errors->has('code') ? ' is-invalid' : '' }}" name="code" id="two_factor_code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" value="{{ old('code') }}" required />
+                      @if ($errors->has('code'))
+                        <span class="error text-danger">{{ $errors->first('code') }}</span>
+                      @endif
+                    </div>
+                    <button type="submit" class="btn btn-success">{{ __('Enable 2FA') }}</button>
+                  </form>
+                @endif
+              @endif
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
           <form method="post" action="/user/regenerate-api-token" class="form-horizontal">
             @csrf
             <div class="card ">

@@ -74,4 +74,10 @@ class Collection extends Model
 		$config = json_decode($this->column_config);
         	return $config;
 	}
+
+	public function isTwoFactorRequired(): bool
+	{
+		$config = $this->getCollectionConfig();
+		return !empty($config->require_two_factor) && (int) $config->require_two_factor === 1;
+	}
 }

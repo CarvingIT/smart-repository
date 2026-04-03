@@ -6,6 +6,8 @@ use Closure;
 
 class CollectionView
 {
+	use EnforcesCollectionTwoFactor;
+
     /**
      * Handle an incoming request.
      *
@@ -32,6 +34,12 @@ class CollectionView
 				abort(403, 'Forbidden');
 			}
 		}
+
+		$twoFactorRedirect = $this->enforceCollectionTwoFactor($request, (int) $collection->id);
+		if ($twoFactorRedirect) {
+			return $twoFactorRedirect;
+		}
+
         return $next($request);
     }
 }
