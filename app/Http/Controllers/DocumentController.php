@@ -790,21 +790,49 @@ public function downloadCloudFile($doc, $storage_drive){
 
     $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($filePath);
     $fileId = $meta['extraMetadata']['id'];
+//print_r($meta);
+//echo $meta['mimeType']."<br />";
+//echo $doc->type."<br />";
+//echo $meta['path'];
+//exit;
 
+        $ext = '';
     if(!preg_match('/application\/vnd.google-apps.*/',$meta['mimeType'])){
         $rawData = Storage::disk($storage_drive)->get($meta['path']);
     }
     else{
-        $expected_mimeType = 'application/pdf'; // or 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' for .docx
+        if($meta['mimeType'] == 'application/vnd.google-apps.document'){
+            $expected_mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';//for .docx
+        }
+        else{
+            $expected_mimeType = 'application/pdf';
+        }
+
+        if($meta['mimeType'] == 'application/vnd.google-apps.document' && empty($meta['extraMetadata']['extension'])){
+            $ext = '.docx';
+        }
+        
         $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
         $rawData = $content = $response->getBody()->getContents();
     }
 
     //$rawData = Storage::disk($storage_drive)->get($meta['path']); //Original Line
     //echo $doc->type; exit;
+
+    $new_filename = $this->sanitize_filename($filename).$ext;
     return response($rawData, 200)
         ->header('ContentType', $doc->type)
-        ->header('Content-Disposition', "attachment; filename=".$filename);
+        ->header('Content-Disposition', "attachment; filename=".$new_filename);
+}
+
+public function sanitize_filename($filename) {
+    // 1. Remove any characters that are NOT a-z, A-Z, 0-9, dot, hyphen, or underscore
+    $filename = preg_replace('/[^a-zA-Z0-9\.\-_]/', '', $filename);
+    
+    // 2. Optional: Replace multiple consecutive dots or hyphens with a single one
+    $filename = preg_replace('/[\.]+(?=\.)/', '', $filename);
+    
+    return $filename;
 }
 
 public function proofRead($collection_id,$document_id){
