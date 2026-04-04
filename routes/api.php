@@ -18,6 +18,7 @@ use App\Document;
 Route::post('/authenticate','ApiAuthController@authenticate');
 Route::middleware('auth:sanctum')->get('/collections','CollectionController@userCollections'); 
 Route::middleware('auth:sanctum')->get('/collection/{collection_id}/search', 'CollectionController@search');
+Route::middleware(['auth:sanctum', 'admin'])->post('/collections/subscribe-user', 'ApiCollectionSubscriptionController@subscribe');
 
 // user details
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
