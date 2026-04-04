@@ -26,7 +26,7 @@ class ProfileController extends Controller
         if (!empty($user->two_factor_secret)) {
             try {
                 $decryptedSecret = Crypt::decryptString($user->two_factor_secret);
-                $issuer = config('app.name', 'Smart Repository');
+                $issuer = env('APP_NAME', 'SMART REPOSITORY');
                 $provisioningUri = $totpService->getProvisioningUri($user->email, $decryptedSecret, $issuer);
                 $qrCodeUrl = $totpService->getQrCodeUrl($provisioningUri);
             } catch (\Exception $e) {
