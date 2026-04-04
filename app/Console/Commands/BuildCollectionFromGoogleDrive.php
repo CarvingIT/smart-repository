@@ -91,6 +91,14 @@ class BuildCollectionFromGoogleDrive extends Command
         $maxFileSize = 10485760; //10,485,760 bytes
         foreach($filesWithMetadata as $file){
             echo $file."\n";
+
+            //check if the file exists
+                if (Storage::disk($storage_drive)->exists($file)) {
+                echo "File exists on drive.\n";
+                    // File exists
+                }
+                else{ echo "File not found on the drive.\n"; continue;}
+
             $meta = Storage::disk($storage_drive)->getAdapter()->getMetadata($file);
             //print_r($meta);
             //echo $file."\n";
@@ -104,17 +112,30 @@ class BuildCollectionFromGoogleDrive extends Command
                 $fileId = $meta['extraMetadata']['id'];
                 $file_name = $meta['extraMetadata']['name'];
 /*
-if(preg_match('/Grade 9 Conciousness and Curriculum/', $file_name)){ 
+if(!preg_match('/Grade 1_Block4_English_Lesson Plan/', $file)){ continue; } 
+if(preg_match('/Grade 1_Block4_English_Lesson Plan/', $file)){ 
     print_r($meta);
     echo $file."\n";
+         $optParams = [
+        'fields' => 'user, storageQuota, exportFormats'
+    ];
+$about = $service->about->get($optParams); // Get all the possible expected_mimeType
+        echo response()->json($about);
+
     echo $meta['fileSize'];echo "\n"; echo $meta['mimeType'];echo "\n"; 
     $expected_mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
-    $rawData = $content = $response->getBody()->getContents();
+    //$expected_mimeType = 'text/plain';
+    try{
+        $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
+        $rawData = $content = $response->getBody()->getContents();
+    }
+    catch(\Exception $e){
+        echo "continue";
+    }
+    //print_r($rawData);
     exit;
 }
 */
-
                 $file_ext = $meta['extraMetadata']['extension'];
                 $file_virtual_path = $meta['extraMetadata']['virtual_path'];
                 $file_display_path = $meta['extraMetadata']['display_path'];
@@ -152,10 +173,17 @@ if(preg_match('/Grade 9 Conciousness and Curriculum/', $file_name)){
                     else{
                     $expected_mimeType = 'application/pdf'; 
                     }
+                    try{
                     $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
                     $rawData = $content = $response->getBody()->getContents();
+                    }
+                    catch(\Exception $e){
+                        echo $e->getMessage();
+                        echo "\nCould not import. Need to import manually\n";
+                        continue;
+                    }    
                 }
-                if(empty($rawData)){ echo "File is empty.".$file_name."\n"; exit;}
+                if(empty($rawData)){ echo "File is empty.".$file_name."\n"; continue;}
 
                 Storage::disk('local')->put('smartarchive_assets/'.$collection_id.'/'.'1'.'/'.$new_filename , $rawData);
                 $local_filepath = storage_path("app/smartarchive_assets/".$collection_id."/"."1"."/".$new_filename);
