@@ -54,7 +54,7 @@ list($hide_type, $hide_title, $hide_approval_status, $hide_size, $hide_creation_
 if(!empty($collection->column_config)){
 	if(@$column_config->type != 1) $hide_type = true;
 	if(@$column_config->title != 1) $hide_title = true;
-	if(@$column_config->display_approval_status === 1) $hide_approval_status = false;
+    if((int)@$column_config->display_approval_status === 1) $hide_approval_status = false;
 	if(@$column_config->size != 1) $hide_size = true;
 	if(@$column_config->creation_time != 1) $hide_creation_time = true;
 }
