@@ -238,7 +238,15 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);
 	Route::put('profile/password', ['as' => 'profile.password', 'uses' => 'ProfileController@password']);
+	Route::post('profile/two-factor/setup', ['as' => 'profile.twofactor.setup', 'uses' => 'ProfileController@setupTwoFactor']);
+	Route::post('profile/two-factor/enable', ['as' => 'profile.twofactor.enable', 'uses' => 'ProfileController@enableTwoFactor']);
+	Route::post('profile/two-factor/disable', ['as' => 'profile.twofactor.disable', 'uses' => 'ProfileController@disableTwoFactor']);
 	Route::resource('template', 'SRTemplateController', ['except' => ['show']]);
+});
+
+Route::group(['middleware' => ['auth']], function () {
+	Route::get('two-factor/challenge/{collection_id}', ['as' => 'two-factor.challenge.form', 'uses' => 'TwoFactorController@showChallengeForm']);
+	Route::post('two-factor/challenge/{collection_id}', ['as' => 'two-factor.challenge.verify', 'uses' => 'TwoFactorController@verifyChallenge']);
 });
 
 Route::post('/user/regenerate-api-token', 'ApiTokenController@update')->middleware(['auth']);

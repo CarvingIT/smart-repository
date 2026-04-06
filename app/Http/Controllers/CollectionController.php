@@ -842,6 +842,7 @@ use App\UrlSuppression;
 	public function saveSettings(Request $request){
 		$collection = Collection::find($request->collection_id);
         $col_config = $request->except(['search_result_template_html', 'details_page_template_html', 'approval_status_labels_text']);
+        $col_config['require_two_factor'] = $request->boolean('require_two_factor') ? 1 : 0;
 
         $approvalRoles = $request->input('approved_by', []);
         $approvalStatusLabelsText = trim((string) $request->input('approval_status_labels_text', ''));

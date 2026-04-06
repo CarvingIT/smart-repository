@@ -6,6 +6,8 @@ use Closure;
 
 class DocumentView
 {
+    use EnforcesCollectionTwoFactor;
+
     /**
      * Handle an incoming request.
      *
@@ -16,6 +18,12 @@ class DocumentView
     public function handle($request, Closure $next)
     {
         $document = \App\Document::find($request->route('document_id'));
+    if($document){
+        $twoFactorRedirect = $this->enforceCollectionTwoFactor($request, (int) $document->collection_id);
+        if ($twoFactorRedirect) {
+            return $twoFactorRedirect;
+        }
+    }
 	if($document && $document->collection->content_type == 'Uploaded documents'){ // restriction only for Uploaded documents
         $document = \App\Document::find($request->document_id);
 		$user = $request->user();

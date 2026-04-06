@@ -125,7 +125,10 @@
             <div class="card collection-card-sm">
             <div class="card-header card-header-primary">
                   @if ($c->type == 'Members Only')
-                    <i class="material-icons">lock</i>
+                                        <i class="material-icons" title="{{ __('Member only') }}" style="margin-right: 6px; vertical-align: middle;">lock</i>
+                                    @endif
+                                    @if ($c->isTwoFactorRequired())
+                                        <i class="material-icons" title="{{ __('2FA required') }}" style="margin-right: 6px; vertical-align: middle;">security</i>
                   @endif
 		<span class="card-title"><a href="/collection/{{ $c->id }}" title="{{ $c->description }}">{{ $c->name }}</a>
 @if (env('ENABLE_COLLECTION_COUNT') == 1) 

@@ -32,7 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password', 'remember_token', 'two_factor_secret',
     ];
 
     /**
@@ -42,10 +42,16 @@ class User extends Authenticatable implements MustVerifyEmail
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+	'two_factor_enabled_at' => 'datetime',
 	'created_at' => 'datetime',
 	'updated_at' => 'datetime',
 	'deleted_at' => 'datetime'
     ];
+
+    public function hasTwoFactorEnabled(): bool
+    {
+        return !empty($this->two_factor_secret) && !empty($this->two_factor_enabled_at);
+    }
 
 	protected $table = "users";
 
