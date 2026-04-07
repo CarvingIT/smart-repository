@@ -1255,11 +1255,17 @@ $(document).ready(function() {
             // Add info icon first (outside thumbnail so it can be sibling of metadata)
             tilesHtml += '  <div class="tile-info-icon" data-tile-id="tile_' + docId + '">i</div>';
             
-            // Show thumbnail if available, otherwise show icon
-            if (doc.type && doc.type.display && doc.type.display.includes('<img')) {
+            // Tile view prefers backend thumbnail_url so list-view icon rendering doesn't affect tile previews.
+            if (doc.thumbnail_url) {
+                tilesHtml += '  <div class="tile-thumbnail">';
+                tilesHtml += '    <img src="' + doc.thumbnail_url + '" alt="Document preview" />';
+                tilesHtml += '  </div>';
+            }
+            // Fallback: use image from tile_type_display if available, otherwise show icon.
+            else if (doc.tile_type_display && doc.tile_type_display.includes('<img')) {
                 // Extract thumbnail URL from img tag
                 var tempDiv = document.createElement('div');
-                tempDiv.innerHTML = doc.type.display;
+                tempDiv.innerHTML = doc.tile_type_display;
                 var imgElement = tempDiv.querySelector('img');
                 if (imgElement) {
                     tilesHtml += '  <div class="tile-thumbnail">';

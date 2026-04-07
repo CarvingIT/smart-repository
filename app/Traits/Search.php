@@ -853,29 +853,33 @@ trait Search{
         }
 	    //$title = '<h6>'.mb_convert_encoding($title, 'UTF-8', 'UTF-8').'</h6><div class="content-highlights">'.strip_tags(implode(' ... ', $content_matches), '<em>').'</div>';
       
-        // Check if file is an image type and display actual image instead of icon
-        $image_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml'];
-        $type_display = '';
-        if(in_array($d->type, $image_types)){
-            // Display actual image with max dimensions
-            $image_url = '/collection/'.$d->collection_id.'/document/'.$d->id;
-            $type_display = '<img class="file-icon" src="'.$image_url.'" />';
-        } 
-          else if($d->type == 'application/pdf'){
-            // Check if document has a thumbnail
-              $thumbnailUrl = $d->getThumbnailUrl();
-              $type_display = $thumbnailUrl 
-            ? '<img class="file-icon" src="'.$thumbnailUrl.'" style="width:50px; height:50px; object-fit:cover;" />' 
-            : '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
-          }
-          else {
-            // Display file type icon
-            $type_display = '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
-        }
+				// Always show file-type icon in list view.
+				$type_display = '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
+
+				// Preserve the richer preview payload for tile view only.
+				$image_types = ['image/png', 'image/jpg', 'image/jpeg', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml'];
+				$tile_type_display = '';
+				$thumbnail_url = null;
+
+				if(in_array($d->type, $image_types)){
+					$image_url = '/collection/'.$d->collection_id.'/document/'.$d->id;
+					$tile_type_display = '<img class="file-icon" src="'.$image_url.'" />';
+				}
+				else if($d->type == 'application/pdf'){
+					$thumbnail_url = $d->getThumbnailUrl();
+					$tile_type_display = $thumbnail_url
+						? '<img class="file-icon" src="'.$thumbnail_url.'" style="width:50px; height:50px; object-fit:cover;" />'
+						: '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
+				}
+				else {
+					$tile_type_display = '<img class="file-icon" src="/i/file-types/'.$d->icon().'.png" />';
+				}
         
         $result = array(
                 'DT_RowId' => 'row_'.$d->id,
                 'type' => array('display'=>$type_display, 'filetype'=>$d->icon()),
+				'tile_type_display' => $tile_type_display,
+				'thumbnail_url' => $thumbnail_url,
                 'title' => $title,
                 'file_extension' => $d->type ?? '',
                 'approval_status' => $approval_status,
