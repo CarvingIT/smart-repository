@@ -86,8 +86,10 @@ $(document).ready(function() {
 			@if(!empty($column_config->size) && $column_config->size == 1) checked="checked" @endif /> {{ __('Size') }}</div>
            <div class="col-md-3"><input name="creation_time" type="checkbox" value="1"
 			@if(!empty($column_config->creation_time) && $column_config->creation_time == 1) checked="checked" @endif /> {{ __('Creation time') }}</div>
+			@if(!empty($collection->require_approval) && $collection->require_approval == 1)
 			<div class="col-md-3"><input name="display_approval_status" type="checkbox" value="1"
             @if(!empty($column_config->display_approval_status) && $column_config->display_approval_status == 1) checked="checked" @endif /> {{ __('Approval Status') }}</div>
+			@endif
 
 			@foreach($collection->meta_fields as $m)
 			@if($m->type == 'Textarea')
