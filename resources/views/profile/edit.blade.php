@@ -42,11 +42,8 @@
                 <div class="row">
                   <label class="col-sm-2 col-form-label">{{ __('Email') }}</label>
                   <div class="col-sm-7">
-                    <div class="form-group{{ $errors->has('email') ? ' has-danger' : '' }}">
-                      <input class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" id="input-email" type="email" placeholder="{{ __('Email') }}" value="{{ old('email', auth()->user()->email) }}" required />
-                      @if ($errors->has('email'))
-                        <span id="email-error" class="error text-danger" for="input-email">{{ $errors->first('email') }}</span>
-                      @endif
+                    <div class="form-group">
+                      <input class="form-control" id="input-email" type="email" value="{{ auth()->user()->email }}" readonly disabled />
                     </div>
                   </div>
                 </div>
