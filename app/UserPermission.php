@@ -9,6 +9,12 @@ class UserPermission extends Model
 {
     //use SoftDeletes;
     protected $table = 'user_permissions';
+    protected $fillable = [
+        'user_id',
+        'collection_id',
+        'permission_id',
+        'till_date',
+    ];
 
     public function permission(){
         return $this->belongsTo('App\Permission', 'permission_id');
