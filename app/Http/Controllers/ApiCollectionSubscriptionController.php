@@ -20,6 +20,10 @@ class ApiCollectionSubscriptionController extends Controller
      */
     public function subscribe(Request $request)
     {
+        $request->merge([
+            'collection_id' => $this->normalizeCollectionIds($request->input('collection_id')),
+        ]);
+
         $validated = $request->validate([
             'email' => ['required', 'email'],
             'collection_id' => ['required', 'array', 'min:1'],
@@ -83,5 +87,48 @@ class ApiCollectionSubscriptionController extends Controller
             'till_date' => $validated['till_date'],
             'password_reset_email_status' => $resetLinkStatus,
         ]);
+    }
+
+    /**
+     * Allow JSON arrays as well as common form-data formats.
+     *
+     * @param mixed $value
+     * @return array
+     */
+    private function normalizeCollectionIds($value)
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if ($value === null || $value === '') {
+            return [];
+        }
+
+        if (is_numeric($value)) {
+            return [(int) $value];
+        }
+
+        if (is_string($value)) {
+            $trimmed = trim($value);
+            if ($trimmed === '') {
+                return [];
+            }
+
+            $decoded = json_decode($trimmed, true);
+            if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+                return $decoded;
+            }
+
+            if (strpos($trimmed, ',') !== false) {
+                return array_values(array_filter(array_map('trim', explode(',', $trimmed)), function ($item) {
+                    return $item !== '';
+                }));
+            }
+
+            return [$trimmed];
+        }
+
+        return [];
     }
 }
