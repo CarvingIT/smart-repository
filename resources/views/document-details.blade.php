@@ -13,8 +13,8 @@
 	$details_page_template = $details_page_template ?? null;
 @endphp
 @push('js')
-<link rel="stylesheet" href="/css/node/jquery-ui.min.css">
-<script src="/js/node/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="/build/assets/css/jquery-ui.min.css">
+<script src="/build/assets/js/jquery-ui.min.js"></script>
 <script>
 /*
  $( function() {

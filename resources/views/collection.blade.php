@@ -20,14 +20,14 @@ td.highlights p{
 }
 
 </style>
-<script src="/js/node/jquery.dataTables.min.js"></script>
-<script src="/js/node/jquery-ui.min.js" defer></script>
+<script src="/build/assets/js/dataTables.js"></script>
+<script src="/build/assets/js/jquery-ui.min.js" defer></script>
 <script type="text/javascript" src="/js/transliteration-input.bundle.js"></script>
-<link href="/css/node/jquery-ui.min.css" rel="stylesheet">
-<link href="/css/node/select2.min.css" rel="stylesheet" />
+<link href="/build/assets/css/jquery-ui.min.css" rel="stylesheet">
+<link href="/build/assets/css/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
 <link href="/css/tile-view.css" rel="stylesheet" />
-<link href="/css/node/fixedColumns.dataTables.min.css" rel="stylesheet" />
+<link href="/build/assets/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
 <style>
     .dataTables_paginate {
         float: right !important;
@@ -45,9 +45,9 @@ td.highlights p{
         margin-top: 10px;
     }
 </style>
-<script src="/js/node/select2.min.js"></script>
+<script src="/build/assets/js/select2.full.min.js"></script>
 <script src="/js/select2totree.js"></script>
-<script src="/js/node/dataTables.fixedColumns.min.js"></script>
+<script src="/build/assets/js/dataTables.fixedColumns.js"></script>
 @php
 $column_config = json_decode($collection->column_config);
 list($hide_type, $hide_title, $hide_approval_status, $hide_size, $hide_creation_time) = array(false, false, true, false, false);
@@ -248,8 +248,8 @@ function setDocSort(sort_by){
 }
 </script>
 
-<script src="/js/node/jquery.daterangepicker.min.js"></script>
-<link rel="stylesheet" href="/css/node/jquery.daterangepicker.min.css"/>
+<script src="/build/assets/js/jquery.daterangepicker.min.js"></script>
+<link rel="stylesheet" href="/build/assets/css/daterangepicker.min.css"/>
 <script src="{{ asset("js/favorites.js") }}"></script>
 <style>
 #doc-sort-wrapper {

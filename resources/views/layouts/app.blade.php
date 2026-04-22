@@ -26,14 +26,14 @@ foreach($config as $c){
 
     <!-- CSS Files -->
     <link href="{{ asset('material') }}/css/material-dashboard.css?v=2.1.1" rel="stylesheet" />
-    <link href="/css/node/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="/build/assets/css/dataTables.dataTables.min.css" rel="stylesheet" />
     <link href="{{ asset('material') }}/css/bootstrap-select.min.css" rel="stylesheet" />
     
     <!-- Material Icons served locally via npm (material-design-icons) -->
     <link href="/vendor/material-icons/material-icons.css" rel="stylesheet">
     
         <!--   Core JS Files   -->
-        <script src="/js/node/jquery.min.js"></script>
+        <script src="/build/assets/js/jquery.min.js"></script>
         <!--   Core JS Files   -->
         <script src="{{ asset('material') }}/js/core/popper.min.js"></script>
         <script src="{{ asset('material') }}/js/plugins/perfect-scrollbar.jquery.min.js"></script>
