@@ -81,7 +81,6 @@ export default defineConfig({
             {
             src: 'node_modules/pdfjs-dist',
             dest: 'assets/pdfjs',
-            rename: {stripBase:true}
             },
             {
             src: 'node_modules/@fortawesome/fontawesome-free',

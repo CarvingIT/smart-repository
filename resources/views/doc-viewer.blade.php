@@ -131,7 +131,6 @@ h4{
             ? '/collection/'.$collection_id.'/document/'.$doc->id.'/details/'.$path_count 
             : '/collection/'.$collection_id.'/document/'.$doc->id;
     @endphp
-    <!--iframe id="pdfreader" class="pdf" src="/js/pdfjs-viewer/viewer.html?file={{ urlencode($pdfPath) }}" width="100%" height="100%"></iframe-->
     <iframe id="pdfreader" class="pdf" src="/pdfjsviewer?file={{ urlencode($pdfPath) }}&collection_id={{ $collection_id }}" width="100%" height="100%"></iframe>
 @else
     @if(!is_null($path_count))
