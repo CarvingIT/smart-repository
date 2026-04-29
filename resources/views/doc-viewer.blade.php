@@ -29,11 +29,11 @@ html, body {
   overflow:clip;
 }
 #meta-view {
-flex:40%;
+flex:30%;
 overflow-y:scroll;
 }
 #doc-view {
-  flex:60%;
+  flex:70%;
   height: 100%;
 }
 ._df_book {

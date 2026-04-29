@@ -28,7 +28,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     <title>PDF.js viewer</title>
 
 <!-- This snippet is used in production (included from viewer.html) -->
-<link rel="resource" type="application/l10n" href="locale/locale.json">
+<!--<link rel="resource" type="application/l10n" href="locale/locale.json">-->
 <script src="/build/assets/pdfjs/node_modules/pdfjs-dist/build/pdf.mjs" type="module"></script>
 
     <link rel="stylesheet" href="/css/pdfjsviewer.css">
@@ -280,7 +280,12 @@ See https://github.com/adobe-type-tools/cmap-resources
                     <span data-l10n-id="pdfjs-print-button-label"></span>
                   </button>
 
-                  <button id="downloadButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-save-button">
+                  <button id="downloadButton" class="toolbarButton" type="button" tabindex="0" data-l10n-id="pdfjs-save-button" 
+                @if(auth::user() && auth::user()->hasPermission(request('collection_id'), 'MAINTAINER'))
+                @else
+                disabled
+                @endif
+                  >
                     <span data-l10n-id="pdfjs-save-button-label"></span>
                   </button>
                 </div>
@@ -302,7 +307,12 @@ See https://github.com/adobe-type-tools/cmap-resources
                           <span data-l10n-id="pdfjs-print-button-label"></span>
                         </button>
 
-                        <button id="secondaryDownload" class="toolbarButton labeled" type="button" tabindex="0" data-l10n-id="pdfjs-save-button">
+                        <button id="secondaryDownload" class="toolbarButton labeled" type="button" tabindex="0" data-l10n-id="pdfjs-save-button" 
+                @if(auth::user() && auth::user()->hasPermission(request('collection_id'), 'MAINTAINER'))
+                @else
+                disabled
+                @endif
+                        >
                           <span data-l10n-id="pdfjs-save-button-label"></span>
                         </button>
 
