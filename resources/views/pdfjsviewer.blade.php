@@ -34,11 +34,11 @@ else{
             type="application/l10n"
             href="locale/locale.json"
         />
-        <script src="/js/pdfjs-viewer/build/pdf.mjs" type="module"></script>
+        <script src="/build/assets/pdfjs/pdf.mjs" type="module"></script>
 
-        <link rel="stylesheet" href="/js/pdfjs-viewer/viewer.css" />
+        <link rel="stylesheet" href="/css/pdfjsviewer.css" />
 
-        <script src="/js/pdfjs-viewer/viewer.mjs" type="module"></script>
+        <script src="/js/pdfjsviewer.mjs" type="module"></script>
         <script>
             // Wire up highlight panel controls after PDF.js initialises
             document.addEventListener("DOMContentLoaded", function () {
