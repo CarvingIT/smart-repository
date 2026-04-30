@@ -31,9 +31,14 @@ Route::middleware('auth:sanctum')->get('/collection/{collection_id}/meta-informa
 	return $collection->meta_fields()->orderby('display_order','ASC')->get();
 }); 
 
-Route::middleware('auth:sanctum')->get('/collection/{collection_id}/document/{document_id}/meta-values', function ($document_id, Request $request){
+Route::middleware('auth:sanctum')->get('/collection/{collection_id}/document/{document_id}/meta-values', function ($collection_id, $document_id, Request $request){
 	$document = Document::find($document_id);
-	return $document->meta;
+    $meta_info = [];
+    $meta_info['title'] = $document->title;
+    foreach($document->meta as $mv){
+        $meta_info[$mv->meta_field->label] = $document->meta_value($mv->meta_field_id);
+    }
+    return $meta_info;
 }); 
 
 Route::middleware('auth:api')->post('/collection/{collection_id}/upload', 'DocumentController@uploadFile');
