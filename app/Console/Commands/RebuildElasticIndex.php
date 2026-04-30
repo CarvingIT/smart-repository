@@ -88,7 +88,7 @@ class RebuildElasticIndex extends Command
             $body['text_content'] = $d->text_content;
             foreach($d->meta as $mv){
                 if(!empty($mv->value)){
-                    if($mv->meta_field->type == 'Numeric') {
+                    if(@$mv->meta_field->type == 'Numeric') {
                         $val = floatval($mv->value);
                     }
                     else {// for Date/Text/Textarea/Select/....
