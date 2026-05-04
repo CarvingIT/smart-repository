@@ -14,7 +14,7 @@ Keep track of every change with **built-in revision history**.
 - View and restore previous versions.
 - Compare differences between revisions.
 
-![Document Revisions Screenshot]({{ site.baseurl }}/assets/images/features/document-revisions.png)
+![Document Revisions Screenshot]({{ site.baseurl }}/assets/images/features/revision-control.png)
 
 ## Why it matters
 
