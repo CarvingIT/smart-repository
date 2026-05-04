@@ -2,7 +2,7 @@
 <head>
 <title>{{ env('APP_NAME', 'Smart Repository') }}::Document Viewer</title>
 <link rel="icon" type="image/png" href="/material/img/favicon.png">
-<script src="/js/node/jquery.min.js"></script>
+<script src="/build/assets/js/jquery.min.js"></script>
 @php
     // Document model is passed directly from the controller as $doc
     $collection = \App\Collection::find($collection_id);
@@ -29,11 +29,11 @@ html, body {
   overflow:clip;
 }
 #meta-view {
-flex:40%;
+flex:30%;
 overflow-y:scroll;
 }
 #doc-view {
-  flex:60%;
+  flex:70%;
   height: 100%;
 }
 ._df_book {
@@ -131,7 +131,6 @@ h4{
             ? '/collection/'.$collection_id.'/document/'.$doc->id.'/details/'.$path_count 
             : '/collection/'.$collection_id.'/document/'.$doc->id;
     @endphp
-    <!--iframe id="pdfreader" class="pdf" src="/js/pdfjs-viewer/viewer.html?file={{ urlencode($pdfPath) }}" width="100%" height="100%"></iframe-->
     <iframe id="pdfreader" class="pdf" src="/pdfjsviewer?file={{ urlencode($pdfPath) }}&collection_id={{ $collection_id }}" width="100%" height="100%"></iframe>
 @else
     @if(!is_null($path_count))

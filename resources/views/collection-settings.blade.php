@@ -1,8 +1,8 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar', 'activePage'=>'column-config'])
 
 @push('js')
- <link rel="stylesheet" href="/css/node/jquery-ui.min.css">
-  <script src="/js/node/jquery-ui.min.js"></script>
+ <link rel="stylesheet" href="/build/assets/css/jquery-ui.min.css">
+  <script src="/build/assets/js/jquery-ui.min.js"></script>
   <script>
   $( function() {
 	  $( "#accordion" ).accordion({
@@ -23,10 +23,8 @@ $(document).ready(function() {
     });
 });
 </script>
-<!--link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/node/select2.min.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/node/select2.min.js"></script-->
-<link href="/css/node/select2.min.css" rel="stylesheet" />
-<script src="/js/node/select2.min.js"></script>
+<link href="/build/assets/css/select2.min.css" rel="stylesheet" />
+<script src="/build/assets/js/select2.full.min.js"></script>
 <script>
 $(document).ready(function() {
     $("#selectsequence").select2();

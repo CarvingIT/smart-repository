@@ -2,8 +2,8 @@
 
 @section('content')
 @push('js')
-<script src="/js/node/jquery-ui.min.js"></script>
-<link rel="stylesheet"  href="/css/node/jquery-ui.min.css" type="text/css"> 
+<script src="/build/assets/js/jquery-ui.min.js"></script>
+<link rel="stylesheet"  href="/build/assets/css/jquery-ui.min.css" type="text/css"> 
 
 <script type="text/javascript">
 $(document).ready(function() {

@@ -3,9 +3,9 @@
 <link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
 <script src="/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
 <script src="/js/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
-<link href="/css/node/select2.min.css" rel="stylesheet" />
+<link href="/build/assets/css/select2.min.css" rel="stylesheet" />
 <link href="/css/select2totree.css" rel="stylesheet" />
-<script src="/js/node/select2.min.js"></script>
+<script src="/build/assets/js/select2.full.min.js"></script>
 <script src="/js/select2totree.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {

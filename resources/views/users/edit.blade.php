@@ -1,8 +1,8 @@
 @extends('layouts.app', ['class'=> 'off-canvas-sidebar', 'activePage' => 'user-management', 'titlePage' => __('User Management')])
 
 @push('js')
-<link href="/css/node/select2.min.css" rel="stylesheet" />
-<script src="/js/node/select2.min.js"></script>
+<link href="/build/assets/css/select2.min.css" rel="stylesheet" />
+<script src="/build/assets/js/select2.full.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
     $('.selectsequence').select2();

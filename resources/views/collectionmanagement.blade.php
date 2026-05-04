@@ -2,12 +2,12 @@
 
 @section('content')
 <!--
-<script src="/js/node/jquery.min.js"></script>
-<script src="/js/node/jquery.dataTables.min.js"></script>
+<script src="/build/assets/js/jquery.min.js"></script>
+<script src="/build/assets/js/dataTables.js"></script>
 -->
-<script src="/js/node/jquery.dataTables.min.js"></script>
-<script src="/js/node/jquery-ui.min.js" defer></script>
-<link href="/css/node/jquery-ui.min.css" rel="stylesheet">
+<script src="/build/assets/js/dataTables.js"></script>
+<script src="/build/assets/js/jquery-ui.min.js" defer></script>
+<link href="/build/assets/css/jquery-ui.min.css" rel="stylesheet">
 
 <script>
 $(document).ready(function() {

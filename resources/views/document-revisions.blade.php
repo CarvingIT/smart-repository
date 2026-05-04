@@ -2,8 +2,8 @@
 
 @section('content')
 @push('js')
-<script src="/js/node/jquery.min.js"></script>
-<script src="/js/node/jquery.dataTables.min.js"></script>
+<script src="/build/assets/js/jquery.min.js"></script>
+<script src="/build/assets/js/dataTables.js"></script>
 <script>
 $(document).ready(function() {
     $('#revisions').DataTable({

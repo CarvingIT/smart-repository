@@ -1,7 +1,7 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
 @push('js')
-<script src="/js/node/jquery-ui.min.js" defer></script>
-<link href="/css/node/jquery-ui.min.css" rel="stylesheet">
+<script src="/build/assets/js/jquery-ui.min.js" defer></script>
+<link href="/build/assets/css/jquery-ui.min.css" rel="stylesheet">
 <link href="/css/classic/main.css" rel="stylesheet">
 <link href="/css/classic/fonts.css" rel="stylesheet">
 <!-- Font Awesome - served locally via npm (@fortawesome/fontawesome-free) -->

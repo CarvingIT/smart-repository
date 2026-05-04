@@ -2,7 +2,7 @@
 
 @section('content')
 
-<script src="/js/node/jquery-ui.min.js"></script>
+<script src="/build/assets/js/jquery-ui.min.js"></script>
 
 <div class="container">
     <div class="row justify-content-center">
