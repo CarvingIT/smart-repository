@@ -14,6 +14,9 @@ Extract text from scanned images and PDFs using **Optical Character Recognition*
 2. Smart Repository automatically runs OCR.
 3. The extracted text becomes searchable.
 
+![OCR Support Screenshot]({{ site.baseurl }}/assets/images/features/OCR-in-Smart-Repository.png)
+
+
 ## Supported formats
 
 - JPEG, PNG, TIFF images
