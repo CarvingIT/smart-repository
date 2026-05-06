@@ -48,3 +48,7 @@ public/js/pdfjs-viewer/iccs/
 public/js/pdfjs-viewer/image_decoders/
 public/js/pdfjs-viewer/wasm/
 public/js/pdfjs-viewer/**/*.map
+
+# Ignore node directories created under public css/js by build scripts
+/public/css/node/
+/public/js/node/
