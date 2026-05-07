@@ -15,12 +15,12 @@ Define your own metadata schema with **custom cataloging fields**.
 - Date, Numeric
 - Taxonomy Tree
 
-![Custom Cataloging Screenshot]({{ site.baseurl }}/assets/images/features/custom-cataloging.png)
+![Custom Cataloging Screenshot]({{ site.baseurl }}/assets/images/features/custom-cataloging-fields.png)
 
 ## How to add fields
 
 1. Go to the collection's **Meta Fields** page.
 2. Click **Add Field**.
-3. Choose the type and configure options.
+3. Choose the field type and configure options.
 
 [← Back to Features]({{ site.baseurl }}/features/)
