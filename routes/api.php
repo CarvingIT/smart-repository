@@ -34,11 +34,18 @@ Route::middleware('auth:sanctum')->get('/collection/{collection_id}/meta-informa
 Route::middleware('auth:sanctum')->get('/collection/{collection_id}/document/{document_id}/meta-values', function ($collection_id, $document_id, Request $request){
 	$document = Document::find($document_id);
     $meta_info = [];
-    $meta_info['title'] = $document->title;
-    foreach($document->meta as $mv){
-        $meta_info[$mv->meta_field->label] = $document->meta_value($mv->meta_field_id);
+    if($document){
+        $meta_info['title'] = $document->title;
+        foreach($document->meta as $mv){
+            $meta_info[$mv->meta_field->label] = $document->meta_value($mv->meta_field_id);
+        }
+        return $meta_info;
     }
-    return $meta_info;
+    else{
+            return response()->json([
+                'message' => 'Record not found.'
+            ], 404);
+    }
 }); 
 
 Route::middleware('auth:api')->post('/collection/{collection_id}/upload', 'DocumentController@uploadFile');
