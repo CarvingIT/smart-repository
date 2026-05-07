@@ -7,6 +7,8 @@
       url: /features/full-text-search/
     - title: Permission Control
       url: /features/permission-control/
+    - title: Two Factor Authentication
+      url: /features/two-factore-authentication/
     - title: Document Revisions
       url: /features/document-revisions/
     - title: OCR Support
