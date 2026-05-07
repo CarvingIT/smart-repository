@@ -55,7 +55,7 @@ class RebuildElasticIndex extends Command
     }
 
     public function indexCollection($c){
-        echo "Rebuilding elastic index of ".$c->name."\n";
+        echo "\nRebuilding elastic index of ".$c->name."\n";
 	    if($c->content_type == 'Uploaded documents'){
 		$index = 'sr_documents';
         	$docs = $c->documents;
@@ -87,7 +87,7 @@ class RebuildElasticIndex extends Command
             $body = $d->toArray();
             $body['text_content'] = $d->text_content;
             foreach($d->meta as $mv){
-                if(!empty($mv->value)){
+                if($mv->meta_field && !empty($mv->value)){
                     if(@$mv->meta_field->type == 'Numeric') {
                         $val = floatval($mv->value);
                     }
