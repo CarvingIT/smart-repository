@@ -139,13 +139,18 @@ $(document).ready(function() {
 	$meta_fields = $collection->meta_fields;
 	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
 	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
+	$column_config = json_decode($collection->column_config);
+	$has_meta_search_config = !empty($column_config) && isset($column_config->meta_fields_search);
+	$enabled_search_meta_fields = $has_meta_search_config ? array_map('intval', (array)$column_config->meta_fields_search) : [];
 	$filters = [];
 	foreach($meta_fields as $m){
 		//if(in_array($m->label, $filter_labels)){
-		if($m->is_filter == 1){//SKK
+		if($m->is_filter == 1 && $has_meta_search_config && in_array((int)$m->id, $enabled_search_meta_fields)){//SKK
 			$filters[] = $m;
 		}
 	}	
+	$show_file_type_filter = !empty($column_config->file_type_search) && (int)$column_config->file_type_search === 1;
+	$show_record_created_filter = !empty($column_config->record_created_filter) && (int)$column_config->record_created_filter === 1;
 
 
 	$url = '/collection/{{ $collection->id }}/search-results?analyzer='.request()->get('analyzer').'&isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
@@ -158,7 +163,7 @@ $(document).ready(function() {
 		$_coll_mf = !empty($_all_mf[$collection->id]) ? $_all_mf[$collection->id] : [];
 		$_has_created = !empty(array_filter($_coll_mf, function($f){ return $f['field_id'] == 'created_at' && $f['operator'] !== '!='; }));
 	@endphp
-	@if($_has_created)
+	@if($_has_created && $show_record_created_filter)
 	// show Record Created section open if a filter is active
 	$('#filter_record_created').show();
 	@endif
@@ -214,6 +219,18 @@ function reloadSearchResults(callback){
 
 function loadSearchResults(callback){
 	var queryString = $('#isa_search').serialize();
+	
+	// Add all checked filter checkboxes to the query string
+	$('input[type="checkbox"][name^="meta_"]:checked').each(function() {
+		var name = $(this).attr('name');
+		var value = $(this).val();
+		if (queryString) {
+			queryString += '&' + name + '=' + encodeURIComponent(value);
+		} else {
+			queryString = name + '=' + encodeURIComponent(value);
+		}
+	});
+	
 	var url = '/collection/{{ $collection->id }}/search-results?'+queryString;
 	$("#search-results").load(url, function(){
 		updateFilterTagCount();
@@ -479,8 +496,13 @@ function goToPage(page){
 		@csrf
         <div class="col-md-12">
             <div class="card">
-				<div class="card-header card-header-primary">
-                	<h4 class="card-title" style="color: white; font-weight: 600; margin: 0;">
+				<div class="card-header card-header-primary" style="display: flex; align-items: center; gap: 15px;">
+					@if(!empty($collection->representative_image))
+					<img src="{{ asset('storage/' . $collection->representative_image) }}" 
+					     alt="{{ $collection->name }}" 
+					     style="height: 40px; width: auto; border-radius: 4px; object-fit: contain;">
+					@endif
+                	<h4 class="card-title" style="color: white; font-weight: 600; margin: 0; flex-grow: 1;">
                 		@if(env('ENABLE_COLLECTION_LIST') == 1)<a href="/collections" style="color: white; text-decoration: none;">{{ __('Collections') }}</a> ::@endif {{ $collection->name }}
                 	</h4>
             	</div>
@@ -683,22 +705,17 @@ foreach($tags as $t){
 		<div class="services-list" style="padding: 10px 5px; border: 1px solid #d3dff3; margin-bottom: 20px; background-color: #fff;">
 			<h5 style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e8e8e8;">Filter By <div style="float:right; cursor:pointer; border:1px solid #9c27b0; padding:4px 8px;border-radius:5px; background-color:#eee; font-size: 14px;" onclick="clearFilters();" title="Clear all filters"><span style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf51a;</span> Clear</div></h5>
 				<!-- File Type Filter (shown first) -->
+				@if($show_file_type_filter)
 				<a href="javascript:return false;" onclick="$('#filter_file_type').toggle()">{{ __('File Type') }}</a>
 				<div id="filter_file_type" style="display:none; margin-left: 15px; margin-top: 5px;">
 					<select name="extension_filter" id="file_type_filter" class="form-control" onchange="applyFileTypeFilter()" style="border: 2px solid #9c27b0; padding: 5px 10px; font-size: 13px; border-radius: 5px; width: auto; max-width: 200px;">
 						<option value="">{{ __('All File Types') }}</option>
 					</select>
 				</div>
+				@endif
 				@php
 				// Taxonomy filters (shown below File Type)
 				$taxonomy_filters = array_filter($filters, function($f){ return $f->type == 'TaxonomyTree'; });
-				// Also include any TaxonomyTree meta fields that don't have is_filter set
-				$shown_ids = array_map(function($f){ return $f->id; }, $taxonomy_filters);
-				foreach($collection->meta_fields as $mf){
-					if($mf->type == 'TaxonomyTree' && !in_array($mf->id, $shown_ids)){
-						$taxonomy_filters[] = $mf;
-					}
-				}
 				foreach($taxonomy_filters as $f){
 					// Keep outer section open if any child is already checked (active filter)
 					$_taxOpenByDefault = !empty(Request::get('meta_'.$f->id));
@@ -757,6 +774,7 @@ foreach($tags as $t){
 				}
 				@endphp
 
+				@if($show_record_created_filter)
 				<!-- Record Created Filter (shown below Taxonomy) -->
 				<a href="javascript:return false;" onclick="$('#filter_record_created').toggle()" style="margin-top:8px; display:block;">{{ __('Record Created') }}</a>
 				<div id="filter_record_created" style="display:none; margin-left: 5px; margin-top: 5px;">
@@ -799,6 +817,7 @@ foreach($tags as $t){
 					</div>
 				@endforeach
 				</div>			<div id="date-facets-container" style="margin-top:4px;"></div>				</div>
+				@endif
 
 <script>
 function applyRecordCreatedFilter(){
@@ -912,6 +931,7 @@ function applyRecordCreatedFilter(){
 
 <script>
 	// Load file types for the dropdown
+	@if($show_file_type_filter)
 	$(document).ready(function() {
 		$.ajax({
 			url: '/collection/{{$collection->id}}/extensions',
@@ -936,6 +956,7 @@ function applyRecordCreatedFilter(){
 			}
 		});
 	});
+	@endif
 	
 	// Helper function to create friendly labels
 	function getFriendlyLabel(mimeType) {

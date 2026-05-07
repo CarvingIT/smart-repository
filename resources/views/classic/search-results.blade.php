@@ -1,5 +1,6 @@
 <!-- Font Awesome - served locally via npm (@fortawesome/fontawesome-free) -->
 <link rel="stylesheet" href="/vendor/font-awesome/css/all.min.css" />
+<link rel="stylesheet" href="/build/assets/css/all.min.css" />
 <div class="search-results-container">
 <style>
 	.search-result-item {
@@ -14,11 +15,16 @@
 		font-size: 20px;
 		line-height: 1.3;
 		margin-bottom: 5px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
 	}
 	.result-title a {
 		color: #f05a22;
 		text-decoration: none;
 		font-weight: 500;
+		margin: 0 !important;
+		padding: 0 !important;
 	}
 	.result-title a:hover {
 		text-decoration: underline;
@@ -35,6 +41,18 @@
 	}
 	.result-meta-info span {
 		margin-right: 15px;
+	}
+	.result-meta-info .meta-date {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+	}
+	.result-meta-info .meta-date-icon {
+		font-size: 16px;
+		line-height: 1;
+		color: #5f6368;
+		margin: 0 !important;
+		padding: 0 !important;
 	}
 	.result-description {
 		color: #4d5156;
@@ -74,14 +92,18 @@
 		margin-right: 8px;
 		font-size: 18px !important;
 		display: inline-block !important;
-		font-family: 'Font Awesome 6 Free' !important;
-		font-weight: 900 !important;
-		font-style: normal !important;
-		font-variant: normal !important;
-		text-rendering: auto !important;
+		vertical-align: middle !important;
+		width: 1em !important;
+		height: 1em !important;
 		line-height: 1 !important;
-		-webkit-font-smoothing: antialiased !important;
-		-moz-osx-font-smoothing: grayscale !important;
+	}
+	.result-title .title-type-icon {
+		color: #f05a22;
+		font-size: 18px;
+		line-height: 1;
+		margin: 0 !important;
+		padding: 0 !important;
+		flex: 0 0 auto;
 	}
 	
 	/* Ensure all Font Awesome icons display */
@@ -96,8 +118,6 @@
 		-webkit-font-smoothing: antialiased !important;
 		-moz-osx-font-smoothing: grayscale !important;
 	}
-	
-	/* Specific icon unicode values */
 	.fa-file-alt:before {
 		content: "\f15c" !important;
 	}
@@ -164,9 +184,9 @@
 				<!-- Title -->
 				<div class="result-title">
 					@if (@$result->type == 'url')
-						<span class="file-type-icon" aria-hidden="true" style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf35d;</span>
+						<i class="material-icons title-type-icon">link</i>
 					@else
-						<span class="file-type-icon" aria-hidden="true" style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf15c;</span>
+						<i class="material-icons title-type-icon">description</i>
 					@endif
 					@php
 						// Highlight keywords in title
@@ -209,7 +229,7 @@
 						@endif
 					@endforeach
 					@if (!empty($document->updated_at))
-						<span><span style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 400;">&#xf017;</span> {{ date('d M Y', strtotime($document->updated_at)) }}</span>
+						<span class="meta-date"><i class="material-icons meta-date-icon">schedule</i>{{ date('d M Y', strtotime($document->updated_at)) }}</span>
 					@endif
 				</div>
 				
