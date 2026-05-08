@@ -72,6 +72,7 @@ function showMetaFieldForm(){
 	$('#addmetafieldbutton').hide();
 }
 </script>
+<script>$(function(){ $('#auto_generate_series').on('change', function(){ if($(this).is(':checked')) $('#series-config').show(); else $('#series-config').hide(); }); });</script>
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-center">
@@ -308,9 +309,64 @@ function showMetaFieldForm(){
                     </div>
                    </div>
 
+                   @php
+                       $field_series = null;
+                       if(!empty($edit_field->id)){
+                           $field_series = \App\MetaFieldSeries::where('meta_field_id', $edit_field->id)->first();
+                       }
+                   @endphp
+
                    <div class="form-group row">
-				   <div class="col-md-4">
+                       <div class="col-md-4">
+                           <label class="col-md-12 col-form-label text-md-right">{{ __('Auto-generate series') }}</label>
+                       </div>
+                       <div class="col-md-8">
+                           <input type="checkbox" name="auto_generate_series" id="auto_generate_series" class="form-control1" value="1"
+                               @if($field_series) checked @endif />
+                           <label for="auto_generate_series">{{ __('Enable automatic generation for this field') }}</label>
+                       </div>
                    </div>
+
+                   <div id="series-config" style="display: {{ $field_series ? 'block' : 'none' }};">
+                       <div class="form-group row">
+                           <div class="col-md-4">
+                               <label class="col-md-12 col-form-label text-md-right">{{ __('Series Prefix') }}</label>
+                           </div>
+                           <div class="col-md-8">
+                               <input type="text" name="series_prefix" class="form-control" placeholder="ABC" value="{{ $field_series->prefix ?? '' }}" />
+                           </div>
+                       </div>
+
+                       <div class="form-group row">
+                           <div class="col-md-4">
+                               <label class="col-md-12 col-form-label text-md-right">{{ __('Date Format') }}</label>
+                           </div>
+                           <div class="col-md-8">
+                               <input type="text" name="series_date_format" class="form-control" placeholder="m" value="{{ $field_series->date_format ?? '' }}" />
+                               <small class="form-text text-muted">Use PHP date() format, e.g. <code>m</code> for month, <code>Y</code> for year</small>
+                           </div>
+                       </div>
+
+                       <div class="form-group row">
+                           <div class="col-md-4">
+                               <label class="col-md-12 col-form-label text-md-right">{{ __('Next Sequence') }}</label>
+                           </div>
+                           <div class="col-md-8">
+                               <input type="number" name="series_next_sequence" class="form-control" value="{{ $field_series->next_sequence ?? 1 }}" />
+                           </div>
+                       </div>
+
+                       <div class="form-group row">
+                           <div class="col-md-4">
+                               <label class="col-md-12 col-form-label text-md-right">{{ __('Pad Length') }}</label>
+                           </div>
+                           <div class="col-md-8">
+                               <input type="number" name="series_pad_length" class="form-control" value="{{ $field_series->pad_length ?? 0 }}" />
+                               <small class="form-text text-muted">Number of digits to pad sequence with zeros (e.g. 3 => 001)</small>
+                           </div>
+                       </div>
+                   </div>
+
                     <div class="col-md-8">
                     <input type="checkbox" name="is_required" id="is_required" class="form-control1" value="1" 
 					@if($edit_field->is_required == 1) {{ 'checked' }} @endif
