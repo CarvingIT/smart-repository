@@ -6,7 +6,9 @@ permalink: /features/two-factore-authentication/
 
 # Two Factor Authentication
 
-Extract text from scanned images and PDFs using **Optical Character Recognition**.
+Get your collection secured with 2FA
+
+![Two Factor Authentication Screenshot]({{ site.baseurl }}/assets/images/features/two-factore-authentication1.png)
 
 ## How it works
 
@@ -14,9 +16,7 @@ Extract text from scanned images and PDFs using **Optical Character Recognition*
 2. User must install Authenticator or Auty on their mobile to get the code..
 3. Enter the received code on the website's 2FA page opened when user clicks to access the collection.
 
-![Two Factor Authentication Screenshot]({{ site.baseurl }}/assets/images/features/two-factore-authentication1.png)
 ![Two Factor Authentication Screenshot]({{ site.baseurl }}/assets/images/features/two-factore-authentication2.png)
-
 
 ## How to enable two factor authentication
 

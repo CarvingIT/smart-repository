@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->get('/collection/{collection_id}/document/{do
     if($document){
         $meta_info['title'] = $document->title;
         foreach($document->meta as $mv){
-            $meta_info[$mv->meta_field->label] = $document->meta_value($mv->meta_field_id);
+            $meta_info[$mv->meta_field->label] = str_replace('&raquo;', '-', $document->meta_value($mv->meta_field_id, false, true));
         }
         return $meta_info;
     }
