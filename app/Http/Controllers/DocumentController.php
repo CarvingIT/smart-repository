@@ -633,8 +633,8 @@ class DocumentController extends Controller
                         }
                     }
                 }
-                $m['field_value'] = array_unique(array_merge($m['field_value'], array_unique($parent_taxo)));
-				$field_value_str = json_encode(array_map('strval',$m['field_value']), JSON_UNESCAPED_UNICODE);
+                $m['field_value'] = array_unique(array_merge($m['field_value'], $parent_taxo));
+				$field_value_str = json_encode(array_values(array_map('strval',$m['field_value'])), JSON_UNESCAPED_UNICODE);
 			}
 			else{
 				$field_value_str = htmlentities($m['field_value']);
