@@ -9,6 +9,7 @@ use App\DocumentApproval;
 use App\Approval;
 use App\Collection;
 use App\BinshopsPost;
+use App\Role;
 //use App\BinshopsPublish;
 use Session;
 
@@ -21,7 +22,11 @@ class ApprovalsController extends Controller
             if (!$document) abort(404);
             $collection_id = $document->collection_id;
 	    $collection = \App\Collection::find($collection_id);
-	    $doc_approvals = \App\DocumentApproval::all();
+	    $document->load(['approvals.approver', 'approvals.approver_role']);
+	    $collection_config = json_decode($collection->column_config) ?? new \stdClass();
+	    $workflow_roles = array_values((array) ($collection_config->approved_by ?? []));
+	    $workflow_checklists = array_values((array) ($collection_config->approval_checklist_labels ?? []));
+	    $role_models = Role::whereIn('id', $workflow_roles)->get()->keyBy('id');
 
 		$user_roles = [];
 		foreach(auth()->user()->roles as $r){
@@ -51,13 +56,39 @@ class ApprovalsController extends Controller
 
 		$current_approval_status = !empty($current_approval) ? $current_approval->approval_status : null;
 		$current_approval_comments = !empty($current_approval) ? $current_approval->comments : '';
+		$current_approval_checklist_values = !empty($current_approval) && is_array($current_approval->checklist_values)
+			? array_values($current_approval->checklist_values)
+			: [];
+
+		$approval_workflow_stages = [];
+		foreach ($workflow_roles as $workflow_index => $workflow_role_id) {
+			$workflow_role_id = (int) $workflow_role_id;
+			$stage_approval = $document->approvals->first(function ($approval) use ($workflow_role_id) {
+				return (int) $approval->approved_by_role === $workflow_role_id;
+			});
+			$stage_labels = $workflow_checklists[$workflow_index] ?? [];
+			if (!is_array($stage_labels)) {
+				$stage_labels = [];
+			}
+
+			$approval_workflow_stages[] = [
+				'role_id' => $workflow_role_id,
+				'role_name' => optional($role_models->get($workflow_role_id))->name ?? ('Role '.$workflow_role_id),
+				'labels' => $stage_labels,
+				'approval' => $stage_approval,
+				'is_current' => !empty($current_approval) && (int) $current_approval->approved_by_role === $workflow_role_id,
+				'is_editable' => !empty($current_approval) && (int) $current_approval->approved_by_role === $workflow_role_id && is_null($current_approval->approval_status),
+			];
+		}
 
                 return view('document_approval', [
 								'collection' => $collection,
 								'document' => $document,
-								'doc_approvals' => $doc_approvals,
+								'current_approval' => $current_approval,
 								'current_approval_status' => $current_approval_status,
 								'current_approval_comments' => $current_approval_comments,
+								'current_approval_checklist_values' => $current_approval_checklist_values,
+								'approval_workflow_stages' => $approval_workflow_stages,
 								'activePage' => 'Document Approval Form',
 								'titlePage' => 'Document Approval'
 							]);
@@ -69,11 +100,24 @@ class ApprovalsController extends Controller
 			$user_roles[] = $r->role_id;
 		}
 		$approvable_type = ($approvable == 'blog')? 'App\BinshopsPost' : 'App\Document';
-		$approval = Approval::where('approvable_id', $approvable_id)
-			->where('approvable_type', $approvable_type)
-			->whereIn('approved_by_role', $user_roles)
-			->whereNull('approval_status')
-			->orderBy('id', 'DESC')->first();
+		$approval_id = $request->input('approval_id');
+		$approval = null;
+		if (!empty($approval_id)) {
+			$approval = Approval::where('id', $approval_id)
+				->where('approvable_id', $approvable_id)
+				->where('approvable_type', $approvable_type)
+				->whereIn('approved_by_role', $user_roles)
+				->whereNull('approval_status')
+				->first();
+		}
+
+		if (!$approval) {
+			$approval = Approval::where('approvable_id', $approvable_id)
+				->where('approvable_type', $approvable_type)
+				->whereIn('approved_by_role', $user_roles)
+				->whereNull('approval_status')
+				->orderBy('id', 'DESC')->first();
+		}
 
 		if (!$approval) {
 			Session::flash('alert-danger', 'No pending approval found for your role.');
@@ -84,6 +128,20 @@ class ApprovalsController extends Controller
 		}
 
 	   try{
+		$approval->load('approvable.collection');
+		$collection_config = json_decode(optional($approval->approvable->collection)->column_config) ?? new \stdClass();
+		$workflow_roles = array_values((array) ($collection_config->approved_by ?? []));
+		$workflow_checklists = array_values((array) ($collection_config->approval_checklist_labels ?? []));
+		$workflow_role_index = array_search((int) $approval->approved_by_role, array_map('intval', $workflow_roles), true);
+		$current_stage_labels = ($workflow_role_index !== false && isset($workflow_checklists[$workflow_role_index]) && is_array($workflow_checklists[$workflow_role_index]))
+			? $workflow_checklists[$workflow_role_index]
+			: [];
+		$submitted_checklist_values = (array) $request->input('checklist_values', []);
+		$normalized_checklist_values = [];
+		foreach ($current_stage_labels as $checklist_index => $checklist_label) {
+			$normalized_checklist_values[$checklist_index] = !empty($submitted_checklist_values[$checklist_index]) ? 1 : 0;
+		}
+		$approval->checklist_values = $normalized_checklist_values;
 		$approval->approved_by = auth()->user()->id;
 		$approval->comments = $request->comments;
 		$approval->approval_status = $request->approval_status;

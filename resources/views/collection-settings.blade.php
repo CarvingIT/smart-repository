@@ -203,6 +203,27 @@ $(document).ready(function() {
 					{{ __('Add one status label per line in the same order as the workflow roles above. Leave blank to use default labels.') }}
 				</small>
 			</div>
+			<div class="col-md-12" style="margin-top: 12px;">
+				<strong>{{ __('Stage-wise Checklist Labels') }}</strong>
+				@php
+					$approvalChecklistLabels = '';
+					if (!empty($column_config->approval_checklist_labels) && is_array($column_config->approval_checklist_labels)) {
+						$approvalChecklistLabels = implode("\n", array_map(function ($stageLabels) {
+							if (empty($stageLabels) || !is_array($stageLabels)) {
+								return '';
+							}
+
+							return implode(' | ', array_map(function ($label) {
+								return is_null($label) ? '' : $label;
+							}, $stageLabels));
+						}, $column_config->approval_checklist_labels));
+					}
+				@endphp
+				<textarea class="form-control" name="approval_checklist_labels_text" rows="5" placeholder="Check document title | Verify attachments\nCheck compliance | Confirm final review">{{ $approvalChecklistLabels }}</textarea>
+				<small class="form-text text-muted">
+					{{ __('Add one line per workflow stage. Separate checklist labels within a stage using | . The number of lines must match the workflow roles above.') }}
+				</small>
+			</div>
 		</div>
 
 		<h4>{{__('Notifications')}}</h4>
