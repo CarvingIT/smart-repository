@@ -86,6 +86,10 @@ trait Search{
 				// default operator is '='
 				// find type of meta field
 				$meta_field = \App\MetaField::where('id', $matches[1])->first();
+				// Skip empty filter values
+				if(empty($v) || (is_array($v) && empty(array_filter($v)))){
+					continue;
+				}
 				if($meta_field && $meta_field->type == 'Numeric' && is_array($v) && count($v)==2){ 
 					// this is for range filters (numeric values). This condition needs to be refined.
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
