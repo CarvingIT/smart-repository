@@ -241,6 +241,7 @@ Route::group(['middleware' => ['auth', 'verified']], function () {
 	Route::post('profile/two-factor/setup', ['as' => 'profile.twofactor.setup', 'uses' => 'ProfileController@setupTwoFactor']);
 	Route::post('profile/two-factor/enable', ['as' => 'profile.twofactor.enable', 'uses' => 'ProfileController@enableTwoFactor']);
 	Route::post('profile/two-factor/disable', ['as' => 'profile.twofactor.disable', 'uses' => 'ProfileController@disableTwoFactor']);
+	Route::post('profile/two-factor/user-preference', ['as' => 'profile.twofactor.user.preference', 'uses' => 'ProfileController@toggleTwoFactorUserPreference']);
 	Route::resource('template', 'SRTemplateController', ['except' => ['show']]);
 });
 

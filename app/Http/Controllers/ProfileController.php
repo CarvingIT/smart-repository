@@ -113,6 +113,7 @@ class ProfileController extends Controller
         $user = auth()->user();
         $user->two_factor_secret = null;
         $user->two_factor_enabled_at = null;
+        $user->two_factor_user_enabled = false;
         $user->save();
 
         foreach (array_keys($request->session()->all()) as $sessionKey) {
@@ -122,5 +123,25 @@ class ProfileController extends Controller
         }
 
         return redirect()->route('profile.edit')->with('status', 'Two-factor authentication disabled successfully.');
+    }
+
+    public function toggleTwoFactorUserPreference(Request $request)
+    {
+        $user = auth()->user();
+
+        // Can only enable preference if 2FA is already set up
+        if ($request->input('enabled') && !$user->hasTwoFactorEnabled()) {
+            return redirect()->route('profile.edit')
+                ->with('alert-danger', 'Please enable TOTP authentication first before enabling 2FA preference.');
+        }
+
+        $user->two_factor_user_enabled = (bool) $request->input('enabled', false);
+        $user->save();
+
+        $message = $user->two_factor_user_enabled 
+            ? 'Two-factor authentication preference enabled. You will be prompted for verification on login.'
+            : 'Two-factor authentication preference disabled.';
+
+        return redirect()->route('profile.edit')->with('status', $message);
     }
 }

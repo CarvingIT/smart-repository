@@ -181,6 +181,41 @@
         </div>
       </div>
 
+      @if(auth()->user()->hasTwoFactorEnabled())
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <h4 class="card-title">{{ __('Login 2FA Preference') }}</h4>
+            </div>
+            <div class="card-body">
+              <p>{{ __('Choose whether you want to use 2FA at login time. Collection-specific 2FA requirements will always override this setting.') }}</p>
+              
+              @if(auth()->user()->isTwoFactorUserPreferenceEnabled())
+                <div class="alert alert-info">
+                  {{ __('2FA is enabled at login time. You will be prompted for verification when logging in.') }}
+                </div>
+                <form method="post" action="{{ route('profile.twofactor.user.preference') }}" class="form-horizontal">
+                  @csrf
+                  <input type="hidden" name="enabled" value="0" />
+                  <button type="submit" class="btn btn-warning">{{ __('Disable Login 2FA') }}</button>
+                </form>
+              @else
+                <div class="alert alert-info">
+                  {{ __('2FA is disabled at login time. You can enable it below.') }}
+                </div>
+                <form method="post" action="{{ route('profile.twofactor.user.preference') }}" class="form-horizontal">
+                  @csrf
+                  <input type="hidden" name="enabled" value="1" />
+                  <button type="submit" class="btn btn-primary">{{ __('Enable Login 2FA') }}</button>
+                </form>
+              @endif
+            </div>
+          </div>
+        </div>
+      </div>
+      @endif
+
       <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-8 ml-auto mr-auto">
           <form method="post" action="/user/regenerate-api-token" class="form-horizontal">
