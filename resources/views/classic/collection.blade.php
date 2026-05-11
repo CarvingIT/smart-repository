@@ -145,7 +145,7 @@ $(document).ready(function() {
 	$filters = [];
 	foreach($meta_fields as $m){
 		//if(in_array($m->label, $filter_labels)){
-		if($m->is_filter == 1 && $has_meta_search_config && in_array((int)$m->id, $enabled_search_meta_fields)){//SKK
+		if($has_meta_search_config && in_array((int)$m->id, $enabled_search_meta_fields)){//SKK
 			$filters[] = $m;
 		}
 	}	
@@ -180,6 +180,12 @@ function clearFilters(){
 		success: function(response) {
 			// Clear the file type filter dropdown
 			$('#file_type_filter').val('');
+			// Reset all text/date/select meta filters in the sidebar
+			$('input[type="text"][name^="meta_"]').val('');
+			$('input[type="date"][name^="meta_"]').val('');
+			$('select[name^="meta_"]').each(function(){
+				this.selectedIndex = 0;
+			});
 			// Uncheck all taxonomy checkboxes
 			$('input[type="checkbox"][name^="meta_"]').prop('checked', false);
 			// Reset all numeric range sliders
@@ -197,7 +203,9 @@ function clearFilters(){
 			@endif
 			@endforeach
 			// Clear record created filter UI
+			$('#record_created_operator').val('>=');
 			$('#record_created_value').val('');
+			$('#filter_record_created').hide();
 			$('#created_filter_tags_container').html('');
 			$('#date-facets-container').html('');
 			// Reload search results
@@ -217,6 +225,13 @@ function reloadSearchResults(callback){
 	loadSearchResults(callback);
 }
 
+function scheduleClassicMetaFilterSearch(){
+	clearTimeout(window.classicMetaFilterSearchTimer);
+	window.classicMetaFilterSearchTimer = setTimeout(function(){
+		reloadSearchResults();
+	}, 450);
+}
+
 function loadSearchResults(callback){
 	var queryString = $('#isa_search').serialize();
 	
@@ -228,6 +243,45 @@ function loadSearchResults(callback){
 			queryString += '&' + name + '=' + encodeURIComponent(value);
 		} else {
 			queryString = name + '=' + encodeURIComponent(value);
+		}
+	});
+	
+	// Add all text/numeric input filters to the query string
+	$('input[type="text"][name^="meta_"]').each(function() {
+		var value = $(this).val();
+		if (value) { // Only add if not empty
+			var name = $(this).attr('name');
+			if (queryString) {
+				queryString += '&' + name + '=' + encodeURIComponent(value);
+			} else {
+				queryString = name + '=' + encodeURIComponent(value);
+			}
+		}
+	});
+	
+	// Add all date input filters to the query string (skip empty dates)
+	$('input[type="date"][name^="meta_"]').each(function() {
+		var value = $(this).val();
+		if (value) { // Only add if not empty
+			var name = $(this).attr('name');
+			if (queryString) {
+				queryString += '&' + name + '=' + encodeURIComponent(value);
+			} else {
+				queryString = name + '=' + encodeURIComponent(value);
+			}
+		}
+	});
+	
+	// Add all select filters to the query string (skip "All" / empty values)
+	$('select[name^="meta_"]').each(function() {
+		var value = $(this).val();
+		if (value && value.trim() !== '') { // Only add if not empty or whitespace
+			var name = $(this).attr('name');
+			if (queryString) {
+				queryString += '&' + name + '=' + encodeURIComponent(value);
+			} else {
+				queryString = name + '=' + encodeURIComponent(value);
+			}
 		}
 	});
 	
@@ -725,7 +779,7 @@ foreach($tags as $t){
 					getTree($children, $rmfv_map, $f->options, $f->id, true);
 					echo "</div>\n";
 				}
-				// Other filters (Numeric, Select)
+				// Other filters (Numeric, Select, Textarea, Text, Date, etc.)
 				foreach($filters as $f){
 					if($f->type == 'TaxonomyTree') continue; // already shown above
 					else if($f->type == 'Numeric'){
@@ -764,12 +818,25 @@ foreach($tags as $t){
 						$options = explode(",",$f->options); 
 						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
-						echo '<select name="meta_'.$f->id.'[]" class="form-control">';
+						echo '<select name="meta_'.$f->id.'[]" class="form-control" onchange="reloadSearchResults();" style="font-size:13px; padding:4px 6px;">';
+						echo '<option value="">{{ __("All") }}</option>';
 						foreach($options as $select_options){
 						echo '<option value="'.$select_options.'">'.$select_options.'</option>';
 						}
 						echo '</select>';
 						echo "</div>\n";
+					}
+					else if($f->type == 'Date'){
+						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="display:none;">';
+						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="reloadSearchResults();" />';
+						echo '</div>';
+					}
+					else if($f->type == 'Textarea' || $f->type == 'Text' || $f->type == 'SelectCombo'){
+						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="display:none;">';
+						echo '<input type="text" name="meta_'.$f->id.'[]" class="form-control" placeholder="'.__('Search').'" style="font-size:13px; padding:4px 6px; margin-bottom:5px;" oninput="scheduleClassicMetaFilterSearch();" onkeydown="if(event.keyCode==13){ event.preventDefault(); reloadSearchResults(); return false; }" />';
+						echo '</div>';
 					}
 				}
 				@endphp
