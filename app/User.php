@@ -217,4 +217,18 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
 ///// 
+
+    /**
+     * Disable two-factor authentication for this user.
+     *
+     * Clears the stored TOTP secret and the enabled timestamp.
+     *
+     * @return void
+     */
+    public function disableTwoFactor(): void
+    {
+        $this->two_factor_secret = null;
+        $this->two_factor_enabled_at = null;
+        $this->save();
+    }
 } // End of the class
