@@ -346,6 +346,13 @@ $(document).ready(function() {
 		</div>
 
 		<h4>{{ __('Display of search results') }}</h4>
+		<div class="form-group row">
+			<div class="col-md-12">
+				<input type="checkbox" name="expand_highlights_by_default" id="expand_highlights_by_default" value="1"
+					@if(!empty($column_config->expand_highlights_by_default)) checked="checked" @endif />
+				<label for="expand_highlights_by_default">{{ __('Expand highlights by default') }}</label>
+			</div>
+		</div>
 		<div class="form-group row align-items-center">
 			<div class="col-md-3 text-right">
 				<label for="fixed_columns_left" class="col-form-label">{{ __('Fixed columns left') }}</label>

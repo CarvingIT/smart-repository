@@ -62,24 +62,30 @@ if(!empty($collection->column_config)){
 $fuzzy = Session::get('fuzzy');
 $full_text_scope = Session::get('full_text_scope');
 $old_search = Session::get('search_query');
+$expand_highlights_by_default = !empty($column_config->expand_highlights_by_default) ? 1 : 0;
 @endphp
 <script>
 var deldialog;
 $(document).ready(function() {
     oTable = $('#documents').DataTable({
     "drawCallback": function(settings) {
-        // Update tiles when DataTable redraws (pagination, search, etc.)
         if (currentViewMode === 'tile') {
-            console.log('DataTable drawCallback - Tile view active, page:', settings._iDisplayStart / settings._iDisplayLength + 1);
             var api = this.api();
             var data = api.rows({page: 'current'}).data().toArray();
             renderTiles(data, false);
-            
-            // Move DataTable controls to tile view layout
-            // Use longer timeout to ensure DataTables has finished rendering controls
-            setTimeout(function() {
-                moveTileControls();
-            }, 50);
+            setTimeout(function() { moveTileControls(); }, 50);
+        }
+        if ({{ $expand_highlights_by_default }}) {
+            var api = this.api();
+            api.rows({page: 'current'}).every(function() {
+                var row = this;
+                var d = row.data();
+                if (d.highlights && d.highlights.text_content && d.highlights.text_content.length > 0) {
+                    if (!row.child.isShown()) {
+                        row.child(formatHighlights(d), 'highlights').show();
+                    }
+                }
+            });
         }
     },
     "columnDefs": [
