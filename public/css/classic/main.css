@@ -749,6 +749,64 @@ section {
   }
 }
 
+/* Shared user navbar: keep it responsive when browser zoom lowers the effective viewport width. */
+.site-user-navbar {
+  background: transparent !important;
+}
+
+.site-user-navbar .navbar-collapse,
+.site-user-navbar .navbar-nav {
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.site-user-navbar .navbar-nav {
+  gap: 0.25rem 0.5rem;
+  background: transparent !important;
+  position: static;
+  overflow: visible;
+}
+
+.site-user-navbar .howdy {
+  width: auto !important;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.site-user-navbar .site-user-navbar-locale,
+.site-user-navbar .site-user-navbar-user {
+  flex: 0 1 auto;
+}
+
+@media (max-width: 1279px) {
+  .site-user-navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: none;
+  }
+
+  .site-user-navbar .navbar-collapse {
+    background: transparent !important;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .site-user-navbar .navbar-nav {
+    width: 100%;
+    padding-top: 0.25rem;
+    background: transparent !important;
+    position: static;
+    overflow: visible;
+  }
+
+  .site-user-navbar .navbar-toggler {
+    margin-left: auto;
+  }
+}
+
 /*--------------------------------------------------------------
 # Featured Services Section
 --------------------------------------------------------------*/

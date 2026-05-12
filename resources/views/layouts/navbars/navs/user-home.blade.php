@@ -15,7 +15,7 @@ $collections = \App\Collection::all();
 @endphp
 <!-- Navbar -->
 <!--nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top "-->
-<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
+<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white site-user-navbar">
   <div class="container">
     <div class="navbar-wrapper">
       <!--a class="navbar-brand" href="/">{{ __('SR') }}</a-->
@@ -37,9 +37,9 @@ $collections = \App\Collection::all();
     <span class="navbar-toggler-icon icon-bar"></span>
     <span class="navbar-toggler-icon icon-bar"></span>
     </button>
-    <div class="collapse navbar-collapse justify-content-end">
+    <div class="collapse navbar-collapse justify-content-end site-user-navbar-collapse">
             @if(env('AVAILALBLE_LOCALES') != '')
-	  <span class="howdy" style="top:5px; width:380px;">
+    <span class="howdy site-user-navbar-locale" style="top:5px;">
                 @php
                     $languages = explode(",",env('AVAILALBLE_LOCALES'));
                     if(Session::get('sr_lang'))
@@ -150,7 +150,7 @@ $collections = \App\Collection::all();
           </a>
 
 
-	  <span class="howdy" style="width:150px;">
+    <span class="howdy site-user-navbar-user">
             <a href="/dashboard" style="color:inherit !important;"> @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
 
 
