@@ -33,7 +33,7 @@ $collections = \App\Collection::all();
       <span class="navbar-toggler-icon icon-bar"></span>
     </button>
     @if(env('AVAILALBLE_LOCALES') != '')
-      <span class="howdy" style="top:5px;">
+      <span class="howdy" style="position: absolute; top: 8px; right: 260px; z-index: 1050; display:flex; align-items:center; gap:8px;">
                     @php
                     $languages = explode(",",env('AVAILALBLE_LOCALES'));
                     if(Session::get('sr_lang'))
@@ -41,7 +41,7 @@ $collections = \App\Collection::all();
                     else
                         $sr_lang = 'en';
                 @endphp
-                <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin:0; padding:4px 10px;">
                     <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> {{ __($sr_lang) }}
                 </button>
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">

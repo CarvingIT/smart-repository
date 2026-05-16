@@ -1,6 +1,5 @@
 <!-- Font Awesome - served locally via npm (@fortawesome/fontawesome-free) -->
 <link rel="stylesheet" href="/vendor/font-awesome/css/all.min.css" />
-<link rel="stylesheet" href="/build/assets/css/all.min.css" />
 <div class="search-results-container">
 <style>
 	.search-result-item {
