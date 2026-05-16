@@ -112,118 +112,254 @@ trait Search{
         return $meta_filters;
     }
 
+    /**
+     * Group filters by field so same-field values can be combined together.
+     */
+    protected function groupMetaFiltersByField($meta_filters){
+        $grouped_filters = [];
+
+        foreach($meta_filters as $mf){
+            $field_id = $mf['field_id'];
+            if(!isset($grouped_filters[$field_id])){
+                $grouped_filters[$field_id] = [];
+            }
+            $grouped_filters[$field_id][] = $mf;
+        }
+
+        return $grouped_filters;
+    }
+
+    /**
+     * Build a single Elasticsearch clause for one meta filter.
+     */
+    protected function buildElasticMetaFilterQuery($mf, $meta_field_types = []){
+        $field_key = 'meta_'.$mf['field_id'];
+        $field_type = $meta_field_types[$mf['field_id']] ?? null;
+        $is_taxonomy = $field_type === 'TaxonomyTree';
+
+        if($mf['operator'] == '='){
+            if(is_array($mf['value'])){
+                $shoulds = [];
+                foreach($mf['value'] as $v){
+                    $shoulds[] = ['match' => [$field_key => $v]];
+                }
+                return ['bool' => ['should' => $shoulds, 'minimum_should_match' => 1]];
+            }
+
+            if($is_taxonomy){
+                return ['match_phrase' => [$field_key => $mf['value']]];
+            }
+
+            return ['match' => [$field_key => $mf['value']]];
+        }
+
+        if($mf['operator'] == 'contains'){
+            return ['match_phrase' => [$field_key => $mf['value']]];
+        }
+
+        if($mf['operator'] == '<='){
+            return ['range' => [$field_key => ['lte' => $mf['value']]]];
+        }
+
+        if($mf['operator'] == '>='){
+            return ['range' => [$field_key => ['gte' => $mf['value']]]];
+        }
+
+        return null;
+    }
+
     public function getMustQueriesFromMetaFilters($meta_filters){
         $must_queries = [];
-        foreach($meta_filters as $mf){
-			if($mf['operator'] == '='){
-				// If multiple values supplied for the same field, build a bool should (OR)
-				if(is_array($mf['value'])){
-					$shoulds = [];
-					foreach($mf['value'] as $v){
-						$shoulds[] = ['match' => ['meta_'.$mf['field_id'] => $v]];
+		$grouped_meta_filters = $this->groupMetaFiltersByField($meta_filters);
+
+		foreach($grouped_meta_filters as $field_filters){
+			$has_range_filter = false;
+			foreach($field_filters as $field_filter){
+				if(in_array($field_filter['operator'], ['>=', '<='])){
+					$has_range_filter = true;
+					break;
+				}
+			}
+
+			if($has_range_filter){
+				// Range filters on the same field must intersect, not OR together.
+				foreach($field_filters as $mf){
+					$query = $this->buildElasticMetaFilterQuery($mf);
+					if(!empty($query)){
+						$must_queries[] = $query;
 					}
-					// minimum_should_match ensures at least one condition must match (OR semantics)
-					$must_queries[] = ['bool' => ['should' => $shoulds, 'minimum_should_match' => 1]];
 				}
-				else{
-					$must_queries[] = ['match'=> ['meta_'.$mf['field_id'] => $mf['value'] ]];
+				continue;
+			}
+
+			if(count($field_filters) === 1){
+				$query = $this->buildElasticMetaFilterQuery($field_filters[0]);
+				if(!empty($query)){
+					$must_queries[] = $query;
 				}
-            }
-            else if($mf['operator'] == 'contains'){
-                $must_queries[] = ['match_phrase'=>
-                            ['meta_'.$mf['field_id'] => $mf['value'] ]
-                        ];
-            }
-            else if($mf['operator'] == '<='){
-                $must_queries[] = ['range'=>
-                            ['meta_'.$mf['field_id'] => [
-                                'lte' => $mf['value']
-                            ]]
-                        ];
-            }
-            else if($mf['operator'] == '>='){
-                $must_queries[] = ['range'=>
-                            ['meta_'.$mf['field_id'] => [
-                                'gte' => $mf['value']
-                            ]]
-                        ];
-            }
+				continue;
+			}
+
+			$shoulds = [];
+			foreach($field_filters as $mf){
+				$query = $this->buildElasticMetaFilterQuery($mf);
+				if(!empty($query)){
+					$shoulds[] = $query;
+				}
+			}
+
+			if(count($shoulds) > 0){
+				$must_queries[] = ['bool' => ['should' => $shoulds, 'minimum_should_match' => 1]];
+			}
         }
         return $must_queries;
     }
+
+		    /**
+		     * Apply one meta filter to an Eloquent document query.
+		     */
+		    protected function applySingleMetaFilterToDocuments($documents, $mf, &$meta_field_types){
+		        if(!preg_match('/^\d*$/', $mf['field_id'])){
+		            if($mf['field_id'] == 'created_at'){
+		                // Use whereDate() so a plain date string like '2026-02-17' matches
+		                // datetime values correctly (avoids '=' never matching or '<=' cutting off same-day records)
+		                $documents = $documents->whereDate('created_at', $mf['operator'], $mf['value']);
+		            }
+		            return $documents;
+		        }
+
+		        if($mf['operator'] == '='){
+		            if(!isset($meta_field_types[$mf['field_id']])){
+		                $m_field = MetaField::find($mf['field_id']);
+		                $meta_field_types[$mf['field_id']] = $m_field ? $m_field->type : null;
+		            }
+		            $field_type = $meta_field_types[$mf['field_id']];
+		            $is_taxonomy = $field_type === 'TaxonomyTree';
+
+		            if(is_array($mf['value'])){
+		                $values = $mf['value'];
+		                $documents = $documents->whereHas('meta', function (Builder $query) use($mf, $values, $is_taxonomy){
+		                    $query->where('meta_field_id', $mf['field_id']);
+		                    $query->where(function($q) use($values, $is_taxonomy){
+		                        foreach($values as $v){
+		                            if($is_taxonomy){
+		                                $q->orWhere('value', 'like', '%"'.$v.'"%');
+		                            }
+		                            else{
+		                                $q->orWhere('value', $v);
+		                            }
+		                        }
+		                    });
+		                });
+		            }
+		            else{
+		                $documents = $documents->whereHas('meta', function (Builder $query) use($mf, $is_taxonomy){
+		                    $query->where('meta_field_id', $mf['field_id']);
+		                    if($is_taxonomy){
+		                        $query->where('value', 'like', '%"'.$mf['value'].'"%');
+		                    }
+		                    else{
+		                        $query->where('value', $mf['value']);
+		                    }
+		                });
+		            }
+		        }
+		        else if($mf['operator'] == '>='){
+		            $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+		                $query->where('meta_field_id', $mf['field_id'])->where('value', '>=', $mf['value']);
+		            });
+		        }
+		        else if($mf['operator'] == '<='){
+		            $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+		                $query->where('meta_field_id', $mf['field_id'])->where('value', '<=', $mf['value']);
+		            });
+		        }
+		        else if($mf['operator'] == 'contains'){
+		            $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+		                $query->where('meta_field_id', $mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
+		            });
+		        }
+
+		        return $documents;
+		    }
 
     public function getMetaFilteredDocuments($request, $documents){
         $meta_filters = $this->getMetaFiltersFromRequest($request);
         // Cache meta field types to avoid N+1 queries
         $meta_field_types = [];
-        
-        foreach($meta_filters as $mf){
-			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filters like created_at, created_by
-				if($mf['field_id'] == 'created_at'){
-					// Use whereDate() so a plain date string like '2026-02-17' matches
-					// datetime values correctly (avoids '=' never matching or '<=' cutting off same-day records)
-					$documents = $documents->whereDate('created_at', $mf['operator'], $mf['value']);
-				}	
-			continue;// no need to proceed further
-			}
 
-            if($mf['operator'] == '='){
-				// Get cached or fetch meta field type (avoid N+1)
-				if(!isset($meta_field_types[$mf['field_id']])){
-					$m_field = MetaField::find($mf['field_id']);
-					$meta_field_types[$mf['field_id']] = $m_field ? $m_field->type : null;
-				}
-				$field_type = $meta_field_types[$mf['field_id']];
-				$is_taxonomy = $field_type === 'TaxonomyTree';
-				
-				if(is_array($mf['value'])){
-					// Multiple values: use OR (match any)
-					$values = $mf['value'];
-					$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $values, $is_taxonomy){
-						$query->where('meta_field_id', $mf['field_id']);
-						$query->where(function($q) use($values, $is_taxonomy){
-							foreach($values as $v){
-								if($is_taxonomy){
-									$q->orWhere('value', 'like', '%"'.$v.'"%');
+				$grouped_meta_filters = $this->groupMetaFiltersByField($meta_filters);
+
+				foreach($grouped_meta_filters as $field_id => $field_filters){
+					if(!preg_match('/^\d*$/', $field_id)){// this is for default filters like created_at, created_by
+						foreach($field_filters as $mf){
+							$documents = $this->applySingleMetaFilterToDocuments($documents, $mf, $meta_field_types);
+						}
+						continue;
+					}
+
+					$has_range_filter = false;
+					foreach($field_filters as $field_filter){
+						if(in_array($field_filter['operator'], ['>=', '<='])){
+							$has_range_filter = true;
+							break;
+						}
+					}
+
+					if($has_range_filter){
+						// Range filters on the same field must intersect, so keep them as AND conditions.
+						foreach($field_filters as $mf){
+							$documents = $this->applySingleMetaFilterToDocuments($documents, $mf, $meta_field_types);
+						}
+						continue;
+					}
+
+					if(count($field_filters) === 1){
+						$documents = $this->applySingleMetaFilterToDocuments($documents, $field_filters[0], $meta_field_types);
+						continue;
+					}
+
+					if(!isset($meta_field_types[$field_id])){
+						$m_field = MetaField::find($field_id);
+						$meta_field_types[$field_id] = $m_field ? $m_field->type : null;
+					}
+					$field_type = $meta_field_types[$field_id];
+					$is_taxonomy = $field_type === 'TaxonomyTree';
+
+					$documents = $documents->whereHas('meta', function (Builder $query) use($field_filters, $field_id, $is_taxonomy){
+						$query->where('meta_field_id', $field_id);
+						$query->where(function($q) use($field_filters, $is_taxonomy){
+							foreach($field_filters as $field_filter){
+								if($field_filter['operator'] == '='){
+									if(is_array($field_filter['value'])){
+										$q->orWhere(function($subQuery) use($field_filter, $is_taxonomy){
+											$subQuery->where(function($valueQuery) use($field_filter, $is_taxonomy){
+												foreach($field_filter['value'] as $v){
+													if($is_taxonomy){
+														$valueQuery->orWhere('value', 'like', '%"'.$v.'"%');
+													}
+													else{
+														$valueQuery->orWhere('value', $v);
+													}
+												}
+											});
+										});
+									}
+									else if($is_taxonomy){
+										$q->orWhere('value', 'like', '%"'.$field_filter['value'].'"%');
+									}
+									else{
+										$q->orWhere('value', $field_filter['value']);
+									}
 								}
-								else{
-									$q->orWhere('value', $v);
+								else if($field_filter['operator'] == 'contains'){
+									$q->orWhere('value', 'like', '%'.$field_filter['value'].'%');
 								}
 							}
 						});
 					});
 				}
-				else{
-					// Single value logic with cached type
-           			$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $is_taxonomy){
-           	    		$query->where('meta_field_id', $mf['field_id']);
-           	    		if($is_taxonomy){
-           	    			$query->where('value', 'like', '%"'.$mf['value'].'"%');
-           	    		}
-           	    		else{
-           	    			$query->where('value', $mf['value']);
-           	    		}
-           			});
-				}
-            }
-            else if($mf['operator'] == '>='){
-                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', '>=', $mf['value']);
-                    }
-                );
-            }
-            else if($mf['operator'] == '<='){
-                $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                        $query->where('meta_field_id',$mf['field_id'])->where('value', '<=', $mf['value']);
-                    }
-                );
-            }
-            else if($mf['operator'] == 'contains'){
-           	    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
-                    $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%'.$mf['value'].'%');
-               	});
-            } //contains
-	    }// foreach
+	    
         return $documents;
     }
 
