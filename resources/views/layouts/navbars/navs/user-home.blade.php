@@ -38,33 +38,6 @@ $collections = \App\Collection::all();
     <span class="navbar-toggler-icon icon-bar"></span>
     </button>
     <div class="collapse navbar-collapse justify-content-end site-user-navbar-collapse">
-            @if(env('AVAILALBLE_LOCALES') != '')
-    <span class="howdy site-user-navbar-locale" style="top:5px;">
-                @php
-                    $languages = explode(",",env('AVAILALBLE_LOCALES'));
-                    if(Session::get('sr_lang'))
-                        $sr_lang = Session::get('sr_lang');
-                    else
-                        $sr_lang = 'en';
-                @endphp
-                    @php
-                    if(Session::get('sr_lang'))
-                        $sr_lang = Session::get('sr_lang');
-                    else
-                        $sr_lang = 'en';
-                @endphp
-                <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="material-icons" style="font-size: 18px; vertical-align: middle;">language</i> {{ __($sr_lang) }} 
-                </button>
-                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
-                    @foreach($languages as $lang)
-                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == $lang) ? 'active' : '' }}" href="/lang?sr_lang={{ $lang }}">
-                        <span style="display: inline-block; width: 35px; color:#000;">{{ __($lang) }}</span>
-                    </a>
-                    @endforeach
-                </div>
-        </span>
-            @endif
       <ul class="navbar-nav">
         <li class="nav-item{{ $activePage == 'home' ? ' active' : '' }}">
           <a href="/" class="nav-link">
@@ -132,6 +105,37 @@ $collections = \App\Collection::all();
     $unread_alert_count = Auth::user()->alerts()->unread()->count();
   @endphp
 
+        <!-- Top info bar (Language and Username) - Absolutely positioned above the main navbar items -->
+        <div style="position: absolute; top: 2px; right: 220px; display: flex; align-items: center; gap: 40px; z-index: 1050;">
+            @if(env('AVAILALBLE_LOCALES') != '')
+            <div class="dropdown site-user-navbar-locale">
+                @php
+                    $languages = explode(",",env('AVAILALBLE_LOCALES'));
+                    if(Session::get('sr_lang'))
+                        $sr_lang = Session::get('sr_lang');
+                    else
+                        $sr_lang = 'en';
+                @endphp
+                <button class="btn btn-sm btn-primary" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin: 0; padding: 4px 10px;">
+                    <i class="material-icons" style="font-size: 16px; vertical-align: middle;">language</i> {{ __($sr_lang) }} 
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown" style="margin-top: 5px;">
+                    @foreach($languages as $lang)
+                    <a class="dropdown-item {{ (isset($sr_lang) && $sr_lang == $lang) ? 'active' : '' }}" href="/lang?sr_lang={{ $lang }}">
+                        <span style="display: inline-block; width: 35px; color:#000;">{{ __($lang) }}</span>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
+            <div class="site-user-navbar-user" style="font-size: 0.9em; white-space: nowrap; color: white;">
+                <a href="/dashboard" style="color: white !important; font-weight: 500;">
+                    @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif !
+                </a>
+            </div>
+        </div>
+
         <li class="nav-item dropdown">
           <a class="nav-link" title="" href="#" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			@if (@Gravatar::exists(Auth::user()->email))
@@ -148,10 +152,6 @@ $collections = \App\Collection::all();
             </p>
 			-->
           </a>
-
-
-    <span class="howdy site-user-navbar-user">
-            <a href="/dashboard" style="color:inherit !important;"> @if (empty(Auth::user()->name)) {{ Auth::user()->email }} @else {{ Auth::user()->name }} @endif </a>!</span>
 
 
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">

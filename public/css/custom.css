@@ -178,6 +178,11 @@ input::placeholder{
 	right:0;
 	font-size:0.8em;
 }
+
+/* Fix: remove white line at top of pages with background image */
+.off-canvas-sidebar .navbar.navbar-transparent{
+    border-top: 0 !important;
+}
 /*tree view */
 
 ul, #myUL {
