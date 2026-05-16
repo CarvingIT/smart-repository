@@ -15,6 +15,10 @@ Route::get('/email/verify', function () {
     return view('auth.verify');
 })->middleware('auth')->name('verification.notice');
 
+// Login 2FA routes
+Route::get('/login/2fa', 'Auth\LoginTwoFactorController@showChallenge')->middleware('auth')->name('login.two-factor.challenge');
+Route::post('/login/2fa/verify', 'Auth\LoginTwoFactorController@verify')->middleware('auth')->name('login.two-factor.verify');
+
 Route::view('/','welcome');
 Route::get('/lang/{locale}', function ($locale) {
     App::setLocale($locale);
@@ -31,9 +35,9 @@ Route::get('/faq', function () {
     return view('faq');
 });
 
-Route::get('/dashboard', 'HomeController@index')->name('dashboard')->middleware(['auth','verified']);
-Route::get('/collections', 'CollectionController@list');
-Route::get('/documents', 'DocumentController@list');
+Route::get('/dashboard', 'HomeController@index')->name('dashboard')->middleware(['auth','verified','login_two_factor_verified']);
+Route::get('/collections', 'CollectionController@list')->middleware(['auth','verified','login_two_factor_verified']);
+Route::get('/documents', 'DocumentController@list')->middleware(['auth','verified','login_two_factor_verified']);
 
 Route::get('/lang', 'CollectionController@selectLanguage');
 
@@ -233,7 +237,7 @@ Route::group(['middleware' => 'auth'], function () {
 	})->name('upgrade');
 });
 
-Route::group(['middleware' => ['auth', 'verified']], function () {
+Route::group(['middleware' => ['auth', 'verified', 'login_two_factor_verified']], function () {
 	Route::resource('user', 'UserController', ['except' => ['show']]);
 	Route::get('profile', ['as' => 'profile.edit', 'uses' => 'ProfileController@edit']);
 	Route::put('profile', ['as' => 'profile.update', 'uses' => 'ProfileController@update']);

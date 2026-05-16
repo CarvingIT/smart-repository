@@ -48,7 +48,24 @@ class LoginController extends Controller
     public function show()
     {   
         return view('auth.login');
-    }   
+    }
+
+    /**
+     * Handle the user after being authenticated.
+     * Check if 2FA is required.
+     */
+    protected function authenticated(\Illuminate\Http\Request $request, $user)
+    {
+        // If user has 2FA enabled, redirect to 2FA verification page
+        if ($user->hasTwoFactorEnabled()) {
+            return redirect()->route('login.two-factor.challenge', [
+                'intended' => $request->query('intended', '/collections')
+            ]);
+        }
+
+        // If user doesn't have 2FA enabled, redirect to profile with message to enable it
+        return redirect()->route('profile.edit')->with('alert-info', __('For security purposes, we recommend enabling two-factor authentication on your account. Click on "Generate QR" to get started.'));
+    }
 
     public function redirectToProvider($driver)
     {   
