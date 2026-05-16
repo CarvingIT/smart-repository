@@ -333,3 +333,32 @@ ul.related-docs{
     width: 1140px;
   } 
 }
+
+/* ==========================================================================
+   Fix: Seamless full-page background image
+   Move the background from .page-header to the body so it covers the entire
+   scrollable area. The .page-header keeps its dark overlay but becomes
+   transparent, letting the body background show through seamlessly.
+   ========================================================================== */
+
+/* 1. Body: single background image fixed to the viewport so it always covers
+      the entire page regardless of content height, dropdown state, or zoom. */
+body.off-canvas-sidebar {
+  background: url('/material/img/login.jpg') top center / cover no-repeat fixed;
+  background-color: #111;
+}
+
+/* 2. Remove the inline background-image from .page-header so there's no
+      double-layer or mismatch. Keep the element transparent. */
+.page-header.login-page {
+  background-image: none !important;
+  background-color: transparent !important;
+  max-height: none !important;
+  min-height: 100vh;
+}
+
+/* 3. The wrapper must fill at least the full viewport so the overlay inside
+      .page-header always covers everything visible. */
+.wrapper.wrapper-full-page {
+  min-height: 100vh;
+}
