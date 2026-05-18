@@ -25,16 +25,18 @@ html, body {
 }
 .row {
   display:flex;
-  height:100%;
   overflow:clip;
+  height:100%;
 }
 #meta-view {
-flex:30%;
-overflow-y:scroll;
+  width:30%;
+  overflow:auto;
+  resize:horizontal;
 }
 #doc-view {
-  flex:70%;
-  height: 100%;
+  width:70%;
+  overflow:hidden;
+  resize:horizontal;
 }
 ._df_book {
   width: 100%;
