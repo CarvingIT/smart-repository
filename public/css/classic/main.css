@@ -650,7 +650,7 @@ section {
 # Mobile Navigation
 --------------------------------------------------------------*/
 @media (max-width: 1279px) {
-  .navbar {
+  .navbar:not(.site-user-navbar) {
     position: fixed;
     top: 0;
     right: -100%;
@@ -661,7 +661,7 @@ section {
     z-index: 9997;
   }
 
-  .navbar ul {
+  .navbar:not(.site-user-navbar) ul {
     position: absolute;
     padding: 5px 0 10px 0;
     background: rgba(240, 90, 34, 0.9);
@@ -670,8 +670,8 @@ section {
     z-index: 9998;
   }
 
-  .navbar a,
-  .navbar a:focus {
+  .navbar:not(.site-user-navbar) a,
+  .navbar:not(.site-user-navbar) a:focus {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -684,22 +684,22 @@ section {
     transition: 0.3s;
   }
 
-  .navbar a i,
-  .navbar a:focus i {
+  .navbar:not(.site-user-navbar) a i,
+  .navbar:not(.site-user-navbar) a:focus i {
     font-size: 12px;
     line-height: 0;
     margin-left: 5px;
   }
 
-  .navbar a:hover,
-  .navbar .active,
-  .navbar .active:focus,
-  .navbar li:hover>a {
+  .navbar:not(.site-user-navbar) a:hover,
+  .navbar:not(.site-user-navbar) .active,
+  .navbar:not(.site-user-navbar) .active:focus,
+  .navbar:not(.site-user-navbar) li:hover>a {
     color: #fff;
   }
 
-  .navbar .get-a-quote,
-  .navbar .get-a-quote:focus {
+  .navbar:not(.site-user-navbar) .get-a-quote,
+  .navbar:not(.site-user-navbar) .get-a-quote:focus {
     background: var(--color-primary);
     padding: 8px 20px;
     border-radius: 4px;
@@ -707,14 +707,14 @@ section {
     color: #fff;
   }
 
-  .navbar .get-a-quote:hover,
-  .navbar .get-a-quote:focus:hover {
+  .navbar:not(.site-user-navbar) .get-a-quote:hover,
+  .navbar:not(.site-user-navbar) .get-a-quote:focus:hover {
     color: #fff;
     background: rgba(13, 66, 255, 0.8);
   }
 
-  .navbar .dropdown ul,
-  .navbar .dropdown .dropdown ul {
+  .navbar:not(.site-user-navbar) .dropdown ul,
+  .navbar:not(.site-user-navbar) .dropdown .dropdown ul {
     position: static;
     display: none;
     padding: 10px 0;
@@ -723,8 +723,8 @@ section {
     border: none;
   }
 
-  .navbar .dropdown>.dropdown-active,
-  .navbar .dropdown .dropdown>.dropdown-active {
+  .navbar:not(.site-user-navbar) .dropdown>.dropdown-active,
+  .navbar:not(.site-user-navbar) .dropdown .dropdown>.dropdown-active {
     display: block;
   }
 
@@ -758,11 +758,11 @@ section {
     overflow: hidden;
   }
 
-  .mobile-nav-active .navbar {
+  .mobile-nav-active .navbar:not(.site-user-navbar) {
     right: 0;
   }
 
-  .mobile-nav-active .navbar:before {
+  .mobile-nav-active .navbar:not(.site-user-navbar):before {
     content: "";
     position: fixed;
     inset: 0;
@@ -770,7 +770,7 @@ section {
     z-index: 9996;
   }
 
-  .navbar .mega-menu {
+  .navbar:not(.site-user-navbar) .mega-menu {
     display: none;
   }
 }
