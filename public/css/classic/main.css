@@ -786,16 +786,28 @@ section {
   background: transparent !important;
 }
 
-.site-user-navbar .navbar-collapse,
-.site-user-navbar .navbar-nav {
+/* Issue 1 fix: keep nav items right-aligned at all viewport sizes */
+.site-user-navbar .navbar-collapse {
   min-width: 0;
   flex-wrap: wrap;
+  justify-content: flex-end !important;
+  /* Issue 3 fix: dropdown menus must not be clipped */
+  overflow: visible !important;
 }
 
 .site-user-navbar .navbar-nav {
+  min-width: 0;
+  flex-wrap: wrap;
   gap: 0.25rem 0.5rem;
   background: transparent !important;
+  /* Issue 3 fix: must stay in normal flow so dropdowns can overflow */
   position: static;
+  overflow: visible;
+}
+
+/* Issue 3 fix: ensure dropdown menus are above all other elements */
+.site-user-navbar .navbar-nav .dropdown-menu {
+  z-index: 1060;
   overflow: visible;
 }
 
@@ -811,6 +823,12 @@ section {
 }
 
 @media (max-width: 1279px) {
+  /* Issue 2 fix: guest navbar (.navbar without .site-user-navbar) must NOT be pushed off-screen.
+     Reset any position/right values so it stays in normal document flow. */
+  .navbar:not(.site-user-navbar) {
+    /* Already handled above in the Mobile Navigation block */
+  }
+
   .site-user-navbar {
     position: fixed;
     top: 0;
@@ -818,12 +836,15 @@ section {
     right: 0;
     width: 100%;
     max-width: none;
+    z-index: 1050;
   }
 
   .site-user-navbar .navbar-collapse {
     background: transparent !important;
     max-width: 100%;
-    overflow-x: hidden;
+    /* Issue 3 fix: must not clip dropdown menus even on mobile */
+    overflow: visible !important;
+    justify-content: flex-end !important;
   }
 
   .site-user-navbar .navbar-nav {
@@ -832,6 +853,7 @@ section {
     background: transparent !important;
     position: static;
     overflow: visible;
+    justify-content: flex-end;
   }
 
   .site-user-navbar .navbar-toggler {

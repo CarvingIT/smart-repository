@@ -11,7 +11,7 @@ $has_collection_list = env('ENABLE_COLLECTION_LIST');
 $collections = \App\Collection::all();
 @endphp
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white">
+<nav class="navbar navbar-expand-lg navbar-transparent navbar-absolute fixed-top text-white site-user-navbar">
   <div class="container">
     <div class="navbar-wrapper">
 	@php

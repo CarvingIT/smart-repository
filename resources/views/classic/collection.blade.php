@@ -518,8 +518,9 @@ function goToPage(page){
 				else{
 					// Original behavior for deeper levels: checkbox with drillDown
 					$tid = $t->id;
-					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
-                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+                	echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
+                	$_chk_id = 'chk_meta_'.$meta_id.'_'.$t->id.'_p'.$parent_id;
+                	echo '<input id="'.$_chk_id.'" class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="'.$_chk_id.'">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 					echo '</div>';
 					getTree($children, $rmfv_map, $t->id, $meta_id, false, $depth+1);
 				}
@@ -535,7 +536,8 @@ function goToPage(page){
 				}
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
-                echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+				$_chk_id2 = 'chk_meta_'.$meta_id.'_'.$t->id.'_leaf';
+                echo '<input id="'.$_chk_id2.'" class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="'.$_chk_id2.'">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 				echo '</div>';
              }
          } // foreach 
