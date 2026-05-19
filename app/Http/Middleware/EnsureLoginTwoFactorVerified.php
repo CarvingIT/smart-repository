@@ -16,6 +16,11 @@ class EnsureLoginTwoFactorVerified
      */
     public function handle(Request $request, Closure $next)
     {
+        // Only enforce login 2FA when explicitly enabled.
+        if ((int) env('ENABLE_2FA_LOGIN', 0) !== 1) {
+            return $next($request);
+        }
+
         $user = $request->user();
 
         // If user is not authenticated, let them proceed (will be redirected by auth middleware)

@@ -56,6 +56,12 @@ class LoginController extends Controller
      */
     protected function authenticated(\Illuminate\Http\Request $request, $user)
     {
+        $isLoginTwoFactorEnabled = (int) env('ENABLE_2FA_LOGIN', 0) === 1;
+
+        if (!$isLoginTwoFactorEnabled) {
+            return redirect()->intended($this->redirectPath());
+        }
+
         // If user has 2FA enabled, redirect to 2FA verification page
         if ($user->hasTwoFactorEnabled()) {
             return redirect()->route('login.two-factor.challenge', [
