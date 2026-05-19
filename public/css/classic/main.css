@@ -2958,9 +2958,13 @@ column-count: 1;
 }
 
 .pagination {
-  max-width: 50%;
-  overflow-x: scroll;
-  margin: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+  margin: 0 auto;
+  max-width: 100%;
+  overflow-x: visible;
 }
 
 .current-page {

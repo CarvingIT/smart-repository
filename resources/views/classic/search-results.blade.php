@@ -320,30 +320,56 @@
 			<div style="color: #5f6368; margin-bottom: 15px; font-size: 14px;">
 					Showing <span id="filtered-results-count">{{ $filtered_results_count }}</span> results
 			</div>
-			<ul class="pagination" style="justify-content: center;">
-				@php
-				$length = 10;
-				$start = empty(Request::get('start')) ? 0 : Request::get('start');
-				$total_pages = ceil($filtered_results_count / 10);
-				$current_page = ($start / 10) + 1;
-				@endphp
-				
-				@if($start > 0)
+			@php
+			$length = 10;
+			$start = intval(Request::get('start'));
+			$total_pages = ceil($filtered_results_count / $length);
+			$current_page = floor($start / $length) + 1;
+			// Windowed pagination: show at most 9 pages centred around current page
+			$window = 4; // pages on each side of current
+			$page_from = max(1, $current_page - $window);
+			$page_to   = min($total_pages, $current_page + $window);
+			@endphp
+			<ul class="pagination" style="justify-content: center; flex-wrap: wrap;">
+				{{-- Previous button --}}
+				@if($current_page > 1)
 				<li class="page-item">
-					<a class="services-pagination" href="javascript:void(0);" onclick="previousPage()" tabindex="-1">&laquo; Previous</a>
+					<a class="services-pagination" href="javascript:void(0);" onclick="previousPage()" tabindex="-1">&laquo; Prev</a>
 				</li>
 				@endif
-				
-				@for ($p = 1; $p <= $total_pages; $p++)
-				<li class="page-item @if ($current_page == $p) {{ 'active' }} @endif">
-					<a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $p }})">{{ $p }}</a>
-				</li>
+
+				{{-- First page + ellipsis --}}
+				@if($page_from > 1)
+					<li class="page-item">
+						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage(1)">1</a>
+					</li>
+					@if($page_from > 2)
+						<li class="page-item disabled"><span class="services-pagination" style="cursor:default;">…</span></li>
+					@endif
+				@endif
+
+				{{-- Windowed page numbers --}}
+				@for ($p = $page_from; $p <= $page_to; $p++)
+					<li class="page-item @if ($current_page == $p) active @endif">
+						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $p }})">{{ $p }}</a>
+					</li>
 				@endfor
-				
-				@if($start < ($filtered_results_count - 10) && count($results) >= 10)
-				<li class="page-item">
-					<a class="services-pagination" href="javascript:void(0);" onclick="nextPage()">Next &raquo;</a>
-				</li>
+
+				{{-- Ellipsis + Last page --}}
+				@if($page_to < $total_pages)
+					@if($page_to < $total_pages - 1)
+						<li class="page-item disabled"><span class="services-pagination" style="cursor:default;">…</span></li>
+					@endif
+					<li class="page-item">
+						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $total_pages }})">{{ $total_pages }}</a>
+					</li>
+				@endif
+
+				{{-- Next button --}}
+				@if($current_page < $total_pages)
+					<li class="page-item">
+						<a class="services-pagination" href="javascript:void(0);" onclick="nextPage()">Next &raquo;</a>
+					</li>
 				@endif
 			</ul>
 		</nav>

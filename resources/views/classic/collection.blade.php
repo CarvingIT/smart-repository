@@ -13,17 +13,31 @@
 	}
 .loader {
   margin:0 auto;
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #9c27b0; /* Theme primary color */
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #9c27b0;
   border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
+  width: 36px;
+  height: 36px;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Loading overlay — sits on top of results, no flicker */
+.results-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 4px;
+  min-height: 80px;
+  pointer-events: none;
 }
 .search-clear-btn {
     position: absolute;
@@ -413,10 +427,12 @@ function classicToggleTaxParent(uid) {
 }
 
 function showSpinner(){
-	$("#search-results").html('<div class="loader"></div>');
-	$('html, body').animate({
-            scrollTop: $(".loader").offset().top - 200
-        }, 500);	
+	// Remove any previous overlay
+	$('#search-results .results-loading-overlay').remove();
+	// Add a subtle overlay on top of existing results — no content deletion, no scroll = no flicker
+	$('#search-results').css('position', 'relative').prepend(
+		'<div class="results-loading-overlay"><div class="loader"></div></div>'
+	);
 }
 
 function nextPage(){
@@ -762,7 +778,7 @@ foreach($tags as $t){
 			<h5 style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e8e8e8;">Filter By <div style="float:right; cursor:pointer; border:1px solid #9c27b0; padding:4px 8px;border-radius:5px; background-color:#eee; font-size: 14px;" onclick="clearFilters();" title="Clear all filters"><span style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf51a;</span> Clear</div></h5>
 				<!-- File Type Filter (shown first) -->
 				@if($show_file_type_filter)
-				<a href="javascript:return false;" onclick="$('#filter_file_type').toggle()">{{ __('File Type') }}</a>
+				<a href="javascript:void(0);" onclick="$('#filter_file_type').toggle()">{{ __('File Type') }}</a>
 				<div id="filter_file_type" style="display:none; margin-left: 15px; margin-top: 5px;">
 					<select name="extension_filter" id="file_type_filter" class="form-control" onchange="applyFileTypeFilter()" style="border: 2px solid #9c27b0; padding: 5px 10px; font-size: 13px; border-radius: 5px; width: auto; max-width: 200px;">
 						<option value="">{{ __('All File Types') }}</option>
@@ -776,7 +792,7 @@ foreach($tags as $t){
 					// Keep outer section open if any child is already checked (active filter)
 					$_taxOpenByDefault = !empty(Request::get('meta_'.$f->id));
 					$_taxOuterDisplay = $_taxOpenByDefault ? '' : 'display:none;';
-					echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()" style="margin-top:8px; display:block;">'.$f->label.'</a>';
+					echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle()" style="margin-top:8px; display:block;">'.$f->label.'</a>';
 					echo '<div id="filter_'.$f->id.'" style="'.$_taxOuterDisplay.'">';
 					getTree($children, $rmfv_map, $f->options, $f->id, true);
 					echo "</div>\n";
@@ -790,7 +806,7 @@ foreach($tags as $t){
               				$numeric_max_value = @$extra_attributes->numeric_max_value;
 
 						$meta_values = Request::get('meta_'.$f->id);
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
 						echo '<fieldset class="filter-range">';
 						echo '<div class="range-field">';
@@ -818,7 +834,7 @@ foreach($tags as $t){
 					}
 					else if($f->type == 'Select'){
 						$options = explode(",",$f->options); 
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
 						echo '<select name="meta_'.$f->id.'[]" class="form-control" onchange="reloadSearchResults();" style="font-size:13px; padding:4px 6px;">';
 						echo '<option value="">{{ __("All") }}</option>';
@@ -829,13 +845,13 @@ foreach($tags as $t){
 						echo "</div>\n";
 					}
 					else if($f->type == 'Date'){
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
 						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="reloadSearchResults();" />';
 						echo '</div>';
 					}
 					else if($f->type == 'Textarea' || $f->type == 'Text' || $f->type == 'SelectCombo'){
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
 						echo '<input type="text" name="meta_'.$f->id.'[]" class="form-control" placeholder="'.__('Search').'" style="font-size:13px; padding:4px 6px; margin-bottom:5px;" oninput="scheduleClassicMetaFilterSearch();" onkeydown="if(event.keyCode==13){ event.preventDefault(); reloadSearchResults(); return false; }" />';
 						echo '</div>';
@@ -845,7 +861,7 @@ foreach($tags as $t){
 
 				@if($show_record_created_filter)
 				<!-- Record Created Filter (shown below Taxonomy) -->
-				<a href="javascript:return false;" onclick="$('#filter_record_created').toggle()" style="margin-top:8px; display:block;">{{ __('Record Created') }}</a>
+				<a href="javascript:void(0);" onclick="$('#filter_record_created').toggle()" style="margin-top:8px; display:block;">{{ __('Record Created') }}</a>
 				<div id="filter_record_created" style="display:none; margin-left: 5px; margin-top: 5px;">
 					<div style="margin-bottom:5px;">
 						<select id="record_created_operator" class="form-control" style="font-size:13px; padding:4px 6px; margin-bottom:5px;">
