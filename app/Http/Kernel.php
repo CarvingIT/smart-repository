@@ -77,6 +77,7 @@ class Kernel extends HttpKernel
         'document_edit' => \App\Http\Middleware\DocumentEdit::class,
         'document_delete' => \App\Http\Middleware\DocumentDelete::class,
         'maintainer' => \App\Http\Middleware\Maintainer::class,
+        'login_two_factor_verified' => \App\Http\Middleware\EnsureLoginTwoFactorVerified::class,
     ];
 
     /**
