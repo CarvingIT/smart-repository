@@ -36,7 +36,7 @@ Route::get('/faq', function () {
 });
 
 Route::get('/dashboard', 'HomeController@index')->name('dashboard')->middleware(['auth','verified','login_two_factor_verified']);
-Route::get('/collections', 'CollectionController@list')->middleware(['auth','verified','login_two_factor_verified']);
+Route::get('/collections', 'CollectionController@list');
 Route::get('/documents', 'DocumentController@list')->middleware(['auth','verified','login_two_factor_verified']);
 
 Route::get('/lang', 'CollectionController@selectLanguage');
