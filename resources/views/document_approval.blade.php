@@ -130,15 +130,25 @@ $(document).ready(function() {
                                 $inputId = 'approval_stage_'.$stageIndex.'_checklist_'.$checklistIndex;
                             @endphp
                             <div class="col-md-6" style="margin-bottom: 8px;">
-                                <div class="form-check">
+                                <div>
                                     @if(!empty($stage['is_editable']))
                                         <input type="hidden" name="checklist_values[{{ $checklistIndex }}]" value="0">
-                                        <input class="form-check-input" type="checkbox" name="checklist_values[{{ $checklistIndex }}]" value="1" id="{{ $inputId }}" @if($isChecked) checked @endif>
-                                        <label class="form-check-label" for="{{ $inputId }}">{{ $checklistLabel }}</label>
-                                    @else
-                                        <input class="form-check-input" type="checkbox" disabled @if($isChecked) checked @endif>
-                                        <label class="form-check-label">{{ $checklistLabel }}</label>
                                     @endif
+                                    <label style="margin-bottom: 0;">
+                                        <input
+                                            class=""
+                                            type="checkbox"
+                                            value="1"
+                                            @if(!empty($stage['is_editable']))
+                                                name="checklist_values[{{ $checklistIndex }}]"
+                                                id="{{ $inputId }}"
+                                            @else
+                                                disabled
+                                            @endif
+                                            @if($isChecked) checked @endif
+                                        >
+                                        <span style="margin-left: 0px;">{{ $checklistLabel }}</span>
+                                    </label>
                                 </div>
                             </div>
                         @endforeach
