@@ -100,16 +100,24 @@ trait Search{
 				}
 			}
 		}
-		$meta_filters = [];
-		if(count($meta_filters_query)>0){
-			$meta_filters = $meta_filters_query;
+		// Always also include session-stored filters (e.g. created_at date range applied via Record Created button).
+		// These are NOT sent as meta_ query params — they live only in the session.
+		// Merge them in so both query-string filters and session filters work together.
+		$all_meta_filters = Session::get('meta_filters');
+		$session_filters  = empty($all_meta_filters[$request->collection_id]) ? [] : $all_meta_filters[$request->collection_id];
+
+		// Build a set of field_ids already covered by query-string params so we don't double-apply
+		$query_field_ids = array_unique(array_column($meta_filters_query, 'field_id'));
+
+		foreach($session_filters as $sf){
+			// Only merge session filter if its field is NOT already sent in the query string.
+			// created_at filters are always session-only, so they will always be included here.
+			if(!in_array($sf['field_id'], $query_field_ids)){
+				$meta_filters_query[] = $sf;
+			}
 		}
-		else{
-			// else take from the session
-        	$all_meta_filters = Session::get('meta_filters');
-        	$meta_filters = empty($all_meta_filters[$request->collection_id])?[]:$all_meta_filters[$request->collection_id];
-		}
-        return $meta_filters;
+
+        return $meta_filters_query;
     }
 
     /**

@@ -246,64 +246,43 @@ function scheduleClassicMetaFilterSearch(){
 	}, 450);
 }
 
+// Keep track of active requests to prevent race conditions
+window.activeSearchAJAX = null;
+window.activeDateFacetsAJAX = null;
+
 function loadSearchResults(callback){
+	// serialize() already includes all form inputs (checkboxes, dates, text, selects)
+	// that are inside the #isa_search form. No need to manually append them again —
+	// doing so would duplicate filter values and cause incorrect server-side handling
+	// (e.g., a Date filter value sent twice gets mistaken for a Numeric range filter).
 	var queryString = $('#isa_search').serialize();
 	
-	// Add all checked filter checkboxes to the query string
-	$('input[type="checkbox"][name^="meta_"]:checked').each(function() {
-		var name = $(this).attr('name');
-		var value = $(this).val();
-		if (queryString) {
-			queryString += '&' + name + '=' + encodeURIComponent(value);
-		} else {
-			queryString = name + '=' + encodeURIComponent(value);
-		}
-	});
-	
-	// Add all text/numeric input filters to the query string
-	$('input[type="text"][name^="meta_"]').each(function() {
-		var value = $(this).val();
-		if (value) { // Only add if not empty
-			var name = $(this).attr('name');
-			if (queryString) {
-				queryString += '&' + name + '=' + encodeURIComponent(value);
-			} else {
-				queryString = name + '=' + encodeURIComponent(value);
-			}
-		}
-	});
-	
-	// Add all date input filters to the query string (skip empty dates)
-	$('input[type="date"][name^="meta_"]').each(function() {
-		var value = $(this).val();
-		if (value) { // Only add if not empty
-			var name = $(this).attr('name');
-			if (queryString) {
-				queryString += '&' + name + '=' + encodeURIComponent(value);
-			} else {
-				queryString = name + '=' + encodeURIComponent(value);
-			}
-		}
-	});
-	
-	// Add all select filters to the query string (skip "All" / empty values)
-	$('select[name^="meta_"]').each(function() {
-		var value = $(this).val();
-		if (value && value.trim() !== '') { // Only add if not empty or whitespace
-			var name = $(this).attr('name');
-			if (queryString) {
-				queryString += '&' + name + '=' + encodeURIComponent(value);
-			} else {
-				queryString = name + '=' + encodeURIComponent(value);
-			}
-		}
-	});
-	
 	var url = '/collection/{{ $collection->id }}/search-results?'+queryString;
-	$("#search-results").load(url, function(){
-		updateFilterTagCount();
-		loadDateFacets();
-		if(typeof callback === 'function') callback();
+	
+	// Abort any pending search request to prevent race conditions and out-of-order rendering
+	if(window.activeSearchAJAX && typeof window.activeSearchAJAX.abort === 'function') {
+		window.activeSearchAJAX.abort();
+	}
+	
+	// Smoothly fade existing results during search for premium feedback
+	$('#search-results').fadeTo(150, 0.4);
+	
+	window.activeSearchAJAX = $.ajax({
+		url: url,
+		method: 'GET',
+		success: function(html){
+			// Replace content and smoothly fade back in
+			$("#search-results").html(html).fadeTo(150, 1.0);
+			updateFilterTagCount();
+			loadDateFacets();
+			if(typeof callback === 'function') callback();
+		},
+		error: function(xhr, status, error){
+			if(status !== 'abort') {
+				console.error("Search request failed:", error);
+				$('#search-results').fadeTo(150, 1.0); // Reset opacity on error
+			}
+		}
 	});
 	return false;
 }
@@ -361,8 +340,14 @@ function loadDateFacets(){
 		$('#date-facets-container').html('');
 		return;
 	}
+	
+	// Abort any pending date facets request
+	if(window.activeDateFacetsAJAX && typeof window.activeDateFacetsAJAX.abort === 'function') {
+		window.activeDateFacetsAJAX.abort();
+	}
+	
 	var queryString = $('#isa_search').serialize();
-	$.getJSON('/collection/{{ $collection->id }}/date-facets?' + queryString, function(data){
+	window.activeDateFacetsAJAX = $.getJSON('/collection/{{ $collection->id }}/date-facets?' + queryString, function(data){
 		var html = '';
 		if(!data || data.length === 0){
 			$('#date-facets-container').html('');
@@ -847,7 +832,7 @@ foreach($tags as $t){
 					else if($f->type == 'Date'){
 						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
-						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="reloadSearchResults();" />';
+						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="scheduleClassicMetaFilterSearch();" />';
 						echo '</div>';
 					}
 					else if($f->type == 'Textarea' || $f->type == 'Text' || $f->type == 'SelectCombo'){
