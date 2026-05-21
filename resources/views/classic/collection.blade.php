@@ -552,7 +552,7 @@ function goToPage(page){
 				}
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
-				$_chk_id2 = 'chk_meta_'.$meta_id.'_'.$t->id.'_leaf';
+				$_chk_id2 = 'chk_meta_'.$meta_id.'_'.$t->id.'_leaf_p'.$parent_id;
                 echo '<input id="'.$_chk_id2.'" class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="'.$_chk_id2.'">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 				echo '</div>';
              }

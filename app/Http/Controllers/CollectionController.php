@@ -60,7 +60,7 @@ class CollectionController extends Controller
         $collectionIds = $collections->pluck('id')->toArray();
         $liveCounts = \App\Document::whereIn('collection_id', $collectionIds)
             ->whereNull('deleted_at')
-            ->selectRaw('collection_id, COUNT(*) as cnt, SUM(size) as total_size')
+            ->selectRaw('collection_id, COUNT(*) as cnt, COALESCE(SUM(size), 0) as total_size')
             ->groupBy('collection_id')
             ->get()
             ->keyBy('collection_id');

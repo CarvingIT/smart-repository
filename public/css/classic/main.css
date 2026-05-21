@@ -3185,9 +3185,3 @@ input.form-control {
   max-width: 1400px;
   margin: 0 auto;
 }
-
-/* Container improvements */
-.container-fluid {
-  max-width: 1400px;
-  margin: 0 auto;
-}
