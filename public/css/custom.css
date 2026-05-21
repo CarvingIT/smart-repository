@@ -328,3 +328,20 @@ ul.related-docs{
     width: 1140px;
   } 
 }
+
+/* Fix: selectpicker dropdown - open/close dono ke time sahi jagah rahe */
+.bootstrap-select .dropdown-menu {
+    transform: none !important;
+    transition: none !important;   /* close animation jump fix */
+    will-change: auto !important;
+}
+
+.bootstrap-select.open > .dropdown-menu,
+.bootstrap-select.show > .dropdown-menu {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    margin-top: 2px !important;
+    z-index: 9999 !important;
+}
+
