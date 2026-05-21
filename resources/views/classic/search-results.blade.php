@@ -334,14 +334,14 @@
 				{{-- Previous button --}}
 				@if($current_page > 1)
 				<li class="page-item">
-					<a class="services-pagination" href="javascript:void(0);" onclick="previousPage()" tabindex="-1">&laquo; Prev</a>
+					<a class="services-pagination" href="javascript:void(0);" onclick="previousPage(); return false;" tabindex="-1">&laquo; Prev</a>
 				</li>
 				@endif
 
 				{{-- First page + ellipsis --}}
 				@if($page_from > 1)
 					<li class="page-item">
-						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage(1)">1</a>
+						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage(1); return false;">1</a>
 					</li>
 					@if($page_from > 2)
 						<li class="page-item disabled"><span class="services-pagination" style="cursor:default;">…</span></li>
@@ -351,7 +351,7 @@
 				{{-- Windowed page numbers --}}
 				@for ($p = $page_from; $p <= $page_to; $p++)
 					<li class="page-item @if ($current_page == $p) active @endif">
-						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $p }})">{{ $p }}</a>
+						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $p }}); return false;">{{ $p }}</a>
 					</li>
 				@endfor
 
@@ -361,14 +361,14 @@
 						<li class="page-item disabled"><span class="services-pagination" style="cursor:default;">…</span></li>
 					@endif
 					<li class="page-item">
-						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $total_pages }})">{{ $total_pages }}</a>
+						<a class="services-pagination" href="javascript:void(0);" onclick="goToPage({{ $total_pages }}); return false;">{{ $total_pages }}</a>
 					</li>
 				@endif
 
 				{{-- Next button --}}
 				@if($current_page < $total_pages)
 					<li class="page-item">
-						<a class="services-pagination" href="javascript:void(0);" onclick="nextPage()">Next &raquo;</a>
+						<a class="services-pagination" href="javascript:void(0);" onclick="nextPage(); return false;">Next &raquo;</a>
 					</li>
 				@endif
 			</ul>
