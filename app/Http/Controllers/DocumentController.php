@@ -615,13 +615,25 @@ class DocumentController extends Controller
 				$m = (array) $m;
 			}
 			if(empty($m['field_id'])) continue;
-			$m_f = \App\MetaFieldValue::where('document_id',$document_id)->where('meta_field_id', $m['field_id'])->first();
+            $m_f = \App\MetaFieldValue::where('document_id',$document_id)->where('meta_field_id', $m['field_id'])->first();
 			if(empty($m_f)){
             	$m_f = new \App\MetaFieldValue;
 			}
             $m_f->document_id = $document_id;
             $m_f->meta_field_id = $m['field_id'];
-			if(is_array($m['field_value'])){
+            // If the meta field has a series configured, generate the next series value and ignore provided input
+            $meta_field = \App\MetaField::find($m['field_id']);
+            if($meta_field && !empty($meta_field->series)){
+                try{
+                    $generated = $meta_field->series->generateNext();
+                    $m['field_value'] = $generated ?: '';
+                }
+                catch(\Exception $ex){
+                    // fallback to provided value if generation fails
+                }
+            }
+
+            if(is_array($m['field_value'])){
                 // check if the field is of type TaxonomyTree
                 $meta_field = \App\MetaField::find($m['field_id']);
                 $parent_taxo = [];

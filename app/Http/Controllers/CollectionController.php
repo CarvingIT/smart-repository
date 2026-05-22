@@ -530,6 +530,25 @@ $j++;
 			$meta_field->extra_attributes = json_encode($extra_attributes);
 
         $meta_field->save();
+
+        // Handle series configuration attached to this meta field
+        if($request->input('auto_generate_series')){
+            $series = \App\MetaFieldSeries::where('meta_field_id', $meta_field->id)->first();
+            if(!$series){
+                $series = new \App\MetaFieldSeries();
+                $series->meta_field_id = $meta_field->id;
+            }
+            $series->prefix = $request->input('series_prefix');
+            $series->date_format = $request->input('series_date_format');
+            $series->next_sequence = intval($request->input('series_next_sequence')) ?: 1;
+            $series->pad_length = intval($request->input('series_pad_length')) ?: 0;
+            $series->save();
+        }
+        else{
+            // remove existing series if auto-generate not set
+            \App\MetaFieldSeries::where('meta_field_id', $meta_field->id)->delete();
+        }
+
         return $this->metaInformation($request->input('collection_id'));
     }
 

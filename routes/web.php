@@ -272,7 +272,13 @@ Route::middleware('admin')->group(function () {
     Route::resource('taxonomies', 'TaxonomyController');
     Route::resource('botman-answers', 'BotmanAnswerController');
 });
-
+// Meta field series management (SuperAdmin)
+Route::get('/admin/meta-field-series', 'AdminMetaFieldSeriesController@index')->middleware('admin');
+Route::get('/admin/meta-field-series/create', 'AdminMetaFieldSeriesController@create')->middleware('admin');
+Route::post('/admin/meta-field-series', 'AdminMetaFieldSeriesController@store')->middleware('admin');
+Route::get('/admin/meta-field-series/{id}/edit', 'AdminMetaFieldSeriesController@edit')->middleware('admin');
+Route::post('/admin/meta-field-series/{id}', 'AdminMetaFieldSeriesController@update')->middleware('admin');
+Route::post('/admin/meta-field-series/{id}/delete', 'AdminMetaFieldSeriesController@destroy')->middleware('admin');
 Route::get('/admin/synonymsmanagement', 'SynonymsController@index')->middleware('admin');
 Route::post('/admin/synonyms/delete','SynonymsController@destroy')->middleware('admin');
 Route::get('autocomplete', 'SynonymController@autoComplete')->name('autocomplete');
