@@ -1,7 +1,6 @@
 @extends('layouts.app',['class'=> 'off-canvas-sidebar'])
 @push('js')
-<link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
-<script src="/js/bootstrap.bundle.min.js" integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0" crossorigin="anonymous"></script>
+{{-- Bootstrap 4 is already loaded by layout, do NOT load Bootstrap 5 here (causes dropdown conflict) --}}
 
 <link rel="stylesheet" href="/build/assets/css/dataTables.dataTables.min.css" />
 <link rel="stylesheet" href="/build/assets/css/jquery-ui.min.css" />
@@ -61,6 +60,9 @@ $(document).ready(function() {
 @if(!empty($document->id))
 <input type="hidden" name="document_id" value="{{ $document->id }}" />
 @endif
+        @if(!empty($current_approval))
+        <input type="hidden" name="approval_id" value="{{ $current_approval->id }}" />
+        @endif
 		<div class="form-group row">
 	   	   <div class="col-md-3">
 		   <label for="title" class="col-md-12 col-form-label text-md-right">Document</label>
@@ -69,33 +71,123 @@ $(document).ready(function() {
 		    <a href="/document/{{ $document->id }}/edit" target="_new">{{ $document->title }}</a>
                     </div>
 		</div>
-                <div class="form-group row">
-                   <div class="col-md-3">
-                   <label for="approved" class="col-md-12 col-form-label text-md-right">Approval Status</label>
-                   </div>
-                   <div class="col-md-9">
-                   <select id="approval_status" name="approval_status" class="selectpicker" required>
-			<option value="">Select Status</option>
+        @php
+            $currentStageIndex = null;
+            if (!empty($current_approval) && !empty($approval_workflow_stages)) {
+                foreach ($approval_workflow_stages as $stageIndex => $stage) {
+                    if ((int) $stage['role_id'] === (int) $current_approval->approved_by_role) {
+                        $currentStageIndex = $stageIndex;
+                        break;
+                    }
+                }
+            }
+        @endphp
+
+        @if(!empty($approval_workflow_stages))
+        <div class="form-group row">
+            <div class="col-md-12">
+                <h5 style="margin-top: 15px;">Approval Workflow</h5>
+            </div>
+        </div>
+        @foreach($approval_workflow_stages as $stageIndex => $stage)
+        <div class="card mb-3 @if(!empty($stage['is_current'])) border border-primary @endif">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>{{ $loop->iteration }}. {{ $stage['role_name'] }}</strong>
+                    @if(!empty($stage['is_current']))
+                        <span class="badge badge-primary" style="margin-left: 8px;">Current stage</span>
+                    @endif
+                </div>
+                <div>
+                    @if(!empty($stage['approval']) && $stage['approval']->approval_status === 1)
+                        <span class="badge badge-success">Approved</span>
+                    @elseif(!empty($stage['approval']) && $stage['approval']->approval_status === 0)
+                        <span class="badge badge-danger">Rejected</span>
+                    @elseif(!empty($stage['approval']))
+                        <span class="badge badge-warning">Pending</span>
+                    @else
+                        <span class="badge badge-secondary">Not started</span>
+                    @endif
+                </div>
+            </div>
+            <div class="card-body">
+                @if(!empty($stage['approval']) && !empty($stage['approval']->approver))
+                    <div class="text-muted" style="margin-bottom: 8px;">Updated by {{ $stage['approval']->approver->name }}</div>
+                @endif
+                @if(empty($stage['labels']))
+                    <div class="text-muted">No checklist configured for this stage.</div>
+                @else
+                    @php
+                        $stageValues = !empty($stage['approval']) && is_array($stage['approval']->checklist_values)
+                            ? array_values($stage['approval']->checklist_values)
+                            : [];
+                    @endphp
+                    <div class="row">
+                        @foreach($stage['labels'] as $checklistIndex => $checklistLabel)
+                            @php
+                                $isChecked = !empty($stageValues[$checklistIndex]);
+                                $inputId = 'approval_stage_'.$stageIndex.'_checklist_'.$checklistIndex;
+                            @endphp
+                            <div class="col-md-6" style="margin-bottom: 8px;">
+                                <div>
+                                    @if(!empty($stage['is_editable']))
+                                        <input type="hidden" name="checklist_values[{{ $checklistIndex }}]" value="0">
+                                    @endif
+                                    <label style="margin-bottom: 0;">
+                                        <input
+                                            class=""
+                                            type="checkbox"
+                                            value="1"
+                                            @if(!empty($stage['is_editable']))
+                                                name="checklist_values[{{ $checklistIndex }}]"
+                                                id="{{ $inputId }}"
+                                            @else
+                                                disabled
+                                            @endif
+                                            @if($isChecked) checked @endif
+                                        >
+                                        <span style="margin-left: 0px;">{{ $checklistLabel }}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+        @endforeach
+        @endif
+
+        @if(!empty($current_approval))
+        <div class="form-group row">
+           <div class="col-md-3">
+           <label for="approved" class="col-md-12 col-form-label text-md-right">Approval Status</label>
+           </div>
+           <div class="col-md-9">
+           <select id="approval_status" name="approval_status" class="selectpicker" required>
+            <option value="">Select Status</option>
             <option value="1" @if(isset($current_approval_status) && $current_approval_status === 1) selected @endif>Approved</option>
             <option value="0" @if(isset($current_approval_status) && $current_approval_status === 0) selected @endif>Rejected</option>
-		   </select>
-                   </div>
-                </div>
-                <div class="form-group row">
-                   <div class="col-md-3">
-                   <label for="approved" class="col-md-12 col-form-label text-md-right">Comments</label>
-                   </div>
-                   <div class="col-md-9">
-                         <textarea class="form-control" id="approval_comment" name="comments">{{ old('comments', $current_approval_comments ?? '') }}</textarea> 
-                   </div>
-                </div>
-
-	<div class="select-data-container" style="position:fixed; top:25%; z-index:1000;"></div>
-<div class="form-group row mb-0">
-    <div class="col-md-9 offset-md-4">
-        <button type="submit" class="btn btn-primary"> Save </button>
-    </div>
-</div>
+           </select>
+           </div>
+        </div>
+        <div class="form-group row">
+           <div class="col-md-3">
+           <label for="approved" class="col-md-12 col-form-label text-md-right">Comments</label>
+           </div>
+           <div class="col-md-9">
+                 <textarea class="form-control" id="approval_comment" name="comments">{{ old('comments', $current_approval_comments ?? '') }}</textarea> 
+           </div>
+        </div>
+        <div class="select-data-container" style="position:fixed; top:25%; z-index:1000;"></div>
+        <div class="form-group row mb-0">
+            <div class="col-md-9 offset-md-4">
+                <button type="submit" class="btn btn-primary"> Save </button>
+            </div>
+        </div>
+        @else
+        <div class="alert alert-warning" style="margin-top: 15px;">No pending approval found for your role.</div>
+        @endif
 </form>
 
 		<div class="table-responsive">

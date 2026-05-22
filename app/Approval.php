@@ -7,7 +7,11 @@ use App\Events\ApprovalSaved;
 
 class Approval extends Model
 {
-	protected $fillable = ['approved_by_role', 'approved_by', 'approval_status', 'comments'];
+	protected $fillable = ['approved_by_role', 'approved_by', 'approval_status', 'comments', 'checklist_values'];
+
+	protected $casts = [
+		'checklist_values' => 'array',
+	];
 
     protected $dispatchesEvents = [
         'saved' => ApprovalSaved::class,

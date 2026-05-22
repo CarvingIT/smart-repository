@@ -853,7 +853,7 @@ use App\UrlSuppression;
 	
 	public function saveSettings(Request $request){
 		$collection = Collection::find($request->collection_id);
-        $col_config = $request->except(['search_result_template_html', 'details_page_template_html', 'approval_status_labels_text']);
+        $col_config = $request->except(['search_result_template_html', 'details_page_template_html', 'approval_status_labels_text', 'approval_checklist_labels_text']);
         $col_config['require_two_factor'] = $request->boolean('require_two_factor') ? 1 : 0;
 
         $approvalRoles = $request->input('approved_by', []);
@@ -875,6 +875,36 @@ use App\UrlSuppression;
             }
 
             $col_config['approval_status_labels'] = array_values($approvalStatusLabels);
+        }
+
+        $approvalChecklistLabelsText = trim((string) $request->input('approval_checklist_labels_text', ''));
+        if ($approvalChecklistLabelsText === '') {
+            unset($col_config['approval_checklist_labels']);
+        } else {
+            $approvalChecklistStageLines = preg_split('/\r\n|\r|\n/', $approvalChecklistLabelsText);
+            $approvalChecklistLabels = [];
+
+            foreach ($approvalChecklistStageLines as $stageLine) {
+                $stageLine = trim((string) $stageLine);
+                if ($stageLine === '') {
+                    $approvalChecklistLabels[] = [];
+                    continue;
+                }
+
+                $stageLabels = preg_split('/\s*\|\s*/', $stageLine);
+                $stageLabels = array_values(array_filter(array_map('trim', $stageLabels), function ($label) {
+                    return $label !== '';
+                }));
+
+                $approvalChecklistLabels[] = $stageLabels;
+            }
+
+            if (count($approvalChecklistLabels) !== count($approvalRoles)) {
+                Session::flash('alert-danger', 'The number of checklist stages must match the number of workflow roles.');
+                return redirect()->back()->withInput();
+            }
+
+            $col_config['approval_checklist_labels'] = array_values($approvalChecklistLabels);
         }
 
 		$collection->column_config = json_encode($col_config);
