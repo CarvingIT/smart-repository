@@ -115,19 +115,10 @@ trait Search{
     public function getMustQueriesFromMetaFilters($meta_filters){
         $must_queries = [];
         foreach($meta_filters as $mf){
-			if($mf['operator'] == '='){
-				// If multiple values supplied for the same field, build a bool should (OR)
-				if(is_array($mf['value'])){
-					$shoulds = [];
-					foreach($mf['value'] as $v){
-						$shoulds[] = ['match' => ['meta_'.$mf['field_id'] => $v]];
-					}
-					// minimum_should_match ensures at least one condition must match (OR semantics)
-					$must_queries[] = ['bool' => ['should' => $shoulds, 'minimum_should_match' => 1]];
-				}
-				else{
-					$must_queries[] = ['match'=> ['meta_'.$mf['field_id'] => $mf['value'] ]];
-				}
+            if($mf['operator'] == '='){
+                $must_queries[] = ['match'=>
+                            ['meta_'.$mf['field_id'] => $mf['value'] ]
+                        ];
             }
             else if($mf['operator'] == 'contains'){
                 $must_queries[] = ['match_phrase'=>
@@ -154,9 +145,6 @@ trait Search{
 
     public function getMetaFilteredDocuments($request, $documents){
         $meta_filters = $this->getMetaFiltersFromRequest($request);
-        // Cache meta field types to avoid N+1 queries
-        $meta_field_types = [];
-        
         foreach($meta_filters as $mf){
 			if(!preg_match('/^\d*$/',$mf['field_id'])){// this is for default filters like created_at, created_by
 				if($mf['field_id'] == 'created_at'){
@@ -168,42 +156,30 @@ trait Search{
 			}
 
             if($mf['operator'] == '='){
-				// Get cached or fetch meta field type (avoid N+1)
-				if(!isset($meta_field_types[$mf['field_id']])){
-					$m_field = MetaField::find($mf['field_id']);
-					$meta_field_types[$mf['field_id']] = $m_field ? $m_field->type : null;
-				}
-				$field_type = $meta_field_types[$mf['field_id']];
-				$is_taxonomy = $field_type === 'TaxonomyTree';
-				
-				if(is_array($mf['value'])){
-					// Multiple values: use OR (match any)
-					$values = $mf['value'];
-					$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $values, $is_taxonomy){
-						$query->where('meta_field_id', $mf['field_id']);
-						$query->where(function($q) use($values, $is_taxonomy){
-							foreach($values as $v){
-								if($is_taxonomy){
-									$q->orWhere('value', 'like', '%"'.$v.'"%');
-								}
-								else{
-									$q->orWhere('value', $v);
-								}
-							}
-						});
-					});
+				//echo '--'.$mf['field_id'].'--'.$mf['value'].'--'; exit;
+				if(is_array($mf['value'])){ 
+					// this is for array of values passed through the query string 
+					// e.g. &meta_10[]=somevalue&meta_10[]=someothervalue
+					//print_r($mf['value']);exit;
+					foreach($mf['value'] as $v){
+            			$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $v){
+        					$query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$v.'"%');
+               			});
+					}
 				}
 				else{
-					// Single value logic with cached type
-           			$documents = $documents->whereHas('meta', function (Builder $query) use($mf, $is_taxonomy){
-           	    		$query->where('meta_field_id', $mf['field_id']);
-           	    		if($is_taxonomy){
-           	    			$query->where('value', 'like', '%"'.$mf['value'].'"%');
-           	    		}
-           	    		else{
-           	    			$query->where('value', $mf['value']);
-           	    		}
-           			});
+		            // find the type of meta field 
+		            $m_field = MetaField::find($mf['field_id']);
+		            if ($m_field->type == 'TaxonomyTree'){
+                	    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+                            $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$mf['value'].'"%');
+                    	});
+		            }
+                    else{
+           			    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
+           	    		    $query->where('meta_field_id',$mf['field_id'])->where('value', $mf['value']);
+           			    });
+                    }
 				}
             }
             else if($mf['operator'] == '>='){
@@ -505,10 +481,11 @@ trait Search{
                 $params['body']['sort'][] = [$sort_column => [ 'order' => $sort_direction]];
             }
 
+
 	        $ordered_document_ids = '';
             $scores = [];
+            $sorts = [];
             $params['size'] = $length;
-            $params['from'] = $start; 
             $document_ids = [];
 		    try{
                 Log::debug(json_encode($params));
@@ -516,11 +493,21 @@ trait Search{
                 unset($params_cnt['body']['highlight']);
                 unset($params_cnt['body']['sort']);
                 $count_response = $client->count($params_cnt);
+
+            // Deep pagination
+            if(!empty($request->search_after)){
+                $params['body']['search_after'] = $request->search_after;
+            }
+            else{
+                $params['from'] = $start; 
+            }
+
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
                         $document_ids[] = $h['_id'];
 		                $highlights[$h['_id']] = @$h['highlight'];
 		                $scores[$h['_id']] = $h['_score'];
+                        $sorts[$h['_id']] = $h['sort'];
                 }
 		    }
 		    catch(\Exception $e){
@@ -553,6 +540,7 @@ trait Search{
 		if($request->is('api/*') || $request->return_format == 'raw'){
 			return ['data'=>$documents,
 		        'highlights'=>$highlights,
+                'sort_data'=> $sorts,
 		        'scores'=>$scores,
             	'draw'=>(int) $request->draw,
             	'recordsTotal'=> $total_count,
