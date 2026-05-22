@@ -320,10 +320,10 @@ function showMetaFieldForm(){
                        <div class="col-md-4">
                            <label class="col-md-12 col-form-label text-md-right">{{ __('Auto-generate series') }}</label>
                        </div>
-                       <div class="col-md-8">
-                           <input type="checkbox" name="auto_generate_series" id="auto_generate_series" class="form-control1" value="1"
-                               @if($field_series) checked @endif />
-                           <label for="auto_generate_series">{{ __('Enable automatic generation for this field') }}</label>
+                       <div class="col-md-8 d-flex align-items-center" style="gap: 8px;">
+                           <input type="checkbox" name="auto_generate_series" id="auto_generate_series" value="1"
+                               @if($field_series) checked @endif style="width: auto; margin: 0;" />
+                           <label for="auto_generate_series" style="margin: 0;">{{ __('Enable automatic generation for this field') }}</label>
                        </div>
                    </div>
 
@@ -367,38 +367,41 @@ function showMetaFieldForm(){
                        </div>
                    </div>
 
-                    <div class="col-md-8">
-                    <input type="checkbox" name="is_required" id="is_required" class="form-control1" value="1" 
-					@if($edit_field->is_required == 1) {{ 'checked' }} @endif
-					/>
-                    <label for="is_required">{{ __('Is required') }}</label> 
-                    </div>
-                   </div>
-
-                   <div class="form-group row" id="rich_text_editor"  style="display:none;">
-				   <div class="col-md-4">
-                   </div>
-                    <div class="col-md-8">
-                    <input type="checkbox" name="with_rich_text_editor" class="with_rich_text_editor form-control1" value="1" 
-					@if($edit_field->with_rich_text_editor == 1) {{ 'checked' }} @endif
-					/>
-                    <label for="with_rich_text_editor">{{ __('With Rich Text Editor') }}</label> 
-                    </div>
-                   </div>
-
                    <div class="form-group row">
-		   <div class="col-md-4">
+                       <div class="col-md-4">
+                           <label class="col-md-12 col-form-label text-md-right">{{ __('Is required') }}</label>
+                       </div>
+                       <div class="col-md-8 d-flex align-items-center" style="gap: 8px;">
+                           <input type="checkbox" name="is_required" id="is_required" value="1"
+                               @if($edit_field->is_required == 1) {{ 'checked' }} @endif style="width: auto; margin: 0;" />
+                           <label for="is_required" style="margin: 0;">{{ __('Is required') }}</label>
+                       </div>
                    </div>
-                   <div class="col-md-8">
-			@php 
-                $show_on_details_page = @$extra_attributes->show_on_details_page;
-                $show_parents = @$extra_attributes->show_parents; 
-            @endphp
-                   <input type="checkbox" name="show_on_details_page" id="show_on_details_page" class="form-control1" value="1" 
-				@if($show_on_details_page == 1) {{ 'checked' }} @endif
-				/>
-                    <label for="show_on_details_page">{{ __('Show on details page') }}</label> 
-                    </div>
+
+                   <div class="form-group row" id="rich_text_editor" style="display:none;">
+                       <div class="col-md-4">
+                           <label class="col-md-12 col-form-label text-md-right">{{ __('With Rich Text Editor') }}</label>
+                       </div>
+                       <div class="col-md-8 d-flex align-items-center" style="gap: 8px;">
+                           <input type="checkbox" name="with_rich_text_editor" class="with_rich_text_editor" value="1"
+                               @if($edit_field->with_rich_text_editor == 1) {{ 'checked' }} @endif style="width: auto; margin: 0;" />
+                           <label for="with_rich_text_editor" style="margin: 0;">{{ __('With Rich Text Editor') }}</label>
+                       </div>
+                   </div>
+
+                   @php 
+                       $show_on_details_page = @$extra_attributes->show_on_details_page;
+                       $show_parents = @$extra_attributes->show_parents; 
+                   @endphp
+                   <div class="form-group row">
+                       <div class="col-md-4">
+                           <label class="col-md-12 col-form-label text-md-right">{{ __('Show on details page') }}</label>
+                       </div>
+                       <div class="col-md-8 d-flex align-items-center" style="gap: 8px;">
+                           <input type="checkbox" name="show_on_details_page" id="show_on_details_page" value="1"
+                               @if($show_on_details_page == 1) {{ 'checked' }} @endif style="width: auto; margin: 0;" />
+                           <label for="show_on_details_page" style="margin: 0;">{{ __('Show on details page') }}</label>
+                       </div>
                    </div>
 
                 @if($edit_field->type == 'TaxonomyTree')
