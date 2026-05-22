@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
 		
 		// Set up theme-based view fallback mechanism
 		// If THEME=classic, add classic views path before default views path
-		if (env('THEME') == 'classic') {
+		if (strtolower(env('THEME')) == 'classic') {
 			$this->app['view']->getFinder()->prependLocation(resource_path('views/classic'));
 		}
 		

@@ -38,10 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     window.addEventListener('load', togglescrollTop);
     document.addEventListener('scroll', togglescrollTop);
-    scrollTop.addEventListener('click', window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    }));
+    scrollTop.addEventListener('click', (event) => {
+      event.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
   }
 
   /**
@@ -103,73 +106,76 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * Initiate pURE cOUNTER
    */
-  new PureCounter();
+  if (typeof PureCounter !== 'undefined') {
+    new PureCounter();
+  }
 
   /**
    * Initiate glightbox
    */
-  const glightbox = GLightbox({
-    selector: '.glightbox'
-  });
+  if (typeof GLightbox !== 'undefined') {
+    const glightbox = GLightbox({
+      selector: '.glightbox'
+    });
+  }
 
   /**
    * Init swiper slider with 1 slide at once in desktop view
    */
-  new Swiper('.slides-1', {
-    speed: 600,
-    loop: true,
-    autoplay: {
-      delay: 5000,
-      disableOnInteraction: false
-    },
-    slidesPerView: 'auto',
-    pagination: {
-      el: '.swiper-pagination',
-      type: 'bullets',
-      clickable: true
-    },
-    navigation: {
-      nextEl: '.swiper-button-next',
-      prevEl: '.swiper-button-prev',
-    }
-  });
+  if (typeof Swiper !== 'undefined') {
+    new Swiper('.slides-1', {
+      speed: 600,
+      loop: true,
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: false
+      },
+      slidesPerView: 'auto',
+      pagination: {
+        el: '.swiper-pagination',
+        type: 'bullets',
+        clickable: true
+      },
+      navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
+      }
+    });
+  }
 
    /**
    * Init swiper slider with 3 slide at once in desktop view
    */
-   new Swiper('.slides-3', {
-    speed: 600,
-    loop: true,
-    // autoplay: {
-    //   delay: 5000,
-    //   disableOnInteraction: false
-    // },
-    slidesPerView: 4,
-    spaceBetween: 30,
-    breakpoints: {
-      150: {
-        slidesPerView: 1,
-        spaceBetween: 0,
+  if (typeof Swiper !== 'undefined') {
+    new Swiper('.slides-3', {
+      speed: 600,
+      loop: true,
+      slidesPerView: 4,
+      spaceBetween: 30,
+      breakpoints: {
+        150: {
+          slidesPerView: 1,
+          spaceBetween: 0,
+        },
+        768: {
+          slidesPerView: 2,
+          spaceBetween: 20,
+        },
+        992: {
+          slidesPerView: 3,
+          spaceBetween: 30,
+        },
+        1281: {
+          slidesPerView: 4,
+          spaceBetween: 30,
+        },
       },
-      768: {
-        slidesPerView: 2,
-        spaceBetween: 20,
+      navigation: {
+        nextEl: ".swiper-button-next",
+        prevEl: ".swiper-button-prev",
       },
-      992: {
-        slidesPerView: 3,
-        spaceBetween: 30,
-      },
-      1281: {
-        slidesPerView: 4,
-        spaceBetween: 30,
-      },
-    },
-    navigation: {
-      nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev",
-    },
-    
-  });
+    });
+  }
 
   /**
    * Animation on scroll function and init

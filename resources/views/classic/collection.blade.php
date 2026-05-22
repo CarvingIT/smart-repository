@@ -13,17 +13,31 @@
 	}
 .loader {
   margin:0 auto;
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #9c27b0; /* Theme primary color */
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #9c27b0;
   border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
+  width: 36px;
+  height: 36px;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Loading overlay — sits on top of results, no flicker */
+.results-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 4px;
+  min-height: 80px;
+  pointer-events: none;
 }
 .search-clear-btn {
     position: absolute;
@@ -232,64 +246,43 @@ function scheduleClassicMetaFilterSearch(){
 	}, 450);
 }
 
+// Keep track of active requests to prevent race conditions
+window.activeSearchAJAX = null;
+window.activeDateFacetsAJAX = null;
+
 function loadSearchResults(callback){
+	// serialize() already includes all form inputs (checkboxes, dates, text, selects)
+	// that are inside the #isa_search form. No need to manually append them again —
+	// doing so would duplicate filter values and cause incorrect server-side handling
+	// (e.g., a Date filter value sent twice gets mistaken for a Numeric range filter).
 	var queryString = $('#isa_search').serialize();
 	
-	// Add all checked filter checkboxes to the query string
-	$('input[type="checkbox"][name^="meta_"]:checked').each(function() {
-		var name = $(this).attr('name');
-		var value = $(this).val();
-		if (queryString) {
-			queryString += '&' + name + '=' + encodeURIComponent(value);
-		} else {
-			queryString = name + '=' + encodeURIComponent(value);
-		}
-	});
-	
-	// Add all text/numeric input filters to the query string
-	$('input[type="text"][name^="meta_"]').each(function() {
-		var value = $(this).val();
-		if (value) { // Only add if not empty
-			var name = $(this).attr('name');
-			if (queryString) {
-				queryString += '&' + name + '=' + encodeURIComponent(value);
-			} else {
-				queryString = name + '=' + encodeURIComponent(value);
-			}
-		}
-	});
-	
-	// Add all date input filters to the query string (skip empty dates)
-	$('input[type="date"][name^="meta_"]').each(function() {
-		var value = $(this).val();
-		if (value) { // Only add if not empty
-			var name = $(this).attr('name');
-			if (queryString) {
-				queryString += '&' + name + '=' + encodeURIComponent(value);
-			} else {
-				queryString = name + '=' + encodeURIComponent(value);
-			}
-		}
-	});
-	
-	// Add all select filters to the query string (skip "All" / empty values)
-	$('select[name^="meta_"]').each(function() {
-		var value = $(this).val();
-		if (value && value.trim() !== '') { // Only add if not empty or whitespace
-			var name = $(this).attr('name');
-			if (queryString) {
-				queryString += '&' + name + '=' + encodeURIComponent(value);
-			} else {
-				queryString = name + '=' + encodeURIComponent(value);
-			}
-		}
-	});
-	
 	var url = '/collection/{{ $collection->id }}/search-results?'+queryString;
-	$("#search-results").load(url, function(){
-		updateFilterTagCount();
-		loadDateFacets();
-		if(typeof callback === 'function') callback();
+	
+	// Abort any pending search request to prevent race conditions and out-of-order rendering
+	if(window.activeSearchAJAX && typeof window.activeSearchAJAX.abort === 'function') {
+		window.activeSearchAJAX.abort();
+	}
+	
+	// Smoothly fade existing results during search for premium feedback
+	$('#search-results').fadeTo(150, 0.4);
+	
+	window.activeSearchAJAX = $.ajax({
+		url: url,
+		method: 'GET',
+		success: function(html){
+			// Replace content and smoothly fade back in
+			$("#search-results").html(html).fadeTo(150, 1.0);
+			updateFilterTagCount();
+			loadDateFacets();
+			if(typeof callback === 'function') callback();
+		},
+		error: function(xhr, status, error){
+			if(status !== 'abort') {
+				console.error("Search request failed:", error);
+				$('#search-results').fadeTo(150, 1.0); // Reset opacity on error
+			}
+		}
 	});
 	return false;
 }
@@ -347,8 +340,14 @@ function loadDateFacets(){
 		$('#date-facets-container').html('');
 		return;
 	}
+	
+	// Abort any pending date facets request
+	if(window.activeDateFacetsAJAX && typeof window.activeDateFacetsAJAX.abort === 'function') {
+		window.activeDateFacetsAJAX.abort();
+	}
+	
 	var queryString = $('#isa_search').serialize();
-	$.getJSON('/collection/{{ $collection->id }}/date-facets?' + queryString, function(data){
+	window.activeDateFacetsAJAX = $.getJSON('/collection/{{ $collection->id }}/date-facets?' + queryString, function(data){
 		var html = '';
 		if(!data || data.length === 0){
 			$('#date-facets-container').html('');
@@ -413,10 +412,12 @@ function classicToggleTaxParent(uid) {
 }
 
 function showSpinner(){
-	$("#search-results").html('<div class="loader"></div>');
-	$('html, body').animate({
-            scrollTop: $(".loader").offset().top - 200
-        }, 500);	
+	// Remove any previous overlay
+	$('#search-results .results-loading-overlay').remove();
+	// Add a subtle overlay on top of existing results — no content deletion, no scroll = no flicker
+	$('#search-results').css('position', 'relative').prepend(
+		'<div class="results-loading-overlay"><div class="loader"></div></div>'
+	);
 }
 
 function nextPage(){
@@ -518,8 +519,9 @@ function goToPage(page){
 				else{
 					// Original behavior for deeper levels: checkbox with drillDown
 					$tid = $t->id;
-					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
-                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+                	echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
+                	$_chk_id = 'chk_meta_'.$meta_id.'_'.$t->id.'_p'.$parent_id;
+                	echo '<input id="'.$_chk_id.'" class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="'.$_chk_id.'">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 					echo '</div>';
 					getTree($children, $rmfv_map, $t->id, $meta_id, false, $depth+1);
 				}
@@ -535,7 +537,8 @@ function goToPage(page){
 				}
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
-                echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+				$_chk_id2 = 'chk_meta_'.$meta_id.'_'.$t->id.'_leaf_p'.$parent_id;
+                echo '<input id="'.$_chk_id2.'" class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="'.$_chk_id2.'">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 				echo '</div>';
              }
          } // foreach 
@@ -760,7 +763,7 @@ foreach($tags as $t){
 			<h5 style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e8e8e8;">Filter By <div style="float:right; cursor:pointer; border:1px solid #9c27b0; padding:4px 8px;border-radius:5px; background-color:#eee; font-size: 14px;" onclick="clearFilters();" title="Clear all filters"><span style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf51a;</span> Clear</div></h5>
 				<!-- File Type Filter (shown first) -->
 				@if($show_file_type_filter)
-				<a href="javascript:return false;" onclick="$('#filter_file_type').toggle()">{{ __('File Type') }}</a>
+				<a href="javascript:void(0);" onclick="$('#filter_file_type').toggle(); return false;">{{ __('File Type') }}</a>
 				<div id="filter_file_type" style="display:none; margin-left: 15px; margin-top: 5px;">
 					<select name="extension_filter" id="file_type_filter" class="form-control" onchange="applyFileTypeFilter()" style="border: 2px solid #9c27b0; padding: 5px 10px; font-size: 13px; border-radius: 5px; width: auto; max-width: 200px;">
 						<option value="">{{ __('All File Types') }}</option>
@@ -774,7 +777,7 @@ foreach($tags as $t){
 					// Keep outer section open if any child is already checked (active filter)
 					$_taxOpenByDefault = !empty(Request::get('meta_'.$f->id));
 					$_taxOuterDisplay = $_taxOpenByDefault ? '' : 'display:none;';
-					echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()" style="margin-top:8px; display:block;">'.$f->label.'</a>';
+					echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;" style="margin-top:8px; display:block;">'.$f->label.'</a>';
 					echo '<div id="filter_'.$f->id.'" style="'.$_taxOuterDisplay.'">';
 					getTree($children, $rmfv_map, $f->options, $f->id, true);
 					echo "</div>\n";
@@ -788,7 +791,7 @@ foreach($tags as $t){
               				$numeric_max_value = @$extra_attributes->numeric_max_value;
 
 						$meta_values = Request::get('meta_'.$f->id);
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
 						echo '<fieldset class="filter-range">';
 						echo '<div class="range-field">';
@@ -816,7 +819,7 @@ foreach($tags as $t){
 					}
 					else if($f->type == 'Select'){
 						$options = explode(",",$f->options); 
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
 						echo '<select name="meta_'.$f->id.'[]" class="form-control" onchange="reloadSearchResults();" style="font-size:13px; padding:4px 6px;">';
 						echo '<option value="">{{ __("All") }}</option>';
@@ -827,13 +830,13 @@ foreach($tags as $t){
 						echo "</div>\n";
 					}
 					else if($f->type == 'Date'){
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
-						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="reloadSearchResults();" />';
+						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="scheduleClassicMetaFilterSearch();" />';
 						echo '</div>';
 					}
 					else if($f->type == 'Textarea' || $f->type == 'Text' || $f->type == 'SelectCombo'){
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
 						echo '<input type="text" name="meta_'.$f->id.'[]" class="form-control" placeholder="'.__('Search').'" style="font-size:13px; padding:4px 6px; margin-bottom:5px;" oninput="scheduleClassicMetaFilterSearch();" onkeydown="if(event.keyCode==13){ event.preventDefault(); reloadSearchResults(); return false; }" />';
 						echo '</div>';
@@ -843,7 +846,7 @@ foreach($tags as $t){
 
 				@if($show_record_created_filter)
 				<!-- Record Created Filter (shown below Taxonomy) -->
-				<a href="javascript:return false;" onclick="$('#filter_record_created').toggle()" style="margin-top:8px; display:block;">{{ __('Record Created') }}</a>
+				<a href="javascript:void(0);" onclick="$('#filter_record_created').toggle(); return false;" style="margin-top:8px; display:block;">{{ __('Record Created') }}</a>
 				<div id="filter_record_created" style="display:none; margin-left: 5px; margin-top: 5px;">
 					<div style="margin-bottom:5px;">
 						<select id="record_created_operator" class="form-control" style="font-size:13px; padding:4px 6px; margin-bottom:5px;">
