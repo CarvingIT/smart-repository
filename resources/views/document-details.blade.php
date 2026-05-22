@@ -515,7 +515,7 @@ $(document).ready(function()
 						@endif
 						@if (Auth::user() && Auth::user()->canDeleteDocument($document->id))
                             @if($document->locked == 0 && \Auth::user()->hasPermission($document->collection_id ,'MAINTAINER'))
-                                <a href="javascript:return false;" onclick="showDeleteDialog();" class="btn btn-sm btn-primary" title="Delete" style="float:left;">
+                                <a href="#" onclick="showDeleteDialog(); return false;" class="btn btn-sm btn-primary" title="Delete" style="float:left;">
                                 <i class="material-icons">delete</i>
                                 </a>
                                 <form name="lock-unlock" method="post" action="/document/{{ $document->id }}/lock-unlock">

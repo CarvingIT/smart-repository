@@ -13,17 +13,31 @@
 	}
 .loader {
   margin:0 auto;
-  border: 16px solid #f3f3f3; /* Light grey */
-  border-top: 16px solid #9c27b0; /* Theme primary color */
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #9c27b0;
   border-radius: 50%;
-  width: 120px;
-  height: 120px;
-  animation: spin 2s linear infinite;
+  width: 36px;
+  height: 36px;
+  animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* Loading overlay — sits on top of results, no flicker */
+.results-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  border-radius: 4px;
+  min-height: 80px;
+  pointer-events: none;
 }
 .search-clear-btn {
     position: absolute;
@@ -139,13 +153,18 @@ $(document).ready(function() {
 	$meta_fields = $collection->meta_fields;
 	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country'), env('YEAR_FIELD_LABEL','Year')];
 	//$filter_labels = [env('THEME_FIELD_LABEL','Theme'),env('COUNTRY_FIELD_LABEL','Country')];
+	$column_config = json_decode($collection->column_config);
+	$has_meta_search_config = !empty($column_config) && isset($column_config->meta_fields_search);
+	$enabled_search_meta_fields = $has_meta_search_config ? array_map('intval', (array)$column_config->meta_fields_search) : [];
 	$filters = [];
 	foreach($meta_fields as $m){
 		//if(in_array($m->label, $filter_labels)){
-		if($m->is_filter == 1){//SKK
+		if($has_meta_search_config && in_array((int)$m->id, $enabled_search_meta_fields)){//SKK
 			$filters[] = $m;
 		}
 	}	
+	$show_file_type_filter = !empty($column_config->file_type_search) && (int)$column_config->file_type_search === 1;
+	$show_record_created_filter = !empty($column_config->record_created_filter) && (int)$column_config->record_created_filter === 1;
 
 
 	$url = '/collection/{{ $collection->id }}/search-results?analyzer='.request()->get('analyzer').'&isa_search_parameter='.urlencode(request()->get('isa_search_parameter'));
@@ -158,7 +177,7 @@ $(document).ready(function() {
 		$_coll_mf = !empty($_all_mf[$collection->id]) ? $_all_mf[$collection->id] : [];
 		$_has_created = !empty(array_filter($_coll_mf, function($f){ return $f['field_id'] == 'created_at' && $f['operator'] !== '!='; }));
 	@endphp
-	@if($_has_created)
+	@if($_has_created && $show_record_created_filter)
 	// show Record Created section open if a filter is active
 	$('#filter_record_created').show();
 	@endif
@@ -175,6 +194,12 @@ function clearFilters(){
 		success: function(response) {
 			// Clear the file type filter dropdown
 			$('#file_type_filter').val('');
+			// Reset all text/date/select meta filters in the sidebar
+			$('input[type="text"][name^="meta_"]').val('');
+			$('input[type="date"][name^="meta_"]').val('');
+			$('select[name^="meta_"]').each(function(){
+				this.selectedIndex = 0;
+			});
 			// Uncheck all taxonomy checkboxes
 			$('input[type="checkbox"][name^="meta_"]').prop('checked', false);
 			// Reset all numeric range sliders
@@ -192,7 +217,9 @@ function clearFilters(){
 			@endif
 			@endforeach
 			// Clear record created filter UI
+			$('#record_created_operator').val('>=');
 			$('#record_created_value').val('');
+			$('#filter_record_created').hide();
 			$('#created_filter_tags_container').html('');
 			$('#date-facets-container').html('');
 			// Reload search results
@@ -212,13 +239,50 @@ function reloadSearchResults(callback){
 	loadSearchResults(callback);
 }
 
+function scheduleClassicMetaFilterSearch(){
+	clearTimeout(window.classicMetaFilterSearchTimer);
+	window.classicMetaFilterSearchTimer = setTimeout(function(){
+		reloadSearchResults();
+	}, 450);
+}
+
+// Keep track of active requests to prevent race conditions
+window.activeSearchAJAX = null;
+window.activeDateFacetsAJAX = null;
+
 function loadSearchResults(callback){
+	// serialize() already includes all form inputs (checkboxes, dates, text, selects)
+	// that are inside the #isa_search form. No need to manually append them again —
+	// doing so would duplicate filter values and cause incorrect server-side handling
+	// (e.g., a Date filter value sent twice gets mistaken for a Numeric range filter).
 	var queryString = $('#isa_search').serialize();
+	
 	var url = '/collection/{{ $collection->id }}/search-results?'+queryString;
-	$("#search-results").load(url, function(){
-		updateFilterTagCount();
-		loadDateFacets();
-		if(typeof callback === 'function') callback();
+	
+	// Abort any pending search request to prevent race conditions and out-of-order rendering
+	if(window.activeSearchAJAX && typeof window.activeSearchAJAX.abort === 'function') {
+		window.activeSearchAJAX.abort();
+	}
+	
+	// Smoothly fade existing results during search for premium feedback
+	$('#search-results').fadeTo(150, 0.4);
+	
+	window.activeSearchAJAX = $.ajax({
+		url: url,
+		method: 'GET',
+		success: function(html){
+			// Replace content and smoothly fade back in
+			$("#search-results").html(html).fadeTo(150, 1.0);
+			updateFilterTagCount();
+			loadDateFacets();
+			if(typeof callback === 'function') callback();
+		},
+		error: function(xhr, status, error){
+			if(status !== 'abort') {
+				console.error("Search request failed:", error);
+				$('#search-results').fadeTo(150, 1.0); // Reset opacity on error
+			}
+		}
 	});
 	return false;
 }
@@ -276,8 +340,14 @@ function loadDateFacets(){
 		$('#date-facets-container').html('');
 		return;
 	}
+	
+	// Abort any pending date facets request
+	if(window.activeDateFacetsAJAX && typeof window.activeDateFacetsAJAX.abort === 'function') {
+		window.activeDateFacetsAJAX.abort();
+	}
+	
 	var queryString = $('#isa_search').serialize();
-	$.getJSON('/collection/{{ $collection->id }}/date-facets?' + queryString, function(data){
+	window.activeDateFacetsAJAX = $.getJSON('/collection/{{ $collection->id }}/date-facets?' + queryString, function(data){
 		var html = '';
 		if(!data || data.length === 0){
 			$('#date-facets-container').html('');
@@ -342,10 +412,12 @@ function classicToggleTaxParent(uid) {
 }
 
 function showSpinner(){
-	$("#search-results").html('<div class="loader"></div>');
-	$('html, body').animate({
-            scrollTop: $(".loader").offset().top - 200
-        }, 500);	
+	// Remove any previous overlay
+	$('#search-results .results-loading-overlay').remove();
+	// Add a subtle overlay on top of existing results — no content deletion, no scroll = no flicker
+	$('#search-results').css('position', 'relative').prepend(
+		'<div class="results-loading-overlay"><div class="loader"></div></div>'
+	);
 }
 
 function nextPage(){
@@ -447,8 +519,9 @@ function goToPage(page){
 				else{
 					// Original behavior for deeper levels: checkbox with drillDown
 					$tid = $t->id;
-					echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
-                	echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+                	echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
+                	$_chk_id = 'chk_meta_'.$meta_id.'_'.$t->id.'_p'.$parent_id;
+                	echo '<input id="'.$_chk_id.'" class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.' ><label class="form-check-label" for="'.$_chk_id.'">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 					echo '</div>';
 					getTree($children, $rmfv_map, $t->id, $meta_id, false, $depth+1);
 				}
@@ -464,7 +537,8 @@ function goToPage(page){
 				}
 				echo '<div class="form-check child-of-'.$parent_id.'" '.$display.'>';
 				$tid = $t->id;
-                echo '<input class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="flexCheckDefault">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
+				$_chk_id2 = 'chk_meta_'.$meta_id.'_'.$t->id.'_leaf_p'.$parent_id;
+                echo '<input id="'.$_chk_id2.'" class="ch-child-of-'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" onChange="drillDown(this);" '.$checked.'><label class="form-check-label" for="'.$_chk_id2.'">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label><br />';
 				echo '</div>';
              }
          } // foreach 
@@ -479,8 +553,13 @@ function goToPage(page){
 		@csrf
         <div class="col-md-12">
             <div class="card">
-				<div class="card-header card-header-primary">
-                	<h4 class="card-title" style="color: white; font-weight: 600; margin: 0;">
+				<div class="card-header card-header-primary" style="display: flex; align-items: center; gap: 15px;">
+					@if(!empty($collection->representative_image))
+					<img src="{{ asset('storage/' . $collection->representative_image) }}" 
+					     alt="{{ $collection->name }}" 
+					     style="height: 40px; width: auto; border-radius: 4px; object-fit: contain;">
+					@endif
+                	<h4 class="card-title" style="color: white; font-weight: 600; margin: 0; flex-grow: 1;">
                 		@if(env('ENABLE_COLLECTION_LIST') == 1)<a href="/collections" style="color: white; text-decoration: none;">{{ __('Collections') }}</a> ::@endif {{ $collection->name }}
                 	</h4>
             	</div>
@@ -683,32 +762,27 @@ foreach($tags as $t){
 		<div class="services-list" style="padding: 10px 5px; border: 1px solid #d3dff3; margin-bottom: 20px; background-color: #fff;">
 			<h5 style="margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #e8e8e8;">Filter By <div style="float:right; cursor:pointer; border:1px solid #9c27b0; padding:4px 8px;border-radius:5px; background-color:#eee; font-size: 14px;" onclick="clearFilters();" title="Clear all filters"><span style="font-family: 'Font Awesome 6 Free', FontAwesome; font-weight: 900;">&#xf51a;</span> Clear</div></h5>
 				<!-- File Type Filter (shown first) -->
-				<a href="javascript:return false;" onclick="$('#filter_file_type').toggle()">{{ __('File Type') }}</a>
+				@if($show_file_type_filter)
+				<a href="javascript:void(0);" onclick="$('#filter_file_type').toggle(); return false;">{{ __('File Type') }}</a>
 				<div id="filter_file_type" style="display:none; margin-left: 15px; margin-top: 5px;">
 					<select name="extension_filter" id="file_type_filter" class="form-control" onchange="applyFileTypeFilter()" style="border: 2px solid #9c27b0; padding: 5px 10px; font-size: 13px; border-radius: 5px; width: auto; max-width: 200px;">
 						<option value="">{{ __('All File Types') }}</option>
 					</select>
 				</div>
+				@endif
 				@php
 				// Taxonomy filters (shown below File Type)
 				$taxonomy_filters = array_filter($filters, function($f){ return $f->type == 'TaxonomyTree'; });
-				// Also include any TaxonomyTree meta fields that don't have is_filter set
-				$shown_ids = array_map(function($f){ return $f->id; }, $taxonomy_filters);
-				foreach($collection->meta_fields as $mf){
-					if($mf->type == 'TaxonomyTree' && !in_array($mf->id, $shown_ids)){
-						$taxonomy_filters[] = $mf;
-					}
-				}
 				foreach($taxonomy_filters as $f){
 					// Keep outer section open if any child is already checked (active filter)
 					$_taxOpenByDefault = !empty(Request::get('meta_'.$f->id));
 					$_taxOuterDisplay = $_taxOpenByDefault ? '' : 'display:none;';
-					echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()" style="margin-top:8px; display:block;">'.$f->label.'</a>';
+					echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;" style="margin-top:8px; display:block;">'.$f->label.'</a>';
 					echo '<div id="filter_'.$f->id.'" style="'.$_taxOuterDisplay.'">';
 					getTree($children, $rmfv_map, $f->options, $f->id, true);
 					echo "</div>\n";
 				}
-				// Other filters (Numeric, Select)
+				// Other filters (Numeric, Select, Textarea, Text, Date, etc.)
 				foreach($filters as $f){
 					if($f->type == 'TaxonomyTree') continue; // already shown above
 					else if($f->type == 'Numeric'){
@@ -717,7 +791,7 @@ foreach($tags as $t){
               				$numeric_max_value = @$extra_attributes->numeric_max_value;
 
 						$meta_values = Request::get('meta_'.$f->id);
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
 						echo '<fieldset class="filter-range">';
 						echo '<div class="range-field">';
@@ -745,20 +819,34 @@ foreach($tags as $t){
 					}
 					else if($f->type == 'Select'){
 						$options = explode(",",$f->options); 
-						echo '<a href="javascript:return false;" onclick="$(\'#filter_'.$f->id.'\').toggle()">'.$f->label.'</a>';
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'">';
-						echo '<select name="meta_'.$f->id.'[]" class="form-control">';
+						echo '<select name="meta_'.$f->id.'[]" class="form-control" onchange="reloadSearchResults();" style="font-size:13px; padding:4px 6px;">';
+						echo '<option value="">{{ __("All") }}</option>';
 						foreach($options as $select_options){
 						echo '<option value="'.$select_options.'">'.$select_options.'</option>';
 						}
 						echo '</select>';
 						echo "</div>\n";
 					}
+					else if($f->type == 'Date'){
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="display:none;">';
+						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="scheduleClassicMetaFilterSearch();" />';
+						echo '</div>';
+					}
+					else if($f->type == 'Textarea' || $f->type == 'Text' || $f->type == 'SelectCombo'){
+						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
+						echo '<div id="filter_'.$f->id.'" style="display:none;">';
+						echo '<input type="text" name="meta_'.$f->id.'[]" class="form-control" placeholder="'.__('Search').'" style="font-size:13px; padding:4px 6px; margin-bottom:5px;" oninput="scheduleClassicMetaFilterSearch();" onkeydown="if(event.keyCode==13){ event.preventDefault(); reloadSearchResults(); return false; }" />';
+						echo '</div>';
+					}
 				}
 				@endphp
 
+				@if($show_record_created_filter)
 				<!-- Record Created Filter (shown below Taxonomy) -->
-				<a href="javascript:return false;" onclick="$('#filter_record_created').toggle()" style="margin-top:8px; display:block;">{{ __('Record Created') }}</a>
+				<a href="javascript:void(0);" onclick="$('#filter_record_created').toggle(); return false;" style="margin-top:8px; display:block;">{{ __('Record Created') }}</a>
 				<div id="filter_record_created" style="display:none; margin-left: 5px; margin-top: 5px;">
 					<div style="margin-bottom:5px;">
 						<select id="record_created_operator" class="form-control" style="font-size:13px; padding:4px 6px; margin-bottom:5px;">
@@ -799,6 +887,7 @@ foreach($tags as $t){
 					</div>
 				@endforeach
 				</div>			<div id="date-facets-container" style="margin-top:4px;"></div>				</div>
+				@endif
 
 <script>
 function applyRecordCreatedFilter(){
@@ -912,6 +1001,7 @@ function applyRecordCreatedFilter(){
 
 <script>
 	// Load file types for the dropdown
+	@if($show_file_type_filter)
 	$(document).ready(function() {
 		$.ajax({
 			url: '/collection/{{$collection->id}}/extensions',
@@ -936,6 +1026,7 @@ function applyRecordCreatedFilter(){
 			}
 		});
 	});
+	@endif
 	
 	// Helper function to create friendly labels
 	function getFriendlyLabel(mimeType) {

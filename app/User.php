@@ -43,6 +43,7 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
 	'two_factor_enabled_at' => 'datetime',
+	'two_factor_user_enabled' => 'boolean',
 	'created_at' => 'datetime',
 	'updated_at' => 'datetime',
 	'deleted_at' => 'datetime'
@@ -51,6 +52,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasTwoFactorEnabled(): bool
     {
         return !empty($this->two_factor_secret) && !empty($this->two_factor_enabled_at);
+    }
+
+    public function isTwoFactorUserPreferenceEnabled(): bool
+    {
+        return $this->two_factor_user_enabled === true && $this->hasTwoFactorEnabled();
     }
 
 	protected $table = "users";
@@ -217,4 +223,18 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
 ///// 
+
+    /**
+     * Disable two-factor authentication for this user.
+     *
+     * Clears the stored TOTP secret and the enabled timestamp.
+     *
+     * @return void
+     */
+    public function disableTwoFactor(): void
+    {
+        $this->two_factor_secret = null;
+        $this->two_factor_enabled_at = null;
+        $this->save();
+    }
 } // End of the class

@@ -86,6 +86,10 @@ trait Search{
 				// default operator is '='
 				// find type of meta field
 				$meta_field = \App\MetaField::where('id', $matches[1])->first();
+				// Skip empty filter values
+				if(empty($v) || (is_array($v) && empty(array_filter($v)))){
+					continue;
+				}
 				if($meta_field && $meta_field->type == 'Numeric' && is_array($v) && count($v)==2){ 
 					// this is for range filters (numeric values). This condition needs to be refined.
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
@@ -477,10 +481,11 @@ trait Search{
                 $params['body']['sort'][] = [$sort_column => [ 'order' => $sort_direction]];
             }
 
+
 	        $ordered_document_ids = '';
             $scores = [];
+            $sorts = [];
             $params['size'] = $length;
-            $params['from'] = $start; 
             $document_ids = [];
 		    try{
                 Log::debug(json_encode($params));
@@ -488,11 +493,21 @@ trait Search{
                 unset($params_cnt['body']['highlight']);
                 unset($params_cnt['body']['sort']);
                 $count_response = $client->count($params_cnt);
+
+            // Deep pagination
+            if(!empty($request->search_after)){
+                $params['body']['search_after'] = $request->search_after;
+            }
+            else{
+                $params['from'] = $start; 
+            }
+
            	    $response = $client->search($params);
                 foreach($response['hits']['hits'] as $h){
                         $document_ids[] = $h['_id'];
 		                $highlights[$h['_id']] = @$h['highlight'];
 		                $scores[$h['_id']] = $h['_score'];
+                        $sorts[$h['_id']] = $h['sort'];
                 }
 		    }
 		    catch(\Exception $e){
@@ -525,6 +540,7 @@ trait Search{
 		if($request->is('api/*') || $request->return_format == 'raw'){
 			return ['data'=>$documents,
 		        'highlights'=>$highlights,
+                'sort_data'=> $sorts,
 		        'scores'=>$scores,
             	'draw'=>(int) $request->draw,
             	'recordsTotal'=> $total_count,

@@ -54,12 +54,24 @@ class CollectionController extends Controller
 
     public function list(Request $request){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
+
+        // Build a real-time document count map so we always show the true count
+        // instead of the cached `document_count` column (which can go out of sync).
+        $collectionIds = $collections->pluck('id')->toArray();
+        $liveCounts = \App\Document::whereIn('collection_id', $collectionIds)
+            ->whereNull('deleted_at')
+            ->selectRaw('collection_id, COUNT(*) as cnt, COALESCE(SUM(size), 0) as total_size')
+            ->groupBy('collection_id')
+            ->get()
+            ->keyBy('collection_id');
+
         $stats = [];
         foreach($collections as $collection){
+            $live = $liveCounts->get($collection->id);
             $stats[$collection->id] = (object)[
-				"cnt" => $collection->document_count,
-				"size" => $collection->size_active
-			];
+                "cnt"  => $live ? (int)$live->cnt : 0,
+                "size" => $live ? (int)$live->total_size : 0,
+            ];
         }
         
         // Handle sorting

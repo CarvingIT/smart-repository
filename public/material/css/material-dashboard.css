@@ -1,4 +1,4 @@
-@import '../../material-design-icons/iconfont/material-icons.css';
+@import '/iconfont/material-icons.css';
 /*!
 
  =========================================================
@@ -289,6 +289,7 @@ html [type="button"],
 [type="reset"],
 [type="submit"] {
   -webkit-appearance: button;
+  appearance: button;
 }
 
 button::-moz-focus-inner,
@@ -310,6 +311,7 @@ input[type="time"],
 input[type="datetime-local"],
 input[type="month"] {
   -webkit-appearance: listbox;
+  appearance: listbox;
 }
 
 textarea {
@@ -348,16 +350,19 @@ progress {
 [type="search"] {
   outline-offset: -2px;
   -webkit-appearance: none;
+  appearance: none;
 }
 
 [type="search"]::-webkit-search-cancel-button,
 [type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
+  appearance: none;
 }
 
 ::-webkit-file-upload-button {
   font: inherit;
   -webkit-appearance: button;
+  appearance: button;
 }
 
 output {
@@ -697,6 +702,7 @@ html [type="button"],
 [type="reset"],
 [type="submit"] {
   -webkit-appearance: button;
+  appearance: button;
 }
 
 button::-moz-focus-inner,
@@ -718,6 +724,7 @@ input[type="time"],
 input[type="datetime-local"],
 input[type="month"] {
   -webkit-appearance: listbox;
+  appearance: listbox;
 }
 
 textarea {
@@ -756,16 +763,19 @@ progress {
 [type="search"] {
   outline-offset: -2px;
   -webkit-appearance: none;
+  appearance: none;
 }
 
 [type="search"]::-webkit-search-cancel-button,
 [type="search"]::-webkit-search-decoration {
   -webkit-appearance: none;
+  appearance: none;
 }
 
 ::-webkit-file-upload-button {
   font: inherit;
   -webkit-appearance: button;
+  appearance: button;
 }
 
 output {
@@ -12929,6 +12939,7 @@ select,
 select.form-control {
   -moz-appearance: none;
   -webkit-appearance: none;
+  appearance: none;
 }
 
 @media (min-width: 576px) {
@@ -13336,7 +13347,6 @@ margin-left:1.2%;
   border-radius: 10px;
   text-align: center;
   line-height: 19px;
-  vertical-align: middle;
   display: block;
 }
 
@@ -18789,6 +18799,7 @@ padding-bottom:11%;
   }
   .navbar-fixed-top {
     -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
   #bodyClick {
     height: 100%;
