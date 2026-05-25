@@ -2,6 +2,21 @@
 
 @section('content')
 <div class="container">
+    <style>
+        /* Ensure system-info tables have a clear outline on patterned backgrounds */
+        .system-info-table {
+            background: #ffffff;
+            border-collapse: collapse;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
+        }
+        .system-info-table th,
+        .system-info-table td {
+            border: 1px solid #e9ecef !important;
+            vertical-align: middle;
+        }
+        /* Make sure responsive wrapper doesn't clip visible borders */
+        .table-responsive { overflow-x: auto; }
+    </style>
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
@@ -191,6 +206,47 @@
                                 </tbody>
                             </table>
                         </div>
+                    </div>
+
+                    {{-- SMTP / Mail Configuration Section --}}
+                    <h5 class="mt-5 mb-3"><i class="material-icons">mail</i> {{ __('SMTP Configuration') }}</h5>
+                    <div class="table-responsive">
+                        @if(!$systemInfo['mail']['configured'])
+                            <div class="alert alert-warning">SMTP configuration is pending.</div>
+                        @else
+                            <table class="table table-bordered system-info-table">
+                                <tbody>
+                                    <tr>
+                                        <th width="180">{{ __('Driver') }}</th>
+                                        <td>{{ $systemInfo['mail']['driver'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ __('Host') }}</th>
+                                        <td>{{ $systemInfo['mail']['host'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ __('Port') }}</th>
+                                        <td>{{ $systemInfo['mail']['port'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ __('Username') }}</th>
+                                        <td>{{ $systemInfo['mail']['username'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ __('Encryption') }}</th>
+                                        <td>{{ $systemInfo['mail']['encryption'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ __('From Address') }}</th>
+                                        <td>{{ $systemInfo['mail']['from'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>{{ __('Password') }}</th>
+                                        <td><em>Not displayed</em></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        @endif
                     </div>
 
                     {{-- OCR Libraries Section --}}
