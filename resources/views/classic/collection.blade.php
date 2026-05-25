@@ -1,7 +1,9 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
 @push('js')
 <script src="/build/assets/js/jquery-ui.min.js" defer></script>
+<script src="/build/assets/js/jquery.daterangepicker.min.js"></script>
 <link href="/build/assets/css/jquery-ui.min.css" rel="stylesheet">
+<link href="/build/assets/css/daterangepicker.min.css" rel="stylesheet">
 <link href="/css/classic/main.css" rel="stylesheet">
 <link href="/css/classic/fonts.css" rel="stylesheet">
 <!-- Font Awesome - served locally via npm (@fortawesome/fontawesome-free) -->
@@ -832,7 +834,8 @@ foreach($tags as $t){
 					else if($f->type == 'Date'){
 						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
-						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="scheduleClassicMetaFilterSearch();" />';
+						echo '<input type="text" name="meta_'.$f->id.'[]" id="meta_'.$f->id.'_search" class="form-control" placeholder="'.__('Select date range').'" autocomplete="off" style="font-size:13px; padding:4px 6px;" />';
+						echo '<script>$("#meta_'.$f->id.'_search").dateRangePicker({monthSelect: true, yearSelect: [1900, moment().get(\'year\')] }).bind("datepicker-change", function(){ reloadSearchResults(); });</script>';
 						echo '</div>';
 					}
 					else if($f->type == 'Textarea' || $f->type == 'Text' || $f->type == 'SelectCombo'){

@@ -90,6 +90,25 @@ trait Search{
 				if(empty($v) || (is_array($v) && empty(array_filter($v)))){
 					continue;
 				}
+				if($meta_field && $meta_field->type == 'Date'){
+					if(is_array($v) && count($v) == 1 && is_string($v[0]) && preg_match('/\s+to\s+/i', $v[0])){
+						$v_parts = preg_split('/\s+to\s+/i', $v[0], 2);
+						$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>trim($v_parts[0]));
+						$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>trim($v_parts[1]));
+						continue;
+					}
+					if(is_array($v) && count($v) == 2){
+						$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
+						$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>$v[1]);
+						continue;
+					}
+					if(is_string($v) && preg_match('/\s+to\s+/i', $v)){
+						$v_parts = preg_split('/\s+to\s+/i', $v, 2);
+						$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>trim($v_parts[0]));
+						$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'<=', 'value'=>trim($v_parts[1]));
+						continue;
+					}
+				}
 				if($meta_field && $meta_field->type == 'Numeric' && is_array($v) && count($v)==2){ 
 					// this is for range filters (numeric values). This condition needs to be refined.
 					$meta_filters_query[] = array('field_id'=>$matches[1], 'operator'=>'>=', 'value'=>$v[0]);
