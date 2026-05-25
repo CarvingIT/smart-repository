@@ -249,6 +249,12 @@
                         @endif
                     </div>
 
+                    <div class="mt-3">
+                        <a href="{{ route('admin.smtp.test.form') }}" class="btn btn-primary">
+                            {{ __('Test SMTP Configuration') }}
+                        </a>
+                    </div>
+
                     {{-- OCR Libraries Section --}}
                     <h5 class="mt-5 mb-3"><i class="material-icons">text_fields</i> {{ __('OCR Libraries') }}</h5>
                     <div class="row">
