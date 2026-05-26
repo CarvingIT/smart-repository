@@ -90,7 +90,7 @@ class Document extends Model implements Auditable
 
 		$meta_field_type = $meta_value->meta_field->type;
         if($meta_value){
-			if(preg_match('/^\[.*\]$/',$meta_value->value)){
+			if(is_array(json_decode($meta_value->value))){
 				if($meta_field_type == 'TaxonomyTree'){
                     $all_selections = empty($meta_value->value) ? [] : json_decode($meta_value->value);
 					$taxonomy_models = Taxonomy::whereIn('id', @json_decode($meta_value->value))->get();
