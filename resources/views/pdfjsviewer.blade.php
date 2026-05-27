@@ -33,6 +33,23 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     <link rel="stylesheet" href="/css/pdfjsviewer.css">
 
+  @php
+        $collectionId = request('collection_id');
+        $collection = $collectionId ? \App\Collection::find($collectionId) : null;
+        $column_config = $collection ? json_decode($collection->column_config) : null;
+      $pdfAutoScrollInterval = max(1, (int) ($column_config->autoscroll_interval ?? 50));
+      $pdfAutoScrollSpeed = max(1, (int) ($column_config->autoscroll_speed ?? 1));
+  @endphp
+
+  <script>
+    window.pdfAutoScrollConfig = {
+      interval: {{ $pdfAutoScrollInterval }},
+      scrollSpeed: {{ $pdfAutoScrollSpeed }}
+    };
+  </script>
+
+  <script src="/js/pdf-autoscroll.js"></script>
+
   <script src="/js/pdfjsviewer.mjs" type="module"></script>
   </head>
 
@@ -288,6 +305,10 @@ See https://github.com/adobe-type-tools/cmap-resources
                   >
                     <span data-l10n-id="pdfjs-save-button-label"></span>
                   </button>
+
+                  <button id="autoscrollButton" class="toolbarButton" type="button" tabindex="0" aria-pressed="false" data-pdf-autoscroll-toggle title="Start auto-scroll">
+                    <span>Auto Scroll</span>
+                  </button>
                 </div>
 
                 <div class="verticalToolbarSeparator hiddenMediumView"></div>
@@ -314,6 +335,10 @@ See https://github.com/adobe-type-tools/cmap-resources
                 @endif
                         >
                           <span data-l10n-id="pdfjs-save-button-label"></span>
+                        </button>
+
+                        <button id="secondaryAutoscrollButton" class="toolbarButton labeled" type="button" tabindex="0" aria-pressed="false" data-pdf-autoscroll-toggle title="Start auto-scroll">
+                          <span>Auto Scroll</span>
                         </button>
 
                       </div>
