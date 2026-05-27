@@ -183,6 +183,8 @@ Route::get('/reports/duplicates', 'ReportsController@duplicates')->middleware('a
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');
 Route::get('/admin/system-info', 'SystemInfoController@index')->middleware('admin');
+Route::get('/admin/system-info/smtp-test', 'SystemInfoController@smtpTestForm')->middleware('admin')->name('admin.smtp.test.form');
+Route::post('/admin/system-info/smtp-test', 'SystemInfoController@sendSmtpTest')->middleware('admin')->name('admin.smtp.test.send');
 Route::get('/admin/collectionmanagement', 'CollectionController@index')->middleware('admin');
 Route::get('/admin/collection-form/{collection_id}', 'CollectionController@add_edit_collection')->middleware('admin');
 Route::post('/admin/collection-form/delete', 'CollectionController@deleteCollection')->middleware('admin');

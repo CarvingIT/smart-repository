@@ -18,10 +18,36 @@ class SystemInfoService
             'permissions' => $this->checkPermissions(),
             'dependencies' => $this->checkMissingDependencies(),
             'elasticsearch' => $this->checkElasticsearch(),
+            'mail' => $this->getMailInfo(),
             'ocr' => $this->checkOcrLibraries(),
             'versions' => $this->getVersionInfo(),
             "database" => $this->getDatabaseInfo(),
             "disk_space" => $this->getStorageInfo(),
+        ];
+    }
+
+    /**
+     * Get Mail / SMTP configuration info (without revealing password)
+     */
+    public function getMailInfo()
+    {
+        $driver = config('mail.driver') ?: config('mail.mailer') ?? env('MAIL_DRIVER', null);
+        $host = config('mail.host') ?? env('MAIL_HOST', null);
+        $port = config('mail.port') ?? env('MAIL_PORT', null);
+        $username = config('mail.username') ?? env('MAIL_USERNAME', null);
+        $encryption = config('mail.encryption') ?? env('MAIL_ENCRYPTION', null);
+        $from = isset(config('mail')['from']) ? config('mail')['from']['address'] ?? null : null;
+
+        $configured = !empty($driver) && !empty($host) && !empty($username);
+
+        return [
+            'configured' => $configured,
+            'driver' => $driver,
+            'host' => $host,
+            'port' => $port,
+            'username' => $username,
+            'encryption' => $encryption,
+            'from' => $from,
         ];
     }
 
