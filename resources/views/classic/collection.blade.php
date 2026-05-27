@@ -860,10 +860,13 @@ foreach($tags as $t){
 						echo "</div>\n";
 					}
 					else if($f->type == 'Date'){
+						$extra_attributes = empty($f->extra_attributes) ? null : json_decode($f->extra_attributes);
+						$min_year = empty($extra_attributes->min_year_setting) ? 1900 : $extra_attributes->min_year_setting;
+						$max_year = empty($extra_attributes->max_year_setting) ? date('Y') : $extra_attributes->max_year_setting;
 						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
-						echo '<input type="text" name="meta_'.$f->id.'[]" id="meta_'.$f->id.'_search" class="form-control" placeholder="'.__('Select date range').'" autocomplete="off" style="font-size:13px; padding:4px 6px;" />';
-						echo '<script>$("#meta_'.$f->id.'_search").dateRangePicker({monthSelect: true, yearSelect: [1900, moment().get(\'year\')] }).bind("datepicker-change", function(){ reloadSearchResults(); });</script>';
+						echo '<input type="text" id="meta_'.$f->id.'_search" class="form-control" placeholder="'.__('Select date range').'" autocomplete="off" style="font-size:13px; padding:4px 6px;" />';
+						echo '<script>$("#meta_'.$f->id.'_search").dateRangePicker({monthSelect: true, yearSelect: ['.$min_year.', '.$max_year.']}).bind("datepicker-change", function(event, obj){ var startDate = moment(obj.date1).format("YYYY-MM-DD"); var endDate = moment(obj.date2).format("YYYY-MM-DD"); $.ajax({ url: "/collection/'.$collection->id.'/quickmetafilters", method: "POST", data: { _token: "'.csrf_token().'", collection_id: "'.$collection->id.'", "meta_field[]": "'.$f->id.'", "meta_type[]": "Date", "operator[]": "between", "meta_value['.$f->id.'][]": startDate + " to " + endDate }, success: function(){ reloadSearchResults(); } }); });</script>';
 						echo '</div>';
 					}
 					else if($f->type == 'Textarea' || $f->type == 'Text' || $f->type == 'SelectCombo'){
