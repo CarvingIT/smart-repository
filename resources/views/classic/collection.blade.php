@@ -517,12 +517,12 @@ function goToPage(page){
 					$arrowChar = $anySelected ? '&#9660;' : '&#9654;';
 					$uid = 'tax_acc_'.$meta_id.'_'.$t->id;
 					echo '<div class="taxonomy-parent-accordion" style="margin-top:4px;">';
-						echo '<div class="taxonomy-parent-label" onclick="classicToggleTaxParentWithCheckbox(\''.$uid.'\', \'chk_meta_'.$meta_id.'_'.$t->id.'_p'.$parent_id.'\');" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; background:#f5f0fa; border-radius:5px; font-weight:600; font-size:13px; color:#444; margin-bottom:2px;">';
+						echo '<div class="taxonomy-parent-label" onclick="classicToggleTaxParent(\''.$uid.'\');" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; background:#f5f0fa; border-radius:5px; font-weight:600; font-size:13px; color:#444; margin-bottom:2px;">';
 					echo '<span style="display:flex; align-items:center; gap:6px; min-width:0;">';
 					echo '<input id="chk_meta_'.$meta_id.'_'.$t->id.'_p'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" '.$checked.' onclick="event.stopPropagation();" onchange="reloadSearchResults();">';
-					echo '<label for="chk_meta_'.$meta_id.'_'.$t->id.'_p'.$parent_id.'" onclick="event.stopPropagation(); classicToggleTaxParent(\''.$uid.'\');" style="cursor:pointer; margin:0;">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</label>';
+						echo '<span onclick="event.stopPropagation(); classicToggleTaxParent(\''.$uid.'\');" style="cursor:pointer; margin:0;">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</span>';
 					echo '</span>';
-						echo '<span id="'.$uid.'_arrow" style="font-size:10px; min-width:14px; text-align:center; color:#9c27b0; cursor:pointer;">'.$arrowChar.'</span>';
+						echo '<span id="'.$uid.'_arrow" onclick="event.stopPropagation(); classicToggleTaxParent(\''.$uid.'\'); return false;" style="font-size:10px; min-width:14px; text-align:center; color:#9c27b0; cursor:pointer;">'.$arrowChar.'</span>';
 					echo '</div>';
 					echo '<div id="'.$uid.'" style="'.$childContainerDisplay.' margin-left:14px; margin-top:2px; padding-bottom:4px; border-left:2px solid #e8d5f5; padding-left:8px;">';
 					getTree($children, $rmfv_map, $t->id, $meta_id, true, $depth+1);
@@ -789,25 +789,13 @@ foreach($tags as $t){
 				foreach($taxonomy_filters as $f){
 					$root_taxonomy = \App\Taxonomy::find($f->options);
 					$root_meta_values = Request::get('meta_'.$f->id);
-					$root_checked = (!empty($root_taxonomy) && !empty($root_meta_values) && in_array($root_taxonomy->id, $root_meta_values)) ? 'checked' : '';
-					// Keep outer section open if the root or any child is already checked (active filter)
-					$_taxOpenByDefault = !empty($root_checked) || !empty($root_meta_values);
-					$_taxOuterDisplay = $_taxOpenByDefault ? '' : 'display:none;';
+					$_taxOpenByDefault = true;
+					$_taxOuterDisplay = '';
 					echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;" style="margin-top:8px; display:block;">'.$f->label.'</a>';
 					echo '<div id="filter_'.$f->id.'" style="'.$_taxOuterDisplay.'">';
 					if(!empty($root_taxonomy)){
-						$root_count = empty($rmfv_map[$f->id][$root_taxonomy->id]) ? 0 : count($rmfv_map[$f->id][$root_taxonomy->id]);
-						echo '<div class="taxonomy-parent-accordion" style="margin-top:4px;">';
-						echo '<div class="taxonomy-parent-label" onclick="classicToggleTaxParentWithCheckbox(\'tax_root_'.$f->id.'\', \'chk_meta_'.$f->id.'_'.$root_taxonomy->id.'_root\');" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; background:#f5f0fa; border-radius:5px; font-weight:600; font-size:13px; color:#444; margin-bottom:2px;">';
-						echo '<span style="display:flex; align-items:center; gap:6px; min-width:0;">';
-						echo '<input id="chk_meta_'.$f->id.'_'.$root_taxonomy->id.'_root" type="checkbox" value="'.$root_taxonomy->id.'" name="meta_'.$f->id.'[]" '.$root_checked.' onclick="event.stopPropagation();" onchange="reloadSearchResults();">';
-						echo '<label for="chk_meta_'.$f->id.'_'.$root_taxonomy->id.'_root" onclick="event.stopPropagation(); classicToggleTaxParent(\'tax_root_'.$f->id.'\');" style="cursor:pointer; margin:0;">'.$root_taxonomy->label.' ('.$root_count.')</label>';
-						echo '</span>';
-						echo '<span id="tax_root_'.$f->id.'_arrow" style="font-size:10px; min-width:14px; text-align:center; color:#9c27b0; cursor:pointer;">&#9660;</span>';
-						echo '</div>';
-						echo '<div id="tax_root_'.$f->id.'" style="'.($_taxOpenByDefault ? '' : 'display:none;').' margin-left:14px; margin-top:2px; padding-bottom:4px; border-left:2px solid #e8d5f5; padding-left:8px;">';
+						echo '<div id="tax_root_'.$f->id.'" style="margin-top:2px; padding-bottom:4px; padding-left:0;">';
 						getTree($children, $rmfv_map, $f->options, $f->id, true);
-						echo '</div>';
 						echo '</div>';
 					}
 					echo "</div>\n";
