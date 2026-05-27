@@ -438,15 +438,7 @@ class DocumentController extends Controller
         } else {
             return redirect('/collection/' . $request->input('collection_id'));
         }
-        // trigger DocumentSaved event so listeners (eg. Elasticsearch indexing)
-        // can pick up the updated meta values
-        try{
-            event(new \App\Events\DocumentSaved(\App\Document::find($document_id)));
-        }
-        catch(\Exception $e){
-            // do not fail the request if indexing/event dispatch fails
-            \Illuminate\Support\Facades\Log::debug('DocumentSaved event dispatch failed: '.$e->getMessage());
-        }
+        // DocumentSaved is dispatched automatically when the Document model is touched/saved
     }
 
     public static function importFile($collection_id, $path, $meta=[]){
