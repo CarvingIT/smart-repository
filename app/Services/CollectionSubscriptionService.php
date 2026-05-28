@@ -10,6 +10,7 @@ use App\Permission;
 use App\User;
 use App\UserPermission;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\URL;
@@ -69,6 +70,25 @@ class CollectionSubscriptionService
         return $subscription->fresh(['collection', 'user']);
     }
 
+    public function successfulSubscriptionFor(Collection $collection, ?User $actor = null, ?string $email = null): ?CollectionSubscription
+    {
+        $query = CollectionSubscription::query()
+            ->where('collection_id', $collection->id)
+            ->where('payment_status', 'success');
+
+        $query->where(function ($subQuery) use ($actor, $email) {
+            if ($actor) {
+                $subQuery->where('user_id', $actor->id);
+            }
+
+            if (!empty($email)) {
+                $subQuery->orWhereRaw('LOWER(user_email) = ?', [strtolower($email)]);
+            }
+        });
+
+        return $query->orderByDesc('paid_at')->orderByDesc('id')->first();
+    }
+
     public function buildGatewayPayload(CollectionSubscription $subscription, Collection $collection): array
     {
         $config = $this->subscriptionConfig($collection);
@@ -88,29 +108,40 @@ class CollectionSubscriptionService
 
     public function reconcile(CollectionSubscription $subscription, array $payload): CollectionSubscription
     {
-        $status = $this->normalizeStatus($payload['payment_status'] ?? $payload['status'] ?? null);
-        $postedAmount = $payload['amount'] ?? $payload['Amount'] ?? $payload['transaction_amount'] ?? null;
+        return DB::transaction(function () use ($subscription, $payload) {
+            $lockedSubscription = CollectionSubscription::query()
+                ->whereKey($subscription->id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        if ($status === 'success' && $postedAmount !== null && $subscription->amount !== null) {
-            if ((float) $postedAmount !== (float) $subscription->amount) {
-                $status = 'failed';
+            if ($lockedSubscription->payment_status === 'success') {
+                return $lockedSubscription->fresh(['collection', 'user']);
             }
-        }
 
-        $subscription->payment_status = $status;
-        $subscription->payment_reference = $payload['transaction_id'] ?? $payload['reference_no'] ?? $payload['reference'] ?? null;
-        $subscription->reconciliation_payload = json_encode($payload);
+            $status = $this->normalizeStatus($payload['payment_status'] ?? $payload['status'] ?? null);
+            $postedAmount = $payload['amount'] ?? $payload['Amount'] ?? $payload['transaction_amount'] ?? null;
 
-        if ($status === 'success') {
-            $subscription->paid_at = $subscription->paid_at ?: now();
-            $subscription->save();
-            $user = $this->grantAccess($subscription);
-            $this->notifySuccess($subscription, $user);
-        } else {
-            $subscription->save();
-        }
+            if ($status === 'success' && $postedAmount !== null && $lockedSubscription->amount !== null) {
+                if ((float) $postedAmount !== (float) $lockedSubscription->amount) {
+                    $status = 'failed';
+                }
+            }
 
-        return $subscription->fresh(['collection', 'user']);
+            $lockedSubscription->payment_status = $status;
+            $lockedSubscription->payment_reference = $payload['transaction_id'] ?? $payload['reference_no'] ?? $payload['reference'] ?? null;
+            $lockedSubscription->reconciliation_payload = json_encode($payload);
+
+            if ($status === 'success') {
+                $lockedSubscription->paid_at = $lockedSubscription->paid_at ?: now();
+                $lockedSubscription->save();
+                $user = $this->grantAccess($lockedSubscription);
+                $this->notifySuccess($lockedSubscription, $user);
+            } else {
+                $lockedSubscription->save();
+            }
+
+            return $lockedSubscription->fresh(['collection', 'user']);
+        });
     }
 
     public function grantAccess(CollectionSubscription $subscription): User

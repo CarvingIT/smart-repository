@@ -40,6 +40,12 @@ class CollectionSoapSubscriptionController extends Controller
         $name = $validated['name'] ?? optional($request->user())->name;
         $email = $validated['email'] ?? optional($request->user())->email;
 
+        $existingSuccess = $this->subscriptionService->successfulSubscriptionFor($collection, $request->user(), $email);
+        if ($existingSuccess) {
+            Session::flash('alert-success', 'You are already subscribed to this collection.');
+            return redirect('/collection/' . $collection->id);
+        }
+
         if (empty($email)) {
             return back()->withErrors(['email' => 'An email address is required to start the subscription.']);
         }

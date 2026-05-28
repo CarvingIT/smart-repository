@@ -1,5 +1,8 @@
 <?php
 
+use App\Collection;
+use App\Services\CollectionSubscriptionService;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,7 +22,23 @@ Route::get('/email/verify', function () {
 Route::get('/login/2fa', 'Auth\LoginTwoFactorController@showChallenge')->middleware('auth')->name('login.two-factor.challenge');
 Route::post('/login/2fa/verify', 'Auth\LoginTwoFactorController@verify')->middleware('auth')->name('login.two-factor.verify');
 
-Route::view('/','welcome');
+Route::get('/', function () {
+	$subscriptionService = app(CollectionSubscriptionService::class);
+
+	$subscriptionCollections = Collection::query()
+		->select(['id', 'name', 'description', 'type', 'column_config'])
+		->where('type', 'Members Only')
+		->orderBy('name')
+		->get()
+		->filter(function ($collection) use ($subscriptionService) {
+			return $subscriptionService->isEnabled($collection);
+		})
+		->values();
+
+	return view('welcome', [
+		'subscriptionCollections' => $subscriptionCollections,
+	]);
+});
 Route::get('/lang/{locale}', function ($locale) {
     App::setLocale($locale);
     return redirect('/');

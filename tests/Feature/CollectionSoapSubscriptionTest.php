@@ -128,4 +128,128 @@ class CollectionSoapSubscriptionTest extends TestCase
         $collection->column_config = $originalConfig;
         $collection->save();
     }
+
+    public function testDuplicateSuccessfulSubscriptionRequestsAreRedirectedWithoutCreatingNewRecords()
+    {
+        Notification::fake();
+
+        $collection = Collection::find(3);
+        $originalConfig = $collection->column_config;
+
+        $config = json_decode($collection->column_config) ?? new \stdClass();
+        $config->soap_subscription_enabled = 1;
+        $config->soap_subscription_amount = '500.00';
+        $config->soap_subscription_process_code = '87';
+        $config->soap_subscription_valid_days = 180;
+        $config->soap_subscription_sequence_length = 5;
+        $config->soap_subscription_challan_template = '{{year}}{{process_code}}{{month}}{{sequence}}';
+        $config->soap_subscription_payment_uri = 'https://payments.example.com/pay';
+        $config->soap_subscription_reconciliation_uri = 'https://payments.example.com/reconcile';
+        $collection->column_config = json_encode($config);
+        $collection->save();
+
+        $email = 'soap-subscription-' . uniqid() . '@example.com';
+
+        $this->post('/collection/3/soap-subscription', [
+            '_token' => csrf_token(),
+            'name' => 'SOAP Subscriber',
+            'email' => $email,
+        ])->assertStatus(200);
+
+        $subscription = \App\CollectionSubscription::where('collection_id', 3)
+            ->where('user_email', $email)
+            ->first();
+
+        $this->post('/collection/3/soap-subscription/reconcile', [
+            '_token' => csrf_token(),
+            'challan' => $subscription->challan,
+            'payment_status' => 'success',
+            'transaction_id' => 'TXN-' . uniqid(),
+        ])->assertRedirect('/collection/3');
+
+        $firstSubscriptionCount = \App\CollectionSubscription::where('collection_id', 3)
+            ->where('user_email', $email)
+            ->count();
+
+        $secondStartResponse = $this->post('/collection/3/soap-subscription', [
+            '_token' => csrf_token(),
+            'name' => 'SOAP Subscriber',
+            'email' => $email,
+        ]);
+
+        $secondStartResponse->assertRedirect('/collection/3');
+
+        $this->assertSame($firstSubscriptionCount, \App\CollectionSubscription::where('collection_id', 3)
+            ->where('user_email', $email)
+            ->count());
+
+        $collection->column_config = $originalConfig;
+        $collection->save();
+    }
+
+    public function testReconcileIsIdempotentForRepeatedSuccessCallbacks()
+    {
+        Notification::fake();
+
+        $collection = Collection::find(3);
+        $originalConfig = $collection->column_config;
+
+        $config = json_decode($collection->column_config) ?? new \stdClass();
+        $config->soap_subscription_enabled = 1;
+        $config->soap_subscription_amount = '500.00';
+        $config->soap_subscription_process_code = '87';
+        $config->soap_subscription_valid_days = 180;
+        $config->soap_subscription_sequence_length = 5;
+        $config->soap_subscription_challan_template = '{{year}}{{process_code}}{{month}}{{sequence}}';
+        $config->soap_subscription_payment_uri = 'https://payments.example.com/pay';
+        $config->soap_subscription_reconciliation_uri = 'https://payments.example.com/reconcile';
+        $collection->column_config = json_encode($config);
+        $collection->save();
+
+        $email = 'soap-subscription-' . uniqid() . '@example.com';
+
+        $this->post('/collection/3/soap-subscription', [
+            '_token' => csrf_token(),
+            'name' => 'SOAP Subscriber',
+            'email' => $email,
+        ])->assertStatus(200);
+
+        $subscription = \App\CollectionSubscription::where('collection_id', 3)
+            ->where('user_email', $email)
+            ->first();
+
+        $firstCallback = [
+            '_token' => csrf_token(),
+            'challan' => $subscription->challan,
+            'payment_status' => 'success',
+            'transaction_id' => 'TXN-' . uniqid(),
+        ];
+
+        $this->post('/collection/3/soap-subscription/reconcile', $firstCallback)
+            ->assertRedirect('/collection/3');
+
+        $subscription->refresh();
+        $user = User::where('email', $email)->first();
+        $viewPermission = Permission::where('name', 'VIEW')->first();
+
+        $this->post('/collection/3/soap-subscription/reconcile', $firstCallback)
+            ->assertRedirect('/collection/3');
+
+        $subscription->refresh();
+
+        $this->assertSame(1, \App\CollectionSubscription::where('collection_id', 3)
+            ->where('user_email', $email)
+            ->where('payment_status', 'success')
+            ->count());
+
+        $this->assertSame(1, \App\UserPermission::where('user_id', $user->id)
+            ->where('collection_id', $collection->id)
+            ->where('permission_id', $viewPermission->id)
+            ->count());
+
+        $this->assertSame(1, Notification::sent($user, CollectionSubscriptionPaymentCompleted::class)->count());
+
+        $collection->column_config = $originalConfig;
+        $collection->save();
+    }
 }
