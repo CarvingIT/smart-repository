@@ -48,3 +48,9 @@ public/js/pdfjs-viewer/iccs/
 public/js/pdfjs-viewer/image_decoders/
 public/js/pdfjs-viewer/wasm/
 public/js/pdfjs-viewer/**/*.map
+
+# Backup files created during env backup/remove workflow
+.env.backup
+.env.testing.backup
+.env_saml.backup
+re-repos-env.unknown.backup
