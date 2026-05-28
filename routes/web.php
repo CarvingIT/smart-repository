@@ -42,6 +42,9 @@ Route::get('/documents', 'DocumentController@list')->middleware(['auth','verifie
 Route::get('/lang', 'CollectionController@selectLanguage');
 
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
+Route::get('/collection/{collection_id}/soap-subscription', 'CollectionSoapSubscriptionController@showForm');
+Route::post('/collection/{collection_id}/soap-subscription', 'CollectionSoapSubscriptionController@start');
+Route::post('/collection/{collection_id}/soap-subscription/reconcile', 'CollectionSoapSubscriptionController@reconcile');
 Route::get('/collection/{collection_id}/export', 'CollectionController@export')->middleware('maintainer');
 Route::get('/collection/{collection_id}/exportxlsx', 'CollectionController@exportXlsx')->middleware('maintainer');
 

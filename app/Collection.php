@@ -25,6 +25,10 @@ class Collection extends Model
         return $this->hasMany('App\Url');
     }
 
+	public function subscriptions(){
+		return $this->hasMany(CollectionSubscription::class, 'collection_id');
+	}
+
     public function meta_fields(){
         return $this->hasMany('App\MetaField')->orderBy('display_order');
     }

@@ -166,6 +166,14 @@
                     </span>
                     </div>
                     </div>
+					@php
+						$collectionConfig = $c->getCollectionConfig();
+					@endphp
+                    @if($c->type === 'Members Only' && !empty($collectionConfig->soap_subscription_enabled) && (!Auth::user() || !Auth::user()->hasPermission($c->id, 'VIEW')))
+					<div class="mt-3 text-center">
+						<a href="/collection/{{ $c->id }}/soap-subscription" class="btn btn-sm btn-warning">{{ __('Subscribe') }}</a>
+					</div>
+					@endif
                  </div>
             </div>
         </div>
