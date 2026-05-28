@@ -54,3 +54,4 @@ public/js/pdfjs-viewer/**/*.map
 .env.testing.backup
 .env_saml.backup
 re-repos-env.unknown.backup
+.phpunit.result.cache
