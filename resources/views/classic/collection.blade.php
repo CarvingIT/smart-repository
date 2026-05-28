@@ -199,6 +199,19 @@ function clearFilters(){
 			// Reset all text/date/select meta filters in the sidebar
 			$('input[type="text"][name^="meta_"]').val('');
 			$('input[type="date"][name^="meta_"]').val('');
+			// Reset classic date-range picker UI and its internal selected range state
+			$('input[id^="meta_"][id$="_search"]').each(function(){
+				var $dateInput = $(this);
+				var dateRangePicker = $dateInput.data('dateRangePicker');
+				if(dateRangePicker){
+					if(typeof dateRangePicker.clear === 'function'){
+						dateRangePicker.clear();
+					} else if(typeof dateRangePicker.setDateRange === 'function'){
+						dateRangePicker.setDateRange('', '', true);
+					}
+				}
+				$dateInput.val('');
+			});
 			$('select[name^="meta_"]').each(function(){
 				this.selectedIndex = 0;
 			});
@@ -463,18 +476,17 @@ function goToPage(page){
 <a name="search-results"></a>
 @php
 	// get reverse meta field values
-	if($collection->require_approval){
-		$rmf_values = App\ReverseMetaFieldValue::whereHas('document', function($q){
+	$column_config_for_counts = empty($collection->column_config) ? null : json_decode($collection->column_config);
+	$show_unapproved_in_results = !empty($column_config_for_counts->display_unapproved_docs) && (int)$column_config_for_counts->display_unapproved_docs === 1;
+	$rmf_values = App\ReverseMetaFieldValue::whereHas('document', function($q) use ($collection, $show_unapproved_in_results){
+		$q->where('collection_id', $collection->id);
+		if($collection->require_approval && !$show_unapproved_in_results){
 			$q->whereNotNull('approved_on');
-		})->get();
-	}
-	else{
-		$rmf_values = App\ReverseMetaFieldValue::all();
-	}
+		}
+	})->get();
 	$rmfv_map = [];
 	foreach($rmf_values as $rmfv){
-		$mf = \App\MetaField::where('id', $rmfv->meta_field_id)->first();
-		$rmfv_map[$rmfv->meta_field_id][$rmfv->meta_value][]=$rmfv->document_id;
+		$rmfv_map[$rmfv->meta_field_id][$rmfv->meta_value][$rmfv->document_id] = true;
 		/*
 		$tm_family = [];
 		if( $mf && $mf->type == 'TaxonomyTree'){
