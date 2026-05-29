@@ -129,6 +129,23 @@
 .fa-external-link-alt:before {
 	content: "\f35d" !important;
 }
+
+/* Ensure created date-range tags and picker input don't clip the end of the range */
+.created-filter-tag {
+	white-space: nowrap;
+	overflow: visible;
+	max-width: 100%;
+}
+.created-filter-tag .filter-tag-text {
+	white-space: nowrap;
+	overflow: visible;
+}
+
+/* Give daterange input extra right padding so the clear icon won't overlap the text */
+input[id$="_search"] {
+	padding-right: 40px !important;
+	min-width: 0; /* allow flex contraction without clipping */
+}
 </style>
 <script>
 $(document).ready(function() {
@@ -317,7 +334,7 @@ function renderCreatedFilterTag(operator, value, filterId){
 		+ 'style="background:#f0e6f6; border:1px solid #9c27b0; border-radius:6px; padding:6px 8px; margin-top:8px;">'
 		+ '<div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">'
 		+ '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">'
-		+ '<span style="font-size:12px; font-weight:700; color:#222;">' + opLabel + ' ' + displayDate + '<\/span>'
+		+ '<span class="filter-tag-text" style="font-size:12px; font-weight:700; color:#222;">' + opLabel + ' ' + displayDate + '<\/span>'
 		+ '<span class="filter-tag-count" style="font-size:11px; font-weight:600; color:#666;"><\/span>'
 		+ '<\/div>'
 		+ '<a href="javascript:void(0);" onclick="removeCreatedFilter(this, \'' + filterId + '\'); return false;" '
@@ -865,7 +882,12 @@ foreach($tags as $t){
 						$max_year = empty($extra_attributes->max_year_setting) ? date('Y') : $extra_attributes->max_year_setting;
 						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
-						echo '<input type="text" id="meta_'.$f->id.'_search" class="form-control" placeholder="'.__('Select date range').'" autocomplete="off" style="font-size:13px; padding:4px 6px;" />';
+						echo '<div style="position:relative; width:100%;">';
+						echo '<input type="text" id="meta_'.$f->id.'_search" class="form-control" placeholder="'.__('Select date range').'" autocomplete="off" style="font-size:13px; padding:6px 34px 6px 6px; width:100%; box-sizing:border-box;" />';
+						echo '<button type="button" onclick="clearClassicDateRangeFilter('.$f->id.');" title="'.__('Clear').'" aria-label="'.__('Clear').'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); background:transparent; border:none; padding:2px; color:#e53935; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">';
+						echo '<i class="material-icons" style="font-size:18px; line-height:1; color:#e53935; font-weight:400;">delete</i>';
+						echo '</button>';
+						echo '</div>';
 						echo '<script>$("#meta_'.$f->id.'_search").dateRangePicker({monthSelect: true, yearSelect: ['.$min_year.', '.$max_year.']}).bind("datepicker-change", function(event, obj){ var startDate = moment(obj.date1).format("YYYY-MM-DD"); var endDate = moment(obj.date2).format("YYYY-MM-DD"); $.ajax({ url: "/collection/'.$collection->id.'/quickmetafilters", method: "POST", data: { _token: "'.csrf_token().'", collection_id: "'.$collection->id.'", "meta_field[]": "'.$f->id.'", "meta_type[]": "Date", "operator[]": "between", "meta_value['.$f->id.'][]": startDate + " to " + endDate }, success: function(){ reloadSearchResults(); } }); });</script>';
 						echo '</div>';
 					}
@@ -950,6 +972,31 @@ function applyRecordCreatedFilter(){
 		error: function(xhr){
 			console.error('Failed to apply date filter', xhr);
 			alert('{{ __("Failed to apply filter. Please try again.") }}');
+		}
+	});
+}
+
+function clearClassicDateRangeFilter(fieldId){
+	var $dateInput = $('#meta_' + fieldId + '_search');
+	$.ajax({
+		url: '/collection/{{ $collection->id }}/ajax-clear-meta-field-filter/' + fieldId,
+		method: 'POST',
+		data: { _token: '{{ csrf_token() }}' },
+		success: function(){
+			var dateRangePicker = $dateInput.data('dateRangePicker');
+			if(dateRangePicker){
+				if(typeof dateRangePicker.clear === 'function'){
+					dateRangePicker.clear();
+				} else if(typeof dateRangePicker.setDateRange === 'function'){
+					dateRangePicker.setDateRange('', '', true);
+				}
+			}
+			$dateInput.val('');
+			reloadSearchResults();
+		},
+		error: function(xhr){
+			console.error('Failed to clear date range filter', xhr);
+			alert('{{ __("Failed to clear filter. Please try again.") }}');
 		}
 	});
 }
