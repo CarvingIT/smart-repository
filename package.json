@@ -10,7 +10,7 @@
         "@fontsource/roboto": "^5.2.10",
         "@fortawesome/fontawesome-free": "^7.2.0",
         "@popperjs/core": "^2.11.8",
-        "axios": "^1.7.8",
+        "axios": "^1.16.0",
         "bootstrap": "^5.3.3",
         "cross-env": "^5.1",
         "datatables.net": "^2.3.5",
