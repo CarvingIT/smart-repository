@@ -675,6 +675,19 @@ $j++;
         return response()->json(['success' => true]);
     }
 
+    public function ajaxClearMetaFieldFilter($collection_id, $field_id){
+        $all_meta_filters = Session::get('meta_filters', []);
+        if(!empty($all_meta_filters[$collection_id])){
+            $all_meta_filters[$collection_id] = array_values(
+                array_filter($all_meta_filters[$collection_id], function($f) use($field_id){
+                    return $f['field_id'] !== $field_id;
+                })
+            );
+            Session::put('meta_filters', $all_meta_filters);
+        }
+        return response()->json(['success' => true]);
+    }
+
     public function ajaxClearAllFilters($collection_id){
         $title_filter = Session::get('title_filter');
         $title_filter[$collection_id] = null;
