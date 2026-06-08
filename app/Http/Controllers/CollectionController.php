@@ -55,6 +55,7 @@ class CollectionController extends Controller
     public function list(Request $request){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
 
+        /*
         // Build a real-time document count map so we always show the true count
         // instead of the cached `document_count` column (which can go out of sync).
         $collectionIds = $collections->pluck('id')->toArray();
@@ -73,7 +74,14 @@ class CollectionController extends Controller
                 "size" => $live ? (int)$live->total_size : 0,
             ];
         }
-        
+        */
+        // cached counts 
+        foreach($collections as $collection){
+            $stats[$collection->id] = (object)[
+                "cnt" => $collection->document_count,
+                "size" => $collection->size_active,
+            ];
+        }
         // Handle sorting
         $sort_by = $request->input('sort_by', 'name_asc'); // default to alphabetical ascending
         
