@@ -55,6 +55,7 @@ class CollectionController extends Controller
     public function list(Request $request){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
 
+        /*
         // Build a real-time document count map so we always show the true count
         // instead of the cached `document_count` column (which can go out of sync).
         $collectionIds = $collections->pluck('id')->toArray();
@@ -73,7 +74,14 @@ class CollectionController extends Controller
                 "size" => $live ? (int)$live->total_size : 0,
             ];
         }
-        
+        */
+        // cached counts 
+        foreach($collections as $collection){
+            $stats[$collection->id] = (object)[
+                "cnt" => $collection->document_count,
+                "size" => $collection->size_active,
+            ];
+        }
         // Handle sorting
         $sort_by = $request->input('sort_by', 'name_asc'); // default to alphabetical ascending
         
@@ -694,6 +702,19 @@ $j++;
         return response()->json(['success' => true]);
     }
 
+    public function ajaxClearMetaFieldFilter($collection_id, $field_id){
+        $all_meta_filters = Session::get('meta_filters', []);
+        if(!empty($all_meta_filters[$collection_id])){
+            $all_meta_filters[$collection_id] = array_values(
+                array_filter($all_meta_filters[$collection_id], function($f) use($field_id){
+                    return $f['field_id'] !== $field_id;
+                })
+            );
+            Session::put('meta_filters', $all_meta_filters);
+        }
+        return response()->json(['success' => true]);
+    }
+
     public function ajaxClearAllFilters($collection_id){
         $title_filter = Session::get('title_filter');
         $title_filter[$collection_id] = null;
@@ -874,6 +895,8 @@ use App\UrlSuppression;
 		$collection = Collection::find($request->collection_id);
         $col_config = $request->except(['search_result_template_html', 'details_page_template_html', 'approval_status_labels_text', 'approval_checklist_labels_text']);
         $col_config['require_two_factor'] = $request->boolean('require_two_factor') ? 1 : 0;
+    $col_config['autoscroll_interval'] = max(1, (int) $request->input('autoscroll_interval', 50));
+    $col_config['autoscroll_speed'] = max(1, (int) $request->input('autoscroll_speed', 1));
 
         $approvalRoles = $request->input('approved_by', []);
         $approvalStatusLabelsText = trim((string) $request->input('approval_status_labels_text', ''));

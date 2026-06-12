@@ -143,6 +143,22 @@ $(document).ready(function() {
                     @if(@$column_config->pdf_viewer == 'pdfjs') checked @endif />
                 <label for="viewer_pdfjs">{{ __('PDF.js (Modern)') }}</label>
             </div>
+			<div class="col-md-12" style="margin-top: 12px;">
+				<strong>{{ __('PDF.js Auto-Scroll') }}</strong>
+				<div class="row" style="margin-top: 8px;">
+					<div class="col-md-3">
+						<label for="autoscroll_interval">{{ __('Interval (milliseconds)') }}</label>
+						<input type="number" class="form-control" name="autoscroll_interval" id="autoscroll_interval" min="1" step="1" value="{{ old('autoscroll_interval', !empty($column_config->autoscroll_interval) ? $column_config->autoscroll_interval : 50) }}" />
+					</div>
+					<div class="col-md-3">
+						<label for="autoscroll_speed">{{ __('Scroll speed (pixels)') }}</label>
+						<input type="number" class="form-control" name="autoscroll_speed" id="autoscroll_speed" min="1" step="1" value="{{ old('autoscroll_speed', !empty($column_config->autoscroll_speed) ? $column_config->autoscroll_speed : 1) }}" />
+					</div>
+					<div class="col-md-12">
+						<small class="form-text text-muted">{{ __('These settings are used only by the PDF.js reader. Lower interval means faster updates; higher speed means more pixels per tick.') }}</small>
+					</div>
+				</div>
+			</div>
         </div>
 
 		<h4>{{ __('Security') }}</h4>
