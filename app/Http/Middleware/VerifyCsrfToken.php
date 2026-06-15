@@ -21,6 +21,7 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         // Exempt the global SPPU SOAP webhook callback from CSRF verification
         '/sppu-reconcile',
+        '/sppu-return',
         // Exempt the per-collection SPPU SOAP webhook callbacks
         '/collection/*/soap-subscription/reconcile',
     ];

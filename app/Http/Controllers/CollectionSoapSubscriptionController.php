@@ -23,6 +23,7 @@ class CollectionSoapSubscriptionController extends Controller
         return view('collection-subscription', [
             'collection' => $collection,
             'subscriptionConfig' => $this->subscriptionService->subscriptionConfig($collection),
+            'activePage' => 'collections',
         ]);
     }
 
