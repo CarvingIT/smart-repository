@@ -34,9 +34,9 @@ class CollectionSoapSubscriptionController extends Controller
         abort_unless($this->subscriptionService->isEnabled($collection), 404);
 
         $validated = $request->validate([
-            'name'   => ['nullable', 'string', 'max:255'],
-            'email'  => ['nullable', 'email', 'max:255'],
-            'mobile' => ['nullable', 'string', 'max:20'],
+            'name'   => ['required', 'string', 'max:255'],
+            'email'  => ['required', 'email', 'max:255'],
+            'mobile' => ['required', 'string', 'max:20'],
         ]);
 
         $name   = $validated['name']   ?? optional($request->user())->name;
