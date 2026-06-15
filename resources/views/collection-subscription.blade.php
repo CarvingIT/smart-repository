@@ -25,18 +25,33 @@
 
                     <form method="POST" action="/collection/{{ $collection->id }}/soap-subscription">
                         @csrf
-                        <div class="form-group row">
-                            <label for="name" class="col-md-4 col-form-label text-md-right">{{ __('Name') }}</label>
-                            <div class="col-md-8">
-                                <input type="text" name="name" id="name" class="form-control" value="{{ old('name', optional(auth()->user())->name) }}" />
+                        <div class="row align-items-center mb-3">
+                            <label for="name" class="col-md-4 col-form-label text-md-right" style="color: black;">{{ __('Name') }} :</label>
+                            <div class="col-md-5">
+                                <div class="form-group bmd-form-group m-0" style="padding-top: 0;">
+                                    <input type="text" name="name" id="name" class="form-control" value="{{ old('name', optional(auth()->user())->name) }}" />
+                                </div>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('Email') }}</label>
-                            <div class="col-md-8">
-                                <input type="email" name="email" id="email" class="form-control" value="{{ old('email', optional(auth()->user())->email) }}" />
+                        <div class="row align-items-center mb-3">
+                            <label for="email" class="col-md-4 col-form-label text-md-right" style="color: black;">{{ __('Email') }} :</label>
+                            <div class="col-md-5">
+                                <div class="form-group bmd-form-group m-0" style="padding-top: 0;">
+                                    <input type="email" name="email" id="email" class="form-control" value="{{ old('email', optional(auth()->user())->email) }}" />
+                                </div>
                                 @error('email')
-                                    <small class="text-danger">{{ $message }}</small>
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="row align-items-center mb-3">
+                            <label for="mobile" class="col-md-4 col-form-label text-md-right" style="color: black;">{{ __('Mobile No.') }} :</label>
+                            <div class="col-md-5">
+                                <div class="form-group bmd-form-group m-0" style="padding-top: 0;">
+                                    <input type="text" name="mobile" id="mobile" class="form-control" value="{{ old('mobile') }}" placeholder="{{ __('e.g. 9876543210') }}" />
+                                </div>
+                                @error('mobile')
+                                    <small class="text-danger d-block mt-1">{{ $message }}</small>
                                 @enderror
                             </div>
                         </div>

@@ -928,6 +928,8 @@ use App\UrlSuppression;
 
         $soapSubscriptionKeys = [
             'soap_subscription_enabled',
+            'soap_subscription_application_id',
+            'soap_subscription_application_name',
             'soap_subscription_amount',
             'soap_subscription_process_code',
             'soap_subscription_valid_days',
@@ -940,6 +942,8 @@ use App\UrlSuppression;
 
         if ($collection->type === 'Members Only') {
             $col_config['soap_subscription_enabled'] = $request->boolean('soap_subscription_enabled') ? 1 : 0;
+            $col_config['soap_subscription_application_id'] = trim((string) $request->input('soap_subscription_application_id', ''));
+            $col_config['soap_subscription_application_name'] = trim((string) $request->input('soap_subscription_application_name', ''));
             $col_config['soap_subscription_amount'] = trim((string) $request->input('soap_subscription_amount', ''));
             $col_config['soap_subscription_process_code'] = trim((string) $request->input('soap_subscription_process_code', ''));
             $col_config['soap_subscription_valid_days'] = (int) $request->input('soap_subscription_valid_days', 365);

@@ -11,6 +11,7 @@ class CollectionSubscription extends Model
         'collection_id',
         'user_email',
         'user_name',
+        'user_mobile',
         'challan',
         'amount',
         'payment_status',

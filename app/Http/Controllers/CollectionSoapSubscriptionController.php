@@ -33,12 +33,14 @@ class CollectionSoapSubscriptionController extends Controller
         abort_unless($this->subscriptionService->isEnabled($collection), 404);
 
         $validated = $request->validate([
-            'name' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'name'   => ['nullable', 'string', 'max:255'],
+            'email'  => ['nullable', 'email', 'max:255'],
+            'mobile' => ['nullable', 'string', 'max:20'],
         ]);
 
-        $name = $validated['name'] ?? optional($request->user())->name;
-        $email = $validated['email'] ?? optional($request->user())->email;
+        $name   = $validated['name']   ?? optional($request->user())->name;
+        $email  = $validated['email']  ?? optional($request->user())->email;
+        $mobile = $validated['mobile'] ?? null;
 
         $existingSuccess = $this->subscriptionService->successfulSubscriptionFor($collection, $request->user(), $email);
         if ($existingSuccess) {
@@ -57,16 +59,23 @@ class CollectionSoapSubscriptionController extends Controller
         }
 
         $subscription = $this->subscriptionService->createPendingSubscription($collection, [
-            'name' => $name,
-            'email' => $email,
+            'name'   => $name,
+            'email'  => $email,
+            'mobile' => $mobile,
         ], $request->user());
 
-        return view('collection-subscription-redirect', [
-            'collection' => $collection,
-            'subscription' => $subscription,
-            'paymentUri' => $paymentUri,
-            'payload' => $this->subscriptionService->buildGatewayPayload($subscription, $collection),
-        ]);
+        // Pre-register with the SPPU gateway (GetPaymentDetails SOAP call).
+        $registered = $this->subscriptionService->registerWithSppuGateway($subscription, $collection);
+        if (!$registered) {
+            Session::flash('alert-danger', 'Could not register the payment request with the gateway. Please try again or contact support.');
+            return back()->withInput();
+        }
+
+        // SPPU requires redirection to the Payment URI with Application_ID = Encrypted ChallanNo
+        $encryptedChallan = $this->subscriptionService->encryptChallanNo($subscription->challan);
+        $redirectUrl = rtrim($paymentUri, '/') . '?Application_ID=' . urlencode($encryptedChallan);
+
+        return redirect()->away($redirectUrl);
     }
 
     public function reconcile(Request $request, $collection_id)

@@ -63,7 +63,11 @@ Route::get('/lang', 'CollectionController@selectLanguage');
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
 Route::get('/collection/{collection_id}/soap-subscription', 'CollectionSoapSubscriptionController@showForm');
 Route::post('/collection/{collection_id}/soap-subscription', 'CollectionSoapSubscriptionController@start');
-Route::post('/collection/{collection_id}/soap-subscription/reconcile', 'CollectionSoapSubscriptionController@reconcile');
+Route::any('/collection/{collection_id}/soap-subscription/reconcile', 'CollectionSoapSubscriptionController@reconcile');
+
+// Global SPPU Gateway Endpoints (Only one SPPU Email Registration required for all collections)
+Route::post('/sppu-reconcile', 'SppuCallbackController@reconcile');
+Route::any('/sppu-return', 'SppuCallbackController@returnPage');
 Route::get('/collection/{collection_id}/export', 'CollectionController@export')->middleware('maintainer');
 Route::get('/collection/{collection_id}/exportxlsx', 'CollectionController@exportXlsx')->middleware('maintainer');
 
