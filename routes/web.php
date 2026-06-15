@@ -149,6 +149,7 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 Route::post('/collection/{collection_id}/ajax-set-extension-filter', 'CollectionController@ajaxSetExtensionFilter');
 Route::post('/collection/{collection_id}/ajax-clear-all-filters', 'CollectionController@ajaxClearAllFilters');
 Route::post('/collection/{collection_id}/ajax-remove-filter/{filter_id}', 'CollectionController@ajaxRemoveFilter');
+Route::post('/collection/{collection_id}/ajax-clear-meta-field-filter/{field_id}', 'CollectionController@ajaxClearMetaFieldFilter');
 Route::get('/collection/{collection_id}/date-facets', 'CollectionController@dateFacets');
 Route::post('/collection/{collection_id}/ajax-exclude-date', 'CollectionController@ajaxExcludeDate');
 // media route; just like the document download route
@@ -209,6 +210,8 @@ Route::get('/reports/duplicates', 'ReportsController@duplicates')->middleware('a
 // admin routes
 Route::get('/admin','AdminController@index')->name('adminhome');
 Route::get('/admin/system-info', 'SystemInfoController@index')->middleware('admin');
+Route::get('/admin/system-info/smtp-test', 'SystemInfoController@smtpTestForm')->middleware('admin')->name('admin.smtp.test.form');
+Route::post('/admin/system-info/smtp-test', 'SystemInfoController@sendSmtpTest')->middleware('admin')->name('admin.smtp.test.send');
 Route::get('/admin/collectionmanagement', 'CollectionController@index')->middleware('admin');
 Route::get('/admin/collection-form/{collection_id}', 'CollectionController@add_edit_collection')->middleware('admin');
 Route::post('/admin/collection-form/delete', 'CollectionController@deleteCollection')->middleware('admin');

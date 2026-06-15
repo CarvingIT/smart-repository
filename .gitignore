@@ -23,6 +23,9 @@ storage/*.key
 .env.*.php
 .env.php
 .env
+.env.backup
+.env.testing.backup
+.env_saml.backup
 Homestead.yaml
 Homestead.json
 
@@ -55,3 +58,4 @@ public/js/pdfjs-viewer/**/*.map
 .env_saml.backup
 re-repos-env.unknown.backup
 .phpunit.result.cache
+re-repos-env.unknown.backup
