@@ -6,6 +6,8 @@ permalink: /features/api-integration/
 
 # API Integration
 
+![API Integration Screenshot]({{ site.baseurl }}/assets/images/features/SR-API.png)
+
 Smart Repository’s API is one of its strongest enablers for integration, automation, and scalability. Instead of treating the repository as an isolated system, APIs allow it to become part of a larger digital ecosystem.
 
 Here’s how the API helps:
@@ -146,7 +148,5 @@ It enables:
 ✅ scalable architecture
 
 In short, the API ensures your knowledge is not trapped inside one application—it becomes available wherever your organization needs it.
-
-![API Integration Screenshot]({{ site.baseurl }}/assets/images/features/SR-API.png)
 
 [← Back to Features]({{ site.baseurl }}/features/)
