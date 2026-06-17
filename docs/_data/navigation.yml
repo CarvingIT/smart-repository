@@ -21,8 +21,8 @@
       url: /features/sso-approvals/
     - title: API Integration
       url: /features/api-integration/
-    - title: Cloud Storage
-      url: /features/cloud-storage/
+    - title: Storage Options
+      url: /features/storage-options/
     - title: Saved Searches
       url: /features/saved-searches/
 - title: Contact
