@@ -149,8 +149,4 @@ In short, the API ensures your knowledge is not trapped inside one application‚Ä
 
 ![API Integration Screenshot]({{ site.baseurl }}/assets/images/features/SR-API.png)
 
-## Authentication
-
-Use API tokens generated from your user profile.
-
 [‚Üê Back to Features]({{ site.baseurl }}/features/)
