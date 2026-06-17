@@ -18,7 +18,7 @@ Smart Repository is packed with powerful features to help you manage digital con
 | [Custom Cataloging Fields]({{ site.baseurl }}/features/custom-cataloging/) | Define your own metadata schema |
 | [Single Sign-On & Approvals]({{ site.baseurl }}/features/sso-approvals/) | SAML 2.0 SSO and approval workflows |
 | [API Integration]({{ site.baseurl }}/features/api-integration/) | REST API for seamless integration |
-| [Cloud Storage]({{ site.baseurl }}/features/cloud-storage/) | Store documents on S3, Azure, GCS, or local disk |
+| [Storage Options]({{ site.baseurl }}/features/storage-options/) | Store documents on S3, Azure, GCS, or local disk |
 | [Saved Searches]({{ site.baseurl }}/features/saved-searches/) | Save and reuse complex search queries |
 
 ---
