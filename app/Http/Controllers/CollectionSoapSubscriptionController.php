@@ -65,10 +65,11 @@ class CollectionSoapSubscriptionController extends Controller
             'mobile' => $mobile,
         ], $request->user());
 
-        // Pre-register with the SPPU gateway (GetPaymentDetails SOAP call).
-        $registered = $this->subscriptionService->registerWithSppuGateway($subscription, $collection);
-        if (!$registered) {
-            Session::flash('alert-danger', 'Could not register the payment request with the gateway. Please try again or contact support.');
+        try {
+            // Pre-register with the SPPU gateway (GetPaymentDetails SOAP call).
+            $this->subscriptionService->registerWithSppuGateway($subscription, $collection);
+        } catch (\Exception $e) {
+            Session::flash('alert-danger', 'Gateway Registration Failed: ' . $e->getMessage());
             return back()->withInput();
         }
 

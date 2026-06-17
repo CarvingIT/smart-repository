@@ -209,12 +209,19 @@ class CollectionSubscriptionService
                 ]);
 
             if ($response->failed() || !str_contains($response->body(), '<GetPaymentDetailsResult>1</GetPaymentDetailsResult>')) {
+                $body = $response->body();
                 Log::warning('SPPU GetPaymentDetails() failed or returned non-1 result.', [
                     'subscription_id' => $subscription->id,
                     'status'          => $response->status(),
-                    'body'            => $response->body(),
+                    'body'            => $body,
                 ]);
-                return false;
+                
+                $resultCode = 'Unknown';
+                if (preg_match('/<GetPaymentDetailsResult>(.*?)<\/GetPaymentDetailsResult>/', $body, $matches)) {
+                    $resultCode = $matches[1];
+                }
+                
+                throw new \Exception("Gateway rejected the request. Result Code: {$resultCode}. Body: " . Str::limit($body, 200));
             }
 
             Log::info('SPPU GetPaymentDetails() registration succeeded.', [
@@ -228,7 +235,7 @@ class CollectionSubscriptionService
                 'subscription_id' => $subscription->id,
                 'error'           => $e->getMessage(),
             ]);
-            return false;
+            throw $e;
         }
     }
 
