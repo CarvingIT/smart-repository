@@ -67,8 +67,21 @@ class CollectionSubscriptionService
         $subscription->payment_payload = json_encode($input);
         $subscription->save();
 
-        $subscription->challan = $this->generateChallanNumber($subscription, $config);
-        $subscription->save();
+        $maxAttempts = 5;
+        for ($i = 0; $i < $maxAttempts; $i++) {
+            try {
+                $subscription->challan = $this->generateChallanNumber($subscription, $config);
+                $subscription->save();
+                break;
+            } catch (\Illuminate\Database\QueryException $e) {
+                $errorCode = $e->errorInfo[1] ?? null;
+                if ($errorCode == 1062 && $i < $maxAttempts - 1) {
+                    usleep(random_int(50000, 150000));
+                    continue;
+                }
+                throw $e;
+            }
+        }
 
         return $subscription->fresh(['collection', 'user']);
     }
@@ -373,7 +386,6 @@ class CollectionSubscriptionService
         $prefix = $year . str_pad($processCode, 2, '0', STR_PAD_LEFT) . $monthCode;
 
         $lastSequence = CollectionSubscription::query()
-            ->where('collection_id', $subscription->collection_id)
             ->where('challan', 'like', $prefix . '%')
             ->whereNotNull('challan')
             ->orderByDesc('id')
