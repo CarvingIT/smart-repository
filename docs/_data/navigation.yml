@@ -17,8 +17,8 @@
       url: /features/localization/
     - title: Custom Cataloging Fields
       url: /features/custom-cataloging/
-    - title: Single Sign-On & Approvals
-      url: /features/sso-approvals/
+    - title: Approval workflows
+      url: /features/approval-workflows/
     - title: API Integration
       url: /features/api-integration/
     - title: Storage Options
