@@ -16,7 +16,7 @@ Smart Repository is packed with powerful features to help you manage digital con
 | [OCR Support]({{ site.baseurl }}/features/ocr-support/) | Extract text from scanned images and PDFs |
 | [Localization & Transliteration]({{ site.baseurl }}/features/localization/) | Multi-language support with transliteration |
 | [Custom Cataloging Fields]({{ site.baseurl }}/features/custom-cataloging/) | Define your own metadata schema |
-| [Single Sign-On & Approvals]({{ site.baseurl }}/features/sso-approvals/) | SAML 2.0 SSO and approval workflows |
+| [Approval workflows with checklists]({{ site.baseurl }}/features/approval-workflows/) | SAML 2.0 SSO and approval workflows |
 | [API Integration]({{ site.baseurl }}/features/api-integration/) | REST API for seamless integration |
 | [Storage Options]({{ site.baseurl }}/features/storage-options/) | Store documents on S3, Azure, GCS, or local disk |
 | [Saved Searches]({{ site.baseurl }}/features/saved-searches/) | Save and reuse complex search queries |
