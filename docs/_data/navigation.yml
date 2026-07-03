@@ -19,6 +19,8 @@
       url: /features/custom-cataloging/
     - title: Approval workflows
       url: /features/approval-workflows/
+    - title: Soft delete and purge operations
+      url: /features/soft-delete-purge/
     - title: API Integration
       url: /features/api-integration/
     - title: Storage Options
