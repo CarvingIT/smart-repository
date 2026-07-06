@@ -5,6 +5,8 @@
   subitems:
     - title: Full-Text Search
       url: /features/full-text-search/
+    - title: Public and Member-only Collections
+      url: /features/public-private-collections/
     - title: Permission Control
       url: /features/permission-control/
     - title: Two Factor Authentication
@@ -25,6 +27,8 @@
       url: /features/api-integration/
     - title: Storage Options
       url: /features/storage-options/
+    - title: Secure Sharing
+      url: /features/secure-sharing/
     - title: Saved Searches
       url: /features/saved-searches/
 - title: Use Cases
