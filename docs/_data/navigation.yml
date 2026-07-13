@@ -19,6 +19,8 @@
       url: /features/localization/
     - title: Custom Cataloging Fields
       url: /features/custom-cataloging/
+    - title: Taxonomies
+      url: /features/taxonomies/
     - title: Approval workflows
       url: /features/approval-workflows/
     - title: Soft delete and purge operations
