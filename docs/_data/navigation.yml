@@ -33,6 +33,8 @@
       url: /features/secure-sharing/
     - title: Saved Searches
       url: /features/saved-searches/
+    - title: System Information
+      url: /features/system-information/
 - title: Use Cases
   url: /use-cases/
 - title: Contact
