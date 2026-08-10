@@ -949,6 +949,44 @@ use App\UrlSuppression;
             $col_config['approval_checklist_labels'] = array_values($approvalChecklistLabels);
         }
 
+        $soapSubscriptionKeys = [
+            'soap_subscription_enabled',
+            'soap_subscription_application_id',
+            'soap_subscription_application_name',
+            'soap_subscription_amount',
+            'soap_subscription_process_code',
+            'soap_subscription_valid_days',
+            'soap_subscription_sequence_length',
+            'soap_subscription_challan_template',
+            'soap_subscription_payment_uri',
+            'soap_subscription_reconciliation_uri',
+            'soap_subscription_notification_email',
+        ];
+
+        if ($collection->type === 'Members Only') {
+            $col_config['soap_subscription_enabled'] = $request->boolean('soap_subscription_enabled') ? 1 : 0;
+            $col_config['soap_subscription_application_id'] = trim((string) $request->input('soap_subscription_application_id', ''));
+            $col_config['soap_subscription_application_name'] = trim((string) $request->input('soap_subscription_application_name', ''));
+            $col_config['soap_subscription_amount'] = trim((string) $request->input('soap_subscription_amount', ''));
+            $col_config['soap_subscription_process_code'] = trim((string) $request->input('soap_subscription_process_code', ''));
+            $col_config['soap_subscription_valid_days'] = (int) $request->input('soap_subscription_valid_days', 365);
+            $col_config['soap_subscription_sequence_length'] = (int) $request->input('soap_subscription_sequence_length', 5);
+            $col_config['soap_subscription_challan_template'] = trim((string) $request->input('soap_subscription_challan_template', ''));
+            $col_config['soap_subscription_payment_uri'] = trim((string) $request->input('soap_subscription_payment_uri', ''));
+            $col_config['soap_subscription_reconciliation_uri'] = trim((string) $request->input('soap_subscription_reconciliation_uri', ''));
+            $col_config['soap_subscription_notification_email'] = trim((string) $request->input('soap_subscription_notification_email', ''));
+
+            foreach ($soapSubscriptionKeys as $key) {
+                if (!array_key_exists($key, $col_config) || $col_config[$key] === '') {
+                    unset($col_config[$key]);
+                }
+            }
+        } else {
+            foreach ($soapSubscriptionKeys as $key) {
+                unset($col_config[$key]);
+            }
+        }
+
 		$collection->column_config = json_encode($col_config);
 		$collection->save();
 

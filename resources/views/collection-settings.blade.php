@@ -259,6 +259,63 @@ $(document).ready(function() {
 			</div>
 		</div>
 
+		@if($collection->type === 'Members Only')
+		<h4>{{ __('SOAP based subscription') }}</h4>
+		<div class="form-group row">
+			<div class="col-md-12">
+				<input type="checkbox" name="soap_subscription_enabled" id="soap_subscription_enabled" value="1"
+					@if(!empty($column_config->soap_subscription_enabled) && (int) $column_config->soap_subscription_enabled === 1) checked="checked" @endif />
+				<label for="soap_subscription_enabled" style="color: black;">{{ __('Enable subscription workflow for this collection') }}</label>
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_application_id" style="color: black;">{{ __('Application ID') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_application_id" id="soap_subscription_application_id" value="@if(isset($column_config->soap_subscription_application_id)){{ $column_config->soap_subscription_application_id }}@endif" placeholder="{{ __('e.g. 42 (from SPPU gateway)') }}" />
+				<small class="form-text text-muted">{{ __('The ApplicationID assigned by the SPPU payment gateway for this application.') }}</small>
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_application_name" style="color: black;">{{ __('Application Name') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_application_name" id="soap_subscription_application_name" value="@if(isset($column_config->soap_subscription_application_name)){{ $column_config->soap_subscription_application_name }}@endif" placeholder="{{ __('e.g. LibrarySubscription') }}" />
+				<small class="form-text text-muted">{{ __('The ApplicationName registered with the SPPU gateway. Leave blank to use the collection name.') }}</small>
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_amount" style="color: black;">{{ __('Amount') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_amount" id="soap_subscription_amount" value="@if(isset($column_config->soap_subscription_amount)){{ $column_config->soap_subscription_amount }}@endif" placeholder="{{ __('e.g. 500.00') }}" />
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_process_code" style="color: black;">{{ __('Process code') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_process_code" id="soap_subscription_process_code" value="@if(isset($column_config->soap_subscription_process_code)){{ $column_config->soap_subscription_process_code }}@endif" placeholder="{{ __('e.g. 87') }}" />
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_valid_days" style="color: black;">{{ __('Validity in days') }}</label>
+				<input type="number" class="form-control" name="soap_subscription_valid_days" id="soap_subscription_valid_days" value="@if(isset($column_config->soap_subscription_valid_days)){{ $column_config->soap_subscription_valid_days }}@else{{ 365 }}@endif" min="1" />
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_sequence_length" style="color: black;">{{ __('Challan sequence length') }}</label>
+				<input type="number" class="form-control" name="soap_subscription_sequence_length" id="soap_subscription_sequence_length" value="@if(isset($column_config->soap_subscription_sequence_length)){{ $column_config->soap_subscription_sequence_length }}@else{{ 5 }}@endif" min="1" />
+			</div>
+			<div class="col-md-12" style="margin-top:10px;">
+				<label for="soap_subscription_challan_template" style="color: black;">{{ __('Challan template') }}</label>
+				<textarea class="form-control" name="soap_subscription_challan_template" id="soap_subscription_challan_template" rows="3" placeholder="year + process_code + month + sequence">@if(isset($column_config->soap_subscription_challan_template)){{ $column_config->soap_subscription_challan_template }}@endif</textarea>
+				<small class="form-text text-muted">{{ __('Available tokens: year, process_code, month, sequence, amount, collection_id, subscription_id') }}</small>
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_payment_uri" style="color: black;">{{ __('Payment URI') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_payment_uri" id="soap_subscription_payment_uri" value="@if(isset($column_config->soap_subscription_payment_uri)){{ $column_config->soap_subscription_payment_uri }}@endif" placeholder="{{ __('Gateway payment URL') }}" />
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_reconciliation_uri" style="color: black;">{{ __('Reconciliation URI') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_reconciliation_uri" id="soap_subscription_reconciliation_uri" value="@if(isset($column_config->soap_subscription_reconciliation_uri)){{ $column_config->soap_subscription_reconciliation_uri }}@endif" placeholder="{{ __('Gateway callback / reconciliation URL') }}" />
+			</div>
+			<div class="col-md-12" style="margin-top:10px;">
+				<label for="soap_subscription_notification_email" style="color: black;">{{ __('Notification email') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_notification_email" id="soap_subscription_notification_email" value="@if(isset($column_config->soap_subscription_notification_email)){{ $column_config->soap_subscription_notification_email }}@endif" placeholder="{{ __('Comma separated email addresses') }}" />
+			</div>
+			<div class="col-md-12">
+				<small class="form-text text-muted">{{ __('When enabled, a challan is generated, saved, and the user is sent to the configured payment URI. The reconciliation URI receives the payment callback and activates collection access on success.') }}</small>
+			</div>
+		</div>
+		@endif
+
 		<h4>{{ __('IMAP Settings (Map an email address to this collection)')}}</h4>
 		<div class="form-group">
 		<p>{{ __('Attachments sent to this email address will be automatically imported into your collection. You may need the help of your IT staff to fill out the following details.') }}</p>
