@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Http\Request;
 use App\Collection;
 use App\Document;
+use App\Disk;
 
 use Illuminate\Support\Facades\Storage;
 use Google\Service\Drive;
@@ -39,23 +40,83 @@ class BuildCollectionFromGoogleDrive extends Command
      */
     public function handle()
     {
+        $collections_array = [];
+        if(preg_match('/all/i',$this->argument('collection_id'))){
+           echo "All\n"; 
+           $collections = Collection::get();
+            foreach($collections as $c){
+                $collections_array[] = $c;
+                /*
+                echo $c->name." = ".$c->storage_drive."\n"; 
+                $disk = \App\Disk::where('name',$c->storage_drive)->first();
+                if(!empty($disk->config)){
+                    $disk_config =  json_decode($disk->config,true);
+                    echo $disk_config['driver']."\n";
+                }
+                else continue;
+                */
+            } 
+        }
+        else{
+            $collection_id = $this->argument('collection_id');
+            $collection = \App\Collection::find($collection_id);
+            $collections_array[] = $collection;
+        }
+/*
+    print_r($collections_array);
+    echo "\n";
+    foreach($collections_array as $collection){
+    echo $collection->id."=".$collection->name."\n";
+        $disk = \App\Disk::where('name',$collection->storage_drive)->first();
+        if(!empty($disk->config)){
+            $disk_config =  json_decode($disk->config,true);
+            $driver = $disk_config['driver'];
+            echo "Disk Drive - ".$disk_config['driver']."\n";
+            if($disk_config['driver'] != 'google'){
+                continue;
+            }
+        }
+        else continue;
+    }
+exit;
+*/
+
+        foreach($collections_array as $collection){//This command will run for each collection id in the collections table.
+            $collection_id = $collection->id;
+
+        // Below is the Working code 
+        /* 
+        //OLD Code
         $collection_id = $this->argument('collection_id');
         $collection = \App\Collection::find($collection_id);
         $storage_drive = empty($collection->storage_drive) ? 'local' : $collection->storage_drive;
         $driver = config("filesystems.disks.{$storage_drive}.driver");
+        if($driver != 'google'){ 
+            echo "Sorry, this command is only for Google Drive.\n";
+            exit;
+        }
+        */
+        $driver = '';
+        $disk = \App\Disk::where('name',$collection->storage_drive)->first();
+        if(!empty($disk->config)){
+            $disk_config =  json_decode($disk->config,true);
+            //echo $disk_config['driver']."\n";
+            $driver = $disk_config['driver'];
+            if($disk_config['driver'] != 'google'){
+                continue;
+            }
+        }
+        else continue;
+        $storage_drive = empty($collection->storage_drive) ? 'local' : $collection->storage_drive;
 
         echo "Collection disk type: ".$driver."\n";
         echo "Collection disk name: ".$storage_drive."\n";
         echo "\n";
 
-        if($driver != 'google'){ 
-            echo "Sorry, this command is only for Google Drive.\n";
-            exit;
-        }
         echo "Started importing the documents: \n";
         echo "\n";
 
-        $disk = \App\Disk::where('name','=',$collection->storage_drive)->first();
+        //$disk = \App\Disk::where('name','=',$collection->storage_drive)->first();
         $config = $disk_config = json_decode($disk->config);
         $folderName = $disk_config->folderId;
 
@@ -111,31 +172,6 @@ class BuildCollectionFromGoogleDrive extends Command
                 $filepath = $meta['path'];
                 $fileId = $meta['extraMetadata']['id'];
                 $file_name = $meta['extraMetadata']['name'];
-/*
-if(!preg_match('/Grade 1_Block4_English_Lesson Plan/', $file)){ continue; } 
-if(preg_match('/Grade 1_Block4_English_Lesson Plan/', $file)){ 
-    print_r($meta);
-    echo $file."\n";
-         $optParams = [
-        'fields' => 'user, storageQuota, exportFormats'
-    ];
-$about = $service->about->get($optParams); // Get all the possible expected_mimeType
-        echo response()->json($about);
-
-    echo $meta['fileSize'];echo "\n"; echo $meta['mimeType'];echo "\n"; 
-    $expected_mimeType = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-    //$expected_mimeType = 'text/plain';
-    try{
-        $response = $service->files->export($fileId, $expected_mimeType, ['alt' => 'media']);
-        $rawData = $content = $response->getBody()->getContents();
-    }
-    catch(\Exception $e){
-        echo "continue";
-    }
-    //print_r($rawData);
-    exit;
-}
-*/
                 $file_ext = $meta['extraMetadata']['extension'];
                 $file_virtual_path = $meta['extraMetadata']['virtual_path'];
                 $file_display_path = $meta['extraMetadata']['display_path'];
@@ -206,6 +242,9 @@ $about = $service->about->get($optParams); // Get all the possible expected_mime
                 echo "\n";
                 //}
         }
+
+        }//foreach ends for all collections
+
         echo "Finished importing the documents. \n";
         
         return Command::SUCCESS;

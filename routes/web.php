@@ -123,6 +123,7 @@ Route::get('/collection/{collection_id}/removeallfilters', 'CollectionController
 Route::post('/collection/{collection_id}/ajax-set-extension-filter', 'CollectionController@ajaxSetExtensionFilter');
 Route::post('/collection/{collection_id}/ajax-clear-all-filters', 'CollectionController@ajaxClearAllFilters');
 Route::post('/collection/{collection_id}/ajax-remove-filter/{filter_id}', 'CollectionController@ajaxRemoveFilter');
+Route::post('/collection/{collection_id}/ajax-clear-meta-field-filter/{field_id}', 'CollectionController@ajaxClearMetaFieldFilter');
 Route::get('/collection/{collection_id}/date-facets', 'CollectionController@dateFacets');
 Route::post('/collection/{collection_id}/ajax-exclude-date', 'CollectionController@ajaxExcludeDate');
 // media route; just like the document download route

@@ -438,6 +438,7 @@ class DocumentController extends Controller
         } else {
             return redirect('/collection/' . $request->input('collection_id'));
         }
+        // DocumentSaved is dispatched automatically when the Document model is touched/saved
     }
 
     public static function importFile($collection_id, $path, $meta=[]){
@@ -608,7 +609,10 @@ class DocumentController extends Controller
     public function saveMetaData($document_id, $meta_data){
 		// reverse meta field values - first delete then add each
 		// first delete if related this document any and then add
-		ReverseMetaFieldValue::where('document_id', $document_id)->delete();
+        // remove existing reverse and forward meta values so that deleted/cleared
+        // meta fields are actually removed from the document
+        ReverseMetaFieldValue::where('document_id', $document_id)->delete();
+        MetaFieldValue::where('document_id', $document_id)->delete();
 
         foreach($meta_data as $m){
 			if(is_object($m)){
