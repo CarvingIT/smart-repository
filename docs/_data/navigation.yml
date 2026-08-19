@@ -5,6 +5,8 @@
   subitems:
     - title: Full-Text Search
       url: /features/full-text-search/
+    - title: Public and Member-only Collections
+      url: /features/public-private-collections/
     - title: Permission Control
       url: /features/permission-control/
     - title: Two Factor Authentication
@@ -17,13 +19,23 @@
       url: /features/localization/
     - title: Custom Cataloging Fields
       url: /features/custom-cataloging/
-    - title: Single Sign-On & Approvals
-      url: /features/sso-approvals/
+    - title: Taxonomies
+      url: /features/taxonomies/
+    - title: Approval workflows
+      url: /features/approval-workflows/
+    - title: Soft delete and purge operations
+      url: /features/soft-delete-purge/
     - title: API Integration
       url: /features/api-integration/
-    - title: Cloud Storage
-      url: /features/cloud-storage/
+    - title: Storage Options
+      url: /features/storage-options/
+    - title: Secure Sharing
+      url: /features/secure-sharing/
     - title: Saved Searches
       url: /features/saved-searches/
+    - title: System Information
+      url: /features/system-information/
+- title: Use Cases
+  url: /use-cases/
 - title: Contact
   url: /contact/

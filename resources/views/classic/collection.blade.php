@@ -1,7 +1,9 @@
 @extends('layouts.app',['class' => 'off-canvas-sidebar','title'=>'Smart Repository','activePage'=>'contact','titlePage'=>'Contact Us'])
 @push('js')
 <script src="/build/assets/js/jquery-ui.min.js" defer></script>
+<script src="/build/assets/js/jquery.daterangepicker.min.js"></script>
 <link href="/build/assets/css/jquery-ui.min.css" rel="stylesheet">
+<link href="/build/assets/css/daterangepicker.min.css" rel="stylesheet">
 <link href="/css/classic/main.css" rel="stylesheet">
 <link href="/css/classic/fonts.css" rel="stylesheet">
 <!-- Font Awesome - served locally via npm (@fortawesome/fontawesome-free) -->
@@ -127,6 +129,23 @@
 .fa-external-link-alt:before {
 	content: "\f35d" !important;
 }
+
+/* Ensure created date-range tags and picker input don't clip the end of the range */
+.created-filter-tag {
+	white-space: nowrap;
+	overflow: visible;
+	max-width: 100%;
+}
+.created-filter-tag .filter-tag-text {
+	white-space: nowrap;
+	overflow: visible;
+}
+
+/* Give daterange input extra right padding so the clear icon won't overlap the text */
+input[id$="_search"] {
+	padding-right: 40px !important;
+	min-width: 0; /* allow flex contraction without clipping */
+}
 </style>
 <script>
 $(document).ready(function() {
@@ -197,6 +216,19 @@ function clearFilters(){
 			// Reset all text/date/select meta filters in the sidebar
 			$('input[type="text"][name^="meta_"]').val('');
 			$('input[type="date"][name^="meta_"]').val('');
+			// Reset classic date-range picker UI and its internal selected range state
+			$('input[id^="meta_"][id$="_search"]').each(function(){
+				var $dateInput = $(this);
+				var dateRangePicker = $dateInput.data('dateRangePicker');
+				if(dateRangePicker){
+					if(typeof dateRangePicker.clear === 'function'){
+						dateRangePicker.clear();
+					} else if(typeof dateRangePicker.setDateRange === 'function'){
+						dateRangePicker.setDateRange('', '', true);
+					}
+				}
+				$dateInput.val('');
+			});
 			$('select[name^="meta_"]').each(function(){
 				this.selectedIndex = 0;
 			});
@@ -302,7 +334,7 @@ function renderCreatedFilterTag(operator, value, filterId){
 		+ 'style="background:#f0e6f6; border:1px solid #9c27b0; border-radius:6px; padding:6px 8px; margin-top:8px;">'
 		+ '<div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">'
 		+ '<div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">'
-		+ '<span style="font-size:12px; font-weight:700; color:#222;">' + opLabel + ' ' + displayDate + '<\/span>'
+		+ '<span class="filter-tag-text" style="font-size:12px; font-weight:700; color:#222;">' + opLabel + ' ' + displayDate + '<\/span>'
 		+ '<span class="filter-tag-count" style="font-size:11px; font-weight:600; color:#666;"><\/span>'
 		+ '<\/div>'
 		+ '<a href="javascript:void(0);" onclick="removeCreatedFilter(this, \'' + filterId + '\'); return false;" '
@@ -411,6 +443,14 @@ function classicToggleTaxParent(uid) {
 	if (arrow) arrow.innerHTML = isHidden ? '&#9660;' : '&#9654;';
 }
 
+function classicToggleTaxParentWithCheckbox(uid, checkboxId) {
+	var checkbox = document.getElementById(checkboxId);
+	if (checkbox) {
+		checkbox.click();
+	}
+	classicToggleTaxParent(uid);
+}
+
 function showSpinner(){
 	// Remove any previous overlay
 	$('#search-results .results-loading-overlay').remove();
@@ -453,18 +493,17 @@ function goToPage(page){
 <a name="search-results"></a>
 @php
 	// get reverse meta field values
-	if($collection->require_approval){
-		$rmf_values = App\ReverseMetaFieldValue::whereHas('document', function($q){
+	$column_config_for_counts = empty($collection->column_config) ? null : json_decode($collection->column_config);
+	$show_unapproved_in_results = !empty($column_config_for_counts->display_unapproved_docs) && (int)$column_config_for_counts->display_unapproved_docs === 1;
+	$rmf_values = App\ReverseMetaFieldValue::whereHas('document', function($q) use ($collection, $show_unapproved_in_results){
+		$q->where('collection_id', $collection->id);
+		if($collection->require_approval && !$show_unapproved_in_results){
 			$q->whereNotNull('approved_on');
-		})->get();
-	}
-	else{
-		$rmf_values = App\ReverseMetaFieldValue::all();
-	}
+		}
+	})->get();
 	$rmfv_map = [];
 	foreach($rmf_values as $rmfv){
-		$mf = \App\MetaField::where('id', $rmfv->meta_field_id)->first();
-		$rmfv_map[$rmfv->meta_field_id][$rmfv->meta_value][]=$rmfv->document_id;
+		$rmfv_map[$rmfv->meta_field_id][$rmfv->meta_value][$rmfv->document_id] = true;
 		/*
 		$tm_family = [];
 		if( $mf && $mf->type == 'TaxonomyTree'){
@@ -496,7 +535,7 @@ function goToPage(page){
 				if($depth == 0){
 					// --- Classic Theme: render first-level parents as collapsible accordion headers ---
 					// Check if any direct child is currently selected (to keep accordion open)
-					$anySelected = false;
+					$anySelected = !empty($checked);
 					$req_meta = Request::get('meta_'.$meta_id);
 					if(!empty($req_meta)){
 						foreach($children['parent_'.$t->id] as $child){
@@ -507,9 +546,12 @@ function goToPage(page){
 					$arrowChar = $anySelected ? '&#9660;' : '&#9654;';
 					$uid = 'tax_acc_'.$meta_id.'_'.$t->id;
 					echo '<div class="taxonomy-parent-accordion" style="margin-top:4px;">';
-					echo '<div class="taxonomy-parent-label" onclick="classicToggleTaxParent(\''.$uid.'\')" style="cursor:pointer; display:flex; align-items:center; gap:5px; padding:6px 8px; background:#f5f0fa; border-radius:5px; font-weight:600; font-size:13px; color:#444; margin-bottom:2px;">';
-					echo '<span id="'.$uid.'_arrow" style="font-size:10px; min-width:14px; text-align:center; color:#9c27b0;">'.$arrowChar.'</span>';
-					echo '<span>'.$t->label.'</span>';
+						echo '<div class="taxonomy-parent-label" onclick="classicToggleTaxParent(\''.$uid.'\');" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:6px 8px; background:#f5f0fa; border-radius:5px; font-weight:600; font-size:13px; color:#444; margin-bottom:2px;">';
+					echo '<span style="display:flex; align-items:center; gap:6px; min-width:0;">';
+					echo '<input id="chk_meta_'.$meta_id.'_'.$t->id.'_p'.$parent_id.'" type="checkbox" value="'.$t->id.'" name="meta_'.$meta_id.'[]" '.$checked.' onclick="event.stopPropagation();" onchange="reloadSearchResults();">';
+						echo '<span onclick="event.stopPropagation(); classicToggleTaxParent(\''.$uid.'\');" style="cursor:pointer; margin:0;">'.$t->label.' ('.(empty($rmfv_map[$meta_id][$t->id])?0:count($rmfv_map[$meta_id][$t->id])).')</span>';
+					echo '</span>';
+						echo '<span id="'.$uid.'_arrow" onclick="event.stopPropagation(); classicToggleTaxParent(\''.$uid.'\'); return false;" style="font-size:10px; min-width:14px; text-align:center; color:#9c27b0; cursor:pointer;">'.$arrowChar.'</span>';
 					echo '</div>';
 					echo '<div id="'.$uid.'" style="'.$childContainerDisplay.' margin-left:14px; margin-top:2px; padding-bottom:4px; border-left:2px solid #e8d5f5; padding-left:8px;">';
 					getTree($children, $rmfv_map, $t->id, $meta_id, true, $depth+1);
@@ -774,12 +816,17 @@ foreach($tags as $t){
 				// Taxonomy filters (shown below File Type)
 				$taxonomy_filters = array_filter($filters, function($f){ return $f->type == 'TaxonomyTree'; });
 				foreach($taxonomy_filters as $f){
-					// Keep outer section open if any child is already checked (active filter)
-					$_taxOpenByDefault = !empty(Request::get('meta_'.$f->id));
-					$_taxOuterDisplay = $_taxOpenByDefault ? '' : 'display:none;';
+					$root_taxonomy = \App\Taxonomy::find($f->options);
+					$root_meta_values = Request::get('meta_'.$f->id);
+					$_taxOpenByDefault = true;
+					$_taxOuterDisplay = '';
 					echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;" style="margin-top:8px; display:block;">'.$f->label.'</a>';
 					echo '<div id="filter_'.$f->id.'" style="'.$_taxOuterDisplay.'">';
-					getTree($children, $rmfv_map, $f->options, $f->id, true);
+					if(!empty($root_taxonomy)){
+						echo '<div id="tax_root_'.$f->id.'" style="margin-top:2px; padding-bottom:4px; padding-left:0;">';
+						getTree($children, $rmfv_map, $f->options, $f->id, true);
+						echo '</div>';
+					}
 					echo "</div>\n";
 				}
 				// Other filters (Numeric, Select, Textarea, Text, Date, etc.)
@@ -830,9 +877,18 @@ foreach($tags as $t){
 						echo "</div>\n";
 					}
 					else if($f->type == 'Date'){
+						$extra_attributes = empty($f->extra_attributes) ? null : json_decode($f->extra_attributes);
+						$min_year = empty($extra_attributes->min_year_setting) ? 1900 : $extra_attributes->min_year_setting;
+						$max_year = empty($extra_attributes->max_year_setting) ? date('Y') : $extra_attributes->max_year_setting;
 						echo '<a href="javascript:void(0);" onclick="$(\'#filter_'.$f->id.'\').toggle(); return false;">'.$f->label.'</a>';
 						echo '<div id="filter_'.$f->id.'" style="display:none;">';
-						echo '<input type="date" name="meta_'.$f->id.'[]" class="form-control" style="font-size:13px; padding:4px 6px;" onchange="scheduleClassicMetaFilterSearch();" />';
+						echo '<div style="position:relative; width:100%;">';
+						echo '<input type="text" id="meta_'.$f->id.'_search" class="form-control" placeholder="'.__('Select date range').'" autocomplete="off" style="font-size:13px; padding:6px 34px 6px 6px; width:100%; box-sizing:border-box;" />';
+						echo '<button type="button" onclick="clearClassicDateRangeFilter('.$f->id.');" title="'.__('Clear').'" aria-label="'.__('Clear').'" style="position:absolute; right:6px; top:50%; transform:translateY(-50%); background:transparent; border:none; padding:2px; color:#e53935; display:inline-flex; align-items:center; justify-content:center; cursor:pointer;">';
+						echo '<i class="material-icons" style="font-size:18px; line-height:1; color:#e53935; font-weight:400;">delete</i>';
+						echo '</button>';
+						echo '</div>';
+						echo '<script>$("#meta_'.$f->id.'_search").dateRangePicker({monthSelect: true, yearSelect: ['.$min_year.', '.$max_year.']}).bind("datepicker-change", function(event, obj){ var startDate = moment(obj.date1).format("YYYY-MM-DD"); var endDate = moment(obj.date2).format("YYYY-MM-DD"); $.ajax({ url: "/collection/'.$collection->id.'/quickmetafilters", method: "POST", data: { _token: "'.csrf_token().'", collection_id: "'.$collection->id.'", "meta_field[]": "'.$f->id.'", "meta_type[]": "Date", "operator[]": "between", "meta_value['.$f->id.'][]": startDate + " to " + endDate }, success: function(){ reloadSearchResults(); } }); });</script>';
 						echo '</div>';
 					}
 					else if($f->type == 'Textarea' || $f->type == 'Text' || $f->type == 'SelectCombo'){
@@ -916,6 +972,31 @@ function applyRecordCreatedFilter(){
 		error: function(xhr){
 			console.error('Failed to apply date filter', xhr);
 			alert('{{ __("Failed to apply filter. Please try again.") }}');
+		}
+	});
+}
+
+function clearClassicDateRangeFilter(fieldId){
+	var $dateInput = $('#meta_' + fieldId + '_search');
+	$.ajax({
+		url: '/collection/{{ $collection->id }}/ajax-clear-meta-field-filter/' + fieldId,
+		method: 'POST',
+		data: { _token: '{{ csrf_token() }}' },
+		success: function(){
+			var dateRangePicker = $dateInput.data('dateRangePicker');
+			if(dateRangePicker){
+				if(typeof dateRangePicker.clear === 'function'){
+					dateRangePicker.clear();
+				} else if(typeof dateRangePicker.setDateRange === 'function'){
+					dateRangePicker.setDateRange('', '', true);
+				}
+			}
+			$dateInput.val('');
+			reloadSearchResults();
+		},
+		error: function(xhr){
+			console.error('Failed to clear date range filter', xhr);
+			alert('{{ __("Failed to clear filter. Please try again.") }}');
 		}
 	});
 }

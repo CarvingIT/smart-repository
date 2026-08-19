@@ -55,6 +55,8 @@ class CollectionController extends Controller
     public function list(Request $request){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
 
+        $stats = [];
+        /*
         // Build a real-time document count map so we always show the true count
         // instead of the cached `document_count` column (which can go out of sync).
         $collectionIds = $collections->pluck('id')->toArray();
@@ -65,7 +67,6 @@ class CollectionController extends Controller
             ->get()
             ->keyBy('collection_id');
 
-        $stats = [];
         foreach($collections as $collection){
             $live = $liveCounts->get($collection->id);
             $stats[$collection->id] = (object)[
@@ -73,7 +74,14 @@ class CollectionController extends Controller
                 "size" => $live ? (int)$live->total_size : 0,
             ];
         }
-        
+        */
+        // cached counts 
+        foreach($collections as $collection){
+            $stats[$collection->id] = (object)[
+                "cnt" => $collection->document_count,
+                "size" => $collection->size_active,
+            ];
+        }
         // Handle sorting
         $sort_by = $request->input('sort_by', 'name_asc'); // default to alphabetical ascending
         
@@ -687,6 +695,19 @@ $j++;
             $all_meta_filters[$collection_id] = array_values(
                 array_filter($all_meta_filters[$collection_id], function($f) use($filter_id){
                     return $f['filter_id'] !== $filter_id;
+                })
+            );
+            Session::put('meta_filters', $all_meta_filters);
+        }
+        return response()->json(['success' => true]);
+    }
+
+    public function ajaxClearMetaFieldFilter($collection_id, $field_id){
+        $all_meta_filters = Session::get('meta_filters', []);
+        if(!empty($all_meta_filters[$collection_id])){
+            $all_meta_filters[$collection_id] = array_values(
+                array_filter($all_meta_filters[$collection_id], function($f) use($field_id){
+                    return $f['field_id'] !== $field_id;
                 })
             );
             Session::put('meta_filters', $all_meta_filters);
