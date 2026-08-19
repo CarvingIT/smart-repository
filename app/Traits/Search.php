@@ -170,7 +170,7 @@ trait Search{
 				else{
 		            // find the type of meta field 
 		            $m_field = MetaField::find($mf['field_id']);
-		            if ($m_field->type == 'TaxonomyTree'){
+		            if (in_array($m_field->type,['TaxonomyTree','Select','MultiSelect'])){
                 	    $documents = $documents->whereHas('meta', function (Builder $query) use($mf){
                             $query->where('meta_field_id',$mf['field_id'])->where('value', 'like', '%"'.$mf['value'].'"%');
                     	});

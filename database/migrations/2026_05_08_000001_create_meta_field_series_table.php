@@ -16,7 +16,7 @@ class CreateMetaFieldSeriesTable extends Migration
         if (!Schema::hasTable('meta_field_series')) {
             Schema::create('meta_field_series', function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->unsignedBigInteger('meta_field_id')->index();
+                $table->unsignedInteger('meta_field_id')->index();
                 $table->string('prefix')->nullable();
                 $table->string('date_format')->nullable();
                 $table->unsignedBigInteger('next_sequence')->default(1);

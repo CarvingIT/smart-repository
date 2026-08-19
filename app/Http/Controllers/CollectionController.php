@@ -55,6 +55,7 @@ class CollectionController extends Controller
     public function list(Request $request){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
 
+        $stats = [];
         /*
         // Build a real-time document count map so we always show the true count
         // instead of the cached `document_count` column (which can go out of sync).
@@ -66,7 +67,6 @@ class CollectionController extends Controller
             ->get()
             ->keyBy('collection_id');
 
-        $stats = [];
         foreach($collections as $collection){
             $live = $liveCounts->get($collection->id);
             $stats[$collection->id] = (object)[
