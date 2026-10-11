@@ -106,7 +106,7 @@ class CollectionController extends Controller
                 $collections = $collections->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE);
         }
         
-        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats, 'sort_by'=>$sort_by]);
+        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats, 'sort_by'=>$sort_by, 'is_logged_in'=>Auth::check()]);
     }
 
     public function save(Request $request){
