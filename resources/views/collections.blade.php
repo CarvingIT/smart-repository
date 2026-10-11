@@ -92,6 +92,7 @@
 <div class="container">
 <div class="container-fluid">
     <div class="row justify-content-end collections-sort-row">
+        @if($collections->count() > 0)
         <div class="col-auto">
             <div class="dropdown">
                 <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -114,10 +115,11 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
 
     <div class="row justify-content-center">
-        @foreach ($collections as $c)
+        @forelse ($collections as $c)
 		@if($c->content_type == 'Web resources' && env('SHOW_WEB_RESOURCES') != 1)
 			@continue
 		@endif
@@ -169,8 +171,31 @@
                  </div>
             </div>
         </div>
-        @endforeach
+        @empty
+        {{-- Empty state: contact-page style card --}}
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header card-header-primary">
+                    <h4 class="card-title">Collections</h4>
+                </div>
+                <div class="card-body" style="padding: 40px 30px; text-align: center;">
+                    <i class="material-icons" style="font-size: 52px; color: #b0bec5; display: block; margin-bottom: 16px;">folder_open</i>
+                    @if(!$is_logged_in)
+                        <p style="font-size: 1rem; color: #546e7a; margin: 0; line-height: 1.8;">
+                            No public collections have been created. If you have access to any member-only collections, please
+                            <a href="{{ route('login') }}" style="color: #9c27b0; font-weight: 600;">login</a> and visit this page.
+                        </p>
+                    @else
+                        <p style="font-size: 1rem; color: #546e7a; margin: 0; line-height: 1.8;">
+                            No public collections have been created and you don't have access to any member-only collections.
+                        </p>
+                    @endif
+                </div>
+            </div>
+        </div>
+        @endforelse
     </div>
 </div>
 </div>
 @endsection
+
