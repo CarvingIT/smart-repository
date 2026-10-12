@@ -436,25 +436,101 @@ $(document).ready(function()
 				</form>
 				@endif {{-- has approve permission --}}
 			</div>
-				@if(empty($document->approved_on))
-                  	<div class="col-md-12">
-                   		<h3>Comments</h3>
-				@foreach($comments as $comment)
-				<div>{{ $comment->user->name }}({{ $comment->user->email }}) said: <p>{{ $comment->comment }}</p></div>
-				@endforeach	
+			@endif {{-- display document status section only for logged in user --}}
+
+			{{-- ============================================================
+			     COMMENTS & ANNOTATIONS SECTION
+			     Visible to any authenticated user when comments_enabled = 1
+			     ============================================================ --}}
+			@php
+				$comments_enabled = !empty($col_config->comments_enabled) && $col_config->comments_enabled == 1;
+			@endphp
+			@if(\Auth::check())
+			<div class="col-md-12" id="comments" style="margin-top:32px; padding-top:16px; border-top:1px solid #e9ecef;">
+
+				<div style="display:flex; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px;">
+					<h3 style="margin:0; font-size:1.25rem; font-weight:600; color:#333; display:flex; align-items:center;">
+						<i class="material-icons" style="font-size:1.35rem; margin-right:6px; color:#8e24aa;">forum</i>
+						{{ __('Comments & Annotations') }}
+						<span class="badge" style="background:#6c757d; color:#fff; font-size:0.75rem; border-radius:12px; padding:3px 9px; margin-left:8px; font-weight:600;">{{ $comments->count() }}</span>
+					</h3>
+					@if($comments_enabled)
+					<span class="badge" style="background:#28a745; color:#fff; font-size:0.72rem; padding:4px 10px; border-radius:12px; font-weight:600; letter-spacing:0.5px;">ON</span>
+					@else
+					<span class="badge" style="background:#6c757d; color:#fff; font-size:0.72rem; padding:4px 10px; border-radius:12px; font-weight:600; letter-spacing:0.5px;">OFF</span>
+					@endif
+				</div>
+
+				{{-- Existing comments list --}}
+				@if($comments->count() > 0)
+				<div style="margin-bottom:24px;">
+					@foreach($comments as $comment)
+					<div style="display:flex; gap:12px; margin-bottom:12px; padding:14px 16px; background:#fff; border:1px solid #e5e7eb; border-left:4px solid #8e24aa; border-radius:8px; box-shadow:0 1px 2px rgba(0,0,0,0.03);">
+						<div style="flex-shrink:0;">
+							<div style="width:38px; height:38px; border-radius:50%; background:linear-gradient(135deg, #8e24aa, #ab47bc); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:0.95rem; box-shadow:0 2px 4px rgba(142,36,170,0.25);">
+								{{ strtoupper(substr($comment->user->name ?? 'U', 0, 1)) }}
+							</div>
+						</div>
+						<div style="flex:1; min-width:0;">
+							<div style="display:flex; align-items:baseline; gap:8px; margin-bottom:4px; flex-wrap:wrap;">
+								<strong style="font-size:0.92rem; color:#1f2937;">{{ $comment->user->name ?? __('Unknown') }}</strong>
+								<span style="color:#6b7280; font-size:0.78rem;">{{ $comment->user->email ?? '' }}</span>
+								<span style="color:#9ca3af; font-size:0.75rem; margin-left:auto;">
+									{{ $comment->created_at->diffForHumans() }} &bull; {{ $comment->created_at->format('d M Y, H:i') }}
+								</span>
+							</div>
+							<p style="margin:0; white-space:pre-wrap; word-break:break-word; color:#374151; font-size:0.92rem; line-height:1.5;">{{ $comment->comment }}</p>
+						</div>
+						@if($comment->canBeDeletedBy(\Auth::user()))
+						<div style="flex-shrink:0; align-self:flex-start; margin-left:8px;">
+							<form method="post" action="/comment/{{ $comment->id }}/delete"
+								onsubmit="return confirm('{{ __('Delete this comment?') }}');" style="margin:0;">
+								@csrf
+								<button type="submit" class="btn btn-link text-danger p-0" title="{{ __('Delete comment') }}" style="min-width:auto; padding:2px 4px; margin:0; line-height:1; opacity:0.6; transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
+									<i class="material-icons" style="font-size:1.2rem; vertical-align:middle;">delete_outline</i>
+								</button>
+							</form>
+						</div>
+						@endif
+					</div>
+					@endforeach
+				</div>
+				@else
+				<p class="text-muted" style="font-style:italic; margin-bottom:20px;">{{ __('No comments yet. Be the first to leave one!') }}</p>
+				@endif
+
+				{{-- Post comment form --}}
+				@if($comments_enabled)
+				<div style="background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:18px 20px; box-shadow:0 1px 3px rgba(0,0,0,0.02);">
+					<h5 style="margin:0 0 12px; font-weight:600; font-size:1rem; color:#1f2937; display:flex; align-items:center; gap:6px;">
+						<i class="material-icons" style="vertical-align:middle; font-size:1.15rem; color:#8e24aa;">edit</i>
+						{{ __('Post a Comment') }}
+					</h5>
+					<form name="comment-form" action="/save-comment" method="post">
+						@csrf
+						<input type="hidden" name="collection_id" value="{{ $document->collection_id }}">
+						<input type="hidden" name="document_id" value="{{ $document->id }}">
+						<div class="form-group" style="margin-bottom:12px;">
+							<textarea name="comment" id="doc-comment-textarea" class="form-control" rows="3"
+								placeholder="{{ __('Write your annotation or comment here…') }}"
+								required maxlength="5000" style="resize:vertical; border:1px solid #d1d5db; border-radius:6px; padding:10px 12px; font-size:0.92rem;"></textarea>
+							<small class="form-text text-muted" style="margin-top:4px;">{{ __('Maximum 5,000 characters.') }}</small>
+						</div>
+						<button type="submit" class="btn btn-primary" style="margin:0;">
+							<i class="material-icons" style="vertical-align:middle; font-size:1rem; margin-right:4px;">send</i>
+							{{ __('Post Comment') }}
+						</button>
+					</form>
+				</div>
+				@else
+				<div class="alert alert-warning" style="margin-top:8px;">
+					<i class="material-icons" style="vertical-align:middle; margin-right:4px;">info</i>
+					{{ __('Comments are currently disabled for this collection. A maintainer can enable them via Collection Settings.') }}
+				</div>
+				@endif
+
 			</div>
-                  	<div class="col-md-12">
-				<form name="comment" action="/save-comment" method="post">
-				@csrf
-				<input type="hidden" name="collection_id" value="{{ $document->collection_id }}">
-				<input type="hidden" name="document_id" value="{{ $document->id }}">
-                   			<h3>Leave a Comment</h3>
-                    			<div id="doc_meta_description" class="col-md-12"><textarea name="comment" id="comment" class="form-control" cols="80" rows="10" value="" placeholder="Enter your comment here" required ></textarea></div>
-					<button type="submit" class="btn btn-primary"> Add Comment </button>
-				</form>	
-                        </div>
-				@endif {{-- display comments only for unapproved documents --}}
-			@endif {{-- display document status and comment section only for logged in user --}}
+			@endif {{-- Auth::check() --}}
 
 				</div>
 				@if ($document->related_documents->count() > 0 || $document->related_to->count() > 0)
