@@ -28,22 +28,36 @@ class SppuCallbackController extends Controller
         $decodedXml = html_entity_decode($xmlContent);
 
         preg_match('/<Status>(.*?)<\/Status>/i', $decodedXml, $statusMatch);
+        preg_match('/<Field9>(.*?)<\/Field9>/i', $decodedXml, $field9Match);
         preg_match('/<ChallanNo>(.*?)<\/ChallanNo>/i', $decodedXml, $challanMatch);
+        preg_match('/<TranID>(.*?)<\/TranID>/i', $decodedXml, $tranIdMatch);
+        preg_match('/<MhPayID>(.*?)<\/MhPayID>/i', $decodedXml, $mhPayIdMatch);
+        preg_match('/<Transaction_Amount>(.*?)<\/Transaction_Amount>/i', $decodedXml, $amtMatch);
+        preg_match('/<Amt>(.*?)<\/Amt>/i', $decodedXml, $altAmtMatch);
 
-        $status = $statusMatch[1] ?? 'failed';
+        $status = $statusMatch[1] ?? ($field9Match[1] ?? 'failed');
         $challanNo = $challanMatch[1] ?? null;
+        $tranId = $tranIdMatch[1] ?? ($mhPayIdMatch[1] ?? null);
+        $amount = $amtMatch[1] ?? ($altAmtMatch[1] ?? null);
 
         if ($challanNo) {
             // Find subscription across ANY collection using ChallanNo
             $subscription = CollectionSubscription::where('challan', $challanNo)->first();
 
             if ($subscription) {
-                // If payment was successful
-                if (strtolower($status) === 'success' || strtolower($status) === 'captured') {
-                    $this->subscriptionService->reconcile($subscription, ['payment_status' => 'success']);
+                $isSuccess = in_array(strtolower(trim($status)), ['success', 'captured', 'paid'], true);
+                $payload = [
+                    'payment_status'     => $isSuccess ? 'success' : 'failed',
+                    'transaction_id'     => $tranId,
+                    'transaction_amount' => $amount,
+                    'status'             => $status,
+                ];
+
+                $this->subscriptionService->reconcile($subscription, $payload);
+
+                if ($isSuccess) {
                     Log::info("Global SPPU Payment Successful for Challan: $challanNo (Collection ID: {$subscription->collection_id})");
                 } else {
-                    $this->subscriptionService->reconcile($subscription, ['payment_status' => 'failed']);
                     Log::warning("Global SPPU Payment Failed for Challan: $challanNo");
                 }
             } else {
@@ -72,7 +86,19 @@ class SppuCallbackController extends Controller
      */
     public function returnPage(Request $request)
     {
-        // Add a success message to the session so it shows on the dashboard
+        $challanNo = $request->input('ChallanNo') ?? $request->input('challan');
+        if ($challanNo) {
+            $subscription = CollectionSubscription::where('challan', $challanNo)->first();
+            if ($subscription) {
+                if ($subscription->payment_status === 'success') {
+                    return redirect('/collection/' . $subscription->collection_id)
+                        ->with('alert-success', 'Payment successful! Access granted to the collection.');
+                }
+                return redirect('/collection/' . $subscription->collection_id . '/soap-subscription')
+                    ->with('alert-danger', 'Payment was not completed or failed.');
+            }
+        }
+
         return redirect('/dashboard')->with('alert-success', 'Your payment is being processed. If successful, your collection access will be granted shortly.');
     }
 }

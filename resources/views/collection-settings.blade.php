@@ -274,8 +274,13 @@ $(document).ready(function() {
 			</div>
 			<div class="col-md-6" style="margin-top:10px;">
 				<label for="soap_subscription_application_name" style="color: black;">{{ __('Application Name') }}</label>
-				<input type="text" class="form-control" name="soap_subscription_application_name" id="soap_subscription_application_name" value="@if(isset($column_config->soap_subscription_application_name)){{ $column_config->soap_subscription_application_name }}@endif" placeholder="{{ __('e.g. LibrarySubscription') }}" />
+				<input type="text" class="form-control" name="soap_subscription_application_name" id="soap_subscription_application_name" value="@if(isset($column_config->soap_subscription_application_name)){{ $column_config->soap_subscription_application_name }}@endif" placeholder="{{ __('e.g. OJMS') }}" />
 				<small class="form-text text-muted">{{ __('The ApplicationName registered with the SPPU gateway. Leave blank to use the collection name.') }}</small>
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_mlc_code" style="color: black;">{{ __('MLC Code (AccountID)') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_mlc_code" id="soap_subscription_mlc_code" value="@if(isset($column_config->soap_subscription_mlc_code)){{ $column_config->soap_subscription_mlc_code }}@endif" placeholder="{{ __('e.g. 411049') }}" />
+				<small class="form-text text-muted">{{ __('The MLC Code for this journal, passed as AccountID in the SPPU payment XML (e.g. 411049 for IPQ, 411050 for Paramarsha).') }}</small>
 			</div>
 			<div class="col-md-6" style="margin-top:10px;">
 				<label for="soap_subscription_amount" style="color: black;">{{ __('Amount') }}</label>

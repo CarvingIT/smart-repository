@@ -111,12 +111,15 @@ class CollectionSubscriptionService
         $reconciliationUri = trim((string) ($config->soap_subscription_reconciliation_uri ?? ''));
         $applicationId   = trim((string) ($config->soap_subscription_application_id   ?? ''));
         $applicationName = trim((string) ($config->soap_subscription_application_name ?? $collection->name));
+        $mlcCode         = trim((string) ($config->soap_subscription_mlc_code         ?? ''));
 
         // SPPU payment gateway expects these exact field names.
         // See Technical Payment Integration Document for the full contract.
+        // AccountID = MLC Code (per SPPU OJMS integration instructions).
         return [
             'ApplicationName' => $applicationName,
             'ApplicationID'   => $applicationId,
+            'AccountID'       => $mlcCode,
             'ChallanNo'       => (string) $subscription->challan,
             'FullName'        => (string) $subscription->user_name,
             'MobileNo'        => (string) $subscription->user_mobile,
@@ -168,23 +171,9 @@ class CollectionSubscriptionService
         $payload = $this->buildGatewayPayload($subscription, $collection);
 
         // Construct the XML required by SPPU
-        $xmlParam = htmlspecialchars("<Challan>
-<ApplicationName>{$payload['ApplicationName']}</ApplicationName>
-<ApplicationID>{$payload['ApplicationID']}</ApplicationID>
-<ChallanNo>{$payload['ChallanNo']}</ChallanNo>
-<FullName>{$payload['FullName']}</FullName>
-<MobileNo>{$payload['MobileNo']}</MobileNo>
-<EmailID>{$payload['EmailID']}</EmailID>
-<Amount>{$payload['Amount']}</Amount>
-<Address1></Address1>
-<Address2></Address2>
-<City></City>
-<Pincode></Pincode>
-<State></State>
-<Country></Country>
-<ChallanDate>" . date('Y-m-d\TH:i:s.v') . "</ChallanDate>
-<IPAddress>" . (request()->ip() ?? '127.0.0.1') . "</IPAddress>
-</Challan>");
+        // AccountID carries the MLC Code as per SPPU OJMS integration document.
+        $accountIdXml = $payload['AccountID'] !== '' ? "\n<AccountID>{$payload['AccountID']}</AccountID>" : '';
+        $xmlParam = htmlspecialchars("<Challan>\r\n<ApplicationName>{$payload['ApplicationName']}</ApplicationName>\r\n<ApplicationID>{$payload['ApplicationID']}</ApplicationID>{$accountIdXml}\r\n<ChallanNo>{$payload['ChallanNo']}</ChallanNo>\r\n<FullName>{$payload['FullName']}</FullName>\r\n<MobileNo>{$payload['MobileNo']}</MobileNo>\r\n<EmailID>{$payload['EmailID']}</EmailID>\r\n<Amount>{$payload['Amount']}</Amount>\r\n<Address1></Address1>\r\n<Address2></Address2>\r\n<City></City>\r\n<Pincode></Pincode>\r\n<State></State>\r\n<Country></Country>\r\n<ChallanDate>" . date('Y-m-d\TH:i:s.v') . "</ChallanDate>\r\n<IPAddress>" . (request()->ip() ?? '127.0.0.1') . "</IPAddress>\r\n</Challan>");
 
         $soapEnvelope = '<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
