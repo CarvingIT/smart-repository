@@ -55,6 +55,7 @@ class CollectionController extends Controller
     public function list(Request $request){
 		$collections = $this->userCollections(['VIEW_OWN','VIEW','MAINTAINER']);
 
+        $stats = [];
         /*
         // Build a real-time document count map so we always show the true count
         // instead of the cached `document_count` column (which can go out of sync).
@@ -66,7 +67,6 @@ class CollectionController extends Controller
             ->get()
             ->keyBy('collection_id');
 
-        $stats = [];
         foreach($collections as $collection){
             $live = $liveCounts->get($collection->id);
             $stats[$collection->id] = (object)[
@@ -106,7 +106,7 @@ class CollectionController extends Controller
                 $collections = $collections->sortBy('name', SORT_NATURAL|SORT_FLAG_CASE);
         }
         
-        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats, 'sort_by'=>$sort_by]);
+        return view('collections', ['title'=>'Smart Repository','activePage'=>'collections','titlePage'=>'Collections','collections'=>$collections, 'stats'=>$stats, 'sort_by'=>$sort_by, 'is_logged_in'=>Auth::check()]);
     }
 
     public function save(Request $request){
@@ -895,6 +895,7 @@ use App\UrlSuppression;
 		$collection = Collection::find($request->collection_id);
         $col_config = $request->except(['search_result_template_html', 'details_page_template_html', 'approval_status_labels_text', 'approval_checklist_labels_text']);
         $col_config['require_two_factor'] = $request->boolean('require_two_factor') ? 1 : 0;
+        $col_config['comments_enabled'] = $request->boolean('comments_enabled') ? 1 : 0;
     $col_config['autoscroll_interval'] = max(1, (int) $request->input('autoscroll_interval', 50));
     $col_config['autoscroll_speed'] = max(1, (int) $request->input('autoscroll_speed', 1));
 

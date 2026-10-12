@@ -477,6 +477,20 @@ $(document).ready(function() {
 			</div>
 		</div>
 
+		<h4>{{ __('Comments & Annotations') }}</h4>
+		<div class="form-group row">
+			<div class="col-md-12">
+				<input type="checkbox" name="comments_enabled" id="comments_enabled" value="1"
+					@if(!empty($column_config->comments_enabled) && $column_config->comments_enabled == 1) checked="checked" @endif />
+				<label for="comments_enabled">{{ __('Enable comments on documents') }}</label>
+			</div>
+			<div class="col-md-12" style="margin-top: 6px;">
+				<small class="form-text text-muted">
+					{{ __('When enabled, authenticated users can post comments on any document in this collection. When disabled, the comment section is hidden entirely.') }}
+				</small>
+			</div>
+		</div>
+
 		</div>
 <div class="form-group row mb-0">
     <div class="col-md-9 offset-md-4">
