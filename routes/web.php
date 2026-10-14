@@ -79,6 +79,8 @@ Route::post('/approve-document', 'DocumentController@approveDocument');
 
 //Document Comment
 Route::post('/save-comment', 'CommentController@save');
+Route::delete('/comment/{comment_id}/delete', 'CommentController@delete')->middleware('auth');
+Route::post('/comment/{comment_id}/delete', 'CommentController@delete')->middleware('auth');
 
 // Document import queue via url
 Route::get('/collection/{collection_id}/url-import', 'URLImportController@index')->middleware('document_add');
