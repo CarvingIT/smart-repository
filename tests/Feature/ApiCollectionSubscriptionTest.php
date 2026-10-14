@@ -58,12 +58,12 @@ class ApiCollectionSubscriptionTest extends TestCase
             ['description' => 'Can view any content']
         );
 
-        $collection = Collection::create([
-            'name' => 'api-subscribe-' . uniqid(),
-            'description' => 'Collection for API subscribe test',
-            'type' => 'Members Only',
-            'user_id' => $admin->id,
-        ]);
+        $collection = new Collection();
+        $collection->name = 'api-subscribe-' . uniqid();
+        $collection->description = 'Collection for API subscribe test';
+        $collection->type = 'Members Only';
+        $collection->user_id = $admin->id;
+        $collection->save();
 
         $email = 'api_subscribe_' . uniqid() . '@example.com';
         $tillDate = now()->addMonth()->format('Y-m-d');
@@ -121,12 +121,12 @@ class ApiCollectionSubscriptionTest extends TestCase
             ['description' => 'Can view any content']
         );
 
-        $collection = Collection::create([
-            'name' => 'api-subscribe-form-' . uniqid(),
-            'description' => 'Collection for API subscribe form payload test',
-            'type' => 'Members Only',
-            'user_id' => $admin->id,
-        ]);
+        $collection = new Collection();
+        $collection->name = 'api-subscribe-form-' . uniqid();
+        $collection->description = 'Collection for API subscribe form payload test';
+        $collection->type = 'Members Only';
+        $collection->user_id = $admin->id;
+        $collection->save();
 
         $email = 'api_subscribe_form_' . uniqid() . '@example.com';
         $tillDate = now()->addMonth()->format('Y-m-d');

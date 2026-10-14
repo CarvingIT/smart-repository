@@ -160,6 +160,39 @@ class CollectionSubscriptionService
     }
 
     /**
+     * Decrypts an encrypted query string token (like encrypted ChallanNo or Application_ID)
+     * using SPPU's AES decryption logic (Technical Integration Document, Section 2.4 DecryptQueryString).
+     */
+    public function decryptChallanNo(string $cipherText): ?string
+    {
+        try {
+            $cipherText = str_replace(' ', '+', trim($cipherText));
+            $cipherBytes = base64_decode($cipherText);
+
+            if ($cipherBytes === false || strlen($cipherBytes) === 0) {
+                return null;
+            }
+
+            $encryptionKey = "MAKV2SPBNI99212";
+            $salt = "Ivan Medvedev";
+
+            $derived = hash_pbkdf2("sha1", $encryptionKey, $salt, 1000, 48, true);
+            $key = substr($derived, 0, 32);
+            $iv  = substr($derived, 32, 16);
+
+            $decryptedBytes = openssl_decrypt($cipherBytes, 'aes-256-cbc', $key, OPENSSL_RAW_DATA, $iv);
+
+            if ($decryptedBytes === false) {
+                return null;
+            }
+
+            return trim(mb_convert_encoding($decryptedBytes, 'UTF-8', 'UTF-16LE'));
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
      * Call the SPPU GetPaymentDetails() registration endpoint before opening
      * the payment page. Returns true on success, false (or throws) on failure.
      *
@@ -230,14 +263,14 @@ class CollectionSubscriptionService
 
     public function reconcile(CollectionSubscription $subscription, array $payload): CollectionSubscription
     {
-        return DB::transaction(function () use ($subscription, $payload) {
+        $reconciled = DB::transaction(function () use ($subscription, $payload) {
             $lockedSubscription = CollectionSubscription::query()
                 ->whereKey($subscription->id)
                 ->lockForUpdate()
                 ->firstOrFail();
 
             if ($lockedSubscription->payment_status === 'success') {
-                return $lockedSubscription->fresh(['collection', 'user']);
+                return $lockedSubscription;
             }
 
             $status = $this->normalizeStatus($payload['payment_status'] ?? $payload['status'] ?? null);
@@ -262,8 +295,215 @@ class CollectionSubscriptionService
                 $lockedSubscription->save();
             }
 
-            return $lockedSubscription->fresh(['collection', 'user']);
+            return $lockedSubscription;
         });
+
+        // Trigger Finance Service Integration (Finance Challan Submission Service) upon successful payment
+        if ($reconciled->payment_status === 'success') {
+            try {
+                $this->submitToFinanceService($reconciled, $payload);
+            } catch (\Exception $e) {
+                Log::error('Finance Service Submission failed for Challan ' . $reconciled->challan . ': ' . $e->getMessage());
+            }
+        }
+
+        return $reconciled->fresh(['collection', 'user']);
+    }
+
+    /**
+     * Resolves the Indian academic year format YYYY-YY (e.g. 2026-27).
+     */
+    public function resolveAcademicYear(?object $config = null): string
+    {
+        if ($config && !empty($config->soap_subscription_acad_year)) {
+            return trim((string) $config->soap_subscription_acad_year);
+        }
+
+        $now = now();
+        $year = (int) $now->format('Y');
+        $month = (int) $now->format('n');
+
+        if ($month >= 6) {
+            $nextYearTwoDigits = substr((string) ($year + 1), 2, 2);
+            return "{$year}-{$nextYearTwoDigits}";
+        }
+
+        $prevYear = $year - 1;
+        $currYearTwoDigits = substr((string) $year, 2, 2);
+        return "{$prevYear}-{$currYearTwoDigits}";
+    }
+
+    /**
+     * Builds the XML required by the Finance Challan Submission Service (ImportChallanXMLNew).
+     * Reference: Technical Payment Integration Document, Section 1 & Section 3.
+     */
+    public function buildFinanceChallanXml(CollectionSubscription $subscription, ?array $callbackPayload = null): string
+    {
+        $collection = $subscription->collection ?: Collection::find($subscription->collection_id);
+        $config = $collection ? $this->subscriptionConfig($collection) : new \stdClass();
+
+        $challanNo = (string) $subscription->challan;
+        $appNo = trim((string) ($config->soap_subscription_application_id ?? '')) ?: (string) $subscription->id;
+        $acadYear = $this->resolveAcademicYear($config);
+
+        $bankName = $callbackPayload['bank_type'] ?? ($callbackPayload['BankType'] ?? ($callbackPayload['bank_name'] ?? 'Bank of Maharashtra'));
+        $isBom = stripos($bankName, 'maharashtra') !== false;
+        $bankCode = $isBom ? '1' : '2';
+
+        $amtType = 'ONLINE';
+        $amount = number_format((float) $subscription->amount, 2, '.', '');
+        $accountId = trim((string) ($config->soap_subscription_mlc_code ?? '411049'));
+
+        // Name parsing (FirstName, MiddleName, SurName)
+        $fullName = trim((string) ($subscription->user_name ?? ''));
+        $nameParts = array_values(array_filter(preg_split('/\s+/', $fullName)));
+        $firstName = $nameParts[0] ?? 'User';
+        $middleName = count($nameParts) > 2 ? $nameParts[1] : '';
+        $surName = count($nameParts) > 2 ? implode(' ', array_slice($nameParts, 2)) : ($nameParts[1] ?? '');
+
+        // Address info from stored payload or sensible defaults
+        $payloadData = json_decode($subscription->payment_payload ?? '{}', true) ?: [];
+        $address = htmlspecialchars($payloadData['address'] ?? '');
+        $city = htmlspecialchars($payloadData['city'] ?? 'PUNE');
+        $dist = htmlspecialchars($payloadData['dist'] ?? 'PUNE');
+        $state = htmlspecialchars($payloadData['state'] ?? 'Maharashtra');
+        $pin = htmlspecialchars($payloadData['pincode'] ?? '411007');
+
+        // College info
+        $collegeName = htmlspecialchars(trim((string) ($config->soap_subscription_college_name ?? ($config->soap_subscription_application_name ?? ($collection ? $collection->name : 'SPPU')))));
+        $collegeCode = htmlspecialchars(trim((string) ($config->soap_subscription_college_code ?? '1042')));
+
+        $entryDate = now()->format('d-M-Y');
+
+        return "<Challan>\r\n" .
+            "<ChallanNo>{$challanNo}</ChallanNo>\r\n" .
+            "<ApplicationNumber>{$appNo}</ApplicationNumber>\r\n" .
+            "<facultyCode></facultyCode>\r\n" .
+            "<bankName>" . htmlspecialchars($bankName) . "</bankName>\r\n" .
+            "<bankCode>{$bankCode}</bankCode>\r\n" .
+            "<Acad_Year>{$acadYear}</Acad_Year>\r\n" .
+            "<amtType>{$amtType}</amtType>\r\n" .
+            "<AMOUNT>{$amount}</AMOUNT>\r\n" .
+            "<GLAmt>\r\n" .
+            "<GL>\r\n" .
+            "<AccountID>" . htmlspecialchars($accountId) . "</AccountID>\r\n" .
+            "<AMOUNT>{$amount}</AMOUNT>\r\n" .
+            "<DBCRType>C</DBCRType>\r\n" .
+            "<StudCount>1</StudCount>\r\n" .
+            "</GL>\r\n" .
+            "</GLAmt>\r\n" .
+            "<Student>\r\n" .
+            "<Name>\r\n" .
+            "<FirstName>" . htmlspecialchars($firstName) . "</FirstName>\r\n" .
+            "<MiddleName>" . htmlspecialchars($middleName) . "</MiddleName>\r\n" .
+            "<SurName>" . htmlspecialchars($surName) . "</SurName>\r\n" .
+            "<MotherName></MotherName>\r\n" .
+            "</Name>\r\n" .
+            "<emailId>" . htmlspecialchars((string) $subscription->user_email) . "</emailId>\r\n" .
+            "<PRNNo></PRNNo>\r\n" .
+            "<AddressDet>\r\n" .
+            "<Address>{$address}</Address>\r\n" .
+            "<City>{$city}</City>\r\n" .
+            "<Dist>{$dist}</Dist>\r\n" .
+            "<State>{$state}</State>\r\n" .
+            "<Pin>{$pin}</Pin>\r\n" .
+            "</AddressDet>\r\n" .
+            "</Student>\r\n" .
+            "<Collage>\r\n" .
+            "<Info>\r\n" .
+            "<CollegeName>{$collegeName}</CollegeName>\r\n" .
+            "<CollegeCode>{$collegeCode}</CollegeCode>\r\n" .
+            "</Info>\r\n" .
+            "</Collage>\r\n" .
+            "<Status>3</Status>\r\n" .
+            "<userid>1</userid>\r\n" .
+            "<EntryDate>{$entryDate}</EntryDate>\r\n" .
+            "</Challan>";
+    }
+
+    /**
+     * Submits the challan to the SPPU Finance Reconciliation Service (ImportChallanXMLNew).
+     * Reference: Technical Payment Integration Document, Section 1 & Section 5.
+     */
+    public function submitToFinanceService(CollectionSubscription $subscription, ?array $callbackPayload = null): array
+    {
+        $collection = $subscription->collection ?: Collection::find($subscription->collection_id);
+        $config = $collection ? $this->subscriptionConfig($collection) : new \stdClass();
+
+        $serviceUrl = trim((string) ($config->soap_subscription_finance_uri ?? '')) ?: 'https://mkclreconcile.unipune.ac.in/Service.svc';
+        $financeKey = trim((string) ($config->soap_subscription_finance_key ?? '')) ?: 'd709ie08dn2dg4201fi1';
+        $staticToken = base64_encode($financeKey);
+
+        $challanXml = $this->buildFinanceChallanXml($subscription, $callbackPayload);
+        $challanNo = (string) $subscription->challan;
+
+        $soapEnvelope = '<?xml version="1.0" encoding="utf-8"?>' . "\r\n" .
+            '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:tem="http://tempuri.org/">' . "\r\n" .
+            '   <soapenv:Header/>' . "\r\n" .
+            '   <soapenv:Body>' . "\r\n" .
+            '      <tem:ImportChallanXMLNew>' . "\r\n" .
+            '         <tem:StaticToken>' . $staticToken . '</tem:StaticToken>' . "\r\n" .
+            '         <tem:ChallanNo>' . $challanNo . '</tem:ChallanNo>' . "\r\n" .
+            '         <tem:XML><![CDATA[' . $challanXml . ']]></tem:XML>' . "\r\n" .
+            '      </tem:ImportChallanXMLNew>' . "\r\n" .
+            '   </soapenv:Body>' . "\r\n" .
+            '</soapenv:Envelope>';
+
+        try {
+            $response = Http::timeout(20)
+                ->withHeaders([
+                    'Content-Type' => 'text/xml; charset=utf-8',
+                    'SOAPAction'   => 'http://tempuri.org/IService/ImportChallanXMLNew',
+                ])
+                ->withoutVerifying()
+                ->send('POST', $serviceUrl, [
+                    'body' => $soapEnvelope,
+                ]);
+
+            $body = $response->body();
+            $resultCode = null;
+            if (preg_match('/<Result>(.*?)<\/Result>/i', $body, $matches)) {
+                $resultCode = $matches[1];
+            }
+
+            Log::info("SPPU Finance Service ImportChallanXMLNew response for Challan: {$challanNo}", [
+                'status' => $response->status(),
+                'result' => $resultCode,
+                'body'   => Str::limit($body, 300),
+            ]);
+
+            // Save Finance response into reconciliation payload
+            $reconcileData = json_decode($subscription->reconciliation_payload ?? '{}', true) ?: [];
+            $reconcileData['finance_service'] = [
+                'submitted_at' => now()->toIso8601String(),
+                'status_code'  => $response->status(),
+                'result'       => $resultCode,
+                'raw_response' => Str::limit($body, 1000),
+            ];
+            $subscription->reconciliation_payload = json_encode($reconcileData);
+            $subscription->save();
+
+            return [
+                'success' => $response->successful(),
+                'result'  => $resultCode,
+                'status'  => $response->status(),
+            ];
+        } catch (\Exception $e) {
+            Log::error("SPPU Finance Service ImportChallanXMLNew Exception for Challan {$challanNo}: " . $e->getMessage());
+
+            $reconcileData = json_decode($subscription->reconciliation_payload ?? '{}', true) ?: [];
+            $reconcileData['finance_service'] = [
+                'submitted_at' => now()->toIso8601String(),
+                'error'        => $e->getMessage(),
+            ];
+            $subscription->reconciliation_payload = json_encode($reconcileData);
+            $subscription->save();
+
+            return [
+                'success' => false,
+                'error'   => $e->getMessage(),
+            ];
+        }
     }
 
     public function grantAccess(CollectionSubscription $subscription): User

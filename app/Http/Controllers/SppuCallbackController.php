@@ -34,11 +34,17 @@ class SppuCallbackController extends Controller
         preg_match('/<MhPayID>(.*?)<\/MhPayID>/i', $decodedXml, $mhPayIdMatch);
         preg_match('/<Transaction_Amount>(.*?)<\/Transaction_Amount>/i', $decodedXml, $amtMatch);
         preg_match('/<Amt>(.*?)<\/Amt>/i', $decodedXml, $altAmtMatch);
+        preg_match('/<BankType>(.*?)<\/BankType>/i', $decodedXml, $bankTypeMatch);
+        preg_match('/<BankCode>(.*?)<\/BankCode>/i', $decodedXml, $bankCodeMatch);
+        preg_match('/<TranDate>(.*?)<\/TranDate>/i', $decodedXml, $tranDateMatch);
 
         $status = $statusMatch[1] ?? ($field9Match[1] ?? 'failed');
         $challanNo = $challanMatch[1] ?? null;
         $tranId = $tranIdMatch[1] ?? ($mhPayIdMatch[1] ?? null);
         $amount = $amtMatch[1] ?? ($altAmtMatch[1] ?? null);
+        $bankType = $bankTypeMatch[1] ?? null;
+        $bankCode = $bankCodeMatch[1] ?? null;
+        $tranDate = $tranDateMatch[1] ?? null;
 
         if ($challanNo) {
             // Find subscription across ANY collection using ChallanNo
@@ -51,6 +57,10 @@ class SppuCallbackController extends Controller
                     'transaction_id'     => $tranId,
                     'transaction_amount' => $amount,
                     'status'             => $status,
+                    'bank_type'          => $bankType,
+                    'bank_code'          => $bankCode,
+                    'tran_date'          => $tranDate,
+                    'raw_callback'       => $decodedXml,
                 ];
 
                 $this->subscriptionService->reconcile($subscription, $payload);
@@ -86,7 +96,17 @@ class SppuCallbackController extends Controller
      */
     public function returnPage(Request $request)
     {
-        $challanNo = $request->input('ChallanNo') ?? $request->input('challan');
+        $rawChallan = $request->input('ChallanNo') ?? $request->input('challan');
+        $challanNo = $rawChallan;
+
+        // If ChallanNo is encrypted (base64 cipher text from SPPU gateway), decrypt it
+        if ($rawChallan && (!ctype_digit($rawChallan) || strlen($rawChallan) > 15)) {
+            $decrypted = $this->subscriptionService->decryptChallanNo($rawChallan);
+            if (!empty($decrypted)) {
+                $challanNo = $decrypted;
+            }
+        }
+
         if ($challanNo) {
             $subscription = CollectionSubscription::where('challan', $challanNo)->first();
             if ($subscription) {

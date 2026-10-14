@@ -315,8 +315,35 @@ $(document).ready(function() {
 				<label for="soap_subscription_notification_email" style="color: black;">{{ __('Notification email') }}</label>
 				<input type="text" class="form-control" name="soap_subscription_notification_email" id="soap_subscription_notification_email" value="@if(isset($column_config->soap_subscription_notification_email)){{ $column_config->soap_subscription_notification_email }}@endif" placeholder="{{ __('Comma separated email addresses') }}" />
 			</div>
-			<div class="col-md-12">
-				<small class="form-text text-muted">{{ __('When enabled, a challan is generated, saved, and the user is sent to the configured payment URI. The reconciliation URI receives the payment callback and activates collection access on success.') }}</small>
+
+			<div class="col-md-12" style="margin-top:20px;">
+				<h5 style="color: black; font-weight: bold; border-bottom: 1px solid #e0e0e0; padding-bottom: 5px;">{{ __('Finance Service Integration (MKCL / University Finance Department)') }}</h5>
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_finance_uri" style="color: black;">{{ __('Finance Service URL') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_finance_uri" id="soap_subscription_finance_uri" value="@if(isset($column_config->soap_subscription_finance_uri)){{ $column_config->soap_subscription_finance_uri }}@endif" placeholder="https://mkclreconcile.unipune.ac.in/Service.svc" />
+				<small class="form-text text-muted">{{ __('Finance Challan Submission SOAP Service URL (default: https://mkclreconcile.unipune.ac.in/Service.svc).') }}</small>
+			</div>
+			<div class="col-md-6" style="margin-top:10px;">
+				<label for="soap_subscription_finance_key" style="color: black;">{{ __('Finance Encryption Key') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_finance_key" id="soap_subscription_finance_key" value="@if(isset($column_config->soap_subscription_finance_key)){{ $column_config->soap_subscription_finance_key }}@endif" placeholder="d709ie08dn2dg4201fi1" />
+				<small class="form-text text-muted">{{ __('Static Encryption Key for Base64 token authentication (default: d709ie08dn2dg4201fi1).') }}</small>
+			</div>
+			<div class="col-md-4" style="margin-top:10px;">
+				<label for="soap_subscription_college_code" style="color: black;">{{ __('College / Dept Code') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_college_code" id="soap_subscription_college_code" value="@if(isset($column_config->soap_subscription_college_code)){{ $column_config->soap_subscription_college_code }}@endif" placeholder="1042" />
+			</div>
+			<div class="col-md-4" style="margin-top:10px;">
+				<label for="soap_subscription_college_name" style="color: black;">{{ __('College / Dept Name') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_college_name" id="soap_subscription_college_name" value="@if(isset($column_config->soap_subscription_college_name)){{ $column_config->soap_subscription_college_name }}@endif" placeholder="{{ __('e.g. SPPU Department') }}" />
+			</div>
+			<div class="col-md-4" style="margin-top:10px;">
+				<label for="soap_subscription_acad_year" style="color: black;">{{ __('Academic Year (Optional)') }}</label>
+				<input type="text" class="form-control" name="soap_subscription_acad_year" id="soap_subscription_acad_year" value="@if(isset($column_config->soap_subscription_acad_year)){{ $column_config->soap_subscription_acad_year }}@endif" placeholder="{{ __('e.g. 2026-27 (auto if blank)') }}" />
+			</div>
+
+			<div class="col-md-12" style="margin-top:15px;">
+				<small class="form-text text-muted">{{ __('When enabled, a challan is generated, registered with the Online Payment Gateway, and upon successful payment, the permanent challan with GL breakdown is automatically submitted to the University Finance Department Service.') }}</small>
 			</div>
 		</div>
 		@endif

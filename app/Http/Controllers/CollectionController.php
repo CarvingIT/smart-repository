@@ -962,6 +962,11 @@ use App\UrlSuppression;
             'soap_subscription_payment_uri',
             'soap_subscription_reconciliation_uri',
             'soap_subscription_notification_email',
+            'soap_subscription_finance_uri',
+            'soap_subscription_finance_key',
+            'soap_subscription_college_code',
+            'soap_subscription_college_name',
+            'soap_subscription_acad_year',
         ];
 
         if ($collection->type === 'Members Only') {
@@ -977,6 +982,11 @@ use App\UrlSuppression;
             $col_config['soap_subscription_payment_uri'] = trim((string) $request->input('soap_subscription_payment_uri', ''));
             $col_config['soap_subscription_reconciliation_uri'] = trim((string) $request->input('soap_subscription_reconciliation_uri', ''));
             $col_config['soap_subscription_notification_email'] = trim((string) $request->input('soap_subscription_notification_email', ''));
+            $col_config['soap_subscription_finance_uri'] = trim((string) $request->input('soap_subscription_finance_uri', ''));
+            $col_config['soap_subscription_finance_key'] = trim((string) $request->input('soap_subscription_finance_key', ''));
+            $col_config['soap_subscription_college_code'] = trim((string) $request->input('soap_subscription_college_code', ''));
+            $col_config['soap_subscription_college_name'] = trim((string) $request->input('soap_subscription_college_name', ''));
+            $col_config['soap_subscription_acad_year'] = trim((string) $request->input('soap_subscription_acad_year', ''));
 
             foreach ($soapSubscriptionKeys as $key) {
                 if (!array_key_exists($key, $col_config) || $col_config[$key] === '') {

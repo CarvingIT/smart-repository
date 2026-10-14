@@ -53,8 +53,9 @@ class ApiCollectionSubscriptionController extends Controller
                     'email' => $validated['email'],
                     // Random password; user is expected to set their own via reset link.
                     'password' => Hash::make(Str::random(40)),
-                    'email_verified_at' => now(),
                 ]);
+                $user->email_verified_at = now();
+                $user->save();
 
                 $token = Password::broker()->createToken($user);
                 $resetUrl = URL::to('/password/reset/' . $token . '?email=' . urlencode($user->email));
