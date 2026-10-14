@@ -48,6 +48,7 @@
         "spatie/pdf-to-image": "^3.1",
         "spatie/pdf-to-text": "^1.4",
         "swiftmailer/swiftmailer": "^6.0",
+        "symfony/polyfill-php72": "*",
         "thiagoalessio/tesseract_ocr": "^2.13",
         "unisharp/laravel-filemanager": "^2.9",
         "vedmant/laravel-feed-reader": "^1.6",
@@ -59,7 +60,7 @@
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^6.0",
-        "phpunit/phpunit": "^10.0"
+        "phpunit/phpunit": "^9.5"
     },
     "config": {
         "optimize-autoloader": true,
