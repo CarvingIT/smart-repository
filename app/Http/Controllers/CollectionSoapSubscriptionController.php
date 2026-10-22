@@ -66,7 +66,19 @@ class CollectionSoapSubscriptionController extends Controller
         ], $request->user());
 
         try {
-            // Pre-register with the SPPU gateway (GetPaymentDetails SOAP call).
+            // Step 1: Submit challan to Finance Service (ImportChallanXMLNew) FIRST.
+            // SPPU requires Finance Service to be called before the Payment Gateway Service.
+            $this->subscriptionService->submitToFinanceService($subscription);
+        } catch (\Exception $e) {
+            // Log but do not block — Finance Service failure should not prevent payment from proceeding.
+            \Illuminate\Support\Facades\Log::warning('Finance Service pre-registration failed, proceeding to gateway.', [
+                'subscription_id' => $subscription->id,
+                'error'           => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            // Step 2: Pre-register with the SPPU Payment Gateway (GetPaymentDetails SOAP call).
             $this->subscriptionService->registerWithSppuGateway($subscription, $collection);
         } catch (\Exception $e) {
             Session::flash('alert-danger', 'Gateway Registration Failed: ' . $e->getMessage());
