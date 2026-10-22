@@ -155,7 +155,7 @@ h4{
 
 		@if(@$m->meta_field->type == 'Date')
 		<p><label>{{ @$m->meta_field->label }}</label><br />
-        @if(date_create($doc->meta_value($m->meta_field_id)))
+        @if(!empty($doc->meta_value($m->meta_field_id)) && date_create($doc->meta_value($m->meta_field_id)))
         {{ date_format(date_create($doc->meta_value($m->meta_field_id)), env('DATE_FORMAT', 'd/m/Y')) }}
         @endif
         </p>
