@@ -96,6 +96,7 @@ class SppuCallbackController extends Controller
      */
     public function returnPage(Request $request)
     {
+
         $rawChallan = $request->input('ChallanNo') ?? $request->input('challan');
         $challanNo = $rawChallan;
 
@@ -111,14 +112,20 @@ class SppuCallbackController extends Controller
             $subscription = CollectionSubscription::where('challan', $challanNo)->first();
             if ($subscription) {
                 if ($subscription->payment_status === 'success') {
+                    // Redirect to collection page — may require login for Members Only collections
                     return redirect('/collection/' . $subscription->collection_id)
-                        ->with('alert-success', 'Payment successful! Access granted to the collection.');
+                        ->with('alert-success', 'Payment successful! Please log in to access the collection.');
                 }
+
+                // Payment still pending or failed — send back to the subscription form (no auth required)
                 return redirect('/collection/' . $subscription->collection_id . '/soap-subscription')
-                    ->with('alert-danger', 'Payment was not completed or failed.');
+                    ->with('alert-warning', 'Your payment is being verified. If successful, your access will be granted shortly. Please check back in a few minutes.');
             }
+
+            Log::warning('SPPU Return Page: Subscription not found for challan', ['challan' => $challanNo]);
         }
 
-        return redirect('/dashboard')->with('alert-success', 'Your payment is being processed. If successful, your collection access will be granted shortly.');
+        // Fallback: send to home (not /dashboard which requires auth)
+        return redirect('/')->with('alert-success', 'Your payment is being processed. If successful, your collection access will be granted shortly.');
     }
 }
