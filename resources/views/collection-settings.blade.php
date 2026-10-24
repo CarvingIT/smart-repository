@@ -343,7 +343,7 @@ $(document).ready(function() {
 			</div>
 
 			<div class="col-md-12" style="margin-top:15px;">
-				<small class="form-text text-muted">{{ __('When enabled, a challan is generated, registered with the Online Payment Gateway, and upon successful payment, the permanent challan with GL breakdown is automatically submitted to the University Finance Department Service.') }}</small>
+				<small class="form-text text-muted">{{ __('When enabled, a challan is generated, registered with the University Finance Service before redirecting to the Online Payment Gateway, and automatically updated with the permanent GL breakdown upon successful payment.') }}</small>
 			</div>
 		</div>
 		@endif
