@@ -1,5 +1,8 @@
 <?php
 
+use App\Collection;
+use App\Services\CollectionSubscriptionService;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,7 +22,23 @@ Route::get('/email/verify', function () {
 Route::get('/login/2fa', 'Auth\LoginTwoFactorController@showChallenge')->middleware('auth')->name('login.two-factor.challenge');
 Route::post('/login/2fa/verify', 'Auth\LoginTwoFactorController@verify')->middleware('auth')->name('login.two-factor.verify');
 
-Route::view('/','welcome');
+Route::get('/', function () {
+	$subscriptionService = app(CollectionSubscriptionService::class);
+
+	$subscriptionCollections = Collection::query()
+		->select(['id', 'name', 'description', 'type', 'column_config'])
+		->where('type', 'Members Only')
+		->orderBy('name')
+		->get()
+		->filter(function ($collection) use ($subscriptionService) {
+			return $subscriptionService->isEnabled($collection);
+		})
+		->values();
+
+	return view('welcome', [
+		'subscriptionCollections' => $subscriptionCollections,
+	]);
+});
 Route::get('/lang/{locale}', function ($locale) {
     App::setLocale($locale);
     return redirect('/');
@@ -42,6 +61,13 @@ Route::get('/documents', 'DocumentController@list')->middleware(['auth','verifie
 Route::get('/lang', 'CollectionController@selectLanguage');
 
 Route::get('/collection/{collection_id}', 'CollectionController@collection')->middleware('collection_view');
+Route::get('/collection/{collection_id}/soap-subscription', 'CollectionSoapSubscriptionController@showForm');
+Route::post('/collection/{collection_id}/soap-subscription', 'CollectionSoapSubscriptionController@start');
+Route::any('/collection/{collection_id}/soap-subscription/reconcile', 'CollectionSoapSubscriptionController@reconcile');
+
+// Global SPPU Gateway Endpoints (Only one SPPU Email Registration required for all collections)
+Route::post('/sppu-reconcile', 'SppuCallbackController@reconcile');
+Route::any('/sppu-return', 'SppuCallbackController@returnPage');
 Route::get('/collection/{collection_id}/export', 'CollectionController@export')->middleware('maintainer');
 Route::get('/collection/{collection_id}/exportxlsx', 'CollectionController@exportXlsx')->middleware('maintainer');
 

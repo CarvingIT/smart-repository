@@ -189,6 +189,26 @@ function clearSearchBar(){
                 </p>
 				@endif
 			</div>
+      @if(!empty($subscriptionCollections) && $subscriptionCollections->count())
+      <div class="card-body pt-0">
+        <div class="mt-3 p-3" style="border:1px solid rgba(0,0,0,0.08); border-radius:12px; background:rgba(255,255,255,0.65);">
+          <h5 class="mb-3">{{ __('Member-only collections with subscription') }}</h5>
+          <div class="row">
+            @foreach($subscriptionCollections as $collection)
+              <div class="col-md-6 mb-3">
+                <div class="p-3 h-100" style="border:1px solid rgba(0,0,0,0.08); border-radius:10px; background:#fff;">
+                  <h6 class="mb-2">{{ $collection->name }}</h6>
+                  @if(!empty($collection->description))
+                    <p class="mb-3" style="text-align:justify;">{{ \Illuminate\Support\Str::limit(strip_tags($collection->description), 180) }}</p>
+                  @endif
+                  <a href="/collection/{{ $collection->id }}/soap-subscription" class="btn btn-warning btn-sm">{{ __('Subscribe') }}</a>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+      @endif
 		</div>
       </div>
 </div>
