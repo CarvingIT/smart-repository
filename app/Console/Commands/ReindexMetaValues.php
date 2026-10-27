@@ -39,8 +39,14 @@ class ReindexMetaValues extends Command
      */
     public function handle()
     {
+        // delete meta field values documents of which have been deleted
+        MetaFieldValue::whereHas('document', function($query){
+            $query->onlyTrashed();
+        })->orDoesntHave('document')->delete(); 
+
 		// empty reverse meta values table first
 		ReverseMetaFieldValue::truncate();
+
 		// add again
 		MetaFieldValue::where('value', 'like','[%]')->chunk(100, function($meta_values){
 		    foreach($meta_values as $mv){

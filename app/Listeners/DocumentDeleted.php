@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\DocumentDeleted as DocumentDeletedNotification;
+use App\ReverseMetaFieldValue;
 
 class DocumentDeleted
 {
@@ -43,6 +44,9 @@ class DocumentDeleted
         }
 
 	    Log::info('Document deleted: '.$event->document->id); 
+        // Delete from reverse meta values
+        ReverseMetaFieldValue::where('document_id', $event->document->id)->delete();
+
 	    // Update elasticsearch index
 	    $elastic_hosts = env('ELASTIC_SEARCH_HOSTS', 'localhost:9200');
 	    $hosts = explode(",",$elastic_hosts);
