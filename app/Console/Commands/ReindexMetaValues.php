@@ -39,20 +39,27 @@ class ReindexMetaValues extends Command
      */
     public function handle()
     {
+        // delete meta field values documents of which have been deleted
+        MetaFieldValue::whereHas('document', function($query){
+            $query->onlyTrashed();
+        })->orDoesntHave('document')->delete(); 
+
 		// empty reverse meta values table first
 		ReverseMetaFieldValue::truncate();
+
 		// add again
-		$meta_values = MetaFieldValue::where('value', 'like','[%]')->get();//pagination needed
-		foreach($meta_values as $mv){
-			$values = json_decode($mv->value);
-			foreach($values as $v){
-				if(empty($v)) continue;
-				$rmfv = new ReverseMetaFieldValue;
-				$rmfv->document_id = $mv->document_id;
-				$rmfv->meta_field_id = $mv->meta_field_id;
-				$rmfv->meta_value = $v;
-				$rmfv->save();
-			}
-		}
+		MetaFieldValue::where('value', 'like','[%]')->chunk(100, function($meta_values){
+		    foreach($meta_values as $mv){
+			    $values = json_decode($mv->value);
+			    foreach($values as $v){
+				    if(empty($v)) continue;
+				    $rmfv = new ReverseMetaFieldValue;
+				    $rmfv->document_id = $mv->document_id;
+				    $rmfv->meta_field_id = $mv->meta_field_id;
+				    $rmfv->meta_value = $v;
+				    $rmfv->save();
+			    }
+		    }
+        });
     }
 }
