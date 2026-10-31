@@ -224,7 +224,7 @@ class UpdateMeta extends Command
 				}
 				else if($meta_field->type == "Select" || $meta_field->type == "MultiSelect"){
 					$val_ar = explode("|", $values[$i]);
-					$field_val_model->value = json_encode($val_ar);
+					$field_val_model->value = json_encode($val_ar, JSON_UNESCAPED_UNICODE);
                     //$field_val_model->value = '['.$values[$i].']';
 				}
 				else{ // default handling for type = Text|TextArea|Date|Numeric 
