@@ -7,11 +7,11 @@ use Illuminate\Http\Request;
 
 class SecureHeaders
 {
-	
-	private $unwantedHeaderList = [
+    private $unwantedHeaderList = [
         'X-Powered-By',
         'Server',
     ];
+
     /**
      * Handle an incoming request.
      *
@@ -21,21 +21,35 @@ class SecureHeaders
      */
     public function handle(Request $request, Closure $next)
     {
+        // 1. Handle CORS Preflight OPTIONS requests for mobile and web clients
+        if ($request->isMethod('OPTIONS')) {
+            $origin = $request->header('Origin') ?: '*';
+            return response('', 200)
+                ->header('Access-Control-Allow-Origin', $origin)
+                ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
+                ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Application')
+                ->header('Access-Control-Allow-Credentials', 'true')
+                ->header('Access-Control-Max-Age', '86400');
+        }
+
         $response = $next($request);
+
+        // Security headers
         $response->headers->set('Referrer-Policy', 'no-referrer-when-downgrade');
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-XSS-Protection', '1; mode=block');
-        //$response->headers->set('X-Frame-Options', 'DENY');
-        $scheme = $request->getScheme();
-        if($scheme == 'https'){
-            $response->headers->set('Clear-Site-Data', "'cache', 'cookies', 'storage', 'executionContents'");
+
+        // 2. Attach CORS headers to all outgoing responses
+        $origin = $request->header('Origin') ?: '*';
+        $response->headers->set('Access-Control-Allow-Origin', $origin);
+        $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+        $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Application');
+        $response->headers->set('Access-Control-Allow-Credentials', 'true');
+
+        foreach ($this->unwantedHeaderList as $h) {
+            $response->headers->remove($h);
         }
-        $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-        $response->headers->set('Access-Control-Allow-Origin', 'mozilla.github.io');
-        $response->headers->set('Content-Security-Policy', "script-src 'self' 'unsafe-inline' 'unsafe-eval' www.googletagmanager.com cdn.jsdelivr.net code.jquery.com mozilla.github.io; style-src 'self' 'unsafe-inline' use.fontawesome.com cdn.jsdelivr.net fonts.googleapis.com code.jquery.com maxcdn.bootstrapcdn.com"); 
-		foreach($this->unwantedHeaderList as $h){
-			$response->headers->remove($h);
-		}
+
         return $response;
     }
 }
